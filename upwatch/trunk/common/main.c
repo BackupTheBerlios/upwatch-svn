@@ -183,20 +183,6 @@ int main( int argc, char** argv, char **envp )
 }
 
 /****************************
- time functions
- ***************************/
-/* compute time diff in microsecs */
-long timeval_diff(struct timeval *a,struct timeval *b)
-{
-  double temp;
-
-  temp = ((a->tv_sec*1000000) + a->tv_usec) -
-           ((b->tv_sec*1000000) + b->tv_usec);
-
-  return (long) temp;
-}
-
-/****************************
  logging utility function
  Mar 31 22:17:53 ts probe[20492]: main.c(63): startup ron
  ***************************/
@@ -350,17 +336,5 @@ static int snprintf_does_errno;  // set to true if snprintf does %m conversions
   }
 
   _LOGRAW(level, buffer);
-}
-
-// return an ascii format timestamp in UTC format
-char *uw_gmtime(time_t *now)
-{
-    struct tm *tnow;
-    char *datetime;
-
-    tnow = gmtime(now);
-    datetime = asctime(tnow);
-    datetime[strlen(datetime)-1] = 0;
-    return(datetime);
 }
 

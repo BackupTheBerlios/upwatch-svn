@@ -13,6 +13,18 @@ guint *guintdup(guint val)
   return(iptr);
 }
 
+// return an ascii format timestamp in UTC format
+char *uw_gmtime(time_t *now)
+{
+    struct tm *tnow;
+    char *datetime;
+
+    tnow = gmtime(now);
+    datetime = asctime(tnow);
+    datetime[strlen(datetime)-1] = 0;
+    return(datetime);
+}
+
 int uw_rand(float maxval)
 {
   return 1+(int) (maxval*rand()/(RAND_MAX+1.0));
@@ -45,5 +57,16 @@ char *strcat_realloc(char *old, char *str)
   new = realloc(old, len+strlen(str)+2);
   strcpy(&new[len], str);
   return(new);
+}
+
+/* compute time diff in microsecs */
+long timeval_diff(struct timeval *a,struct timeval *b)
+{
+  double temp;
+
+  temp = ((a->tv_sec*1000000) + a->tv_usec) -
+           ((b->tv_sec*1000000) + b->tv_usec);
+
+  return (long) temp;
 }
 
