@@ -10,7 +10,7 @@
 
 static int month_len_in_days(struct tm *tm)
 {
-  int days_in_month;
+  register int days_in_month;
 
   switch (tm->tm_mon) {
     case 1: /* februari */
@@ -47,8 +47,8 @@ static int year_len_in_days(struct tm *tm)
 
 static int five_year_len_in_days(struct tm *tm)
 {
-  int five_year_days;
-  int i;
+  register int five_year_days;
+  register int i;
 
   for (five_year_days=0, i=0; i < 5; i++, tm->tm_year++) {
     five_year_days += year_len_in_days(tm);
@@ -63,7 +63,7 @@ static int five_year_len_in_days(struct tm *tm)
  */
 int uw_slot(int type, gulong when, gulong *lowest, gulong *highest)
 {
-  struct tm *tm;
+  register struct tm *tm;
   double diff;
   int seconds_per_period = 86400;
   int seconds_per_slot;

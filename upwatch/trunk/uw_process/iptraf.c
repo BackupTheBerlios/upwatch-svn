@@ -145,7 +145,7 @@ static void *get_def(module *probe, void *probe_res)
     result = my_query(probe->db, 0,
                       "select stattime from pr_%s_raw use index(probstat) "
                       "where probe = '%u' order by stattime desc limit 1",
-                       res->name, res->probeid);
+                       res->name, def->probeid);
     if (result) {
       if (mysql_num_rows(result) > 0) {
         row = mysql_fetch_row(result);
@@ -188,10 +188,10 @@ static void *get_def(module *probe, void *probe_res)
   if (res->color == 0) { // no color given in the result?
     float largest = res->in_total > res->out_total ? res->in_total : res->out_total;
     res->color = 200;
-    if ((largest*8)/60 > (def->yellow*1024)) {
+    if ((largest*8)/res->interval > (def->yellow*1024)) {
       res->color = STAT_YELLOW;
     }
-    if ((largest*8)/60 > (def->red*1024)) {
+    if ((largest*8)/res->interval > (def->red*1024)) {
       res->color = STAT_RED;
     }
   }

@@ -305,9 +305,9 @@ extern int forever;
       free(g_ptr_array_index(arr,i));
       continue;
     }
-    if (resfile_arr->len >= 100) {
+    if (resfile_arr->len >= 10000) {
       free(g_ptr_array_index(arr,i));
-      //fprintf(stderr, "we already have 100 files in memory\n");
+      //fprintf(stderr, "we already have 10000 files in memory\n");
       continue;
     }
     rf = g_malloc0(sizeof(struct resfile));
@@ -373,7 +373,7 @@ static int resummarize(void);
     sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), OPT_ARG(INPUT));
     uw_setproctitle("listing %s", path);
     read_input_files(path);
-    process_probes(NULL);
+    process_probes((gpointer)-1);
   }
 #endif
   return(resfile_arr->len);

@@ -120,7 +120,7 @@ int spool_result(char *basedir, char *target, xmlDocPtr doc, char **targetname)
   return 1;
 }
 
-void *spool_open(char *basedir, char *target)
+void *spool_open(char *basedir, char *target, char *basename)
 {
   struct stat filestat;
   int count;
@@ -150,7 +150,7 @@ void *spool_open(char *basedir, char *target)
   /* Step 2:  Stat the temporary file.  Wait for ENOENT as a response. */
   for(count=1;;count++) {
     /* Get the temporary filename to use now for dumping data. */
-    outfile = mk_tempfile(); // returns malloc'ed string
+    outfile = basename ? strdup(basename) : mk_tempfile(); // returns malloc'ed string
     if (outfile == NULL) {
       free(si);
       LOG(LOG_ERR, "can not construct temp filename");

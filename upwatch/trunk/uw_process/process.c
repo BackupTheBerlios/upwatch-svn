@@ -55,6 +55,8 @@ static void *extract_info_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur,
   res->probeid = xmlGetPropInt(cur, (const xmlChar *) "id");
   res->stattime = xmlGetPropUnsigned(cur, (const xmlChar *) "date");
   res->expires = xmlGetPropUnsigned(cur, (const xmlChar *) "expires");
+  res->interval = xmlGetPropUnsigned(cur, (const xmlChar *) "interval");
+  if (res->interval == 0) res->interval = 60;
   res->ipaddress = xmlGetProp(cur, (const xmlChar *) "ipaddress");
 
   if (probe->xml_result_node) {
@@ -346,8 +348,8 @@ static void insert_pr_status(module *probe, struct probe_def *def, struct probe_
   mysql_free_result(result);
   if (mysql_affected_rows(probe->db) == 0 || (mysql_errno(probe->db) == ER_DUP_ENTRY)) { 
     // nothing was actually inserted, it was probably already there
-    LOG(LOG_NOTICE, "insert_pr_status failed (%s:%u) with %s", 
-                    res->name, def->probeid, mysql_error(probe->db));
+    LOG(LOG_NOTICE, "insert_pr_status failed (%s:%u:%u) with %s", 
+                    res->name, res->stattime, def->probeid, mysql_error(probe->db));
     result = my_query(probe->db, 0,
                       "update pr_status "
                       "set    stattime = '%u', expires = '%u', color = '%d', hide = '%s', "
@@ -594,9 +596,9 @@ int process(module *probe, trx *t)
       gulong not_later_then = UINT_MAX;
       gint i;
 
-      if (debug > 2) {
+      if (debug > 3) {
         LOG(LOG_DEBUG, "stattime = %u, newest = %u for %s %u", t->res->stattime, def->newest,
-          t->res->name, t->res->probeid);
+          t->res->name, def->probeid);
       }
       for (i=0; summ_info[i].period != -1; i++) { // FOR EACH PERIOD
         cur_slot = uw_slot(summ_info[i].period, t->res->stattime, &slotlow, &slothigh);

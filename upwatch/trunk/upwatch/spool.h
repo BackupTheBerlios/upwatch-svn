@@ -1,4 +1,4 @@
-void *spool_open(char *basedir, char *target);
+void *spool_open(char *basedir, char *target, char *basename);
 int spool_printf(void *sp_info, char *fmt, ...);
 int spool_write(void *sp_info, char *buffer, int len);
 int spool_close(void *sp_info, int complete);

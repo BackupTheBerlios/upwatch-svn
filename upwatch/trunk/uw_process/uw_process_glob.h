@@ -20,6 +20,7 @@ PROBE_EMPTY = 1,
   char *hostname; \
   char *ipaddress; \
   guint expires; \
+  guint interval; \
   char *message; 
 
 struct probe_result {

@@ -262,7 +262,7 @@ char *_logfile;
 void _LOGRAW(int level, const char *buffer)
 {
   char *p, *file;
-  char msg[2*65536];
+  char msg[2*16384];
 
   if ((p = strrchr(_logsrce, '/')) != NULL) {
     file = ++p;
@@ -308,7 +308,7 @@ void _LOGRAW(int level, const char *buffer)
 
 void _LOG(int level, const char *fmt, ...)
 {
-  char buffer[65536];
+  char buffer[16384];
   char *p;
   va_list arg;
 

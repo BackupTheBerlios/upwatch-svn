@@ -235,7 +235,13 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
   int filesize;
   int i, len;
   struct q_info *q = td->q;
+  char *basename;
   
+  if ((basename = strrchr(td->filename, '/')) == NULL) {
+    basename = td->filename;
+  } else {
+    basename++;
+  }
   if (stat(td->filename, &st)) {
     LOG(LOG_WARNING, "%s: %m", td->filename);
     return 0;
@@ -311,7 +317,7 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
     return 0;
   } 
 
-  sprintf(buffer, "DATA %d\n", filesize);
+  sprintf(buffer, "DATA %d %s\n", filesize, basename);
   uw_setproctitle("%s:%d %s", q->host, q->port, buffer);
   if (debug > 3) fprintf(stderr, "> %s", buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);

@@ -45,6 +45,7 @@
 			ipaddress NMTOKEN "127.0.0.1"
 			date NMTOKEN #REQUIRED 
 			expires NMTOKEN #REQUIRED
+			interval NMTOKEN "60"
 			notify NMTOKEN "1" >
 
 <!ELEMENT httpget	(host,color,lookup,connect,pretransfer,total,info?)>
@@ -54,6 +55,7 @@
 			ipaddress NMTOKEN "127.0.0.1"
 			date NMTOKEN #REQUIRED 
 			expires NMTOKEN #REQUIRED
+			interval NMTOKEN "60"
 			notify NMTOKEN "1" >
 
 <!ELEMENT iptraf	(in?,out?)>
@@ -61,6 +63,7 @@
 			ipaddress NMTOKEN "127.0.0.1"
 			date NMTOKEN #REQUIRED 
 			expires NMTOKEN #REQUIRED
+			interval NMTOKEN "60"
 			notify NMTOKEN "1" >
 
 <!ELEMENT sysstat	(loadavg,user,system,nice,idle,swapin,swapout,
@@ -68,6 +71,7 @@
 <!ATTLIST sysstat	server NMTOKEN #REQUIRED 
 			date NMTOKEN #REQUIRED 
 			expires NMTOKEN #REQUIRED
+			interval NMTOKEN "60"
 			notify NMTOKEN "1" >
 
 <!ELEMENT mysql		(host,color,connect,total,info?)>
@@ -77,6 +81,7 @@
 			ipaddress NMTOKEN "127.0.0.1"
 			date NMTOKEN #REQUIRED 
 			expires NMTOKEN #REQUIRED
+			interval NMTOKEN "60"
 			notify NMTOKEN "1" >
 
 <!ELEMENT pop3		(host,color,connect,total,info?)>
@@ -86,6 +91,7 @@
 			ipaddress NMTOKEN "127.0.0.1"
 			date NMTOKEN #REQUIRED 
 			expires NMTOKEN #REQUIRED
+			interval NMTOKEN "60"
 			notify NMTOKEN "1" >
 
 <!ELEMENT mssql		(host,color,connect,total,info?)>
@@ -95,6 +101,7 @@
 			ipaddress NMTOKEN "127.0.0.1"
 			date NMTOKEN #REQUIRED 
 			expires NMTOKEN #REQUIRED
+			interval NMTOKEN "60"
 			notify NMTOKEN "1" >
 
 <!ELEMENT postgresql	(host,color,connect,total,info?)>
@@ -104,6 +111,7 @@
 			ipaddress NMTOKEN "127.0.0.1"
 			date NMTOKEN #REQUIRED 
 			expires NMTOKEN #REQUIRED
+			interval NMTOKEN "60"
 			notify NMTOKEN "1" >
 
 <!ELEMENT imap		(host,color,connect,total,info?)>
@@ -113,16 +121,19 @@
 			ipaddress NMTOKEN "127.0.0.1"
 			date NMTOKEN #REQUIRED 
 			expires NMTOKEN #REQUIRED
+			interval NMTOKEN "60"
 			notify NMTOKEN "1" >
 
 <!ELEMENT bb		(host,color,info?)>
 <!ATTLIST bb		hostname NMTOKEN "localhost"
 			date NMTOKEN #REQUIRED 
 			expires NMTOKEN #REQUIRED
+			interval NMTOKEN "60"
 			bbname NMTOKEN #REQUIRED>
 
 <!ELEMENT bb_cpu	(hostname,color,info?)>
 <!ATTLIST bb_cpu	hostname NMTOKEN "localhost"
 			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED>
+			expires NMTOKEN #REQUIRED
+			interval NMTOKEN "60">
 

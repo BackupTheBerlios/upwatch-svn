@@ -17,7 +17,7 @@ int thread_count;
 
 static char *chop(char *s, int i)
 {
-  i--;
+  s[i--] = 0;
   while (i > 0 && isspace(s[i])) {
     s[i--] = 0;
   }
@@ -176,6 +176,7 @@ void handle_session(st_netfd_t rmt_nfd, char *remotehost)
   char user[64], passwd[18];
   char buffer[BUFSIZ];
   int filesize;
+  char *filename;
   void *sp_info;
   char *targ;
   int length, len;
@@ -265,7 +266,7 @@ logged_in:
     return;
   }
 
-  // expect here: DATA xxxxx
+  // expect here: DATA size filename
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
   if (len == ETIME) {
@@ -280,9 +281,16 @@ logged_in:
   chop(buffer, len);
   if (strncasecmp(buffer, "QUIT", 4) == 0) goto end;
   if (strncasecmp(buffer, "DATA ", 5)) goto syntax; 
-  filesize = atoi(buffer + 5);
+  filesize = atoi(buffer+5);
+  for (filename = buffer+5; *filename && isdigit(*filename); filename++)
+    ;
+  for (; *filename && isspace(*filename); filename++)
+    ;
+  if (filename && strlen(filename) < 12) {
+    filename = NULL;
+  }
 
-  sp_info = spool_open(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT));
+  sp_info = spool_open(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), filename);
   if (sp_info == NULL) {
     sprintf(buffer, "-ERR Sorry, error spooling file - enter command\n");
     goto logged_in;
