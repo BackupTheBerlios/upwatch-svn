@@ -8,6 +8,14 @@
 #include "dmalloc.h"
 #endif
 
+#ifndef HAVE_MYSQL_REAL_ESCAPE
+unsigned long mysql_real_escape_string(MYSQL *mysql, char *to, const char *from, unsigned long length)
+{
+  return(mysql_escape_string(to, from, length));
+}
+#endif
+
+
 /****************************
  database functions. 
  NOTE: Don't use with multithreaded programs!

@@ -3,8 +3,8 @@ export        = "#define progOptions uw_pingOptions";
 prog-name     = uw_ping;
 prog-title    = "Upwatch parallel ping daemon";
 version       = `cat ../VERSION`;
-homerc        = "/etc/upwatch.conf";
-homerc        = "/etc/upwatch.d/uw_ping.conf";
+homerc        = `echo $sysconfdir/upwatch.conf`;
+homerc        = `echo $confdir/uw_ping.conf`;
 homerc        = "$HOME/.upwatchrc";
 homerc        = "$HOME";
 homerc        = "$$/upwatch.conf";
@@ -16,7 +16,7 @@ process thousands of hosts in a very short period.';
 
 // this section is for the generated specfile
 spec-requires = "/usr/bin/mysql glib2";
-spec-files    = "%attr(4770,root,upwatch) /usr/sbin/uw_ping";
+spec-files = `echo "%attr(4770,root,upwatch)" $sbindir/uw_ping`;
 
 // describe commandline flags
 flag = {

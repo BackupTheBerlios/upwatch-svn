@@ -5,6 +5,7 @@ export        = "#include <stdlib.h>";
 
 explain;
 long-opts;
+gnu-usage;
 
 copyright = {
   date = "2002";

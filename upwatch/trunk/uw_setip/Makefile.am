@@ -4,14 +4,12 @@ program = uw_setip
 sbin_PROGRAMS = $(program)
 man_MANS = $(program).1
 conf_DATA = $(program).conf
-redhat_DATA = $(program).redhat
-suse_DATA = $(program).suse
+init_DATA = $(INITFILES)
 
-uw_setip_SOURCES = run.c cmd_options.c cmd_options.h $(program).spec-files \
- $(program).redhat $(program).suse
+uw_setip_SOURCES = run.c cmd_options.c cmd_options.h \
+ $(SPECFILES) $(INITFILES)
 uw_setip_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@
-BUILT_SOURCES = cmd_options.h  $(program).spec-files $(program).spec-requires \
- $(program).redhat $(program).suse $(program).spec-install
+BUILT_SOURCES = cmd_options.h $(SPECFILES) $(INITFILES)
 INCLUDES = -I../upwatch -I $(INCL_ST)
 EXTRA_DIST = cmd_options.def $(program).conf
 LDADD = $(DB_O) $(MAIN_O) $(LIBOPTS) $(LIBST) $(LIBUPWATCH) @MYSQL_LIBS@ @LIBGLIB2_LIBS@

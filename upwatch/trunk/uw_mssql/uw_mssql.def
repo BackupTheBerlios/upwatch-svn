@@ -3,8 +3,8 @@ export        = "#define progOptions uw_mssqlOptions";
 prog-name     = uw_mssql;
 prog-title    = "Upwatch mssql daemon";
 version       = `cat ../VERSION`;
-homerc        = "/etc/upwatch.conf";
-homerc        = "/etc/upwatch.d/uw_mssql.conf";
+homerc        = `echo $sysconfdir/upwatch.conf`;
+homerc        = `echo $confdir/uw_mssql.conf`;
 homerc        = "$HOME/.upwatchrc";
 homerc        = "$HOME";
 homerc        = "$$/upwatch.conf";
@@ -16,7 +16,7 @@ so uw_mssql can process thousands of hosts in a very short period.';
 
 // this section is for the generated specfile
 spec-requires = "/usr/bin/mysql glib2 freetds";
-spec-files = "%attr(0770,root,upwatch) /usr/sbin/uw_mssql";
+spec-files = `echo "%attr(0770,root,upwatch)" $sbindir/uw_mssql`;
 
 // describe commandline flags
 flag = {

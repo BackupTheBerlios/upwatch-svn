@@ -3,8 +3,8 @@ export        = "#define progOptions uw_setipOptions";
 prog-name     = uw_setip;
 prog-title    = "Upwatch daemon for setting IP address";
 version       = `cat ../VERSION`;
-homerc        = "/etc/upwatch.conf";
-homerc        = "/etc/upwatch.d/uw_setip.conf";
+homerc        = `echo $sysconfdir/upwatch.conf`;
+homerc        = `echo $confdir/uw_setip.conf`;
 homerc        = "$HOME/.upwatchrc";
 homerc        = "$HOME";
 homerc        = "$$/upwatch.conf";
@@ -16,7 +16,7 @@ These are send by clients with variable IP addresses.';
 
 // this section is for the generated specfile 
 spec-requires = "/usr/bin/mysql glib2";
-spec-files = "%attr(0770,root,upwatch) /usr/sbin/uw_setip";
+spec-files = `echo "%attr(0770,root,upwatch)" $sbindir/uw_setip`;
 
 // describe commandline flags
 flag = {

@@ -27,18 +27,28 @@ endif
 # iptraf (uw_iptraf)
 # server (uw_process, uw_accept, uw_acceptbb, uw_setip)
 CLIENTPROG = uw_sysstat uw_send
+
+if ENABLE_SERVER
 # order is important here: uw_process should be last
 SERVERPROG = uw_acceptbb uw_accept uw_setip uw_notify uw_process
+endif
+
+if ENABLE_MONITORS
 MONITORPROG = uw_httpget uw_ping uw_mysql uw_pop3 uw_imap \
  ${UW_IPTRAF} ${UW_POSTGRESQL} ${UW_SNMPGET} ${UW_MSSQL}
-EXTRAPROG = uw_iptraf
+endif
+
+if ENABLE_IPTRAF
+EXTRAPROG = ${UW_IPTRAF}
+endif
+
 # order is important: SERVERPROG should be last
 PROGNAMES = ${CLIENTPROG} ${MONITORPROG} ${EXTRAPROG} ${SERVERPROG}
 
 export PROGNAMES MONITORPROG CLIENTPROG SERVERPROG EXTRAPROG
 export TOP_SRCDIR = $(top_srcdir)
 
-SUBDIRS = upwatch st-1.4 libstatgrab-0.6 ${PROGNAMES} util scripts compat doc config common
+SUBDIRS = config upwatch st-1.4 libstatgrab-0.6 ${PROGNAMES} util scripts compat doc common
 DIST_SUBDIRS = ${SUBDIRS}
 
 doc_DATA = AUTHORS COPYING ChangeLog NEWS README upwatch.mysql
@@ -49,7 +59,7 @@ EXTRA_DIST = Makefile.am.common Makefile.am.libs Makefile.am.path VERSION libtoo
   cfg/install-sh cfg/config.sub cfg/mkinstalldirs cfg/depcomp cfg/cvs2cl.pl
 
 upwatch.spec: upwatch-spec.def upwatch-spec.tpl common/spec.tpl \
-  uw_*/*.spec-files uw_*/*.spec-requires uw_*/*.spec-install
+  uw_*/*.spec-files uw_*/*.spec-requires 
 	autogen -b upwatch upwatch-spec.def
 
 upwatch.mysql: config/upwatch-base.mysql uw_*/probe.mysql
@@ -65,24 +75,22 @@ ChangeLog: force-changelog
 CLEANFILES = upwatch.mysql upwatch.spec upwatch-*.tar.gz
 
 install-data-local:
-	if test `id -u` -eq 0; then \
+	if test `${ID} -u` -eq 0; then \
 	  ${INSTALL} -d -m 770  -o upwatch -g upwatch ${DESTDIR}${confdir} ;\
 	  ${INSTALL} -d -m 770  -o upwatch -g upwatch ${DESTDIR}${upwatchdir} ;\
 	  ${INSTALL} -d -m 770  -o upwatch -g upwatch ${DESTDIR}${dtddir} ;\
-	  ${INSTALL} -d -m 770  -o upwatch -g upwatch ${DESTDIR}${redhatdir} ;\
-	  ${INSTALL} -d -m 770  -o upwatch -g upwatch ${DESTDIR}${susedir} ;\
-	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${localstatedir}/log/upwatch ;\
-	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTRIR}${localstatedir}/spool/upwatch ;\
+	  ${INSTALL} -d -m 770  -o upwatch -g upwatch ${DESTDIR}${initdir} ;\
+	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${logdir} ;\
+	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTRIR}${spooldir} ;\
 	else \
 	  mkdir -p ${DESTDIR}${confdir} ;\
 	  mkdir -p ${DESTDIR}${upwatchdir} ;\
 	  mkdir -p ${DESTDIR}${dtddir} ;\
-	  mkdir -p ${DESTDIR}${redhatdir} ;\
-	  mkdir -p ${DESTDIR}${susedir} ;\
-	  mkdir -p ${DESTDIR}${localstatedir}/log/upwatch ;\
-	  mkdir -p ${DESTRIR}${localstatedir}/spool/upwatch ;\
+	  mkdir -p ${DESTDIR}${initdir} ;\
+	  mkdir -p ${DESTDIR}${logdir} ;\
+	  mkdir -p ${DESTRIR}${spooldir} ;\
 	fi
 
-rpm: dist
+rpm: all dist
 	$(RPMBUILD) -ta upwatch-${VERSION}.tar.gz
 

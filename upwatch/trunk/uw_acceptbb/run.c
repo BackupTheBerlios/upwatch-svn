@@ -1,4 +1,6 @@
 #include "config.h"
+#include <generic.h>
+#include <time.h>
 #define _XOPEN_SOURCE /* glibc2 needs this for strptime */
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -10,8 +12,6 @@
 #include <malloc.h>
 #include <ctype.h>
 
-#include <generic.h>
-#include <time.h>
 #include <st.h>
 #include "cmd_options.h"
 

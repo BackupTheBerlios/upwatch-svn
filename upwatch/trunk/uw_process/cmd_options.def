@@ -3,8 +3,8 @@ export        = "#define progOptions uw_processOptions";
 prog-name     = uw_process;
 prog-title    = "Upwatch parallel probe daemon";
 version       = `cat ../VERSION`;
-homerc        = "/etc/upwatch.conf";
-homerc        = "/etc/upwatch.d/uw_process.conf";
+homerc        = `echo $sysconfdir/upwatch.conf`;
+homerc        = `echo $confdir/uw_process.conf`;
 homerc        = "$HOME/.upwatchrc";
 homerc        = "$HOME";
 homerc        = "$$/upwatch.conf";
@@ -14,11 +14,10 @@ detail        =
 
 // this section is for the generated specfile
 spec-requires = "/usr/bin/mysql glib2";
-spec-install  = "mkdir -p $RPM_BUILD_ROOT/var/spool/upwatch/uw_process/tmp";
-spec-install  = "mkdir -p $RPM_BUILD_ROOT/var/spool/upwatch/uw_process/new";
-spec-files    = "%attr(0770,root,upwatch) %dir /var/spool/upwatch/uw_process/new";
-spec-files    = "%attr(0770,root,upwatch) %dir /var/spool/upwatch/uw_process/tmp";
-spec-files    = "%attr(0770,root,upwatch) /usr/sbin/uw_process";
+spec-files = `echo "%attr(0770,root,upwatch)" $sbindir/uw_process`;
+spec-files = `echo "%attr(0770,root,upwatch) %dir " $spooldir/uw_process`;
+spec-files = `echo "%attr(0770,root,upwatch) %dir " $spooldir/uw_process/new`;
+spec-files = `echo "%attr(0770,root,upwatch) %dir " $spooldir/uw_process/tmp`;
 
 // describe commandline flags
 flag = {

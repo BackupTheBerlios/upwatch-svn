@@ -3,8 +3,8 @@ export        = "#define progOptions uw_sysstatOptions";
 prog-name     = uw_sysstat;
 prog-title    = "Upwatch probe daemon";
 version       = `cat ../VERSION`;
-homerc        = "/etc/upwatch.conf";
-homerc        = "/etc/upwatch.d/uw_sysstat.conf";
+homerc        = `echo $sysconfdir/upwatch.conf`;
+homerc        = `echo $confdir/uw_sysstat.conf`;
 homerc        = "$HOME/.upwatchrc";
 homerc        = "$HOME";
 homerc        = "$$/upwatch.conf";
@@ -14,7 +14,7 @@ detail        =
 
 // this section is for the generated specfile
 spec-requires = "glib2";
-spec-files    = "%attr(0770,root,upwatch) /usr/sbin/uw_sysstat";
+spec-files = `echo "%attr(0770,root,upwatch)" $sbindir/uw_sysstat`;
 
 // describe commandline flags
 flag = {

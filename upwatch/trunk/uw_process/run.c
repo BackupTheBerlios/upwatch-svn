@@ -1,11 +1,12 @@
 #include "config.h"
-#include <netinet/in_systm.h>
+#include <generic.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
-#include <netinet/in.h>
 #include <netdb.h>
+#include <netinet/in.h>
+#include <netinet/in_systm.h>
 
 #include <generic.h>
 #include "cmd_options.h"

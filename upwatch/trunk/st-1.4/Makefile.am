@@ -1,6 +1,12 @@
 noinst_LIBRARIES = libst.a
 libst_a_SOURCES = sched.c stk.c sync.c key.c io.c st.h common.h  md.h public.h
-CFLAGS = -DUSE_POLL -DLINUX
+if LINUX
+MYCFLAGS = -DUSE_POLL -DLINUX
+endif
+if SOLARIS
+MYCFLAGS = -DSOLARIS
+endif
+CFLAGS = ${MYCFLAGS}
 
 EXTRA_DIST = osguess.sh
 

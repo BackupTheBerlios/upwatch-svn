@@ -1,11 +1,11 @@
 #include "config.h"
-#include <netinet/in_systm.h>
-#include <netinet/in.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <netdb.h>
+#include <netinet/in_systm.h>
+#include <netinet/in.h>
 
 #include <generic.h>
 #include <st.h>
@@ -212,7 +212,7 @@ void *push(void *data)
   }
 
   if ((hp = gethostbyname(q->host)) == (struct hostent *) 0) {
-    LOG(LOG_NOTICE, "can't resolve %s: %s", q->host, hstrerror(h_errno));
+    LOG(LOG_NOTICE, "can't resolve %s: %s", q->host, strerror(h_errno));
     q->fatal = 1;
     goto quit;
   } 

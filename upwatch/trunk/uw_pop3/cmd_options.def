@@ -3,8 +3,8 @@ export        = "#define progOptions uw_pop3Options";
 prog-name     = uw_pop3;
 prog-title    = "Upwatch pop3 daemon";
 version       = `cat ../VERSION`;
-homerc        = "/etc/upwatch.conf";
-homerc        = "/etc/upwatch.d/uw_pop3.conf";
+homerc        = `echo $sysconfdir/upwatch.conf`;
+homerc        = `echo $confdir/uw_pop3.conf`;
 homerc        = "$HOME/.upwatchrc";
 homerc        = "$HOME";
 homerc        = "$$/upwatch.conf";
@@ -16,7 +16,7 @@ so uw_pop3 can process thousands of hosts in a very short period.';
 
 // this section is for the generated specfile
 spec-requires = "/usr/bin/mysql glib2";
-spec-files = "%attr(0770,root,upwatch) /usr/sbin/uw_pop3";
+spec-files = `echo "%attr(0770,root,upwatch)" $sbindir/uw_pop3`;
 
 // describe commandline flags
 flag = {

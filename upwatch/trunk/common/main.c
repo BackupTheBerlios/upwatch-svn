@@ -276,7 +276,7 @@ static unsigned prv;
   } else {
     file = _logsrce;
   }
-  sprintf(msg, "%s[%u] %s(%d): ", progname, getpid(), file, _logline);
+  sprintf(msg, "%s[%lu] %s(%d): ", progname, (unsigned long)getpid(), file, _logline);
   strcat(msg, buffer);
 
   //fprintf(stderr, "compare: rpt=%u, msg=%s, prv=%s\n", rpt, msg, prvmsg);
@@ -293,7 +293,7 @@ static unsigned prv;
   if (rpt) {
     char buf[256];
 
-    sprintf(buf, "%s[%u]: last message repeated %u times", progname, getpid(), rpt);
+    sprintf(buf, "%s[%lu]: last message repeated %u times", progname, (unsigned long)getpid(), rpt);
     _ll_lograw(level, buf);
     rpt = 0;
   }
@@ -351,7 +351,7 @@ void _LOG(int level, const char *fmt, ...)
   va_end(arg);
 
   // kill trailing blanks (xml errors have this a lot)
-  for (p = &buffer[strlen(buffer) - 1]; isspace(*p); p--) {
+  for (p = &buffer[(char)(strlen(buffer) - 1)]; isspace(*p); p--) {
     *p = 0;
   }
 

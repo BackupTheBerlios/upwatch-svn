@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.31 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.32 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -26,24 +26,47 @@ AM_WITH_DMALLOC
 # ----------------------------------------------------------------------
 # Set some global things based on os type
 # ----------------------------------------------------------------------
-AM_CONDITIONAL([LINUX], false)
-AM_CONDITIONAL([SOLARIS], false)
+AC_CANONICAL_HOST
 
 case $host in
   *-*-linux*) 
-    echo "This is a linux system"
-    LINUX=yes
-    AM_CONDITIONAL([LINUX], true)
+    linux=true
+    if test "$bindir" = '${exec_prefix}/bin' ; 		then bindir='/usr/bin' ; fi
+    if test "$sbindir" = '${exec_prefix}/sbin' ; 	then sbindir='/usr/sbin' ; fi
+    if test "$libexecdir" = '${exec_prefix}/libexec';	then libexecdir='/usr/libexec' ; fi
+    if test "$datadir" = '${prefix}/share' ;		then datadir='/usr/local/share' ; fi
+    if test "$sysconfdir" = '${prefix}/etc' ;		then sysconfdir='/etc' ; fi
+    if test "$sharedstatedir" = '${prefix}/com' ;	then sharedstatedir='/usr/local/com' ; fi
+    if test "$localstatedir" = '${prefix}/var' ; 	then localstatedir='/var' ; fi
+    if test "$libdir" = '${exec_prefix}/lib' ; 		then libdir='/usr/lib' ; fi
+    if test "$includedir" = '${prefix}/include' ; 	then includedir='/usr/include' ; fi
+    if test "$oldincludedir" = '/usr/include' ; 	then oldincludedir='/usr/include' ; fi
+    if test "$infodir" = '${prefix}/info' ; 		then infodir='/usr/share/info' ; fi
+    if test "$mandir" = '${prefix}/man' ;		then mandir='/usr/share/man' ; fi
     ;;
   *-*-solaris*)
-    echo "This is a Solaris system"
-    SOLARIS=yes
-    AM_CONDITIONAL([SOLARIS], true)
+    solaris=true
+    if test "$bindir" = '${exec_prefix}/bin' ; 		then bindir='/usr/bin' ; fi
+    if test "$sbindir" = '${exec_prefix}/sbin' ; 	then sbindir='/usr/sbin' ; fi
+    if test "$libexecdir" = '${exec_prefix}/libexec';	then libexecdir='/usr/libexec' ; fi
+    if test "$datadir" = '${prefix}/share' ;		then datadir='/usr/share' ; fi
+    if test "$sysconfdir" = '${prefix}/etc' ;		then sysconfdir='/etc' ; fi
+    if test "$sharedstatedir" = '${prefix}/com' ;	then sharedstatedir='/usr/local/com' ; fi
+    if test "$localstatedir" = '${prefix}/var' ; 	then localstatedir='/var' ; fi
+    if test "$libdir" = '${exec_prefix}/lib' ; 		then libdir='/usr/local/lib' ; fi
+    if test "$includedir" = '${prefix}/include' ; 	then includedir='/usr/include' ; fi
+    if test "$oldincludedir" = '/usr/include' ; 	then oldincludedir='/usr/include' ; fi
+    if test "$infodir" = '${prefix}/info';  		then infodir='/usr/share/info' ; fi
+    if test "$mandir" = '${prefix}/man' ;		then mandir='/usr/share/man' ; fi
+    LIBS="-lgen $LIBS"
     ;;
   *)
-    HOST="generic"
+    generic=true
     ;;
 esac
+
+AM_CONDITIONAL([LINUX], test x$linux = xtrue)
+AM_CONDITIONAL([SOLARIS], test x$solaris = xtrue)
 
 # ----------------------------------------------------------------------
 # check for various programs used during the build.
@@ -58,10 +81,28 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_AWK
 
+AC_PATH_PROG([ID], [id], [/usr/bin/id], [/usr/xpg4/bin:$PATH])
+if test -z "$ID"
+then
+  AC_PATH_PROG(ID, echo)
+fi
+
 AC_PATH_PROG(JW, jw)
 if test -z "$JW"
 then
   AC_PATH_PROG(JW, echo)
+fi
+
+AC_PATH_PROG(XSLTPROC, xsltproc)
+if test -z "$XSLTPROC"
+then
+  AC_PATH_PROG(XSLTPROC, echo)
+fi
+
+AC_PATH_PROG(LYNX, lynx)
+if test -z "$LYNX"
+then
+  AC_PATH_PROG(LYNX, echo)
 fi
 
 AC_PATH_PROG(RPMBUILD, rpmbuild)
@@ -89,6 +130,37 @@ AC_ARG_ENABLE(profile,
         CFLAGS="${CFLAGS} -pg "
     fi]
 )
+
+AC_ARG_ENABLE(server,
+    [  --enable-server         Install server software (default=no)],
+    [  ENABLE_SERVER=$enable_server ]
+)
+AM_CONDITIONAL(ENABLE_SERVER, test x$enable_server = xyes)
+
+AC_ARG_ENABLE(iptraf,
+    [  --enable-iptraf         Install iptraf daemon (default=no)],
+)
+AM_CONDITIONAL(ENABLE_IPTRAF, test x$enable_iptraf = xyes)
+
+AC_ARG_ENABLE(monitors,
+    [  --enable-monitors       Install monitor daemons (default=no)],
+)
+AM_CONDITIONAL(ENABLE_MONITORS, test x$enable_monitors = xyes)
+
+AC_ARG_ENABLE(all,
+    [  --enable-all            Install everything (default=no)],
+)
+
+if test x$enable_all = xyes
+then
+  enable_server=yes
+  enable_monitors=yes
+  enable_iptraf=yes
+fi
+
+AM_CONDITIONAL(ENABLE_SERVER, test x$enable_all = xyes)
+AM_CONDITIONAL(ENABLE_MONITORS, test x$enable_all = xyes)
+AM_CONDITIONAL(ENABLE_IPTRAF, test x$enable_all = xyes)
 
 # Checks for libraries.
 
@@ -296,6 +368,9 @@ AC_SUBST(LIBPQ_CFLAGS)
 #LIBOPTS_LDADD=-lopts
 #AC_SUBST(LIBOPTS_LDADD)
 
+# Check for various functions
+AC_CHECK_FUNCS([daemon, setsid])
+
 # Checks for header files.
 AC_HEADER_DIRENT
 AC_HEADER_STDC
@@ -319,51 +394,66 @@ AC_TYPE_SIGNAL
 AC_FUNC_STAT
 AC_FUNC_STRFTIME
 AC_CHECK_FUNCS([alarm atexit dup2 gethostbyname gethostname gettimeofday inet_ntoa memset putenv regcomp select socket strchr strdup strerror strncasecmp strrchr strstr strtol strtoul tzset uname])
-
+AC_CHECK_LIB(mysqlclient, mysql_real_escape_string, AC_DEFINE(HAVE_MYSQL_REAL_ESCAPE,1,[Does mysql have real_escape]),,[$MYSQL_LIBS])
 
 echo 
 echo "*********************************************************"
-echo "* CONFIGURATION:                                        *"
-echo "*                                                       *"
-echo "* using RPM program: $RPMBUILD                        *"
+echo "* CONFIGURATION:"
+echo "*"
+echo "* using RPM program: $RPMBUILD"
 
-#if test $HAVE_LIBNET -eq 0
-#then
-#echo "* libnet not found, uw_investigate will not be built    *"
-#else
-#AC_CONFIG_FILES([uw_investigate/Makefile])
-#fi
-if test $HAVE_LIBPCAP -eq 0
+echo "enable_iptraf=$enable_iptraf"
+if test "$enable_iptraf" = "yes"
 then
-echo "* libpcap not found, uw_iptraf will not be built        *"
-else
-AC_CONFIG_FILES([uw_iptraf/Makefile])
+  if test $HAVE_LIBPCAP -eq 0
+  then
+    echo "* libpcap not found, uw_iptraf will not be built"
+  else
+    AC_CONFIG_FILES([uw_iptraf/Makefile])
+  fi
 fi
-if test $HAVE_LIBCRYPTO -eq 0
+
+if test "$enable_monitors" = "yes"
 then
-echo "* -lcrypto not found, some things will not be built     *"
+  AC_CONFIG_FILES([uw_httpget/Makefile])
+  AC_CONFIG_FILES([uw_ping/Makefile])
+  AC_CONFIG_FILES([uw_mysql/Makefile])
+  AC_CONFIG_FILES([uw_pop3/Makefile])
+  AC_CONFIG_FILES([uw_imap/Makefile])
+  if test $HAVE_LIBSNMP -eq 0
+  then
+    echo "* snmp libs not found, no SNMP support"
+  else
+    AC_CONFIG_FILES([uw_snmpget/Makefile])
+  fi
+
+  if test $HAVE_LIBTDS -eq 0
+  then
+    echo "* TDS lib not found, no MS-SQL support"
+  else
+    AC_CONFIG_FILES([uw_mssql/Makefile])
+  fi
+
+  if test $HAVE_LIBPQ -eq 0
+  then
+    echo "* PostgreSQL not found, no PostgreSQL support"
+  else
+    AC_CONFIG_FILES([uw_postgresql/Makefile])
+  fi
 fi
-if test $HAVE_LIBSNMP -eq 0
+
+if test "$enable_server" = "yes"
 then
-echo "* snmp libs not found, no SNMP support                  *"
-else
-AC_CONFIG_FILES([uw_snmpget/Makefile])
-fi
-if test $HAVE_LIBTDS -eq 0
-then
-echo "* TDS lib not found, no MS-SQL support                  *"
-else
-AC_CONFIG_FILES([uw_mssql/Makefile])
-fi
-if test $HAVE_LIBPQ -eq 0
-then
-echo "* PostgreSQL not found, no PostgreSQL support           *"
-else
-AC_CONFIG_FILES([uw_postgresql/Makefile])
+  AC_CONFIG_FILES([uw_setip/Makefile])
+  AC_CONFIG_FILES([uw_accept/Makefile])
+  AC_CONFIG_FILES([uw_acceptbb/Makefile])
+  AC_CONFIG_FILES([uw_process/Makefile])
+  AC_CONFIG_FILES([uw_notify/Makefile])
 fi
 
 echo "*********************************************************"
 echo 
+
 
 AC_CONFIG_FILES([Makefile
                  doc/Makefile
@@ -373,23 +463,14 @@ AC_CONFIG_FILES([Makefile
                  st-1.4/Makefile
                  util/Makefile
                  scripts/Makefile
-                 uw_setip/Makefile
-                 uw_accept/Makefile
-                 uw_acceptbb/Makefile
-                 uw_httpget/Makefile
-                 uw_notify/Makefile
-                 uw_ping/Makefile
-                 uw_process/Makefile
                  uw_send/Makefile
                  uw_sysstat/Makefile
-                 uw_mysql/Makefile
-                 uw_pop3/Makefile
-                 uw_imap/Makefile
                  compat/Makefile
                  compat/bb/Makefile
                  compat/bb/bbhimport/Makefile
                  compat/sometests/Makefile
                  compat/sometests/setproctitle/Makefile])
 
+cp patches/libstatgrab-configure.gnu libstatgrab-0.6/configure.gnu
 AC_CONFIG_SUBDIRS(libstatgrab-0.6)
 AC_OUTPUT

@@ -2,6 +2,6 @@ docdir = $(datadir)/doc/$(PACKAGE)-$(VERSION)
 upwatchdir = $(datadir)/$(PACKAGE)
 confdir = $(sysconfdir)/$(PACKAGE).d
 dtddir = $(upwatchdir)/dtd
-redhatdir = $(upwatchdir)/redhat
-susedir = $(upwatchdir)/suse
-
+initdir = $(upwatchdir)/init
+logdir = ${localstatedir}/log/upwatch
+spooldir = ${localstatedir}/spool/upwatch

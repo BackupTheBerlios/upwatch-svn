@@ -1,5 +1,49 @@
-[+ AutoGen5 template suse +]
-#! /bin/sh
+[+ AutoGen5 template redhat suse solaris +]
+[+ CASE (suffix) +][+
+   == redhat
++]#! /bin/sh
+#
+# [+prog-name+]	       [+prog-title+]
+#
+# chkconfig: 2345 40 60
+# description: 	[+(string-substitute (get "detail") '("\n") '("\n#\t\t") )+]
+#
+# processname: [+prog-name+]
+# pidfile: /var/run/[+prog-name+].pid
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# See how we were called.
+case "$1" in
+  start)
+	echo -n "Starting [+prog-name+]: "
+	daemon --user upwatch [+(getenv "sbindir")+]/[+prog-name+]
+	echo
+	touch /var/lock/subsys/[+prog-name+]
+	;;
+  stop)
+	echo -n "Stopping [+prog-name+]: "
+	killproc [+prog-name+]
+	echo
+	rm -f /var/lock/subsys/[+prog-name+]
+	;;
+  restart)
+	$0 stop
+	$0 start
+	;;
+  status)
+	status [+prog-name+]
+	;;
+  *)
+	echo "Usage: [+prog-name+] {start|stop|restart|status}"
+	exit 1
+esac
+
+exit 0
+
+[+ == suse
++]#! /bin/sh
 #
 # [+prog-name+]        [+prog-title+]
 #
@@ -16,8 +60,7 @@
 # Description:         start [+prog-name+]
 ### END INIT INFO
 
-DEAMON=/usr/sbin/[+prog-name+]
-DEAMONCONF=/etc/upwatch.d/[+prog-name+].conf
+DEAMON=[+(getenv "sbindir")+]/[+prog-name+]
 
 test -x $DEAMON || exit 5
 
@@ -93,4 +136,45 @@ case "$1" in
 	;;
 esac
 rc_exit
+
+[+ == solaris
++]#!/sbin/sh
+#
+# [+prog-name+]	       [+prog-title+]
+#
+# chkconfig: 2345 40 60
+# description: 	[+(string-substitute (get "detail") '("\n") '("\n#\t\t") )+]
+#
+# processname: [+prog-name+]
+# 
+# All rights reserved.
+#
+
+case "$1" in
+'start')
+        [ ! -x [+(getenv "sbindir")+]/[+prog-name+] ] && exit 0
+
+        # check for a [+prog-name+] process and exit
+        # if the daemon is already running.
+
+        if /usr/bin/pgrep -x -u 0 -P 1 [+prog-name+] >/dev/null 2>&1; then
+               echo "$0: [+prog-name+] is already running"
+               exit 0
+        fi
+
+        [+(getenv "sbindir")+]/[+prog-name+] &
+        ;;
+
+'stop')
+        /usr/bin/pkill -x -u 0 -P 1 [+prog-name+]
+        ;;
+
+*)
+        echo "Usage: $0 { start | stop }"
+        exit 1
+        ;;
+esac
+exit 0[+
+ESAC +]
+
 

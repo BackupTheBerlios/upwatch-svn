@@ -3,8 +3,8 @@ export        = "#define progOptions uw_acceptbbOptions";
 prog-name     = uw_acceptbb;
 prog-title    = "Upwatch daemon for accepting reports from Big Brother clients";
 version       = `cat ../VERSION`;
-homerc        = "/etc/upwatch.conf";
-homerc        = "/etc/upwatch.d/uw_acceptbb.conf";
+homerc        = `echo $sysconfdir/upwatch.conf`;
+homerc        = `echo $confdir/uw_acceptbb.conf`;
 homerc        = "$HOME/.upwatchrc";
 homerc        = "$HOME";
 homerc        = "$$/upwatch.conf";
@@ -15,7 +15,7 @@ Big Brother package (www.bb4.com)';
 
 // this section is for the generated specfile 
 spec-requires = "/usr/bin/mysql glib2";
-spec-files = "%attr(0770,root,upwatch) /usr/sbin/uw_acceptbb";
+spec-files = `echo "%attr(0770,root,upwatch)" $sbindir/uw_acceptbb`;
 
 // describe commandline flags
 flag = {

@@ -3,8 +3,8 @@ export        = "#define progOptions uw_iptrafOptions";
 prog-name     = uw_iptraf;
 prog-title    = "Upwatch probe daemon";
 version       = `cat ../VERSION`;
-homerc        = "/etc/upwatch.conf";
-homerc        = "/etc/upwatch.d/uw_iptraf.conf";
+homerc        = `echo $sysconfdir/upwatch.conf`;
+homerc        = `echo $confdir/uw_iptraf.conf`;
 homerc        = "$HOME/.upwatchrc";
 homerc        = "$HOME";
 homerc        = "$$/upwatch.conf";
@@ -14,7 +14,7 @@ detail        =
 
 // this section is for the generated specfile
 spec-requires = "libpcap glib2 >= 2.0.4";
-spec-files    = "%attr(4770,root,upwatch) /usr/sbin/uw_iptraf";
+spec-files = `echo "%attr(0770,root,upwatch)" $sbindir/uw_iptraf`;
 
 // describe commandline flags
 flag = {

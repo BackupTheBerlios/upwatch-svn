@@ -8,12 +8,16 @@ DB_O = db.o
 MAN1TPL = $(top_srcdir)/common/man1.tpl
 SPECTPL = $(top_srcdir)/common/spec.tpl
 PROBTPL = $(top_srcdir)/common/probe.tpl
-REDHTPL = $(top_srcdir)/common/redhat.tpl
-SUSETPL = $(top_srcdir)/common/suse.tpl
+INITTPL = $(top_srcdir)/common/init.tpl
 CMDDEF  = $(top_srcdir)/common/generic_options.def $(top_srcdir)/common/dbase_options.def \
  $(top_srcdir)/common/minimal_options.def
 PROBDEF = $(top_srcdir)/common/probe_generic.def
 GENINCL = -L /usr/share/autogen -L $(top_srcdir)/common
+
+SPECFILES = $(program).spec-requires $(program).spec-files
+INITFILES = $(program).redhat $(program).suse $(program).solaris
+AGDEFINES = -Dconfdir=$(confdir) -Dsysconfdir=$(sysconfdir) -Dsbindir=$(sbindir) \
+ -Dlogdir=$(logdir) -Dspooldir=$(spooldir)
 
 main.o: $(top_srcdir)/common/main.c cmd_options.def $(CMDDEF)
 	$(COMPILE) @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ -c $(top_srcdir)/common/main.c
@@ -22,40 +26,38 @@ db.o: $(top_srcdir)/common/db.c cmd_options.def $(CMDDEF)
 	$(COMPILE) @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ -c $(top_srcdir)/common/db.c
 
 cmd_options.h: cmd_options.def $(CMDDEF)
-	autogen -b cmd_options $(GENINCL) cmd_options.def
+	autogen -b cmd_options $(AGDEFINES) $(GENINCL) cmd_options.def
 
 probe.def_h: probe.def $(PROBDEF)
-	autogen -b probe $(GENINCL) -T $(PROBTPL) probe.def
+	autogen -b probe $(AGDEFINES) $(GENINCL) -T $(PROBTPL) probe.def
 
 probe.res_h: probe.def $(PROBDEF)
-	autogen -b probe $(GENINCL) -T $(PROBTPL) probe.def
+	autogen -b probe $(AGDEFINES) $(GENINCL) -T $(PROBTPL) probe.def
 
 probe.enum: probe.def $(PROBDEF) 
-	autogen -b probe $(GENINCL) -T $(PROBTPL) probe.def
+	autogen -b probe $(AGDEFINES) $(GENINCL) -T $(PROBTPL) probe.def
 
 probe.mysql: probe.def $(PROBDEF) 
-	autogen -b probe $(GENINCL) -T $(PROBTPL) probe.def
+	autogen -b probe $(AGDEFINES) $(GENINCL) -T $(PROBTPL) probe.def
 
 $(program).1: cmd_options.def $(top_srcdir)/common/man1.tpl
-	autogen -b $(program) $(GENINCL) -T $(MAN1TPL) cmd_options.def
+	autogen -b $(program) $(AGDEFINES) $(GENINCL) -T $(MAN1TPL) cmd_options.def
 
 $(program).redhat: cmd_options.def $(CMDDEF)
-	autogen -b $(program) $(GENINCL) -T $(REDHTPL) cmd_options.def
+	autogen -b $(program) $(AGDEFINES) $(GENINCL) -T $(INITTPL) cmd_options.def
 
 $(program).suse: cmd_options.def $(CMDDEF)
-	autogen -b $(program) $(GENINCL) -T $(SUSETPL) cmd_options.def
+	autogen -b $(program) $(AGDEFINES) $(GENINCL) -T $(INITTPL) cmd_options.def
 
-$(program).spec-install: cmd_options.def $(CMDDEF) $(SPECTPL)
-	autogen -b $(program) $(GENINCL) -T $(SPECTPL) cmd_options.def
+$(program).solaris: cmd_options.def $(CMDDEF)
+	autogen -b $(program) $(AGDEFINES) $(GENINCL) -T $(INITTPL) cmd_options.def
 
 $(program).spec-requires: cmd_options.def $(CMDDEF) $(SPECTPL)
-	autogen -b $(program) $(GENINCL) -T $(SPECTPL) cmd_options.def
+	autogen -b $(program) $(AGDEFINES) $(GENINCL) -T $(SPECTPL) cmd_options.def
 
 $(program).spec-files: cmd_options.def $(CMDDEF) $(SPECTPL)
-	autogen -b $(program) $(GENINCL) -T $(SPECTPL) cmd_options.def
+	autogen -b $(program) $(AGDEFINES) $(GENINCL) -T $(SPECTPL) cmd_options.def
 
-CLEANFILES = cmd_options.c cmd_options.h *.1 $(program).spec-files \
-  $(program).spec-install $(program).spec-requires $(program).init \
-  $(program).init-suse Makefile.in probe.def_h probe.res_h probe.enum \
-  probe.mysql
+CLEANFILES = cmd_options.c cmd_options.h *.1 Makefile.in probe.def_h probe.res_h \
+  probe.enum probe.mysql $(SPECFILES) $(INITFILES)
 

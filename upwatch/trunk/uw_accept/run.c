@@ -18,7 +18,7 @@ int thread_count;
 static char *chop(char *s, int i)
 {
   s[i--] = 0;
-  while (i > 0 && isspace(s[i])) {
+  while (i > 0 && isspace(s[(char)i])) {
     s[i--] = 0;
   }
   return(s);

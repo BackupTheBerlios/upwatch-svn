@@ -48,6 +48,8 @@ guint *guintdup(guint val);
 int uw_rand(float maxval);
 void setsin(struct sockaddr_in *, u_int32_t);
 
+#include <compat.h>
+
 extern int debug;
 extern int startsec;
 extern int every;

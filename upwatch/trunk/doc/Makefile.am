@@ -10,11 +10,12 @@ EXTRA_DIST = ${XMLSOURCE} upwatch.xsl jadetex.cfg style.dsl style.xsl style.css
 
 upwatch.html: ${XMLSOURCE}
 	xmllint --valid --noout upwatch.xml
-	-xsltproc --nonet -o upwatch.html upwatch.xsl upwatch.xml
+	-${XSLTPROC} --nonet -o upwatch.html upwatch.xsl upwatch.xml
 	touch upwatch.html
 
 upwatch.txt: ${XMLSOURCE}
-	lynx -nolist -dump upwatch.html > upwatch.txt
+	-${LYNX} -nolist -dump upwatch.html > upwatch.txt
+	touch upwatch.txt
 
 # jw wants internet access to www.oasis-open.org. I don't understand catalogs
 # enough to disable this
