@@ -141,8 +141,8 @@ static void *get_def(module *probe, void *probe_res)
     g_hash_table_insert(probe->cache, guintdup(*(unsigned *)&res->ipaddr), def);
   }
   if (res->color == 0) { // no color given in the result?
-    res->color = 200;
     guint total = res->in + res->out;
+    res->color = 200;
     if ((total*8)/60 > (def->yellow*1024)) {
       res->color = STAT_YELLOW;
     }
