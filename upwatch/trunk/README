@@ -1,0 +1,19 @@
+This is version 0.1 of UpWatch, a device monitoring and statistics
+framework. UpWatch boasts extendability, extreme speed and scalability,
+useful statistics and graphs, and a web interface.
+
+Currently it uses PHP, MySQL, and the daemons are written in C.
+ 
+CVS =================================================================
+
+If you have CVS access, issue the following commands:
+
+cvs checkout upwatch
+./autogen.sh
+./configure
+make
+
+Use `make dist` to create a tar.gz file, then run 
+`rpm -ta upwatch-xx.tar.gz`. This will create rpm files.
+
+

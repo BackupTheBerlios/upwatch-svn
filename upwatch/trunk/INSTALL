@@ -1,0 +1,85 @@
+This is version 0.1 of UpWatch, a device monitoring and statistics
+framework. UpWatch boasts extendability, extreme speed and scalability,
+useful statistics and graphs, and a web interface.
+
+Currently it uses PHP, MySQL, and the daemons are written in C.
+
+ 
+Basic Installation
+==================
+
+First the requirements. If you install from source, you need the 
+following packages including any development files like headers 
+and libraries:
+
+- gcc, make, autoconf etcetera.
+- autogen + autoopts
+- gzip 
+- glib2
+- gnet
+- mysql
+- curl
+- libpcap
+- libnet
+
+If you install the RPM you need to install the following rpm's:
+
+- gnet
+- glib2
+- mysql
+- curl
+- libpcap
+- libnet
+
+1a. Supposing you install the RPM's: that's easy.
+
+	rpm -Uvh upwatch-*.rpm
+
+    This also creates the upwatch user and installs
+    the php scripts in its home directory.
+    Now skip to step 2.
+
+1b. Installing from source needs the standard sequence:
+
+	./configure
+	make 
+	make install
+
+    Next create the upwatch user:
+
+	/usr/sbin/adduser upwatch
+
+    or something along those lines. And copy the php 
+    tree to some place you want to have it.
+
+2.  Now you must create the database. For this we provide a mysql 
+    script. Create the database:
+
+	mysqladmin create upwatch
+ 	mysql < config/upwatch.mysql
+
+    You may want to tweak the mysql creation script to change some
+    tables from MySQL into InnoDB. This will give you transactions.
+    Usually this is not necessary.
+
+
+Configuration
+=============
+
+Configuration is done through config scripts /etc/upwatch.conf
+and per-probe configs in /etc/upwatch.d. Read the manpages 
+for more info. Every long option can also be entered in the
+config files.
+
+In case of problems, look in /var/log/upwatch.log.
+
+
+Testing
+=======
+
+The easiest test is to create a ping probe. Point your browser
+to the php entry page. Create a host, on that host create a 
+ping probe. The host will be ping'ed by uw_ping within a 
+couple of minutes. 
+
+
