@@ -62,6 +62,7 @@ mkdir -p $RPM_BUILD_ROOT/etc/rc.d/init.d
 install -m 770 config/upwatch.init $RPM_BUILD_ROOT/etc/rc.d/init.d/upwatch
 
 cp /usr/lib/libopts.so $RPM_BUILD_ROOT/usr/lib
+cp /usr/lib/libopts.so.9 $RPM_BUILD_ROOT/usr/lib
 
 [+ FOR program +]
 # package specific files for [+program+]
@@ -106,6 +107,7 @@ install -m 660 [+program+]/[+program+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+prog
 %attr(0755,root,root) /usr/bin/ctime
 %attr(0755,root,root) /usr/bin/slot
 %attr(0755,root,root) /usr/lib/libopts.so
+%attr(0755,root,root) /usr/lib/libopts.so.9
 /usr/share/man/man1/ctime.1.gz
 /usr/share/man/man1/slot.1.gz
 /usr/share/man/man1/bbhimport.1.gz
