@@ -31,7 +31,7 @@ void mod_ic_flush(module *probe, const char *table)
                              (char *) table, (char *) g_ptr_array_index(probe->insertc, 0));
   g_free(g_ptr_array_index(probe->insertc, 0));
   for (i=1; i < probe->insertc->len; i++) {
-    start += sprintf(start, ", %s", g_ptr_array_index(probe->insertc, i));
+    start += sprintf(start, ", %s", (char *) g_ptr_array_index(probe->insertc, i));
     g_free(g_ptr_array_index(probe->insertc, i));
   }
   g_ptr_array_free(probe->insertc, TRUE); 

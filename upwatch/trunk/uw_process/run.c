@@ -200,6 +200,11 @@ int init(void)
 {
   struct sigaction new_action;
 
+  if (I_AM(uw_notify) && HAVE_OPT(SUMMARIZE)) {
+    fprintf(stderr, "Illegal option --summarize\n");
+    return 1;
+  }
+
   daemonize = TRUE;
   if (HAVE_OPT(RUN_QUEUE) || HAVE_OPT(SUMMARIZE)) {
     every = ONE_SHOT;
@@ -431,28 +436,10 @@ static void *extract_info_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur,
       }
       continue;
     }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "host")) && (cur->ns == ns)) {
-      xmlNodePtr hname;
-
-      for (hname = cur->xmlChildrenNode; hname != NULL; hname = hname->next) {
-        if (xmlIsBlankNode(hname)) continue;
-        if ((!xmlStrcmp(hname->name, (const xmlChar *) "hostname")) && (hname->ns == ns)) {
-          p = xmlNodeListGetString(doc, hname->xmlChildrenNode, 1);
-          if (p) {
-            res->hostname = strdup(p);
-            xmlFree(p);
-          }
-          continue;
-        }
-        if ((!xmlStrcmp(hname->name, (const xmlChar *) "ipaddress")) && (hname->ns == ns)) {
-          p = xmlNodeListGetString(doc, hname->xmlChildrenNode, 1);
-          if (p) {
-            res->ipaddress = strdup(p);
-            xmlFree(p);
-          }
-          continue;
-        }
-      }
+    if ((!xmlStrcmp(cur->name, (const xmlChar *) "notify")) && (cur->ns == ns)) {
+      res->proto = xmlGetProp(cur->xmlChildrenNode, (const xmlChar *) "proto");
+      res->target = xmlGetProp(cur->xmlChildrenNode, (const xmlChar *) "target");
+      continue;
     }
     if (probe->get_from_xml) {
       probe->get_from_xml(probe, doc, cur, ns, res);
@@ -467,7 +454,7 @@ static void *extract_info_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur,
 static int handle_file(gpointer data, gpointer user_data)
 {
   char *filename = (char *)data;
-  xmlDocPtr doc; 
+  xmlDocPtr doc, failed, notify;
   xmlNsPtr ns;
   xmlNodePtr cur;
   char *p;
@@ -477,6 +464,10 @@ static int handle_file(gpointer data, gpointer user_data)
   struct stat st;
   int filesize;
   int i;
+  int output_ct = STACKCT_OPT(OUTPUT);
+  char **output_pn = STACKLST_OPT(OUTPUT);
+  int notify_ct = STACKCT_OPT(NOTIFY);
+  char **notify_pn = STACKLST_OPT(NOTIFY);
 
   if (debug) { LOG(LOG_DEBUG, "Processing %s", filename); }
 
@@ -554,11 +545,17 @@ static int handle_file(gpointer data, gpointer user_data)
     xmlFreeDoc(doc);
     return 0;
   }
+  failed = UpwatchXmlDoc("result");
+  xmlSetDocCompressMode(failed, OPT_VALUE_COMPRESS);
+  notify = UpwatchXmlDoc("result");
+  xmlSetDocCompressMode(notify, OPT_VALUE_COMPRESS);
+
   /* Second level is a list of probes, but be laxist */
   for (failures = 0; cur != NULL;) {
     int found = 0;
     char buf[20];
     int count = 0;
+    trx *t = NULL;
 
     buf[0] = 0;
     if (xmlIsBlankNode(cur)) {
@@ -566,8 +563,6 @@ static int handle_file(gpointer data, gpointer user_data)
       continue;
     }
     for (i = 0; modules[i]; i++) {
-      trx *t;
-      xmlNodePtr del = cur;
       int ret;
 
       if (modules[i]->accept_probe) {
@@ -583,6 +578,8 @@ static int handle_file(gpointer data, gpointer user_data)
       found = 1;
       t = (trx *)g_malloc0(sizeof(trx));
       t->res = extract_info_from_xml(modules[i], doc, cur, ns);
+      t->doc = doc;
+      t->node = cur;
 
       if (buf[0] == 0 || count % 100 == 0) {
         strftime(buf, sizeof(buf), "%Y-%m-%d %T", gmtime(&fromdate));
@@ -590,33 +587,57 @@ static int handle_file(gpointer data, gpointer user_data)
       }
       if (debug > 3) { fprintf(stderr, "%s %s@%s", buf, t->res->name, fromhost); }
       ret = process(modules[i], t);
-      free(t);
       if (ret == 0 || ret == -1) { // error in processing this probe
-        failures++; // should log this somewhere
+        failures++; 
+        found = FALSE; // so it will go to the failed section
       } else if (ret == -2) {
+        free(t);
         goto errexit; // fatal database error
       } else {
         count++;
       }
-      cur = cur->next;
-      xmlUnlinkNode(del); // succeeded, remove this node from the XML tree
-      xmlFreeNode(del);
       break;
     }
-    if (!found) {
+    if (found) {
+      xmlNodePtr node, new;
+
+      if (t->notify) {
+        node = cur;
+        xmlUnlinkNode(node); // unlink, copy and paste
+        new = xmlCopyNode(node, 1);
+        xmlFreeNode(node);
+        xmlAddChild(xmlDocGetRootElement(notify), new);
+      }
+    } else {
+      xmlNodePtr node, new;
+
       LOG(LOG_ERR, "can't find method: %s, saved to %s", cur->name, OPT_ARG(FAILURES));
       failures++;
-      cur = cur->next;
+      node = cur;
+      xmlUnlinkNode(node); // unlink, copy and paste
+      new = xmlCopyNode(node, 1);
+      xmlFreeNode(node);
+      xmlAddChild(xmlDocGetRootElement(failed), new);
     }
+    cur = cur->next;
+    if (t) free(t);
   }
   if (failures) {
-    xmlSaveFormatFile(OPT_ARG(FAILURES), doc, 1);
+    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(FAILURES), failed, NULL);
+  }
+  for (i=0; i < output_ct; i++) {
+    spool_result(OPT_ARG(SPOOLDIR), output_pn[i], doc, NULL);
+  }
+  for (i=0; i < notify_ct; i++) {
+    spool_result(OPT_ARG(SPOOLDIR), notify_pn[i], doc, NULL);
   }
   unlink(filename);
 
 errexit:
   free(filename);
   xmlFreeDoc(doc);
+  xmlFreeDoc(notify);
+  xmlFreeDoc(failed);
   if (fromhost) free(fromhost);
   return 0;
 }

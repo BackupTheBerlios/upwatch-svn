@@ -1,6 +1,7 @@
 # included from Makefile.am in every program subdirectory
 
 LIBUPWATCH = $(top_srcdir)/upwatch/libupwatch.a @LIBXML2_LIBS@
+LIBUPWATCHT = $(top_srcdir)/upwatch/libupwatcht.a @LIBXML2_LIBS@
 
 LIBST = $(top_srcdir)/st-1.4/libst.a
 INCL_ST = $(top_srcdir)/st-1.4

@@ -1,0 +1,82 @@
+AutoGen Definitions options;
+export        = "#define progOptions uw_nullOptions";
+prog-name     = uw_null;
+prog-title    = "Upwatch parallel probe daemon";
+version       = `cat ../VERSION`;
+homerc        = `echo $sysconfdir/upwatch.conf`;
+homerc        = `echo $confdir/uw_null.conf`;
+homerc        = "$HOME/.upwatchrc";
+homerc        = "$HOME";
+homerc        = "$$/upwatch.conf";
+homerc        = "$$/uw_null.conf";
+detail        = 
+'uw_null just deletes everything in its queue';
+
+// this section is for the generated specfile
+spec-requires = "/usr/bin/mysql glib2";
+spec-files = `echo "%attr(0770,root,upwatch)" $sbindir/uw_null`;
+spec-files = `echo "%attr(0770,root,upwatch) %dir " $spooldir/uw_null`;
+spec-files = `echo "%attr(0770,root,upwatch) %dir " $spooldir/uw_null/new`;
+spec-files = `echo "%attr(0770,root,upwatch) %dir " $spooldir/uw_null/tmp`;
+
+// describe commandline flags
+flag = {
+    name      = spooldir;
+    value     = S;
+    arg_type  = string;
+    descrip   = "maildir-type spooldirectory for result files";
+    doc       =
+'This parameter denotes the basedirectory for reading input files. Inside
+this directory another directory is expected named by the `input` parameter.
+Inside this directory directories called `tmp` and `new` should exist. All files
+will be read from `new`. You should set up some cron job that
+removes any files in `tmp` that are older then 36 hours. For some more info
+about maildir see http://www.qmail.org/man/man5/maildir.html.';
+};
+
+// describe commandline flags
+flag = {
+    name      = input;
+    value     = I;
+    arg_type  = string;
+    arg-default = uw_null;
+    descrip   = "name of queue to read from";
+    doc       =
+'The argument is taken to be a maildir under the directory `spooldir`.
+Everything placed in this queue is transferred.';
+};
+
+flag = {
+    name      = copy;
+    value     = c;
+    arg_type  = string;
+    descrip   = "file to copy all transactions to";
+    doc       =
+'You can copy all transactions to the specified queue, for inspecting
+them later';
+};
+
+flag = {
+    name      = compress;
+    value     = C;
+    arg_type  = number;
+    arg-default = 9;
+    arg-range = '0->9';
+    descrip   = "XML compression factor";
+    doc       =
+'The generated resultfile, will normally be compressed to save datatraffic costs.
+The compression can be set between 0 no (compression) and 9 (highest compression).
+Decompression is automatic';
+};
+
+flag = {
+    name      = run_queue;
+    value     = q;
+    descrip   = "Process the queue once, and then exit";
+    doc       =
+'You might just want to process the files in the queue, and then exit.
+This is useful is you want to run uw_null under cron or for debugging.';
+};
+
+#include dbase_options.def
+#include generic_options.def

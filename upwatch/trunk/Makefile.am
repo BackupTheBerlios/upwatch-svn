@@ -22,15 +22,15 @@ endif
 
 # variables to build installable packages
 # packages are:
-# base (includes docs, utils, uw_sysstat and uw_send).
+# base (includes docs, utils, uw_sysstat, uw_null and uw_send).
 # monitor (for monitoring station. All remote probes.)
 # iptraf (uw_iptraf)
 # server (uw_process, uw_accept, uw_acceptbb, uw_setip)
-CLIENTPROG = uw_send uw_sysstat
+CLIENTPROG = uw_send uw_sysstat uw_null
 
 if ENABLE_SERVER
 # order is important here: uw_process should be last
-SERVERPROG = uw_acceptbb uw_accept uw_route uw_setip uw_notify uw_process
+SERVERPROG = uw_acceptbb uw_accept uw_route uw_setip uw_process
 ENABLE_SERVER = --enable-server
 endif
 

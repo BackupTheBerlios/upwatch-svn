@@ -398,6 +398,7 @@ extern int forever;
     }
   }
 
+  info[0] = 0;
   if (fullest > OPT_VALUE_DISKFREE_YELLOW) { // if some disk is more then 80% full give `df` listing
     char cmd[1024];
     FILE *in;

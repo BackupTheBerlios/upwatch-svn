@@ -22,7 +22,9 @@ int main(int argc, char *argv[])
 #include <time.h>
 #include <ctype.h>
 
+#ifdef WITH_THREADS
 pthread_mutex_t _logmutex = PTHREAD_MUTEX_INITIALIZER;
+#endif
 char *_logsrce;
 int _logline;
 char *_logfile;
@@ -87,6 +89,8 @@ void _LOG(int level, const char *fmt, ...)
     syslog(level, msg);
   }
 */
+#ifdef WITH_THREADS
   pthread_mutex_unlock(&_logmutex);
+#endif
 }
 

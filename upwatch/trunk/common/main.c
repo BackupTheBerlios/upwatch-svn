@@ -208,7 +208,9 @@ long timeval_diff(struct timeval *a,struct timeval *b)
 #include <time.h>
 #include <ctype.h>
 
+#ifdef WITH_THREADS
 pthread_mutex_t _logmutex = PTHREAD_MUTEX_INITIALIZER;
+#endif
 char *_logsrce;
 int _logline;
 char *_logfile;
@@ -287,7 +289,9 @@ static void _ll_lograw(int level, const char *msg)
   if (OPT_VALUE_SYSLOG) {
     syslog(level, msg);
   }
+#ifdef WITH_THREADS
   pthread_mutex_unlock(&_logmutex);
+#endif
 }
 
 void _LOG(int level, char *fmt, ...)

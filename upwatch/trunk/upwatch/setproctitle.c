@@ -290,17 +290,23 @@ setproctitle(const char *fmt, ...)
 void
 uw_setproctitle(const char *fmt, ...)
 {
+#ifdef WITH_THREADS
 static  pthread_mutex_t buf_mutex;
+#endif
 static	char buf[SPT_BUFSIZE];
 	va_list ap;
 
+#ifdef WITH_THREADS
         pthread_mutex_lock(&buf_mutex);
+#endif
 	va_start(ap, fmt);
 	(void) vsnprintf(buf, SPT_BUFSIZE, fmt, ap);
 	va_end(ap);
 
 	setproctitle("%s", buf);
+#ifdef WITH_THREADS
         pthread_mutex_unlock(&buf_mutex);
+#endif
 }
 
 

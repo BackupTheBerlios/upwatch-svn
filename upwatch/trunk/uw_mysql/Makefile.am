@@ -1,17 +1,19 @@
 include $(top_srcdir)/Makefile.am.path
 
 probe = mysql
+AM_CFLAGS = -DWITH_THREADS
 program = uw_mysql
 sbin_PROGRAMS = $(program)
 man_MANS = $(program).1
 conf_DATA = $(program).conf
 init_DATA = $(INITFILES)
+AMCFLAGS = -DWITH_THREADS
 
 uw_mysql_SOURCES = run.c cmd_options.h cmd_options.c $(PROBFILES) $(SPECFILES) $(INITFILES)
-uw_mysql_CFLAGS = @MYSQL_CFLAGS@ @LIBGTHREAD2_CFLAGS@ @LIBXML2_CFLAGS@
+uw_mysql_CFLAGS = @MYSQL_CFLAGS@ @LIBGTHREAD2_CFLAGS@ @LIBXML2_CFLAGS@ $(AM_CFLAGS)
 BUILT_SOURCES = cmd_options.h cmd_options.c $(PROBFILES) $(SPECFILES) $(INITFILES)
 INCLUDES = -I../upwatch 
 EXTRA_DIST = cmd_options.def probe.def probe.enum probe.mysql $(program).conf
-LDADD = $(DB_O) $(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @MYSQL_LIBS@ @LIBGTHREAD2_LIBS@
+LDADD = $(DB_O) $(MAIN_O) $(LIBOPTS) $(LIBUPWATCHT) @MYSQL_LIBS@ @LIBGTHREAD2_LIBS@
 include $(top_srcdir)/Makefile.am.common
 

@@ -20,17 +20,17 @@ else
 GENINCL = -L /usr/share/autogen -L $(top_srcdir)/common
 endif
 
-SPECFILES = $(program).spec-requires $(program).spec-files
-INITFILES = $(program).redhat $(program).suse $(program).solaris
+SPECFILES = $(program:%=%.spec-requires) $(program:%=%.spec-files)
+INITFILES = $(program:%=%.redhat) $(program:%=%.suse) $(program:%=%.solaris)
 PROBFILES  = probe.def_h probe.res_h probe.enum probe.mysql probe.xml probe.dtd probe.dtd-inc
 AGDEFINES = -Dconfdir=$(confdir) -Dsysconfdir=$(sysconfdir) -Dsbindir=$(sbindir) \
  -Dlogdir=$(logdir) -Dspooldir=$(spooldir)
 
 main.o: $(top_srcdir)/common/main.c cmd_options.def $(CMDDEF)
-	$(COMPILE) @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ -c $(top_srcdir)/common/main.c
+	$(COMPILE) @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ $(AM_CFLAGS) -c $(top_srcdir)/common/main.c
 
 db.o: $(top_srcdir)/common/db.c cmd_options.def $(CMDDEF)
-	$(COMPILE) @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ -c $(top_srcdir)/common/db.c
+	$(COMPILE) @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ $(AM_CFLAGS) -c $(top_srcdir)/common/db.c
 
 cmd_options.h: cmd_options.def $(CMDDEF)
 	autogen -b cmd_options $(AGDEFINES) $(GENINCL) cmd_options.def

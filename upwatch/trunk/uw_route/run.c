@@ -266,7 +266,6 @@ static int handle_file(gpointer data, gpointer user_data)
 
   for (i = 0; route[i].name; i++) {
     if (route[i].doc) {
-      //xmlReconciliateNs(route[i].doc, xmlDocGetRootElement(route[i].doc));
       spool_result(OPT_ARG(SPOOLDIR), route[i].queue, route[i].doc, NULL);
       xmlFreeDoc(route[i].doc);
       route[i].doc = NULL;

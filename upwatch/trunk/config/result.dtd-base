@@ -9,3 +9,10 @@
 
 <!ELEMENT info          (#PCDATA)>
 
+<!-- notify record -->
+<!ELEMENT notify (info?)>
+<!ATTLIST notify  proto NMTOKEN  #REQUIRED
+        target NMTOKEN #REQUIRED
+        date NMTOKEN
+>
+

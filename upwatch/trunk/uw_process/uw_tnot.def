@@ -18,8 +18,24 @@ spec-files = `echo "%attr(0770,root,upwatch)" $sbindir/uw_process`;
 spec-files = `echo "%attr(0770,root,upwatch) %dir " $spooldir/uw_process`;
 spec-files = `echo "%attr(0770,root,upwatch) %dir " $spooldir/uw_process/new`;
 spec-files = `echo "%attr(0770,root,upwatch) %dir " $spooldir/uw_process/tmp`;
+spec-files = `echo "%attr(0770,root,upwatch) %dir " $spooldir/q_failed`;
+spec-files = `echo "%attr(0770,root,upwatch) %dir " $spooldir/q_failed/new`;
+spec-files = `echo "%attr(0770,root,upwatch) %dir " $spooldir/q_failed/tmp`;
 
 // describe commandline flags
+flag = {
+    name      = compress;
+    value     = C;
+    arg_type  = number;
+    arg-default = 9;
+    arg-range = '0->9';
+    descrip   = "XML compression factor";
+    doc       =
+'The generated resultfile, will normally be compressed to save datatraffic costs.
+The compression can be set between 0 no (compression) and 9 (highest compression).
+Decompression is automatic';
+};
+
 flag = {
     name      = spooldir;
     value     = S;
@@ -48,13 +64,37 @@ For every input queue given a new reader process is started';
 };
 
 flag = {
+    name      = output;
+    value     = O;
+    stack_arg;
+    arg_type  = string;
+    descrip   = "name of queue to drop results";
+    doc       =
+'The argument is taken to be a maildir under the directory `spooldir`.
+All results are (after processing) placed in this queue.
+This flag may be given multiple times.';
+};
+
+flag = {
     name      = failures;
     value     = f;
     arg_type  = string;
-    descrip   = "file to store failed transactions";
+    descrip   = "name of queue to store failed transactions";
     doc       =
 'For some reason storing results for a particular probe may fail.
-These transactions are kept in the filename given with here';
+These transactions are placed in the queue given here';
+};
+
+flag = {
+    name      = notify;
+    value     = N;
+    stack_arg;
+    arg_type  = string;
+    descrip   = "name of queue to drop results with a notification on them";
+    doc       =
+'The argument is taken to be a maildir under the directory `spooldir`.
+All results for which a notofication should be sent are placed in this queue.
+This flag may be given multiple times.';
 };
 
 flag = {
@@ -124,17 +164,6 @@ flag = {
     doc       =
 'You might just want to process the files in the queue, and then exit.
 This is useful is you want to run uw_process under cron or for debugging.';
-};
-
-flag = {
-    name      = batch_size;
-    arg_type  = number;
-    arg-default = 10000;
-    arg-range = '1->100000';
-    descrip   = "How much resultfiles to process at once";
-    doc       =
-'How many result files should be read into memory before processing. This
-also denotes the amount of entries processed by -q';
 };
 
 flag = {

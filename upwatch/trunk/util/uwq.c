@@ -65,7 +65,7 @@ int main (int argc, char *argv[])
       }
       if (!OPT_VALUE_NO_STAT) {
         if (stat(buffer, &st)) {
-          perror(buffer);
+          if (errno != ENOENT) perror(buffer);
           continue;
         }
         if (oldest > st.st_mtime) oldest = st.st_mtime;

@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.46 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.47 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -490,6 +490,7 @@ AC_CONFIG_FILES([util/Makefile])
 AC_CONFIG_FILES([scripts/Makefile])
 AC_CONFIG_FILES([uw_send/Makefile])
 AC_CONFIG_FILES([uw_sysstat/Makefile])
+AC_CONFIG_FILES([uw_null/Makefile])
 AC_CONFIG_FILES([compat/Makefile])
 AC_CONFIG_FILES([compat/sometests/Makefile])
 AC_CONFIG_FILES([compat/sometests/setproctitle/Makefile])
@@ -500,7 +501,6 @@ AC_CONFIG_FILES([uw_accept/Makefile])
 AC_CONFIG_FILES([uw_acceptbb/Makefile])
 AC_CONFIG_FILES([uw_route/Makefile])
 AC_CONFIG_FILES([uw_process/Makefile])
-AC_CONFIG_FILES([uw_notify/Makefile])
 AC_CONFIG_FILES([compat/bb/Makefile])
 AC_CONFIG_FILES([compat/bb/bbhimport/Makefile])
 

@@ -8,7 +8,7 @@ init_DATA = $(INITFILES)
 
 uw_template_SOURCES = run.c cmd_options.c cmd_options.h cmd_options.def \
  $(SPECFILES) $(INITFILES)
-uw_template_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@
+uw_template_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ $(AM_CFLAGS)
 BUILT_SOURCES = cmd_options.h $(SPECFILES) $(INITFILES)
 INCLUDES = -I../upwatch -I$(INCL_ST)
 EXTRA_DIST = cmd_options.def $(program).conf

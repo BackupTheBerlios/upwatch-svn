@@ -1,6 +1,7 @@
 include $(top_srcdir)/Makefile.am.path
 
 program = uw_investigate
+AM_CFLAGS = -DWITH_THREADS
 sbin_PROGRAMS = $(program)
 man_MANS = $(program).1
 conf_DATA = $(program).conf
@@ -8,11 +9,12 @@ init_DATA = $(INITFILES)
 
 uw_investigate_SOURCES = run.c cmd_options.c cmd_options.h traceroute.c traceroute.h \
   cmd_options.def $(PROBFILES) $(SPECFILES) $(INITFILES)
-uw_investigate_CFLAGS = @MYSQL_CFLAGS@ @LIBGTHREAD2_CFLAGS@ @LIBXML2_CFLAGS@ @LIBNET_CFLAGS@ @LIBPCAP_CFLAGS@ # -DUSE_THREADS
+uw_investigate_CFLAGS = @MYSQL_CFLAGS@ @LIBGTHREAD2_CFLAGS@ @LIBXML2_CFLAGS@ @LIBNET_CFLAGS@ \
+  @LIBPCAP_CFLAGS@ $(AM_CFLAGS)
 BUILT_SOURCES = cmd_options.h $(PROBFILES) $(SPECFILES) $(INITFILES)
 INCLUDES = -I../upwatch 
 EXTRA_DIST = cmd_options.def $(program).conf
-LDADD = $(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @LIBGTHREAD2_LIBS@ @LIBPCAP_LIBS@ @LIBNET_LIBS@
+LDADD = $(MAIN_O) $(LIBOPTS) $(LIBUPWATCHT) @LIBGTHREAD2_LIBS@ @LIBPCAP_LIBS@ @LIBNET_LIBS@
 include $(top_srcdir)/Makefile.am.common
 
 tp : tp.o traceroute.o

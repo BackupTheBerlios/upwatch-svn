@@ -6,10 +6,6 @@ if SOLARIS
 SOLARISLIBS = -lresolv
 endif
 
-if HAVE_LIBESMTP
-DEF_LIBESMTP = -DHAVE_LIBESMTP
-endif
-
 if HAVE_LIBPQ
 USE_LIBPQ = postgresql.c
 DEF_LIBPQ = -DHAVE_LIBPQ
@@ -34,12 +30,12 @@ uw_process_SOURCES = run.c process.c generic_ct.c cmd_options.h cmd_options.c \
  insertcache.c uw_process.h modules.inc $(SPECFILES) $(INITFILES) notify.c \
  ping.c httpget.c iptraf.c sysstat.c mysql.c bb_cpu.c bb.c pop3.c $(USE_LIBPQ) \
  $(USE_LIBSNMP) $(USE_LIBTDS) imap.c errlog.c diskfree.c
-uw_process_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ \
-  $(DEF_LIBPQ) $(DEF_LIBSNMP) $(DEF_LIBTDS) $(DEF_LIBESMTP) # -DUSE_THREADS
+uw_process_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ $(AM_CFLAGS) \
+  $(DEF_LIBPQ) $(DEF_LIBSNMP) $(DEF_LIBTDS) $(DEF_LIBESMTP) 
 BUILT_SOURCES = cmd_options.h cmd_options.c $(SPECFILES) $(INITFILES)
 INCLUDES = -I../upwatch 
 EXTRA_DIST = cmd_options.def $(program).conf
-LDADD = $(DB_O) $(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @LIBESMTP_LIBS@ @MYSQL_LIBS@ \
+LDADD = $(DB_O) $(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @MYSQL_LIBS@ \
   @LIBGLIB2_LIBS@ @LIBXML2_LIBS@ $(SOLARISLIBS)
 include $(top_srcdir)/Makefile.am.common
 
@@ -53,10 +49,16 @@ install-data-local:
 	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/$(program) ;\
 	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/$(program)/new ;\
 	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/$(program)/tmp ;\
+	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/q_failed ;\
+	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/q_failed/new ;\
+	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/q_failed/tmp ;\
 	else \
 	  mkdir -p ${DESTDIR}${spooldir}/$(program) ;\
 	  mkdir -p ${DESTDIR}${spooldir}/$(program)/new ;\
 	  mkdir -p ${DESTDIR}${spooldir}/$(program)/tmp ;\
+	  mkdir -p ${DESTDIR}${spooldir}/q_failed ;\
+	  mkdir -p ${DESTDIR}${spooldir}/q_failed/new ;\
+	  mkdir -p ${DESTDIR}${spooldir}/q_failed/tmp ;\
 	fi
 
 CLEANFILES += ../probes.enum
@@ -64,6 +66,6 @@ CLEANFILES += ../probes.enum
 bin_PROGRAMS = tnot
 tnot_SOURCES = tnot.c notify.c cmd_options.h cmd_options.c
 tnot_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ \
-  $(DEF_LIBPQ) $(DEF_LIBSNMP) $(DEF_LIBTDS) $(DEF_LIBESMTP) # -DUSE_THREADS
+  $(DEF_LIBPQ) $(DEF_LIBSNMP) $(DEF_LIBTDS) $(DEF_LIBESMTP) 
 
 

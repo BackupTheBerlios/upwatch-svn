@@ -3,6 +3,8 @@
 
 extern int trust(char *name);
 
+#define I_AM(a)  (strcmp(progname, #a) == 0)
+
 /* list of probes */
 typedef enum
 {
@@ -21,6 +23,8 @@ PROBE_EMPTY = 1,
   guint expires; \
   guint received; \
   guint interval; \
+  char *proto; \
+  char *target; \
   char *message; 
 
 struct probe_result {
@@ -102,14 +106,15 @@ struct summ_spec {
 
 typedef struct transaction {
   module *probe;		// point to the module processing this transaction
-  void *def;			// probe definition data
-  void *loc;			// local data ptr
+  xmlDocPtr doc;		// points to current XML document
+  xmlNodePtr node;		// points to current result node in document
+  struct probe_def *def;	// probe definition data
   struct probe_result *res;	// probe result pointer
+  int notify;			// true if there is a notification on this result
 } trx;
 
-void notify(module *probe, struct probe_def *def, struct probe_result *res, struct probe_result *prv);
+void notify(module *probe, trx *t, struct probe_result *prv);
 char *query_server_by_id(module *probe, int id);
-
 
 void mod_ic_add(module *probe, const char *table, const char *str);
 void mod_ic_flush(module *probe, const char *table);

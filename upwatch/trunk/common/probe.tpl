@@ -265,7 +265,7 @@ IF (not (exist? "noelement")) +]<!ELEMENT [+name+] (#PCDATA)>		<!-- [+descrip+] 
 +][+ FOR probe +]<!-- [+ descrip +] -->
 <!ELEMENT [+name+]	([+ FOR element+][+name+][+
 IF optional +]?[+ENDIF+],[+ ENDFOR element +][+ FOR result +][+
-IF (not (exist? "noelement")) +][+name+],[+ ENDIF element +][+ ENDFOR +]info?)>
+IF (not (exist? "noelement")) +][+name+],[+ ENDIF element +][+ ENDFOR +]info?,notify?)>
 <!ATTLIST [+name+][+FOR attribute +]	[+name+] NMTOKEN [+
 IF default +] "[+default+]"[+ENDIF
 +][+IF required+] #REQUIRED[+ENDIF required+]

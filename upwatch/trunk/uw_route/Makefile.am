@@ -13,7 +13,7 @@ init_DATA = $(INITFILES)
 
 uw_route_SOURCES = run.c cmd_options.h cmd_options.c \
  $(SPECFILES) $(INITFILES) 
-uw_route_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ 
+uw_route_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ $(AM_CFLAGS)
 BUILT_SOURCES = cmd_options.h cmd_options.c $(SPECFILES) $(INITFILES)
 INCLUDES = -I../upwatch 
 EXTRA_DIST = cmd_options.def $(program).conf

@@ -38,80 +38,6 @@ void free_res(void *res)
 }
 
 //*******************************************************************
-// GET THE INFO FROM THE XML FILE
-// Caller must free the pointer it returns
-//*******************************************************************
-static void *extract_info_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
-{
-  struct probe_result *res;
-
-  res = g_malloc0(probe->res_size);
-  if (res == NULL) {
-    return(NULL);
-  }
-
-  res->name = strdup(cur->name);
-
-  res->server = xmlGetPropInt(cur, (const xmlChar *) "server");
-  res->probeid = xmlGetPropInt(cur, (const xmlChar *) "id");
-  res->stattime = xmlGetPropUnsigned(cur, (const xmlChar *) "date");
-  res->expires = xmlGetPropUnsigned(cur, (const xmlChar *) "expires");
-  res->received = xmlGetPropUnsigned(cur, (const xmlChar *) "received");
-  res->interval = xmlGetPropUnsigned(cur, (const xmlChar *) "interval");
-  if (res->interval == 0) res->interval = 60;
-  res->ipaddress = xmlGetProp(cur, (const xmlChar *) "ipaddress");
-
-  if (probe->xml_result_node) {
-    probe->xml_result_node(probe, doc, cur, ns, res);
-  }
-
-  for (cur = cur->xmlChildrenNode; cur != NULL; cur = cur->next) {
-    char *p;
-
-    if (xmlIsBlankNode(cur)) continue;
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "color")) && (cur->ns == ns)) {
-      res->color = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "info")) && (cur->ns == ns)) {
-      p = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-      if (p) {
-        res->message = strdup(p);
-        xmlFree(p);
-      }
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "host")) && (cur->ns == ns)) {
-      xmlNodePtr hname;
-
-      for (hname = cur->xmlChildrenNode; hname != NULL; hname = hname->next) {
-        if (xmlIsBlankNode(hname)) continue;
-        if ((!xmlStrcmp(hname->name, (const xmlChar *) "hostname")) && (hname->ns == ns)) {
-          p = xmlNodeListGetString(doc, hname->xmlChildrenNode, 1);
-          if (p) {
-            res->hostname = strdup(p);
-            xmlFree(p);
-          }
-          continue;
-        }
-        if ((!xmlStrcmp(hname->name, (const xmlChar *) "ipaddress")) && (hname->ns == ns)) {
-          p = xmlNodeListGetString(doc, hname->xmlChildrenNode, 1);
-          if (p) {
-            res->ipaddress = strdup(p);
-            xmlFree(p);
-          }
-          continue;
-        }
-      }
-    }
-    if (probe->get_from_xml) {
-      probe->get_from_xml(probe, doc, cur, ns, res);
-    }
-  }
-  return(res);
-}
-
-//*******************************************************************
 // retrieve the definitions + status
 // get it from the cache. if there but too old: delete
 // in case of mysql-has-gone-away type errors, we keep on running, 
@@ -561,7 +487,6 @@ int slot_is_complete(module *probe, char *name, guint probeid, int i, guint slot
 int process(module *probe, trx *t)
 {
   int seen_before=0, must_update_def=0;
-  struct probe_def *def=NULL;
   struct probe_result *prv=NULL;
   int err = 1; /* default ok */
 
@@ -579,11 +504,11 @@ int process(module *probe, trx *t)
   if (debug > 3) fprintf(stderr, "get_def\n");
   if (probe->get_def) {
     if (debug > 3) fprintf(stderr, "RETRIEVE PROBE DEFINITION RECORD FROM DATABASE\n");
-    def = probe->get_def(probe, t->res); // RETRIEVE PROBE DEFINITION RECORD FROM DATABASE
+    t->def = probe->get_def(probe, t->res); // RETRIEVE PROBE DEFINITION RECORD FROM DATABASE
   } else {
-    def = get_def(probe, t->res);
+    t->def = get_def(probe, t->res);
   }
-  if (!def) {  // Oops, def record not found. Skip this probe
+  if (!t->def) {  // Oops, def record not found. Skip this probe
     if (debug > 3) fprintf(stderr, "def NOT found\n");
     err = -1; /* malformed input FIXME should make distinction between db errors and def not found */
     goto exit_with_res;
@@ -591,7 +516,7 @@ int process(module *probe, trx *t)
 
   if (debug > 3) fprintf(stderr, "STORE RAW RESULTS\n");
   if (probe->store_results) {
-    int ret = probe->store_results(probe, def, t->res, &seen_before); // STORE RAW RESULTS
+    int ret = probe->store_results(probe, t->def, t->res, &seen_before); // STORE RAW RESULTS
     if (!ret) { /* error return? */
       if (debug > 3) fprintf(stderr, "error in store_results\n");
       err = -2; /* database fatal error - try again later */
@@ -601,19 +526,19 @@ int process(module *probe, trx *t)
     seen_before = FALSE;
   }
 
-  if (t->res->stattime > def->newest) { // IF CURRENT RAW RECORD IS THE MOST RECENT 
+  if (t->res->stattime > t->def->newest) { // IF CURRENT RAW RECORD IS THE MOST RECENT 
     if (debug > 3) fprintf(stderr, "CURRENT RAW RECORD IS THE MOST RECENT\n");
     prv = g_malloc0(sizeof(struct probe_result));
-    prv->color = def->color;  // USE PREVIOUS COLOR FROM DEF RECORD
-    prv->stattime = def->newest;
+    prv->color = t->def->color;  // USE PREVIOUS COLOR FROM DEF RECORD
+    prv->stattime = t->def->newest;
   } else {
     if (debug > 3) fprintf(stderr, "RETRIEVE PRECEDING RAW RECORD FROM DATABASE\n");
-    prv = get_previous_record(probe, def, t->res); // RETRIEVE PRECEDING RAW RECORD FROM DATABASE
+    prv = get_previous_record(probe, t->def, t->res); // RETRIEVE PRECEDING RAW RECORD FROM DATABASE
   }
 
-  if (def->newest == 0) { // IF THIS IS THE FIRST RESULT EVER FOR THIS PROBE
+  if (t->def->newest == 0) { // IF THIS IS THE FIRST RESULT EVER FOR THIS PROBE
     if (debug > 3) fprintf(stderr, "THIS IS THE FIRST RESULT EVER FOR THIS PROBE\n");
-    insert_pr_status(probe, def, t->res);
+    insert_pr_status(probe, t->def, t->res);
     must_update_def = TRUE;
     goto finish;
   }
@@ -626,34 +551,34 @@ int process(module *probe, trx *t)
     struct probe_result *nxt;
 
     if (debug > 3) fprintf(stderr, "COLOR DIFFERS FROM PRECEDING RAW RECORD - CREATE PR_HIST\n");
-    create_pr_hist(probe, def, t->res, prv); // CREATE PR_HIST
+    create_pr_hist(probe, t->def, t->res, prv); // CREATE PR_HIST
     if (debug > 3) fprintf(stderr, "RETRIEVE FOLLOWING RAW RECORD\n");
-    nxt = get_following_record(probe, def, t->res); // RETRIEVE FOLLOWING RAW RECORD
+    nxt = get_following_record(probe, t->def, t->res); // RETRIEVE FOLLOWING RAW RECORD
     if (nxt && nxt->color) { // IF FOUND
       if (debug > 3) fprintf(stderr, "FOLLOWING RECORD IS FOUND\n");
       if (nxt->color == t->res->color) {  // IF COLOR OF FOLLOWING IS THE SAME AS CURRENT
         if (debug > 3) fprintf(stderr, "SAME COLOR: DELETE POSSIBLE HISTORY RECORDS\n");
-        delete_history(probe, def, nxt); // DELETE POSSIBLE HISTORY RECORDS FOR FOLLOWING RECORD
+        delete_history(probe, t->def, nxt); // DELETE POSSIBLE HISTORY RECORDS FOR FOLLOWING RECORD
       }
       g_free(nxt);
     }
-    if (t->res->stattime > def->newest) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED
+    if (t->res->stattime > t->def->newest) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED
       if (debug > 3) fprintf(stderr, "THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED - UPDATE PR_STATUS\n");
-      update_pr_status(probe, def, t->res, prv);    // UPDATE PR_STATUS
+      update_pr_status(probe, t->def, t->res, prv);    // UPDATE PR_STATUS
       if (debug > 3) fprintf(stderr, "UPDATE SERVER COLOR\n");
-      update_server_color(probe, def, t->res, prv); // UPDATE SERVER COLOR
+      update_server_color(probe, t->def, t->res, prv); // UPDATE SERVER COLOR
       must_update_def = TRUE;
     }
   } else {
     if (debug > 3) fprintf(stderr, "COLOR SAME AS PRECEDING RAW RECORD\n");
-    if (t->res->stattime > def->newest) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED
+    if (t->res->stattime > t->def->newest) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED
       if (debug > 3) fprintf(stderr, "THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED - UPDATE PR_STATUS\n");
-      update_pr_status(probe, def, t->res, prv);  // UPDATE PR_STATUS (not for the color, but for the expiry time)
+      update_pr_status(probe, t->def, t->res, prv);  // UPDATE PR_STATUS (not for the color, but for the expiry time)
       must_update_def = TRUE;
     }
   }
   if (probe->summarize) { // if we have a summarisation function
-    if (t->res->stattime > def->newest) { // IF CURRENT RAW RECORD IS THE MOST RECENT
+    if (t->res->stattime > t->def->newest) { // IF CURRENT RAW RECORD IS THE MOST RECENT
       guint cur_slot, prev_slot;
       gulong slotlow, slothigh;
       gulong dummy_low, dummy_high;
@@ -667,7 +592,7 @@ int process(module *probe, trx *t)
           if (debug > 3)  fprintf(stderr, "cur(%u for %u) != prv(%u for %u), summarizing %s from %lu to %lu",
                                           cur_slot, t->res->stattime, prev_slot, prv->stattime,
                                           summ_info[i].from, slotlow, slothigh);
-          probe->summarize(probe, def, t->res, summ_info[i].from, summ_info[i].to, 
+          probe->summarize(probe, t->def, t->res, summ_info[i].from, summ_info[i].to, 
                            cur_slot, slotlow, slothigh, 0);
         }
       }
@@ -679,17 +604,17 @@ int process(module *probe, trx *t)
 
       if (debug > 3) {
         fprintf(stderr, "SUMMARIZING. CURRENT RAW RECORD IS AN OLD ONE\n");
-        LOG(LOG_DEBUG, "stattime = %u, newest = %u for %s %u", t->res->stattime, def->newest,
-          t->res->name, def->probeid);
+        LOG(LOG_DEBUG, "stattime = %u, newest = %u for %s %u", t->res->stattime, t->def->newest,
+          t->res->name, t->def->probeid);
       }
       for (i=0; summ_info[i].period != -1; i++) { // FOR EACH PERIOD
         cur_slot = uw_slot(summ_info[i].period, t->res->stattime, &slotlow, &slothigh);
         if (slothigh > not_later_then) continue; // we already know there are none later then this
         // IF THIS SLOT IS COMPLETE
-        if (slot_is_complete(probe, t->res->name, def->probeid, i, slotlow, slothigh)) {
+        if (slot_is_complete(probe, t->res->name, t->def->probeid, i, slotlow, slothigh)) {
           // RE-SUMMARIZE CURRENT SLOT
           if (debug > 3) fprintf(stderr, "SLOT IS COMPLETE - RE-SUMMARIZE CURRENT SLOT\n");
-          probe->summarize(probe, def, t->res, summ_info[i].from, summ_info[i].to, 
+          probe->summarize(probe, t->def, t->res, summ_info[i].from, summ_info[i].to, 
                            cur_slot, slotlow, slothigh, 0);
         } else {
           not_later_then = slothigh;
@@ -699,18 +624,18 @@ int process(module *probe, trx *t)
   }
 
   // notify if needed
-  notify(probe, def, t->res, prv);
+  notify(probe, t, prv);
 
 finish:
   if (must_update_def) {
-    def->newest = t->res->stattime;
-    def->color = t->res->color;
+    t->def->newest = t->res->stattime;
+    t->def->color = t->res->color;
   }
   g_free(prv);
 
 exit_with_res:
   if (probe->end_probe) {
-    probe->end_probe(probe, def, t->res);
+    probe->end_probe(probe, t->def, t->res);
   }
 
   // free the result block
@@ -721,7 +646,7 @@ exit_with_res:
     free_res(t->res); // .. and the generic part
   }
 
-  // note we don't free the *def here, because that structure is owned by the hashtable
+  // note we don't free the *t->def here, because that structure is owned by the hashtable
   return err;
 }
 

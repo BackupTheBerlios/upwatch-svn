@@ -1,18 +1,24 @@
 include $(top_srcdir)/Makefile.am.path
 
-program = uw_send
+program = uw_null
+
+if SOLARIS
+SOLARISLIBS = -lresolv
+endif
+
 sbin_PROGRAMS = $(program)
 man_MANS = $(program).1
 conf_DATA = $(program).conf
 init_DATA = $(INITFILES)
 
-uw_send_SOURCES = run.c cmd_options.c cmd_options.h cmd_options.def \
- $(SPECFILES) $(INITFILES)
-uw_send_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ $(AM_CFLAGS)
-BUILT_SOURCES = cmd_options.h $(SPECFILES) $(INITFILES)
-INCLUDES = -I../upwatch -I$(INCL_ST)
+uw_null_SOURCES = run.c cmd_options.h cmd_options.c \
+ $(SPECFILES) $(INITFILES) 
+uw_null_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ $(AM_CFLAGS)
+BUILT_SOURCES = cmd_options.h cmd_options.c $(SPECFILES) $(INITFILES)
+INCLUDES = -I../upwatch 
 EXTRA_DIST = cmd_options.def $(program).conf
-LDADD = $(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) $(LIBST) @LIBGLIB2_LIBS@
+LDADD = $(DB_O) $(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @MYSQL_LIBS@ \
+  @LIBGLIB2_LIBS@ @LIBXML2_LIBS@ $(SOLARISLIBS)
 include $(top_srcdir)/Makefile.am.common
 
 install-data-local:
@@ -25,3 +31,5 @@ install-data-local:
 	  mkdir -p ${DESTDIR}${spooldir}/$(program)/new ;\
 	  mkdir -p ${DESTDIR}${spooldir}/$(program)/tmp ;\
 	fi
+
+

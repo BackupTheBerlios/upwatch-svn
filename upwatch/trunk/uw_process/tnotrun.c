@@ -19,6 +19,7 @@ int init(void)
 
 int run(void)
 {
+  trx t;
   module probe = { 2, "iptraf" } ;
   struct probe_def def = { 0, 74, { 0 } , 1, 1, 200, 0, 0, "raarts@office.netland.nl", 0, 0};
   struct probe_result res = { "iptraf", STAT_RED, 0, 1, 1 };
@@ -33,7 +34,9 @@ int run(void)
                            OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
                            OPT_VALUE_DBCOMPRESS);
 
-  notify(&probe, &def, &res, &prv);
+  t.def = &def;
+  t.res = &res;
+  notify(&probe, &t, &prv);
   return 0;
 }
 

@@ -19,7 +19,7 @@ int uw_rand(float maxval)
 }
 
 char *color2string(int color) {
-static buf[10];
+static char buf[10];
 
   switch (color) {
   case STAT_NONE:	return("NONE");
