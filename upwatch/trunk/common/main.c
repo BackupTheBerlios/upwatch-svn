@@ -34,7 +34,7 @@ void termination_handler (int signum)
 
 void exit_function(void)
 {
-  LOG(LOG_NOTICE, "exit");
+  if (debug > 1) LOG(LOG_NOTICE, "exit");
 }
 
 int every = ONE_SHOT;
@@ -165,7 +165,7 @@ int main( int argc, char** argv, char **envp )
 
   debug = OPT_VALUE_DEBUG;
 
-  LOG(LOG_NOTICE, "start");
+  if (debug > 1) LOG(LOG_NOTICE, "start");
   atexit(exit_function);
   if (!init()) exit(1);
 
@@ -174,6 +174,7 @@ int main( int argc, char** argv, char **envp )
   sigemptyset (&new_action.sa_mask);
   new_action.sa_flags = 0;
   sigaction (SIGTERM, &new_action, NULL);
+
   new_action.sa_handler = termination_handler;
   sigemptyset (&new_action.sa_mask);
   new_action.sa_flags = 0;
@@ -184,6 +185,7 @@ int main( int argc, char** argv, char **envp )
   sigemptyset (&new_action.sa_mask);
   new_action.sa_flags = 0;
   sigaction (SIGHUP, &new_action, NULL);
+
   new_action.sa_handler = SIG_IGN;
   sigemptyset (&new_action.sa_mask);
   new_action.sa_flags = 0;

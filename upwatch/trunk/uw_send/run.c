@@ -101,10 +101,10 @@ int init(void)
     q->pwd = strdup(pwd[i]);
     q->maxthreads = thr[i] ? atoi(thr[i]) : 1;
   }
-  daemonize = TRUE;
   if (HAVE_OPT(ONCE)) {
     every = ONE_SHOT;
   } else {
+    daemonize = TRUE;
     every = EVERY_5SECS;
   }
   st_init();
@@ -116,40 +116,36 @@ static void *read_queue(void *data)
 {
   struct q_info *q = (struct q_info *)data;
 extern int forever;
-
-  while (forever) {
-    char path[PATH_MAX];
-    G_CONST_RETURN gchar *filename;
-    GDir *dir;
-    int i;
-
-    sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), q->name);
-    dir = g_dir_open (path, 0, NULL);
-    while ((filename = g_dir_read_name(dir)) != NULL && !q->fatal && forever) {
-      char buffer[PATH_MAX];
-      struct thr_data *td;
+  char path[PATH_MAX];
+  G_CONST_RETURN gchar *filename;
+  GDir *dir;
+  int i;
  
-      sprintf(buffer, "%s/%s", path, filename);
-      td = g_malloc0(sizeof(struct thr_data));
-      td->q = q;
-      td->filename = strdup(buffer);
-      if (st_thread_create(push, td, 0, 0) == NULL) { 
-        LOG(LOG_DEBUG, "couldn't create thread");
-        st_sleep(1);
-      } else {
-        q->thread_count++;
-      }
-      while (q->thread_count >= q->maxthreads) {
-        st_usleep(10000); /* 10 ms */
-      }
+  sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), q->name);
+  if (debug > 3) LOG(LOG_DEBUG, "reading queue %s", path); 
+  dir = g_dir_open (path, 0, NULL);
+  while ((filename = g_dir_read_name(dir)) != NULL && !q->fatal && forever) {
+    char buffer[PATH_MAX];
+    struct thr_data *td;
+ 
+    sprintf(buffer, "%s/%s", path, filename);
+    td = g_malloc0(sizeof(struct thr_data));
+    td->q = q;
+    td->filename = strdup(buffer);
+    if (st_thread_create(push, td, 0, 0) == NULL) { 
+      LOG(LOG_DEBUG, "couldn't create thread");
+      st_sleep(1);
+    } else {
+      q->thread_count++;
+      thread_count++;
     }
-    g_dir_close(dir);
-    uw_setproctitle("sleeping");
-    for (i=5; i && forever; i--) {
-      st_sleep(1); // give it some rest before retrying
+    while (q->thread_count >= q->maxthreads) {
+      st_usleep(10000); /* 10 ms */
     }
-    q->fatal = 0;
   }
+  g_dir_close(dir);
+  uw_setproctitle("sleeping");
+  thread_count--;
   return NULL;
 }
 
@@ -158,6 +154,7 @@ static void create_q_threads(gpointer key, gpointer value, gpointer user_data)
   if (st_thread_create(read_queue, value, 0, 0) == NULL) { 
     LOG(LOG_DEBUG, "couldn't create queue thread for %s", (char *)key);
   } else {
+    if (debug > 3) LOG(LOG_DEBUG, "created new thread");
     thread_count++;
   }
 }
@@ -165,6 +162,7 @@ static void create_q_threads(gpointer key, gpointer value, gpointer user_data)
 int run(void)
 {
   g_hash_table_foreach(hash, create_q_threads, NULL);
+  if (debug > 3) LOG(LOG_DEBUG, "waiting for all threads to finish");
   while (thread_count) {
     st_usleep(10000); /* 10 ms */
   }
@@ -222,6 +220,7 @@ quit:
   free(td->filename);
   free(td);
   q->thread_count--;
+  thread_count--;
   return NULL;
 }
 
