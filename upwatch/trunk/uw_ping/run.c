@@ -20,6 +20,7 @@ struct probedef {
 #include "../common/common.h"
 #include "probe.res_h"
   struct sockaddr_in    saddr;          /* internet address */
+  int                   other;          /* how many non-echo reply packets received */
   int                   done;           /* true if done with this host */
   struct timeval        last_send_time; /* time of last packet sent */
   int                   num_sent;       /* number of ping packets sent */
@@ -30,19 +31,12 @@ struct probedef {
   char                  *msg;           /* last error message */
 };
 GHashTable *cache;
-
-// incremented for every run - placed in the icmp seq field
-// to distinguish pings sent in a previous round from pings sent in 
-// the current round
-static int runid;
+GHashTable *ip;
 
 // increments with each packet sent in the current round
 // unique for each packet, so we know it when it comes back
-static int pktno;
-
-// put into the icmp id field, distinguishes our packets from
-// other pinging processes on this host
-static int our_pid;
+// placed in the identifier and sequence number of the icmp packet
+static unsigned int pktno;
 
 // socket id
 static int sock = -1;
@@ -89,7 +83,7 @@ int init(void)
   every = EVERY_MINUTE;
   startsec = OPT_VALUE_BEGIN;
   xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
-  our_pid = getpid() & 0xFFFF;
+  pktno = (getpid() & 0xffff) << 16;
 
   if ((proto = getprotobyname("icmp")) == NULL) {
     LOG(LOG_ERR, "unknown protocol icmp");
@@ -120,9 +114,9 @@ int run(void)
 {
   MYSQL *mysql;
 
-  if (runid > 32000) runid = 0;
-  runid++;
-  pktno = 0;
+  if ((pktno >> 16) > (getpid() & 0xffff) + 10) {
+    pktno = (getpid() & 0xffff) << 16;
+  }
 
   if (!cache) {
     cache = g_hash_table_new_full(g_int_hash, g_int_equal, g_free, free_probe);
@@ -157,7 +151,7 @@ void refresh_database(MYSQL *mysql)
   char qry[1024];
 
   sprintf(qry,  "SELECT pr_ping_def.id, pr_ping_def.domid, pr_ping_def.tblid, pr_domain.name, "
-                "       pr_ping_def.ipaddress, "
+                "       pr_ping_def.ipaddress, pr_ping_def.count, "
                 "       pr_ping_def.yellow,  pr_ping_def.red "
                 "FROM   pr_ping_def, pr_domain "
                 "WHERE  pr_ping_def.id > 1 and pr_ping_def.disable <> 'yes'"
@@ -184,14 +178,15 @@ void refresh_database(MYSQL *mysql)
       } else {
         probe->probeid = probe->id;
       }
-      probe->count = 5;
       g_hash_table_insert(cache, guintdup(id), probe);
     }
 
     if (probe->ipaddress) g_free(probe->ipaddress);
     probe->ipaddress = strdup(row[4]);
-    probe->yellow = atof(row[5]);
-    probe->red = atof(row[6]);
+    probe->count = atoi(row[5]);
+    if (probe->count > 30) probe->count = 30;
+    probe->yellow = atof(row[6]);
+    probe->red = atof(row[7]);
     if (probe->msg) g_free(probe->msg);
     probe->msg = NULL;
     probe->seen = 1;
@@ -232,7 +227,6 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
     probe->msg = strcat_realloc(probe->msg, tmp);
   }
 
-
   ping = xmlNewChild(xmlDocGetRootElement(doc), NULL, "ping", NULL);
   if (probe->domain) {
     xmlSetProp(ping, "domain", probe->domain);
@@ -260,6 +254,7 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   probe->num_sent = 0;
   probe->num_recv = 0;
   probe->done = 0;
+  probe->other = 0;
   memset(&probe->last_send_time, 0, sizeof(struct timeval));
   probe->max_reply = 0;
   probe->min_reply = 0;
@@ -284,22 +279,19 @@ void write_results(void)
   xmlFreeDoc(doc);
 }
 
-GArray *pi; // stores info about every ping packet sent
+GHashTable *pi_hash; // stores info about every ping packet sent
+GMemChunk *pi_chunk;
 
 typedef struct ping_info {
   int			probeid;	/* probe for which this packet was send */
   int			count;		/* counts up to -c count or 1 */
+  int			echo;		/* echo reply received */
   struct timeval	ts;		/* time sent */
 } PING_INFO;
 
-typedef struct ping_data {
-  int                   id;		/* send id - index into ping packet hash table */
-  int                   magic;		/* magic value */
-} PING_DATA;
-
 #include <netinet/ip_icmp.h>
 #define SIZE_ICMP_HDR ICMP_MINLEN   /* from ip_icmp.h */
-#define PING_PACKET_SIZE  (sizeof(PING_DATA)+44+SIZE_ICMP_HDR)
+#define PING_PACKET_SIZE  (44+SIZE_ICMP_HDR)
 
 static int done;
 
@@ -331,8 +323,9 @@ void ping_step(gpointer key, gpointer value, gpointer user_data)
   gettimeofday(&now, &tz);
   //printf("diff = %d\n", timeval_diff(&now, &host->last_send_time));
   if (timeval_diff(&now, &probe->last_send_time) > 10000000) { // nothing received for 10 seconds
-    probe->msg = strcat_realloc(probe->msg, "No replies received during 10 seconds\n");
-    LOG(LOG_NOTICE," %s: No replies received during 10 seconds", probe->ipaddress);
+    if (probe->other == 0) {
+      LOG(LOG_DEBUG," %s: No replies received during 10 seconds", probe->ipaddress);
+    }
     probe->done++;
     done++;
     return;
@@ -350,19 +343,20 @@ void run_actual_probes(void)
 {
   done = 0;
 
-  pi = g_array_new (FALSE, FALSE, sizeof (PING_INFO));
+  pi_chunk = g_mem_chunk_create (PING_INFO, 1024, G_ALLOC_ONLY);
+  pi_hash = g_hash_table_new_full(g_int_hash, g_int_equal, g_free, NULL);
   while (done < g_hash_table_size(cache)) {
     g_hash_table_foreach(cache, ping_step, NULL);
-    fprintf(stderr, "done=%u, size=%u\n", done, g_hash_table_size(cache));
+    if (debug > 3) fprintf(stderr, "done=%u, size=%u\n", done, g_hash_table_size(cache));
   }
-  g_array_free(pi, TRUE);
+  g_hash_table_destroy(pi_hash);
+  g_mem_chunk_destroy (pi_chunk);
 }
 
 int send_ping(struct probedef *probe)
 {
   char buffer[PING_PACKET_SIZE];
   struct icmp *icp;
-  PING_DATA *pdp;
   int n, ret=0;
   char buf[1024];
   struct sockaddr_in in;
@@ -374,17 +368,15 @@ int send_ping(struct probedef *probe)
   icp->icmp_type = ICMP_ECHO;
   icp->icmp_code = 0;
   icp->icmp_cksum = 0;
-  icp->icmp_seq = runid;
-  icp->icmp_id = our_pid;
-
-  pdp = (PING_DATA *) &buffer[SIZE_ICMP_HDR];
-  pdp->id = pktno;
-  pdp->magic = 0x1a2b3c4d;
+  icp->icmp_id = (pktno >> 16) & 0xffff;
+  icp->icmp_seq = pktno & 0xffff;
 
   icp->icmp_cksum = in_cksum( (u_short *)icp, PING_PACKET_SIZE);
 
   sprintf(buf, "sending [%d] to %s", probe->num_sent, probe->ipaddress);
-  LOG(LOG_DEBUG, buf);
+  if (debug > 3) {
+    LOG(LOG_DEBUG, buf);
+  }
 
   memset(&in, 0, sizeof(in));
   in.sin_family = AF_INET;
@@ -401,15 +393,18 @@ int send_ping(struct probedef *probe)
     probe->done++;
     ret = 1;
   } else {
-    PING_INFO pi_item;
+    PING_INFO *pi_item;
     struct timezone tz;
 
     // fill the ping info itemblock with info about this packet
-    pi_item.probeid = probe->id;
-    pi_item.count = ++probe->num_sent;
-    gettimeofday(&pi_item.ts, &tz);
-    probe->last_send_time = pi_item.ts;
-    g_array_append_val(pi, pi_item);
+    pi_item = g_chunk_new (PING_INFO, pi_chunk);
+    pi_item->probeid = probe->id;
+    pi_item->count = ++probe->num_sent;
+    pi_item->echo = 0;
+    gettimeofday(&pi_item->ts, &tz);
+    probe->last_send_time = pi_item->ts;
+    g_hash_table_insert(pi_hash, guintdup(pktno), pi_item);
+    
     pktno++;
   }
   return(ret);
@@ -421,11 +416,10 @@ int wait_for_reply(void)
   static char buffer[4096];
   struct sockaddr_in response_addr;
   struct ip *ip;
-  int hlen;
+  unsigned int hlen, pktno;
   struct icmp *icp;
   struct probedef *probe;
-  PING_DATA *pdp;
-  PING_INFO pi_item;
+  PING_INFO *pi_item;
   long this_reply;
   struct timeval now;
   struct timezone tz;
@@ -458,34 +452,39 @@ int wait_for_reply(void)
     return(0);
   }
 
-  if (icp->icmp_id != our_pid) {
-    LOG(LOG_NOTICE, "not from us");
-    return(0); /* packet received, but not the one we are looking for! */
-  }
-
   // find the probe def belonging to this packet
-  pdp = (PING_DATA *)icp->icmp_data;
-  pi_item = g_array_index (pi, PING_INFO, pdp->id);
+  pktno = (icp->icmp_id << 16) | icp->icmp_seq;
+  pi_item = g_hash_table_lookup(pi_hash, &pktno);
 
-  if (icp->icmp_seq  != runid) {
-    LOG(LOG_NOTICE, "received: old packet for %u", pi_item.probeid);
-    return(0); /* packet ok, but from a previous round */
+  if (!pi_item) {
+    LOG(LOG_NOTICE, "could not find info for packet %u", pktno);
+    return(0); /* packet ok, but probably from a previous round */
   }
 
-  probe = g_hash_table_lookup(cache, &pi_item.probeid);
+  probe = g_hash_table_lookup(cache, &pi_item->probeid);
   if (!probe) {
-    LOG(LOG_ERR, "received: id=%u, probeid=%u (not found)", pdp->id, pi_item.probeid);
+    LOG(LOG_WARNING, "received: id=%u, probeid=%u (not found)", pktno, pi_item->probeid);
     return 0; // huh? 
+  }
+
+  if (pi_item->echo) {
+    char tmp[128];
+
+    sprintf(tmp, "%s: dup echo reply received\n", probe->ipaddress);
+    LOG(LOG_DEBUG, tmp);
+    strcat_realloc(probe->msg, tmp);
+    return(0);
   }
 
   /* received ping is cool, so process it */
   probe->num_recv++;
+  pi_item->echo = 1;
   gettimeofday(&now, &tz);
 
 #ifdef DEBUG
   printf("received [%d]\n", probe->count);
 #endif
-  this_reply = timeval_diff(&now, &pi_item.ts);
+  this_reply = timeval_diff(&now, &pi_item->ts);
   if (probe->num_recv == 1) {
     probe->max_reply = this_reply;
     probe->min_reply = this_reply;
@@ -552,22 +551,23 @@ int handle_random_icmp(struct icmp *p, int psize, struct sockaddr_in *addr)
   u_char *c;
   struct probedef *probe;
   char buffer[1024];
-  PING_DATA *pdp;
-  PING_INFO pi_item;
+  PING_INFO *pi_item;
 
   c = (u_char *)p;
   switch (p->icmp_type) {
   case ICMP_UNREACH:
     sent_icmp = (struct icmp *) (c + 28);
-    if ((sent_icmp->icmp_type == ICMP_ECHO) &&
-        (sent_icmp->icmp_id == our_pid) &&
-        (sent_icmp->icmp_seq == runid)) {
-      /* this is a response to a ping we sent */
-      pdp = (PING_DATA *)sent_icmp->icmp_data;
-      pi_item = g_array_index (pi, PING_INFO, pdp->id);
-      probe = g_hash_table_lookup(cache, &pi_item.probeid);
+    if (sent_icmp->icmp_type == ICMP_ECHO) {
+      // find the probe def belonging to this packet
+      unsigned pktno = (sent_icmp->icmp_id << 16) | sent_icmp->icmp_seq;
+      pi_item = g_hash_table_lookup(pi_hash, &pktno);
+      if (!pi_item) {
+        LOG(LOG_INFO, "could not find info for packet %u", pktno);
+        return 0;
+      }
+      probe = g_hash_table_lookup(cache, &pi_item->probeid);
       if (!probe) {
-        LOG(LOG_ERR, "%s: probeid = %u, not found", icmp_type_str[p->icmp_type], pi_item.probeid);
+        LOG(LOG_WARNING, "%s: probeid = %u, not found", icmp_type_str[p->icmp_type], pi_item->probeid);
         return 0;
       }
       if (p->icmp_code > ICMP_UNREACH_MAXTYPE) {
@@ -579,7 +579,10 @@ int handle_random_icmp(struct icmp *p, int psize, struct sockaddr_in *addr)
                 probe->ipaddress, icmp_unreach_str[p->icmp_code],
                 inet_ntoa(addr->sin_addr));
       }
-      LOG(LOG_INFO, buffer);
+      if (debug > 3) {
+        LOG(LOG_DEBUG, buffer);
+      }
+      probe->other++;
       probe->msg = strcat_realloc(probe->msg, buffer);
     }
     return 1;
@@ -588,21 +591,26 @@ int handle_random_icmp(struct icmp *p, int psize, struct sockaddr_in *addr)
   case ICMP_TIMXCEED:
   case ICMP_PARAMPROB:
     sent_icmp = (struct icmp *) (c + 28);
-    if ((sent_icmp->icmp_type = ICMP_ECHO) &&
-        (sent_icmp->icmp_id = our_pid) &&
-        (sent_icmp->icmp_seq == runid)) {
-      /* this is a response to a ping we sent */
-      pdp = (PING_DATA *)sent_icmp->icmp_data;
-      pi_item = g_array_index (pi, PING_INFO, pdp->id);
-      probe = g_hash_table_lookup(cache, &pi_item.probeid);
+    if (sent_icmp->icmp_type == ICMP_ECHO) {
+      // find the probe def belonging to this packet
+      unsigned pktno = (sent_icmp->icmp_id << 16) | sent_icmp->icmp_seq;
+      pi_item = g_hash_table_lookup(pi_hash, &pktno);
+      if (!pi_item) {
+        LOG(LOG_INFO, "could not find info for packet %u", pktno);
+        return 0;
+      }
+      probe = g_hash_table_lookup(cache, &pi_item->probeid);
       if (!probe) {
-        LOG(LOG_ERR, "%s: probeid = %u, not found\n", icmp_type_str[p->icmp_type], pi_item.probeid);
+        LOG(LOG_WARNING, "%s: probeid = %u, not found\n", icmp_type_str[p->icmp_type], pi_item->probeid);
         return 0;
       }
       sprintf(buffer, "%s: %s from %s\n",
               probe->ipaddress, icmp_type_str[p->icmp_type],
               inet_ntoa(addr->sin_addr));
-      LOG(LOG_INFO, buffer);
+      if (debug > 3) {
+        LOG(LOG_DEBUG, buffer);
+      }
+      probe->other++;
       probe->msg = strcat_realloc(probe->msg, buffer);
     }
     return 2;
