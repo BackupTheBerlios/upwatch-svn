@@ -98,7 +98,7 @@ int run(void)
 
     LOG(LOG_INFO, "writing results");
     uw_setproctitle("writing results");
-    //write_results();
+    write_results();
   }
 
   return(g_hash_table_size(cache));
@@ -261,7 +261,7 @@ void *probe(void *data)
   st_netfd_t rmt_nfd;
   struct probedef *probe = (struct probedef *)data;
   char buffer[1024];
-  st_utime_t start, now;
+  st_utime_t start;
 
   memset(&rmt, 0, sizeof(struct sockaddr_in));
   rmt.sin_family = AF_INET;
@@ -299,19 +299,21 @@ void *probe(void *data)
   }
   start = st_utime();
 
+  if (debug > 3) fprintf(stderr, "Connecting to: %s\n", probe->ipaddress);
   if (st_connect(rmt_nfd, (struct sockaddr *)&rmt, sizeof(rmt), TIMEOUT) < 0) {
     char buf[256];
 
     sprintf(buf, "%s(%d): %s", probe->ipaddress, __LINE__, strerror(errno));
+    probe->connect = ((float) (st_utime() - start)) * 0.000001;
+    probe->pretransfer = probe->connect;
+    probe->total = probe->pretransfer;
     probe->msg = strdup(buf);
     LOG(LOG_DEBUG, probe->msg);
     if (debug > 3) fprintf(stderr, "%s: %s\n", probe->ipaddress, probe->msg);
     goto err_close;
   }
-goto err_close;
 
-  now = st_utime();
-  probe->connect = ((float) (now - start)) * 0.000001;
+  probe->connect = ((float) (st_utime() - start)) * 0.000001;
 
   sprintf(buffer, "GET %s HTTP/1.0\r\nHost: %s\r\n\r\n", probe->uri, probe->hostname);
   if (debug > 3) fprintf(stderr, "> %s", buffer);
@@ -326,15 +328,15 @@ goto err_close;
     } else {
       sprintf(buf, "%s(%d): %s", probe->ipaddress, __LINE__, strerror(errno));
     }
+    probe->pretransfer = ((float) (st_utime() - start)) * 0.000001;
+    probe->total = probe->pretransfer;
     probe->msg = strdup(buf);
     LOG(LOG_DEBUG, probe->msg);
-    //if (debug > 3) fprintf(stderr, "%s: %s\n", probe->ipaddress, probe->msg);
-    probe->connect = 0.0;
+    if (debug > 3) fprintf(stderr, "%s: %s\n", probe->ipaddress, probe->msg);
     goto err_close;
   }
 
-  now = st_utime();
-  probe->pretransfer = ((float) (now - start)) * 0.000001;
+  probe->pretransfer = ((float) (st_utime() - start)) * 0.000001;
 
   // Now read the response
   memset(buffer, 0, sizeof(buffer));
@@ -349,17 +351,15 @@ goto err_close;
     } else {
       sprintf(buf, "%s(%d): %s", probe->ipaddress, __LINE__, strerror(errno));
     }
+    probe->total = ((float) (st_utime() - start)) * 0.000001;
     probe->msg = strdup(buf);
     LOG(LOG_DEBUG, probe->msg);
     if (debug > 3) fprintf(stderr, "%s: %s\n", probe->ipaddress, probe->msg);
-    probe->connect = 0.0;
-    probe->pretransfer = 0.0;
     goto err_close;
   }
-  //if (debug > 3) fprintf(stderr, "< %s", buffer);
+  if (debug > 3) fprintf(stderr, "< %s", buffer);
   probe->info = strdup(buffer);
-  now = st_utime();
-  probe->total = ((float) (now - start)) * 0.000001;
+  probe->total = ((float) (st_utime() - start)) * 0.000001;
 
 err_close:
   st_netfd_close(rmt_nfd);
