@@ -148,24 +148,26 @@ int ob_client_func (GConn* conn, GConnStatus status,
   int i = length-1;
 void runbb(char *req);
 
-  // remove trailing spaces. IS this really a sensible thing to do?
-  while (i > 0 && isspace(buffer[i])) {
-    buffer[i--] = 0;
-  }
-  if (i > 1024) {
-    strcpy(&buffer[990], "\n\n... DATA TRUNCATED ...\n\n");
-  }
-  for(;i>=0; i--) {
-    if (buffer[i] < 0 || buffer[i] == '\r') {
-      buffer[i] = ' ';
-    }
-  }
-
   switch (status) {
     case GNET_CONN_STATUS_READ:
       {
         if (buffer) {
           if (debug > 2) LOG(LOG_NOTICE, "GNET_CONN_STATUS_READ: %s", buffer);
+
+          // remove trailing spaces. IS this really a sensible thing to do?
+          while (i > 0 && isspace(buffer[i])) {
+            buffer[i--] = 0;
+          }
+          if (i > 1024) {
+            strcpy(&buffer[990], "\n\n... DATA TRUNCATED ...\n\n");
+          } else {
+            buffer[i+1] = 0;
+          }
+          for(;i>=0; i--) {
+            if (buffer[i] < 0 || buffer[i] == '\r') {
+              buffer[i] = ' ';
+            }
+          }
           runbb(buffer);
 	}
 	break;
@@ -300,9 +302,10 @@ void runbb(char *cmd)
     *p = 0;
     color = cmd;
     cmd = ++p;
+    while (*cmd == ' ') cmd++; // skip leading spaces
 
     // isolate date/time
-    LOG(LOG_WARNING, "datestring: %s", cmd); 
+    if (debug > 1) LOG(LOG_WARNING, "datestring: %s", cmd); 
     // Mon Oct 07 14:37:54 RDT 2002
     message = strptime(cmd, "%a %b %d %T ", &probedate);
     if (!message) {
