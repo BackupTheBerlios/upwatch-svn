@@ -187,6 +187,7 @@ void *sysstat_get_def(trx *t, int create)
 
     g_hash_table_insert(t->probe->cache, guintdup(res->server), def);
   }
+  res->probeid = def->probeid;
   return(def);
 }   
 

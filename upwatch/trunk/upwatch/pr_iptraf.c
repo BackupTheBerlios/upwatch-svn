@@ -222,6 +222,7 @@ void *iptraf_get_def(trx *t, int create)
 
     g_hash_table_insert(t->probe->cache, guintdup(*(unsigned *)&res->ipaddr), def);
   }
+  res->probeid = def->probeid;
   sprintf(buffer, "%u", res->color);
   set_result_value(t, "color", buffer);
   return(def);

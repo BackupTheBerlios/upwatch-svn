@@ -138,6 +138,7 @@ void *bb_get_def(trx *t, int create)
     mysql_free_result(result);
   }
   if (!def->color) def->color = res->color;
+  res->probeid = def->probeid;
 
   return(def);
 }

@@ -251,6 +251,7 @@ void *get_def(trx *t, int create)
     def->probeid = res->probeid;
     g_hash_table_insert(t->probe->cache, guintdup(def->probeid), def);
   }
+  res->probeid = def->probeid;
   return(def);
 }
 
