@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD Docbook XML V4.1.2//EN"
-                      "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+                      "/usr/share/sgml/docbook/xml-dtd-4.1.2-1.0-8/docbookx.dtd">
 <book id="upwatch" lang="en" status="draft">
     <bookinfo>
         <title>Upwatch documentation</title>
@@ -75,7 +75,7 @@
         <sect1 id="Actual_Installation">
             <title>Actual Installation</title>
             <para> Before you install the software decide on the architecture. If you know in
-                advance yuo'll have to monitor thousands of hosts, or the probes will exhaust your
+                advance you'll have to monitor thousands of hosts, or the probes will exhaust your
                 machine otherwise, you may have to split your installation across several machines.
                 There may be more reasons to do that. Consult <link linkend="Scaling_up">Scaling
                 up</link> and <link linkend="How_it_all_works">How it all works</link>
@@ -168,46 +168,73 @@
 	 <table label="Header record layout" pgwide="1"><title>Header record layout</title>
             <tgroup cols = "2">
                <colspec colname = "1" colnum = "1" colwidth = "1.0in"/>
-               <colspec colname = "2" colnum = "2" colwidth = "1.0in"/>
+               <colspec colname = "2" colnum = "2" colwidth = "4.0in"/>
                <tbody>
                   <row>
                      <entry colname = "1"><para><emphasis>Field:</emphasis></para></entry>
                      <entry colname = "2"><para><emphasis>Type</emphasis></para></entry>
                   </row>
                   <row>
-                     <entry colname = "1"><para>method</para></entry>
+                     <entry colname = "1">
+                        <indexterm><primary>probe</primary><secondary>method</secondary></indexterm>
+                        <para>method</para>
+                     </entry>
                      <entry colname = "2"><para>Probe name (for example 'ping')</para></entry>
                   </row>
                   <row>
-                     <entry colname = "1"><para>lines</para></entry>
+                     <entry colname = "1">
+                        <indexterm><primary>probe</primary><secondary>lines in result</secondary></indexterm>
+                        <para>lines</para>
+                     </entry>
                      <entry colname = "2"><para>Total number of lines including this one</para></entry>
                   </row>
                   <row>
-                     <entry colname = "1"><para>probeid</para></entry>
+                     <entry colname = "1">
+                        <indexterm><primary>probe</primary><secondary>id</secondary></indexterm>
+                        <para>probeid</para>
+                     </entry>
                      <entry colname = "2"><para>Probe id from the database</para></entry>
                   </row>
                   <row>
-                     <entry colname = "1"><para>user</para></entry>
+                     <entry colname = "1">
+                        <indexterm><primary>probe</primary><secondary>user for login</secondary></indexterm>
+                        <para>user</para>
+                     </entry>
                      <entry colname = "2"><para>username for logging into uw_accept</para></entry>
                   </row>
                   <row>
-                     <entry colname = "1"><para>password</para></entry>
+                     <entry colname = "1">
+                        <indexterm><primary>probe</primary><secondary>password for login</secondary></indexterm>
+                        <para>password</para>
+                     </entry>
                      <entry colname = "2"><para>password for loggin in to uw_accept</para></entry>
                   </row>
                   <row>
-                     <entry colname = "1"><para>date</para></entry>
+                     <entry colname = "1">
+                        <indexterm><primary>probe</primary><secondary>date</secondary></indexterm>
+                        <para>date</para>
+                     </entry>
                      <entry colname = "2"><para>current date in seconds since epoch</para></entry>
                   </row>
                   <row>
-                     <entry colname = "1"><para>expires</para></entry>
+                     <entry colname = "1">
+                        <indexterm><primary>probe</primary><secondary>result expiry</secondary></indexterm>
+                        <para>expires</para>
+                     </entry>
                      <entry colname = "2"><para>When this probe expires (seconds since epoch)</para></entry>
                   </row>
                   <row>
-                     <entry colname = "1"><para>ipaddress</para></entry>
+                     <entry colname = "1">
+                        <indexterm><primary>probe</primary><secondary>ipaddress</secondary></indexterm>
+                        <para>ipaddress</para>
+                     </entry>
                      <entry colname = "2"><para>Probe target ip address</para></entry>
                   </row>
                   <row>
-                     <entry colname = "1"><para>color</para></entry>
+                     <entry colname = "1">
+                        <indexterm><primary>probe</primary><secondary>color</secondary></indexterm>
+                        <para>color</para>
+                     </entry>
                      <entry colname = "2"><para>200 (green), 300 (yellow) or 500 (red)</para></entry>
                   </row>
                   <row>
@@ -238,7 +265,7 @@
 	 <table label="ping record layout" pgwide="1"><title>ping record layout</title>
             <tgroup cols = "2">
                <colspec colname = "1" colnum = "1" colwidth = "1.0in"/>
-               <colspec colname = "2" colnum = "2" colwidth = "1.0in"/>
+               <colspec colname = "2" colnum = "2" colwidth = "4.0in"/>
                <tbody>
                   <row>
                      <entry colname = "1"><para><emphasis>Field:</emphasis></para></entry>
@@ -250,15 +277,24 @@
                      <entry colname = "2"><para><emphasis>Standard header fields...</emphasis></para></entry>
                   </row>
                    <row>
-                     <entry colname = "1"><para>minpingtime</para></entry>
+                     <entry colname = "1">
+                        <indexterm><primary>fields</primary><secondary>minpingtime</secondary></indexterm>
+                        <para>minpingtime</para>
+                     </entry>
                      <entry colname = "2"><para>Shortes measured ping time</para></entry>
                   </row>
                  <row>
-                     <entry colname = "1"><para>avgpingtime</para></entry>
+                     <entry colname = "1">
+                        <indexterm><primary>fields</primary><secondary>avgpingtime</secondary></indexterm>
+                        <para>avgpingtime</para>
+                     </entry>
                      <entry colname = "2"><para>Average measured ping time</para></entry>
                   </row>
                  <row>
-                     <entry colname = "1"><para>maxpingtime</para></entry>
+                     <entry colname = "1">
+                        <indexterm><primary>fields</primary><secondary>maxpingtime</secondary></indexterm>
+                        <para>maxpingtime</para>
+                     </entry>
                      <entry colname = "2"><para>Longest measured ping time</para></entry>
                   </row>
                    <row>
@@ -272,7 +308,7 @@
          </para>
           </sect2>
           <sect2 id="Ping_database_layout">
-             <title>Ping databasse layout</title>
+             <title>Ping database layout</title>
              <para></para>
           </sect2>
           <sect2 id="uw_ping_daemon">
