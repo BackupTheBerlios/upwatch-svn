@@ -135,7 +135,7 @@ if [ -x /sbin/chkconfig ]; then
 # indicate in the logfile we have installed a new package
 DATE=`date +%b\ %e\ %T`
 HOST=`hostname | cut -d. -f1`
-echo $DATE $HOST rpm[$$]: installed %{name}-%{version}-%{release} >> /var/log/upwatch/messages
+echo "$DATE" $HOST rpm[$$]: installed %{name}-%{version}-%{release} >> /var/log/upwatch/messages
 chown upwatch:upwatch /var/log/upwatch/messages
 chmod 664 /var/log/upwatch/messages
 

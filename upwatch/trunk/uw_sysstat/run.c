@@ -121,6 +121,7 @@ int check_log(GString *string, int idx)
   int warnlines = 0;
   int readlines = 0;
   long long filesize = 0;
+extern int forever;
 
   uw_setproctitle("scanning %s", errlogspec[idx].path);
   in = fopen(errlogspec[idx].path, "r");
@@ -146,6 +147,7 @@ int check_log(GString *string, int idx)
   while (fgets(buffer, sizeof(buffer), in)) {
     int color;
 
+    if (!forever) break;
     if (++readlines % 5 == 0) {
       float perc;
       long long pos = ftell(in);
