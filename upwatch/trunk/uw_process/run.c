@@ -1,5 +1,9 @@
 #include "config.h"
 #include <netinet/in_systm.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 #include <netinet/in.h>
 #include <curl/curl.h>
 #include <netdb.h>
