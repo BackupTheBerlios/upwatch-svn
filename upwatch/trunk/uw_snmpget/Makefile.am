@@ -12,7 +12,7 @@ uw_snmpget_LDADD = uw_snmpget_$(DB_O) uw_snmpget_$(MAIN_O) $(LIBOPTS) $(LIBUPWAT
 
 BUILT_SOURCES = $(program:%=%.1) $(program:%=%.h) $(program:%=%.c) $(PROBFILES) $(SPECFILES) $(INITFILES)
 INCLUDES = -I../upwatch
-EXTRA_DIST = $(program:%=%.conf) $(program:%=%.def) probe.def probe.enum probe.mysql
+EXTRA_DIST = $(program:%=%.conf) $(program:%=%.def) probe.def
 
 include $(top_srcdir)/Makefile.am.common
 

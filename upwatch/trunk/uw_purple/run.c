@@ -31,8 +31,7 @@ int run(void)
   xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
 
   db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
-                     OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
-                     OPT_VALUE_DBCOMPRESS);
+                     OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
   if (!db) goto errexit;
 
   // find all expired probes, but skip those for which processing

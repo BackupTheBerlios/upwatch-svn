@@ -17,7 +17,7 @@ uw_sysstat_LDADD = uw_sysstat_$(MAIN_O) $(LIBOPTS) $(SOLARISLIBS) $(LIBSTATGRAB)
 
 BUILT_SOURCES = $(program:%=%.1) $(program:%=%.h) $(program:%=%.c) $(PROBFILES) $(SPECFILES) $(INITFILES)
 INCLUDES = -I../upwatch 
-EXTRA_DIST = $(program:%=%.conf) $(program:%=%.def) probe.def probe.enum probe.mysql
+EXTRA_DIST = $(program:%=%.conf) $(program:%=%.def) probe.def
 
 include $(top_srcdir)/Makefile.am.common
 

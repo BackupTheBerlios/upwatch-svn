@@ -12,7 +12,7 @@ uw_imap_LDADD = uw_imap_$(DB_O) uw_imap_$(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) $(LIB
 
 BUILT_SOURCES = $(program:%=%.1) $(program:%=%.h) $(program:%=%.c) $(PROBFILES) $(SPECFILES) $(INITFILES)
 INCLUDES = -I../upwatch -I $(INCL_ST)
-EXTRA_DIST = $(program:%=%.conf) $(program:%=%.def) probe.def probe.enum probe.mysql
+EXTRA_DIST = $(program:%=%.conf) $(program:%=%.def) probe.def
 
 include $(top_srcdir)/Makefile.am.common
 

@@ -98,8 +98,7 @@ static void modules_start_run(void)
     modules[i]->errors = 0;
 
     modules[i]->db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
-                                   OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
-                                   OPT_VALUE_DBCOMPRESS);
+                                   OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
     if (modules[i]->db) {
       result = my_query(modules[i]->db, 0, "select fuse, lastseen from probe where id = '%d'", modules[i]->class);
       if (result) {
@@ -483,7 +482,7 @@ extern int forever;
   }
 
   mysql = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
-			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD), OPT_VALUE_DBCOMPRESS);
+			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
   if (!mysql) {
     return 0;
   }

@@ -161,7 +161,7 @@ int run(void)
   LOG(LOG_INFO, "reading ping info from database");
   uw_setproctitle("reading ping info from database");
   mysql = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
-			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD), OPT_VALUE_DBCOMPRESS);
+			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
   while (mysql) {
     MYSQL_RES *result;
     MYSQL_ROW row;

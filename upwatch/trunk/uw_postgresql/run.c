@@ -67,7 +67,7 @@ int run(void)
   LOG(LOG_INFO, "reading info from database");
   uw_setproctitle("reading info from database");
   mysql = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
-			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD), OPT_VALUE_DBCOMPRESS);
+			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
   if (mysql) {
     refresh_database(mysql);
     close_database(mysql);

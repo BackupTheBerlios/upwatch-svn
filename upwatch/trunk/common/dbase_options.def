@@ -13,17 +13,6 @@ databases might be supported in the future';
 
 flag = {
     must-set;
-    name      = dbcompress;
-    value     = C;        /* flag style option character */
-    arg-default = 1;
-    arg_type  = numeric;   /* option argument indication  */
-    descrip   = "Use compression on database connection";
-    doc       =
-'If set, this option compresses all communication with the database server';
-};
-
-flag = {
-    must-set;
     name      = dbhost;
     value     = h;        /* flag style option character */
     arg_type  = string;   /* option argument indication  */

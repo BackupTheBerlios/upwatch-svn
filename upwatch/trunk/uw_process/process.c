@@ -433,8 +433,7 @@ int process(trx *t)
 
   if (!t->probe->db) {
     t->probe->db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
-                              OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
-                              OPT_VALUE_DBCOMPRESS);
+                              OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
     if (!t->probe->db) return -2;
   }
 

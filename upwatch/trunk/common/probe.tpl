@@ -8,11 +8,13 @@
 --
 
 CREATE TABLE pr_[+name+]_def (
+-- PLEASE NOTE THE FIRST FIELDS MUST STAY THIS WAY.
   id int NOT NULL auto_increment,  		-- probe unique numerical id
 -- the following fields are only used when the probe definitions are aggregated
--- in one central database
+-- in one central database. 
   domid int unsigned NOT NULL default '1',      -- the id of the database this probe belongs to
   tblid int unsigned NOT NULL default '1',      -- the unique id of the probe in that database
+  changed timestamp NOT NULL,			-- 
 -- end aggregation fields
   pgroup int unsigned NOT NULL default '2', 	-- group id 
   server int unsigned NOT NULL default '1', 	-- server id
