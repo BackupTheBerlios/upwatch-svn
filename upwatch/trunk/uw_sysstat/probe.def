@@ -16,6 +16,35 @@ probe = {
   red = "5";
   message = "list of processes";
 
+  attribute = {
+    name = "server";
+    required = true;
+    descrip = "id of this server in the database";
+  };
+
+  attribute = {
+    name = "ipaddress";
+    default = "127.0.0.1";
+    descrip = "target ip address";
+  };
+
+  attribute = {
+    name = "date";
+    required = true;
+    descrip = "date/time for this result";
+  };
+
+  attribute = {
+    name = "expires";
+    required = true;
+    descrip = "when this result expires";
+  };
+
+  element = {
+    name = "color";
+    descrip = "color as this probe thinks it should be";
+  };
+
   /* no extra definition fields */
 
   result = {
@@ -48,13 +77,6 @@ probe = {
     null = false;
     default = "0";
     descrip = "CPU idle time";
-  };
-  result = {
-    name = "systemp";
-    type = "tinyint";
-    null = false;
-    default = "0";
-    descrip = "System temperature in Celsius";
   };
   result = {
     name = "swapin";
@@ -127,5 +149,12 @@ probe = {
     null = false;
     default = "0";
     descrip = "Amount of memory used by processes";
+  };
+  result = {
+    name = "systemp";
+    type = "tinyint";
+    null = false;
+    default = "0";
+    descrip = "System temperature in Celsius";
   };
 };

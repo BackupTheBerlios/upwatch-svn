@@ -1,4 +1,4 @@
-[+ AutoGen5 template mysql def_h res_h enum xml +]
+[+ AutoGen5 template mysql def_h res_h enum xml dtd dtd-inc +]
 [+ CASE (suffix) +][+
    == mysql +]--
 [+(dne "-- ")+]
@@ -252,57 +252,100 @@ ENDIF+]int [+name+];    /* [+descrip+] */[+ ESAC type +][+ ENDFOR result+][+ END
 [+ == enum +][+ FOR probe 
 +]PROBE_[+name+] = [+id+],
 [+ ENDFOR probe +]
-[+ == xml
+[+ == dtd-inc
++][+ FOR probe +][+ FOR element +]<!ELEMENT [+name+] (#PCDATA)>		<!-- [+descrip+] -->
+[+ ENDFOR element +][+ FOR result +][+
+IF (not (exist? "noelement")) +]<!ELEMENT [+name+] (#PCDATA)>		<!-- [+descrip+] -->
+[+ ENDIF element +][+ ENDFOR result +][+ ENDFOR probe +][+ == dtd
++][+ FOR probe +]<!-- [+ descrip +] -->
+<!ELEMENT [+name+]	([+ FOR element+][+name+][+
+IF optional +]?[+ENDIF+],[+ ENDFOR element +][+ FOR result +][+
+IF (not (exist? "noelement")) +][+name+],[+ ENDIF element +][+ ENDFOR +]info?)>
+<!ATTLIST [+name+][+FOR attribute +]	[+name+] NMTOKEN [+
+IF default +] "[+default+]"[+ENDIF
++][+IF required+] #REQUIRED[+ENDIF required+]
+[+ ENDFOR attribute +]>
+
+[+ ENDFOR probe +][+ == xml
 +]<?xml version="1.0" encoding="UTF-8"?>
 [+ FOR probe +]
 
 <sect1 id="[+name+]">
    <title>[+name+] - [+descrip+]</title>
-   <sect2 id="[+name+]_result_record">
-      <title>[+name+] result record</title>
-      <table label="[+name+] result record layout" pgwide="1"><title>[+name+] result record layout</title>
-         <tgroup cols = "2">
-            <colspec colname = "1" colnum = "1" colwidth = "1.0in"/>
-            <colspec colname = "2" colnum = "2" colwidth = "4.0in"/>
+   <para>[+doc+]</para>
+   <sect2 id="[+name+]_result_layout">
+      <title>[+name+] result record layout</title>
+
+      <table label="[+name+] attributes" pgwide="1"><title>[+name+] attributes</title>
+         <tgroup cols = "5">
+            <colspec colname = "Name" colnum = "1" colwidth = "1.0in"/>
+            <colspec colname = "Type" colnum = "2" colwidth = "1.0in"/>
+            <colspec colname = "Required" colnum = "3" colwidth = "0.4in"/>
+            <colspec colname = "Default" colnum = "4" colwidth = "0.4in"/>
+            <colspec colname = "Description" colnum = "5" colwidth = "2.4in"/>
             <tbody>
                <row>
-                  <entry colname = "1"><para><emphasis>Field:</emphasis></para></entry>
-                  <entry colname = "2"><para><emphasis>Type</emphasis></para></entry>
-               </row>
+                  <entry colname = "Name"><para>Name</para></entry>
+                  <entry colname = "Type"><para>Type </para></entry>
+                  <entry colname = "Required"><para>Required</para></entry>
+                  <entry colname = "Default"><para>Default </para></entry>
+                  <entry colname = "Description"><para>Description</para></entry>
+               </row>[+ FOR element +]
                <row>
-                  <entry colname = "1"><para><emphasis>.....</emphasis></para></entry>
-                  <entry colname = "2"><para><emphasis>Standard header fields...</emphasis></para></entry>
-               </row>
+                  <entry colname = "Name"><para>[+name+] </para></entry>
+                  <entry colname = "Type"><para>NMTOKEN </para></entry>[+
+ IF required +]
+                  <entry colname = "Required"><para>YES </para></entry>[+
+ ELSE +]
+                  <entry colname = "Required"><para>NO </para></entry>[+
+ ENDIF +][+ IF default +]
+                  <entry colname = "Default"><para>[+ default +] </para></entry>[+
+ ELSE +]
+                  <entry colname = "Default"><para> </para></entry>[+
+ ENDIF +]
+                  <entry colname = "Description"><para>[+descrip+] </para></entry>
+               </row>[+ ENDFOR element +][+ FOR result +]
                <row>
-                  <entry colname = "1">
-                     <indexterm><primary>fields</primary><secondary>minpingtime</secondary></indexterm>
-                     <para>minpingtime</para>
-                  </entry>
-                  <entry colname = "2"><para>Shortes measured ping time</para></entry>
-               </row>
-               <row>
-                  <entry colname = "1">
-                     <indexterm><primary>fields</primary><secondary>avgpingtime</secondary></indexterm>
-                    <para>avgpingtime</para>
-                  </entry>
-                  <entry colname = "2"><para>Average measured ping time</para></entry>
-               </row>
-               <row>
-                  <entry colname = "1">
-                     <indexterm><primary>fields</primary><secondary>maxpingtime</secondary></indexterm>
-                     <para>maxpingtime</para>
-                  </entry>
-                  <entry colname = "2"><para>Longest measured ping time</para></entry>
-               </row>
-               <row>
-                  <entry colname = "1"><para>hostname</para></entry>
-                  <entry colname = "2"><para>hostname that was pinged</para></entry>
-               </row>
-            </tbody>
+                  <entry colname = "Name"><para>[+name+] </para></entry>
+                  <entry colname = "Type"><para>NMTOKEN </para></entry>[+
+ IF required +]
+                  <entry colname = "Required"><para>YES </para></entry>[+
+ ELSE +]
+                  <entry colname = "Required"><para>NO </para></entry>[+
+ ENDIF +][+ IF default +]
+                  <entry colname = "Default"><para>[+ default +] </para></entry>[+
+ ELSE +]
+                  <entry colname = "Default"><para> </para></entry>[+
+ ENDIF +]
+                  <entry colname = "Description"><para>[+descrip+] </para></entry>
+               </row>[+ ENDFOR result +]
+           </tbody>
          </tgroup>
       </table>
-      <para> Any lines following the header record contain error messages.
-      </para>
+
+      <table label="[+name+] elements" pgwide="1"><title>[+name+] elements</title>
+         <tgroup cols = "3">
+            <colspec colname = "Name" colnum = "1" colwidth = "1.0in"/>
+            <colspec colname = "Optional" colnum = "2" colwidth = "0.4in"/>
+            <colspec colname = "Description" colnum = "3" colwidth = "3.0in"/>
+            <tbody>
+               <row>
+                  <entry colname = "Name"><para>Name</para></entry>
+                  <entry colname = "Optional"><para>Optional</para></entry>
+                  <entry colname = "Description"><para>Description</para></entry>
+               </row>[+ FOR attribute +]
+               <row>
+                  <entry colname = "Name"><para>[+name+] </para></entry>[+
+ IF optional +]
+                  <entry colname = "Optional"><para>YES </para></entry>[+
+ ELSE +]
+                  <entry colname = "Optional"><para>NO </para></entry>[+
+ ENDIF +]
+                  <entry colname = "Description"><para>[+descrip+] </para></entry>
+               </row>[+ ENDFOR attribute +]
+           </tbody>
+         </tgroup>
+      </table>
    </sect2>
    <sect2 id="[+name+]_database_layout">
       <title>[+name+] database layout</title>
@@ -455,6 +498,8 @@ IF unsigned +] unsigned[+ ENDIF+] </para></entry>[+
            </tbody>
          </tgroup>
       </table>
+
+
 
       <table label="[+name+] result record layout" pgwide="1"><title>[+name+] result record layout</title>
          <tgroup cols = "6">

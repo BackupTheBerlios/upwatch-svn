@@ -23,15 +23,15 @@ static void get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr 
 {
   struct ping_result *res = (struct ping_result *)probe_res;
 
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "min")) && (cur->ns == ns)) {
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "lowest")) && (cur->ns == ns)) {
     res->lowest = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "avg")) && (cur->ns == ns)) {
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "value")) && (cur->ns == ns)) {
     res->value = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "max")) && (cur->ns == ns)) {
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "highest")) && (cur->ns == ns)) {
     res->highest = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
     return;
   }

@@ -306,11 +306,11 @@ int run(void)
     if (color == STAT_RED) xmlSetProp(ping, "investigate", "icmptraceroute");
     sprintf(buffer, "%d", color); 		subtree = xmlNewChild(ping, NULL, "color", buffer);
     sprintf(buffer, "%f", ((float) hosts[id]->min_reply) * 0.000001);
-      subtree = xmlNewChild(ping, NULL, "min", buffer);
+      subtree = xmlNewChild(ping, NULL, "lowest", buffer);
     sprintf(buffer, "%f", ((float) (hosts[id]->total_time / (hosts[id]->num_recv==0?1:hosts[id]->num_recv))) * 0.000001);
-      subtree = xmlNewChild(ping, NULL, "avg", buffer);
+      subtree = xmlNewChild(ping, NULL, "value", buffer);
     sprintf(buffer, "%f", ((float) hosts[id]->max_reply) * 0.000001);
-      subtree = xmlNewChild(ping, NULL, "max", buffer);
+      subtree = xmlNewChild(ping, NULL, "highest", buffer);
     if (info[0]) subtree = xmlNewChild(ping, NULL, "info", info);
 
     // reset all counters

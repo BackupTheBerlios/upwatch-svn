@@ -1,139 +1,144 @@
 <!ELEMENT result	((ping|httpget|iptraf|sysstat|bb|bb_cpu|mysql|pop3|mssql|postgresql|imap)*)>
-<!ATTLIST result	fromhost NMTOKEN #REQUIRED	-- host where this result originated --
-			date NMTOKEN #REQUIRED		-- data/time generated-- 
+<!ATTLIST result	fromhost NMTOKEN #REQUIRED
+			date NMTOKEN #REQUIRED
 > 
 
-<!ELEMENT host		(hostname,ipaddress?)>
+<!ELEMENT host          (hostname,ipaddress?)>
 <!ELEMENT hostname      (#PCDATA)>
-<!ELEMENT ipaddress	(#PCDATA)>
+<!ELEMENT ipaddress     (#PCDATA)>
 
-<!ELEMENT color     	(#PCDATA)>
+<!ELEMENT info          (#PCDATA)>
 
-<!ELEMENT info      	(#PCDATA)>
 
-<!ELEMENT min      	(#PCDATA)>
-<!ELEMENT avg      	(#PCDATA)>
-<!ELEMENT max      	(#PCDATA)>
+<!ELEMENT blockin (#PCDATA)>		<!-- Amount of blocks read from block devices -->
+<!ELEMENT blockout (#PCDATA)>		<!-- Amount of blocks written to block devices -->
+<!ELEMENT buffered (#PCDATA)>		<!-- Amount of memory used for OS buffers -->
+<!ELEMENT cached (#PCDATA)>		<!-- Amount of memory used for disk buffers -->
+<!ELEMENT color (#PCDATA)>		<!-- color as this probe thinks it should be -->
+<!ELEMENT connect (#PCDATA)>		<!-- time for connection to complete -->
+<!ELEMENT free (#PCDATA)>		<!-- Free memory -->
+<!ELEMENT highest (#PCDATA)>		<!-- highest turn-around time -->
+<!ELEMENT host (#PCDATA)>		<!-- host where this element originated -->
+<!ELEMENT idle (#PCDATA)>		<!-- CPU idle time -->
+<!ELEMENT in (#PCDATA)>		<!-- total incoming bytes -->
+<!ELEMENT loadavg (#PCDATA)>		<!-- The load average as reported by the system -->
+<!ELEMENT lookup (#PCDATA)>		<!-- time needed for DNS lookup -->
+<!ELEMENT lowest (#PCDATA)>		<!-- lowest turn-around time -->
+<!ELEMENT out (#PCDATA)>		<!-- total outgoing bytes -->
+<!ELEMENT pretransfer (#PCDATA)>		<!-- time for any pre-transfer actions -->
+<!ELEMENT swapin (#PCDATA)>		<!-- Amount of blocks swapped in from disk -->
+<!ELEMENT swapout (#PCDATA)>		<!-- Amount of blocks swapped out to disk -->
+<!ELEMENT swapped (#PCDATA)>		<!-- Amount of blocks written to swap device -->
+<!ELEMENT system (#PCDATA)>		<!-- CPU system time -->
+<!ELEMENT systemp (#PCDATA)>		<!-- System temperature in Celsius -->
+<!ELEMENT total (#PCDATA)>		<!-- total time needed -->
+<!ELEMENT used (#PCDATA)>		<!-- Amount of memory used by processes -->
+<!ELEMENT user (#PCDATA)>		<!-- CPU user time -->
+<!ELEMENT value (#PCDATA)>		<!-- Average turn-around time -->
+<!ELEMENT value (#PCDATA)>		<!-- Value of OID queried -->
 
-<!ELEMENT lookup      	(#PCDATA)>
-<!ELEMENT connect      	(#PCDATA)>
-<!ELEMENT pretransfer   (#PCDATA)>
-<!ELEMENT total		(#PCDATA)>
+<!-- Big Brother generic probe -->
+<!ELEMENT bb	(host,color,info?)>
+<!ATTLIST bb	ipaddress NMTOKEN  "127.0.0.1"
+	date NMTOKEN  #REQUIRED
+	expires NMTOKEN  #REQUIRED
+>
 
-<!ELEMENT in      	(#PCDATA)>
-<!ELEMENT out      	(#PCDATA)>
+<!-- Big Brother System probe -->
+<!ELEMENT bb_cpu	(host,color,info?)>
+<!ATTLIST bb_cpu	ipaddress NMTOKEN  "127.0.0.1"
+	date NMTOKEN  #REQUIRED
+	expires NMTOKEN  #REQUIRED
+>
 
-<!ELEMENT loadavg	(#PCDATA)>
-<!ELEMENT user		(#PCDATA)>
-<!ELEMENT system	(#PCDATA)>
-<!ELEMENT nice		(#PCDATA)>
-<!ELEMENT idle		(#PCDATA)>
-<!ELEMENT swapin	(#PCDATA)>
-<!ELEMENT swapout	(#PCDATA)>
-<!ELEMENT blockin	(#PCDATA)>
-<!ELEMENT blockout	(#PCDATA)>
-<!ELEMENT swapped	(#PCDATA)>
-<!ELEMENT free		(#PCDATA)>
-<!ELEMENT buffered	(#PCDATA)>
-<!ELEMENT cached	(#PCDATA)>
-<!ELEMENT used		(#PCDATA)>
-<!ELEMENT systemp	(#PCDATA)>
 
-<!ELEMENT ping		(host,color,min,avg,max,info?)>
-<!ATTLIST ping		id NMTOKEN #REQUIRED 
-			investigate NMTOKEN #FIXED "icmptraceroute"
-			ipaddress NMTOKEN "127.0.0.1"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED
-			interval NMTOKEN "60"
-			notify NMTOKEN "1" >
+<!-- Do a HTTP GET request -->
+<!ELEMENT httpget	(color,lookup,connect,pretransfer,total,info?)>
+<!ATTLIST httpget	id NMTOKEN  #REQUIRED
+	ipaddress NMTOKEN  "127.0.0.1"
+	date NMTOKEN  #REQUIRED
+	expires NMTOKEN  #REQUIRED
+>
 
-<!ELEMENT httpget	(host,color,lookup,connect,pretransfer,total,info?)>
-<!ATTLIST httpget	id NMTOKEN #REQUIRED 
-			investigate NMTOKEN #FIXED "tcptraceroute"
-			port NMTOKEN "80"
-			ipaddress NMTOKEN "127.0.0.1"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED
-			interval NMTOKEN "60"
-			notify NMTOKEN "1" >
 
-<!ELEMENT iptraf	(in?,out?)>
-<!ATTLIST iptraf	id NMTOKEN #REQUIRED 
-			ipaddress NMTOKEN "127.0.0.1"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED
-			interval NMTOKEN "60"
-			notify NMTOKEN "1" >
+<!-- Test a IMAP server, optionally with user/password -->
+<!ELEMENT imap	(color,connect,total,info?)>
+<!ATTLIST imap	id NMTOKEN  #REQUIRED
+	ipaddress NMTOKEN  "127.0.0.1"
+	date NMTOKEN  #REQUIRED
+	expires NMTOKEN  #REQUIRED
+>
 
-<!ELEMENT sysstat	(loadavg,user,system,nice,idle,swapin,swapout,
-			blockin,blockout,swapped,free,buffered,cached,used,systemp)>
-<!ATTLIST sysstat	server NMTOKEN #REQUIRED 
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED
-			interval NMTOKEN "60"
-			notify NMTOKEN "1" >
 
-<!ELEMENT mysql		(host,color,connect,total,info?)>
-<!ATTLIST mysql		id NMTOKEN #REQUIRED 
-			investigate NMTOKEN #FIXED "tcptraceroute"
-			port NMTOKEN "80"
-			ipaddress NMTOKEN "127.0.0.1"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED
-			interval NMTOKEN "60"
-			notify NMTOKEN "1" >
+<!-- Incoming and outgoing traffic to an IP adddress, network or interface -->
+<!ELEMENT iptraf	(in,out,info?)>
+<!ATTLIST iptraf	ipaddress NMTOKEN  "127.0.0.1"
+	date NMTOKEN  #REQUIRED
+	expires NMTOKEN  #REQUIRED
+	interval NMTOKEN  "60"
+>
 
-<!ELEMENT pop3		(host,color,connect,total,info?)>
-<!ATTLIST pop3		id NMTOKEN #REQUIRED 
-			investigate NMTOKEN #FIXED "tcptraceroute"
-			port NMTOKEN "80"
-			ipaddress NMTOKEN "127.0.0.1"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED
-			interval NMTOKEN "60"
-			notify NMTOKEN "1" >
 
-<!ELEMENT mssql		(host,color,connect,total,info?)>
-<!ATTLIST mssql		id NMTOKEN #REQUIRED 
-			investigate NMTOKEN #FIXED "tcptraceroute"
-			port NMTOKEN "80"
-			ipaddress NMTOKEN "127.0.0.1"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED
-			interval NMTOKEN "60"
-			notify NMTOKEN "1" >
+<!-- Do a Microsoft SQL Server query -->
+<!ELEMENT mssql	(color,connect,total,info?)>
+<!ATTLIST mssql	id NMTOKEN  #REQUIRED
+	ipaddress NMTOKEN  "127.0.0.1"
+	date NMTOKEN  #REQUIRED
+	expires NMTOKEN  #REQUIRED
+>
 
-<!ELEMENT postgresql	(host,color,connect,total,info?)>
-<!ATTLIST postgresql	id NMTOKEN #REQUIRED 
-			investigate NMTOKEN #FIXED "tcptraceroute"
-			port NMTOKEN "80"
-			ipaddress NMTOKEN "127.0.0.1"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED
-			interval NMTOKEN "60"
-			notify NMTOKEN "1" >
 
-<!ELEMENT imap		(host,color,connect,total,info?)>
-<!ATTLIST imap		id NMTOKEN #REQUIRED 
-			investigate NMTOKEN #FIXED "tcptraceroute"
-			port NMTOKEN "80"
-			ipaddress NMTOKEN "127.0.0.1"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED
-			interval NMTOKEN "60"
-			notify NMTOKEN "1" >
+<!-- Do a MySQL query -->
+<!ELEMENT mysql	(color,connect,total,info?)>
+<!ATTLIST mysql	id NMTOKEN  #REQUIRED
+	ipaddress NMTOKEN  "127.0.0.1"
+	date NMTOKEN  #REQUIRED
+	expires NMTOKEN  #REQUIRED
+>
 
-<!ELEMENT bb		(host,color,info?)>
-<!ATTLIST bb		hostname NMTOKEN "localhost"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED
-			interval NMTOKEN "60"
-			bbname NMTOKEN #REQUIRED>
 
-<!ELEMENT bb_cpu	(hostname,color,info?)>
-<!ATTLIST bb_cpu	hostname NMTOKEN "localhost"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED
-			interval NMTOKEN "60">
+<!-- send ICMP echo requests -->
+<!ELEMENT ping	(color,value,lowest,highest,info?)>
+<!ATTLIST ping	id NMTOKEN  #REQUIRED
+	ipaddress NMTOKEN  "127.0.0.1"
+	date NMTOKEN  #REQUIRED
+	expires NMTOKEN  #REQUIRED
+>
+
+
+<!-- Test a POP3 server, optionally with user/password -->
+<!ELEMENT pop3	(color,connect,total,info?)>
+<!ATTLIST pop3	id NMTOKEN  #REQUIRED
+	ipaddress NMTOKEN  "127.0.0.1"
+	date NMTOKEN  #REQUIRED
+	expires NMTOKEN  #REQUIRED
+>
+
+
+<!-- Do a PostgreSQL query -->
+<!ELEMENT postgresql	(color,connect,total,info?)>
+<!ATTLIST postgresql	id NMTOKEN  #REQUIRED
+	ipaddress NMTOKEN  "127.0.0.1"
+	date NMTOKEN  #REQUIRED
+	expires NMTOKEN  #REQUIRED
+>
+
+
+<!-- Query an SNMP variable using an SNMP GET -->
+<!ELEMENT snmpget	(color,value,info?)>
+<!ATTLIST snmpget	id NMTOKEN  #REQUIRED
+	ipaddress NMTOKEN  "127.0.0.1"
+	date NMTOKEN  #REQUIRED
+	expires NMTOKEN  #REQUIRED
+>
+
+
+<!-- System information like load average, CPU/MEM usage etc -->
+<!ELEMENT sysstat	(color,loadavg,user,system,idle,swapin,swapout,blockin,blockout,swapped,free,buffered,cached,used,systemp,info?)>
+<!ATTLIST sysstat	server NMTOKEN  #REQUIRED
+	ipaddress NMTOKEN  "127.0.0.1"
+	date NMTOKEN  #REQUIRED
+	expires NMTOKEN  #REQUIRED
+>
+
 

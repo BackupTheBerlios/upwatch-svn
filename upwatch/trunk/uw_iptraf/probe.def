@@ -13,17 +13,41 @@ probe = {
   yellow = "300";
   red = "500";
 
+  attribute = {
+    name = "ipaddress";
+    default = "127.0.0.1";
+    descrip = "target ip address";
+  };
+
+  attribute = {
+    name = "date";
+    required = true;
+    descrip = "date/time for this result";
+  };
+
+  attribute = {
+    name = "expires";
+    required = true;
+    descrip = "when this result expires";
+  };
+
+  attribute = {
+    name = "interval";
+    default = "60";
+    descrip = "time between measurements";
+  };
+
 /* no specific definition fields */
 
   result = {
-    name = "in_total";
+    name = "in";
     type = "float";
     null = false;
     default = "0";
     descrip = "total incoming bytes";
   };
   result = {
-    name = "out_total";
+    name = "out";
     type = "float";
     null = false;
     default = "0";
