@@ -84,7 +84,7 @@ int push(gpointer data, gpointer user_data)
     unlink(filename);
   }
   free(filename);
-  close(sock);
+  //close(sock);
   return 1;
 }
 
@@ -101,6 +101,10 @@ int pushto(int sock, char *filename)
     return(0);
   }
   filesize = (int) st.st_size;
+  if (filesize == 0) {
+    LOG(LOG_WARNING, "zero size: %s", filename);
+    return(1);
+  }
   if ((in = fopen(filename, "r")) == NULL) {
     LOG(LOG_WARNING, "can't open %s", filename);
     return(0);
@@ -141,7 +145,8 @@ int pushto(int sock, char *filename)
     return(0);
   }
   //fprintf(stderr, "%s", buffer);
-  uw_setproctitle("%s:%d: UPLOADING", OPT_ARG(HOST), OPT_VALUE_PORT);
+  uw_setproctitle("%s:%d: UPLOADING, size=%u %s", OPT_ARG(HOST), OPT_VALUE_PORT,
+                filesize, filename);
   while ((i = fread(buffer, 1, sizeof(buffer), in)) == sizeof(buffer)) {
     if (fwrite(buffer, sizeof(buffer), 1, out) != 1) {
       LOG(LOG_WARNING, "socket write error: %m");
