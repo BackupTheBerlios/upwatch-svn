@@ -116,7 +116,19 @@
     </sect1>
     <sect1 id="Database">
         <title>Database</title>
-        <para> Create the database as follows. You DO have a root password set for mysq don't you?</para>
+        <para> First things first. Depending on the size of your installation you may
+           run out of database or record space. It happened to me on the iptraf probe.
+           I was measuring traffic for 4000 IP addresses and ran out of space after a month
+           on the pr_iptraf_raw table - it hit the max_data_length limit. 
+           I had to issue the following commands:
+        <literallayout>
+           $ mysql -u root --password=PASSWORD
+           mysql> alter table pr_iptraf_raw max_rows = 1000000000;
+        </literallayout>
+           and this took almost two hours! So you better look at your own situation and
+           adjust the settings MAX_ROWS and AVG_RECORD_SIZE accordingly for each table.
+        </para>
+        <para> Create the database as follows. You DO have a root password set for mysql don't you?</para>
         <literallayout>
            $ mysqladmin -u root --password=PASSWORD create upwatch
            $ mysql -u root --password=PASSWORD &lt; upwatch.mysql
