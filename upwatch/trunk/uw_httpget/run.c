@@ -1,6 +1,8 @@
 #include "config.h"
 #include <netinet/in_systm.h>
 #include <netinet/in.h>
+#include <netdb.h>
+#include <sys/socket.h>        /* for AF_INET */
 #include <curl/curl.h>
 
 #include <generic.h>
@@ -9,6 +11,7 @@
 struct hostinfo {
   int		id;             /* server probe id */
   char		*name;          /* server name */
+  char		*ipaddress;     /* ipaddress */
 #include "probe.def_h"
 #include "../common/common.h"
 #include "probe.res_h"
@@ -141,7 +144,7 @@ int run_actual_probes(int count);
     }
     httpget = xmlNewChild(xmlDocGetRootElement(cur), NULL, "httpget", NULL);
     sprintf(buffer, "%d", hosts[id]->id);       xmlSetProp(httpget, "id", buffer);
-    sprintf(buffer, "%s", inet_ntoa(hosts[id]->saddr.sin_addr)); xmlSetProp(httpget, "ipaddress", buffer);
+    sprintf(buffer, "%s", hosts[id]->ipaddress); xmlSetProp(httpget, "ipaddress", buffer);
     sprintf(buffer, "%d", (int) now);           xmlSetProp(httpget, "date", buffer);
     sprintf(buffer, "%d", ((int)now)+(2*60));   xmlSetProp(httpget, "expires", buffer);
     if (investigate) { 
@@ -150,8 +153,6 @@ int run_actual_probes(int count);
     } 
     host = xmlNewChild(httpget, NULL, "host", NULL);
     sprintf(buffer, "%s", hosts[id]->name);     subtree = xmlNewChild(host, NULL, "hostname", buffer);
-    //sprintf(buffer, "%s", inet_ntoa(hosts[id]->saddr.sin_addr));
-    //  subtree = xmlNewChild(host, NULL, "ipaddress", buffer);
     sprintf(buffer, "%d", color);               subtree = xmlNewChild(httpget, NULL, "color", buffer);
     sprintf(buffer, "%f", hosts[id]->lookup); subtree = xmlNewChild(httpget, NULL, "lookup", buffer);
     sprintf(buffer, "%f", hosts[id]->connect);    subtree = xmlNewChild(httpget, NULL, "connect", buffer);
@@ -227,6 +228,18 @@ void probe(gpointer data, gpointer user_data)
   double result;
 
   if (!host) return;
+
+  if (host->ipaddress == NULL) {
+    struct hostent ret, *result;
+    int h_errno;
+
+    if (gethostbyname_r (host->hostname, &ret, buffer, sizeof(buffer), &result, &h_errno) == 0) {
+      host->ipaddress = strdup(ret.h_addr);
+    } else {
+      host->info = strdup(buffer);
+      return;
+    }
+  }
   sprintf(buffer, "http://%s", host->hostname);
   if (host->uri[0] != '/') {
     strcat(buffer, "/");
