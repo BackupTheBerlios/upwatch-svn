@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD Docbook XML V4.1.2//EN" 
                       "/usr/share/sgml/docbook/xml-dtd-4.1.2-1.0-14/docbookx.dtd" [
-<!ENTITY about SYSTEM "about.xml">
+<!ENTITY client-about SYSTEM "client-about.xml">
+<!ENTITY client-install SYSTEM "client-install.xml">
+<!ENTITY client-configuration SYSTEM "client-configuration.xml">
 ]>
 
 <book id="upwatch" lang="en" status="draft">
@@ -18,14 +20,12 @@
     </bookinfo>
     <preface>
         <title>Preface</title>
-        <para> People, especially managers, like to have facts and figures when taking decisions,
-            either because a lot of money may be involved, or their job (or both). If you want to
-            prove your website (or switch, or basically any other device) was available, showed the
-            proper performance, or just want to know current and past CPU load, you've come to the
-            right place.</para>
-
+        <para>This book describes the client side installation and configuration
+        of UpWatch.</para>
     </preface>
-    &about;
+    &client-about;
+    &client-install;
+    &client-configuration;
     <index>
     </index>
 </book>

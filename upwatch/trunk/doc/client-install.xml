@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<chapter>
+    <title>Installation</title>
+    <sect1 id="Getting_upwatch">
+        <title>Getting upwatch</title>
+        <para> The UpWatch clients can be download from www.upwatch.com. They are available in the
+          following formats:</para>
+          <itemizedlist>
+          <listitem><para>as a tar.gz file, including sources for every supported platform</para></listitem>
+          <listitem><para>SuSE, RedHat of Fedora .rpm files</para></listitem>
+          <listitem><para>A windows installer</para></listitem>
+          </itemizedlist>
+          <para>If you want, you can inspect the code for security issues.</para>
+    </sect1>
+    <sect1 id="Requirements">
+        <title>Requirements</title>
+        <sect2 id="Run-time_requirements">
+            <title>Run-time requirements</title>
+            <para>First ensure that the time/date on all hosts is correctly set. </para>
+            <para>Here's a list of everything we expect (I'll also list the version we use ourselves):</para>
+            <itemizedlist>
+                <listitem><para>glib2 >= 2.0.4</para></listitem>
+                <listitem><para>xml2 (any version will do)</para></listitem>
+                <listitem><para>libpcre 3.9.10</para></listitem>
+                <listitem><para>libncurses 5.2</para></listitem>
+                <listitem><para>libreadline 4.3</para></listitem>
+            </itemizedlist>
+            <para>Delivered with upwatch are libstatgrab (0.7), xmbmon 2.03, and the State Threads Library (1,4).</para>
+        </sect2>
+        <sect2 id="Build_requirements">
+            <title>Build requirements</title>
+            <para>You probably don't want to build upwatch yourself. Most likely you'll 
+            grab the RPM packages and issue rpm -Uvh upwatch*rpm. Then skip to 
+            <link linkend="Configuration">Configuration</link>.
+            </para>
+            <para> But on the other hand: you can build the software yourself. Apart from the normal GNU
+                compilation tools, and the development versions of the above mentioned packages,
+                you'll need the following on your system to build upwatch:</para>
+            <itemizedlist>
+                <listitem><para>autogen 5.3.6 (autogen.sourceforge.net)</para></listitem>
+                <listitem><para>RPM tools, if you want to build RPM's</para></listitem>
+            </itemizedlist>
+            <para>If you run RedHat, Debian or SuSE, don't forget to install the *-devel packages
+                if there are any.</para>
+        </sect2>
+    </sect1>
+    <sect1 id="Compiling_upwatch">
+        <title>Compiling upwatch</title>
+        <para>Just in case you really want to (or need to) compile upwatch yourself, it's
+           pretty easy:
+        </para>
+           <literallayout>
+              $ tar xzvf upwatch-x.x.tar.gz
+              $ cd upwatch-x.x
+              $ ./configure
+              $ make 
+              $ make install
+           </literallayout>
+        <para> Nothing to it... In case of problems, you're probably missing some library or
+            header files, or they are in unexpected places. Look at the last parts
+            of config.log.</para>
+    </sect1>
+</chapter>

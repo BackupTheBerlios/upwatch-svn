@@ -4,7 +4,7 @@ doc_DATA = upwatch.html upwatch.txt upwatch.pdf \
  admin-guide.html admin-guide.txt admin-guide.pdf \
  program-guide.html program-guide.txt program-guide.pdf 
 
-UPWATCH_SOURCE = upwatch.xml about.xml
+UPWATCH_SOURCE = upwatch.xml client-about.xml client-install.xml client-configuration.xml
 
 ADMIN_SOURCE = admin-guide.xml administration.xml configuration.xml \
   installation.xml about.xml

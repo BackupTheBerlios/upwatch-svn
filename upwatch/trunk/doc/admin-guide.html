@@ -6,7 +6,7 @@ body { background-image: url('http://docbook.sourceforge.net/release/images/draf
        /* I think that's just a bit too distracting for the reader... */
        /* background-attachment: fixed; */
        /* background-position: center center; */
-</style></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book" lang="en"><div class="titlepage"><div><h1 class="title"><a name="upwatch"></a>Upwatch Administration Guide</h1></div><div><div class="author"><h3 class="author">Ron Arts</h3></div></div><div><p class="copyright">Copyright © 2002-2004 UpWatch BV, The Netherlands</p></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#id5428290">Preface</a></dt><dt>1. <a href="#About_UpWatch">About UpWatch</a></dt><dd><dl><dt>1.1. <a href="#Upwatch_History">History</a></dt><dt>1.2. <a href="#Upwatch_features">Features</a></dt></dl></dd><dt>2. <a href="#id5365874">Installation</a></dt><dd><dl><dt>2.1. <a href="#Getting_upwatch">Getting upwatch</a></dt><dt>2.2. <a href="#Requirements">Requirements</a></dt><dd><dl><dt>2.2.1. <a href="#Run-time_requirements">Run-time requirements</a></dt><dt>2.2.2. <a href="#Build_requirements">Build requirements</a></dt></dl></dd><dt>2.3. <a href="#Compiling_upwatch">Compiling upwatch</a></dt><dt>2.4. <a href="#Actual_Installation">Actual Installation</a></dt><dt>2.5. <a href="#php_pages">PHP pages</a></dt><dt>2.6. <a href="#Security_considerations">Security considerations</a></dt><dt>2.7. <a href="#Database">Database</a></dt></dl></dd><dt>3. <a href="#Configuration">Configuration</a></dt><dd><dl><dt>3.1. <a href="#Probe_configuration">Probe configuration</a></dt><dt>3.2. <a href="#uw_sysstat_configuration">Tailoring uw_sysstat</a></dt><dt>3.3. <a href="#Database_configuration">Database configuration</a></dt></dl></dd><dt>4. <a href="#Administration">Administration</a></dt><dd><dl><dt>4.1. <a href="#logging">Logging</a></dt><dt>4.2. <a href="#managing_daemons">Managing daemons</a></dt><dt>4.3. <a href="#Queues">Queues</a></dt></dl></dd><dt><a href="#id5429846">Index</a></dt></dl></div><div class="preface" lang="en"><div class="titlepage"><div><h2 class="title"><a name="id5428290"></a>Preface</h2></div></div><p> People, especially managers, like to have facts and figures when taking decisions,
+</style></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book" lang="en"><div class="titlepage"><div><h1 class="title"><a name="upwatch"></a>Upwatch Administration Guide</h1></div><div><div class="author"><h3 class="author">Ron Arts</h3></div></div><div><p class="copyright">Copyright © 2002-2004 UpWatch BV, The Netherlands</p></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#id5428290">Preface</a></dt><dt>1. <a href="#About_UpWatch">About UpWatch</a></dt><dd><dl><dt>1.1. <a href="#Upwatch_History">History</a></dt><dt>1.2. <a href="#Upwatch_features">Features</a></dt></dl></dd><dt>2. <a href="#id5365874">Installation</a></dt><dd><dl><dt>2.1. <a href="#Getting_upwatch">Getting upwatch</a></dt><dt>2.2. <a href="#Requirements">Requirements</a></dt><dd><dl><dt>2.2.1. <a href="#Run-time_requirements">Run-time requirements</a></dt><dt>2.2.2. <a href="#Build_requirements">Build requirements</a></dt></dl></dd><dt>2.3. <a href="#Compiling_upwatch">Compiling upwatch</a></dt><dt>2.4. <a href="#Actual_Installation">Actual Installation</a></dt><dt>2.5. <a href="#php_pages">PHP pages</a></dt><dt>2.6. <a href="#Security_considerations">Security considerations</a></dt><dt>2.7. <a href="#Database">Database</a></dt></dl></dd><dt>3. <a href="#Configuration">Configuration</a></dt><dd><dl><dt>3.1. <a href="#Probe_configuration">Probe configuration</a></dt><dt>3.2. <a href="#Database_configuration">Database configuration</a></dt></dl></dd><dt>4. <a href="#Administration">Administration</a></dt><dd><dl><dt>4.1. <a href="#logging">Logging</a></dt><dt>4.2. <a href="#managing_daemons">Managing daemons</a></dt><dt>4.3. <a href="#Queues">Queues</a></dt></dl></dd><dt><a href="#id5366320">Index</a></dt></dl></div><div class="preface" lang="en"><div class="titlepage"><div><h2 class="title"><a name="id5428290"></a>Preface</h2></div></div><p> People, especially managers, like to have facts and figures when taking decisions,
             either because a lot of money may be involved, or their job (or both). If you want to
             prove your website (or switch, or basically any other device) was available, showed the
             proper performance, or just want to know current and past CPU load, you've come to the
@@ -96,7 +96,7 @@ body { background-image: url('http://docbook.sourceforge.net/release/images/draf
         </p></div><p>Do this for every host that runs probes.</p><p>Next user is for the background processing and the php access:</p><div class="literallayout"><p><br>
            $ mysql -u root --PASSWORD=PASSWORD mysql<br>
            mysql&gt; GRANT SELECT, INSERT, UPDATE, DELETE ON `netland`.* TO 'upwatch'@'localhost' IDENTIFIED BY 'PASSWD'<br>
-        </p></div></div></div><div class="chapter" lang="en"><div class="titlepage"><div><h2 class="title"><a name="Configuration"></a>Chapter 3. Configuration</h2></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt>3.1. <a href="#Probe_configuration">Probe configuration</a></dt><dt>3.2. <a href="#uw_sysstat_configuration">Tailoring uw_sysstat</a></dt><dt>3.3. <a href="#Database_configuration">Database configuration</a></dt></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="Probe_configuration"></a>3.1. Probe configuration</h2></div></div><p>
+        </p></div></div></div><div class="chapter" lang="en"><div class="titlepage"><div><h2 class="title"><a name="Configuration"></a>Chapter 3. Configuration</h2></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt>3.1. <a href="#Probe_configuration">Probe configuration</a></dt><dt>3.2. <a href="#Database_configuration">Database configuration</a></dt></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="Probe_configuration"></a>3.1. Probe configuration</h2></div></div><p>
           Each probe first reads the general configuration file <tt>/etc/upwatch.conf</tt>
           and then its own configurationfile in <tt>/etc/upwatch.d</tt> if it exists.
           Normally some general things like the debug and logging level, and the database access
@@ -104,47 +104,7 @@ body { background-image: url('http://docbook.sourceforge.net/release/images/draf
           override settings from the generic file in the probe-specific file.
        </p><p> Each program has a manual page that documents options. Every long commandine option
           can also be entered in a configuration file.
-       </p></div><div class="sect1" lang="en"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="uw_sysstat_configuration"></a>3.2. Tailoring uw_sysstat</h2></div></div><p>uw_sysstat is special in that it allows you to scan every (line-oriented) logfile
-       you want. It uses regular expressions to set a yellow or red state. It works as follows:</p><p>On startup it reads <tt>/etc/upwatch.d/uw_sysstat.conf</tt>, and
-       searches for <b>logfile</b> statements. Say it encounters the statement:</p><div class="literallayout"><p><br>
-       logfile errlog /var/log/messages<br>
-       </p></div><p>what it does is it reads all files in the directory 
-       <tt>/etc/upwatch.d/uw_sysstat.d/errlog</tt> (except <tt>rmacros.txt</tt>
-       and <tt>macros.txt</tt>). 
-       These files should contain regular expressions prefixed by one of the keywords 
-       <b>green</b>, <b>yellow</b>, or <b>red</b>. Next 
-       uw_sysstat starts scanning <tt>/var/log/messages</tt>. It reads a line
-       from the logfile and the following happens:</p><div class="itemizedlist"><ul type="disc"><li><p>Check against the red list. If match found, flag red
-       condition, and send the offending line to the upwatch server</p></li><li><p>Check line against the yellow list. If matches, flag yellow
-       and send to server</p></li><li><p>Check agains green list. If it matches, ignore this line and
-       go the next line in the logfile. If the current line does not match any of the
-       green list, flag yellow, and send line to server</p></li></ul></div><p>The regular expressions may (for readability) contain macros, they should
-       be entered in <tt>/etc/upwatch.d/uw_sysstat.d/syslog/macros.txt</tt>.</p><p>You can easily add a directory of youw own, containing regular expressions
-       for you own logfiles. In fact upwatch includes a handy utility <b>chklog</b> to
-       help you create regular expression lists. Here is an example how to do it. Suppose 
-       you plan to scan the logfile for the imaginary 'timtim' navigational system. It resides in 
-       <tt>/var/log/timtim.log</tt>.</p><div class="itemizedlist"><ul type="disc"><li><p>First create the directory:</p><div class="literallayout"><p><br>
-         # cd /etc/upwatch.d/uw_sysstat.d<br>
-         # mkdir timtim<br>
-         # cp syslog/rmacros.txt timtim<br>
-         # cp syslog/general timtim<br>
-         # chown -R root:upwatch timtim<br>
-         # chmod 770 timtim<br>
-         # chmod 660 timtim/*<br>
-       </p></div></li><li><p>Next look at <tt>rmacros.txt</tt> and tailor it to
-       accomodate specifics for the timtim logfile. It might for example contain
-       entries for zipcodes, or latitudes/longitudes for which you would like to create
-       macros.</p></li><li><p>Next step: extract regular expressions from an example logfile:</p><div class="literallayout"><p><br>
-         # chklog -t timtim -r /var/log/timtim.log | sort -u &gt; /tmp/timtim<br>
-       </p></div></li><li><p>edit this file. Maybe it will contain dupes, you should try to
-       keep the number of regular expressions low. If you are satisfied you
-       can try copying it to <tt>/etc/upwatch.d/uw_sysstat/timtim</tt> using
-       any filename, and use <b>chklog</b> to test it:</p><div class="literallayout"><p><br>
-         # chklog -t timtim -m /var/log/timtim.log<br>
-       </p></div><p>Now you should only see the lines you want to be reported by uw_sysstat. Repeat
-       steps until you are satisfied</p></li><li><p>Finally tell uw_sysstat that you want it to start scanning by
-       adding <b>errlog timtim /var/log/timtim.log</b> to its configuration
-       file. That's it.</p></li></ul></div></div><div xmlns:ns1="" class="sect1" lang="en"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="Database_configuration"></a>3.3. Database configuration</h2></div></div><ns1:p> First things first. Depending on the size of your installation you may
+       </p></div><div xmlns:ns1="" class="sect1" lang="en"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="Database_configuration"></a>3.2. Database configuration</h2></div></div><ns1:p> First things first. Depending on the size of your installation you may
            run out of database or record space. It happened to me on the iptraf probe.
            I was measuring traffic for 4000 IP addresses and ran out of space after a month
            on the pr_iptraf_raw table - it hit the max_data_length limit. 
@@ -170,4 +130,4 @@ body { background-image: url('http://docbook.sourceforge.net/release/images/draf
        queues. This means that while the queuefile is written, it is written to a temporary directory, and when it's
        closed it is hardlinked to the actual queue directory. This way you can be absolutely sure that if you find
        a file in the queue, it is complete and nobody has the file open. Only one process reads from the
-       queue and deletes the file when done. </p></div></div><div class="index"><div class="titlepage"><div><h2 class="title"><a name="id5429846"></a>Index</h2></div></div><div class="index"></div></div></div></body></html>
+       queue and deletes the file when done. </p></div></div><div class="index"><div class="titlepage"><div><h2 class="title"><a name="id5366320"></a>Index</h2></div></div><div class="index"></div></div></div></body></html>

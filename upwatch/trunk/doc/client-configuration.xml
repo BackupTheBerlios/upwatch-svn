@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<chapter id="Configuration">
+    <title>Configuration</title>
+    <sect1 id="uw_sysstat_configuration">
+       <title>Tailoring uw_sysstat</title>
+       <para>uw_sysstat is special in that it allows you to scan every (line-oriented) logfile
+       you want. It uses regular expressions to set a yellow or red state. It works as follows:</para>
+       <para>On startup it reads <filename>/etc/upwatch.d/uw_sysstat.conf</filename>, and
+       searches for <command>logfile</command> statements. Say it encounters the statement:</para>
+       <literallayout>
+       logfile errlog /var/log/messages
+       </literallayout>
+       <para>what it does is it reads all files in the directory 
+       <filename>/etc/upwatch.d/uw_sysstat.d/errlog</filename> (except <filename>rmacros.txt</filename>
+       and <filename>macros.txt</filename>). 
+       These files should contain regular expressions prefixed by one of the keywords 
+       <command>green</command>, <command>yellow</command>, or <command>red</command>. Next 
+       uw_sysstat starts scanning <filename>/var/log/messages</filename>. It reads a line
+       from the logfile and the following happens:</para>
+       <itemizedlist>
+       <listitem><para>Check against the red list. If match found, flag red
+       condition, and send the offending line to the upwatch server</para></listitem>
+       <listitem><para>Check line against the yellow list. If matches, flag yellow
+       and send to server</para></listitem>
+       <listitem><para>Check agains green list. If it matches, ignore this line and
+       go the next line in the logfile. If the current line does not match any of the
+       green list, flag yellow, and send line to server</para></listitem>
+       </itemizedlist>
+       <para>The regular expressions may (for readability) contain macros, they should
+       be entered in <filename>/etc/upwatch.d/uw_sysstat.d/syslog/macros.txt</filename>.</para>
+       <para>You can easily add a directory of youw own, containing regular expressions
+       for you own logfiles. In fact upwatch includes a handy utility <command>chklog</command> to
+       help you create regular expression lists. Here is an example how to do it. Suppose 
+       you plan to scan the logfile for the imaginary 'timtim' navigational system. It resides in 
+       <filename>/var/log/timtim.log</filename>.</para>
+       <itemizedlist>
+       <listitem><para>First create the directory:</para>
+       <literallayout>
+         # cd /etc/upwatch.d/uw_sysstat.d
+         # mkdir timtim
+         # cp syslog/rmacros.txt timtim
+         # cp syslog/general timtim
+         # chown -R root:upwatch timtim
+         # chmod 770 timtim
+         # chmod 660 timtim/*
+       </literallayout></listitem>
+       <listitem><para>Next look at <filename>rmacros.txt</filename> and tailor it to
+       accomodate specifics for the timtim logfile. It might for example contain
+       entries for zipcodes, or latitudes/longitudes for which you would like to create
+       macros.</para></listitem>
+       <listitem><para>Next step: extract regular expressions from an example logfile:</para>
+       <literallayout>
+         # chklog -t timtim -r /var/log/timtim.log | sort -u > /tmp/timtim
+       </literallayout></listitem>
+       <listitem><para>edit this file. Maybe it will contain dupes, you should try to
+       keep the number of regular expressions low. If you are satisfied you
+       can try copying it to <filename>/etc/upwatch.d/uw_sysstat/timtim</filename> using
+       any filename, and use <command>chklog</command> to test it:</para>
+       <literallayout>
+         # chklog -t timtim -m /var/log/timtim.log
+       </literallayout>
+       <para>Now you should only see the lines you want to be reported by uw_sysstat. Repeat
+       steps until you are satisfied</para></listitem>
+       <listitem><para>Finally tell uw_sysstat that you want it to start scanning by
+       adding <command>errlog timtim /var/log/timtim.log</command> to its configuration
+       file. That's it.</para></listitem>
+       </itemizedlist>
+    </sect1>
+</chapter>
+

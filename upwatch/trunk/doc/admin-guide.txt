@@ -31,8 +31,7 @@ Ron Arts
    3. Configuration
 
         3.1. Probe configuration
-        3.2. Tailoring uw_sysstat
-        3.3. Database configuration
+        3.2. Database configuration
 
    4. Administration
 
@@ -285,8 +284,7 @@ Chapter 3. Configuration
    Table of Contents
 
    3.1. Probe configuration
-   3.2. Tailoring uw_sysstat
-   3.3. Database configuration
+   3.2. Database configuration
 
 3.1. Probe configuration
 
@@ -300,70 +298,7 @@ Chapter 3. Configuration
    Each  program  has  a  manual  page that documents options. Every long
    commandine option can also be entered in a configuration file.
 
-3.2. Tailoring uw_sysstat
-
-   uw_sysstat   is   special   in  that  it  allows  you  to  scan  every
-   (line-oriented) logfile you want. It uses regular expressions to set a
-   yellow or red state. It works as follows:
-
-   On  startup  it reads /etc/upwatch.d/uw_sysstat.conf, and searches for
-   logfile statements. Say it encounters the statement:
-
-          logfile errlog /var/log/messages
-
-   what   it   does   is   it   reads   all   files   in   the  directory
-   /etc/upwatch.d/uw_sysstat.d/errlog     (except     rmacros.txt     and
-   macros.txt).  These  files should contain regular expressions prefixed
-   by  one  of the keywords green, yellow, or red. Next uw_sysstat starts
-   scanning  /var/log/messages.  It reads a line from the logfile and the
-   following happens:
-     * Check  against  the  red list. If match found, flag red condition,
-       and send the offending line to the upwatch server
-     * Check  line  against  the yellow list. If matches, flag yellow and
-       send to server
-     * Check  agains  green  list. If it matches, ignore this line and go
-       the  next  line in the logfile. If the current line does not match
-       any of the green list, flag yellow, and send line to server
-
-   The  regular  expressions  may  (for readability) contain macros, they
-   should be entered in /etc/upwatch.d/uw_sysstat.d/syslog/macros.txt.
-
-   You  can  easily  add  a  directory  of  youw  own, containing regular
-   expressions  for  you  own  logfiles. In fact upwatch includes a handy
-   utility chklog to help you create regular expression lists. Here is an
-   example  how  to  do  it. Suppose you plan to scan the logfile for the
-   imaginary    'timtim'    navigational    system.    It    resides   in
-   /var/log/timtim.log.
-     * First create the directory:
-                # cd /etc/upwatch.d/uw_sysstat.d
-                # mkdir timtim
-                # cp syslog/rmacros.txt timtim
-                # cp syslog/general timtim
-                # chown -R root:upwatch timtim
-                # chmod 770 timtim
-                # chmod 660 timtim/*
-
-     * Next look at rmacros.txt and tailor it to accomodate specifics for
-       the  timtim  logfile.  It  might  for  example contain entries for
-       zipcodes,  or  latitudes/longitudes  for  which  you would like to
-       create macros.
-     * Next step: extract regular expressions from an example logfile:
-                # chklog -t timtim -r /var/log/timtim.log | sort -u > /tm
-       p/timtim
-
-     * edit  this  file.  Maybe  it will contain dupes, you should try to
-       keep  the  number of regular expressions low. If you are satisfied
-       you  can  try copying it to /etc/upwatch.d/uw_sysstat/timtim using
-       any filename, and use chklog to test it:
-                # chklog -t timtim -m /var/log/timtim.log
-
-       Now  you  should  only  see  the  lines you want to be reported by
-       uw_sysstat. Repeat steps until you are satisfied
-     * Finally  tell  uw_sysstat  that  you  want it to start scanning by
-       adding  errlog  timtim  /var/log/timtim.log  to  its configuration
-       file. That's it.
-
-3.3. Database configuration
+3.2. Database configuration
 
    First things first. Depending on the size of your installation you may
    run  out  of database or record space. It happened to me on the iptraf
