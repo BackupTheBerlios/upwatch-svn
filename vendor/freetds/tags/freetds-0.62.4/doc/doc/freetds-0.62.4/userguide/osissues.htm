@@ -1,0 +1,438 @@
+<HTML
+><HEAD
+><TITLE
+>OS-specific Issues</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.57"><LINK
+REL="HOME"
+TITLE="FreeTDS User Guide"
+HREF="index.htm"><LINK
+REL="UP"
+TITLE="Build FreeTDS"
+HREF="build.htm"><LINK
+REL="PREVIOUS"
+TITLE="How to build: Configure and make"
+HREF="config.htm"><LINK
+REL="NEXT"
+TITLE="Install FreeTDS"
+HREF="install.htm"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+><SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> User Guide: A Guide to Installing, Configuring, and Running <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="config.htm"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 2. Build <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="install.htm"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="OSISSUES"
+>OS-specific Issues</A
+></H1
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="WINDOWS"
+></A
+></H2
+><P
+>The <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> ODBC driver compiles under
+			
+			<P
+></P
+><UL
+><LI
+><P
+>VC++; <TT
+CLASS="FILENAME"
+>.dsw</TT
+> and <TT
+CLASS="FILENAME"
+>.dsp</TT
+> files are included in the <TT
+CLASS="FILENAME"
+>win32</TT
+> directory.  </P
+></LI
+><LI
+><P
+>Dev-C++</P
+></LI
+><LI
+><P
+>MingW</P
+></LI
+><LI
+><P
+><SPAN
+CLASS="APPLICATION"
+>gcc</SPAN
+> under <SPAN
+CLASS="APPLICATION"
+>cygwin</SPAN
+>. </P
+></LI
+><LI
+><P
+>The Borland Builder 6.0 compiler is also reported to work, but requires some tweaking of the <TT
+CLASS="LITERAL"
+>#include</TT
+> statements.  We would apply any patches that make this work cleanly.</P
+></LI
+></UL
+>	
+
+Threadsafe operation will not be enabled.  </P
+><P
+>From the Department of Double Emulation: <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> builds as a <TT
+CLASS="FILENAME"
+>.dll</TT
+> under <SPAN
+CLASS="PRODUCTNAME"
+>WINE</SPAN
+> and as a <TT
+CLASS="FILENAME"
+>.a</TT
+> under <SPAN
+CLASS="PRODUCTNAME"
+>Interix</SPAN
+>.  See the mailing list archives (second half of 2003) for details.  </P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="VMS"
+>VMS&reg;</A
+></H2
+><P
+><SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> will probably build and run on most versions of OpenVMS Alpha 7.0 and later with DEC/Compaq C 6.0 or later.  Other prerequisites:
+
+			<P
+></P
+><TABLE
+BORDER="0"
+><TBODY
+><TR
+><TD
+><SPAN
+CLASS="APPLICATION"
+>gunzip</SPAN
+></TD
+></TR
+><TR
+><TD
+><SPAN
+CLASS="APPLICATION"
+>vmstar</SPAN
+></TD
+></TR
+><TR
+><TD
+><SPAN
+CLASS="APPLICATION"
+>MMS</SPAN
+> or <SPAN
+CLASS="APPLICATION"
+>MMK</SPAN
+></TD
+></TR
+></TBODY
+></TABLE
+><P
+></P
+>
+			</P
+><DIV
+CLASS="SECT3"
+><H3
+CLASS="SECT3"
+><A
+NAME="AEN621"
+>Build Instructions</A
+></H3
+><P
+>Decompress and unpack the source archive using gunzip and vmstar.  If
+you are untarring on an ODS-5 disk, you should use the <TT
+CLASS="PARAMETER"
+><I
+>/ODS2</I
+></TT
+> or <TT
+CLASS="PARAMETER"
+><I
+>-o</I
+></TT
+>
+option to create universally VMS-friendly filenames; otherwise the build will fail to locate some files.</P
+><P
+>Set default to the top-level source directory and run the configuration
+script:</P
+><PRE
+CLASS="SCREEN"
+>    <TT
+CLASS="PROMPT"
+>$</TT
+> <TT
+CLASS="USERINPUT"
+><B
+>@[.vms]configure</B
+></TT
+></PRE
+><P
+> This creates a <TT
+CLASS="FILENAME"
+>descrip.mms</TT
+> in the top-level source
+directory which you may execute by simply running MMS (if you have the Module Management System that
+is part of DECset) or MMK (a freeware MMS alternative available from <A
+HREF="http://www.madgoat.com"
+TARGET="_top"
+>www.madgoat.com</A
+>).</P
+><P
+>Further information can be found in the <TT
+CLASS="FILENAME"
+></TT
+> in the source distribution.  
+			</P
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="OSX"
+>OS X&reg;</A
+></H2
+><P
+>As of this writing ($Date: 2003/12/29 15:53:21 $), the regular distribution will not compile on OS X.  Current CVS code works, but the <B
+CLASS="COMMAND"
+>libtool</B
+> we use (1.4a) creates a small problem.  Eventually, we'll upgrade our libtool, but that's bound to have other ramifications we'd rather not deal with right now.  Instead, we offer the following patch to the distributed libtool.  </P
+><DIV
+CLASS="FIGURE"
+><A
+NAME="FIG.OSX.PATCH"
+></A
+><P
+><B
+>Figure 2-1. <B
+CLASS="COMMAND"
+>libtool</B
+> patch for OS X 10.3</B
+></P
+><PRE
+CLASS="PROGRAMLISTING"
+>--- libtool-orig Thu Nov  6 15:34:53 2003
++++ libtool Thu Nov  6 15:38:45 2003
+@@ -202,7 +202,7 @@
+ old_archive_from_expsyms_cmds=""
+
+ # Commands used to build and install a shared archive.
+-archive_cmds="\$CC \$(if test .\$module = .yes; then echo -bundle; else echo -dynamiclib; fi) \$allow_undefined_flag -o \$lib \$libobjs \$deplibs \$linkopts -install_name\$rpath/\$soname \$verstring"
++archive_cmds="\$CC \$(if test .\$module = .yes; then echo -bundle; else echo -dynamiclib; fi) \$allow_undefined_flag -o \$lib \$libobjs           \$linkopts -install_name\$rpath/\$soname \$verstring"
+ archive_expsym_cmds=""
+ postinstall_cmds=""
+ postuninstall_cmds=""</PRE
+></DIV
+><P
+>This patch was contributed by <TT
+CLASS="EMAIL"
+>&#60;<A
+HREF="mailto:Daniel Fazekas"
+><A
+HREF="mailto:fdsubs@axelero.hu"
+TARGET="_top"
+>Daniel Fazekas</A
+></A
+>&#62;</TT
+>, and has been used successfully by three people that we know of.  As you can see, the only effect is to remove \$deplibs from  line 202.  </P
+><P
+>OS X includes ODBC header files, which <B
+CLASS="COMMAND"
+>configure</B
+> will detect, causing the <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> ODBC driver to be built.  You may with to use the <TT
+CLASS="OPTION"
+>--disable-odbc</TT
+> option if you don't plan to use ODBC.  </P
+><TABLE
+CLASS="SIDEBAR"
+BORDER="1"
+CELLPADDING="5"
+><TR
+><TD
+><DIV
+CLASS="SIDEBAR"
+><A
+NAME="AEN650"
+></A
+><P
+></P
+><P
+><SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> builds, installs, and runs on virtually any machine with an OS vaguely related to Unix.  If you've recently built and installed <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> and noticed steps peculiar to your OS, we'll happily include your comments here. </P
+><P
+>One thing that can be said, if it's not too obvious:  check with your vendor or favorite download site.  <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> is routinely rolled up into OS install packages.  We know of packages for <SPAN
+CLASS="PRODUCTNAME"
+>Debian</SPAN
+>, <SPAN
+CLASS="PRODUCTNAME"
+>Red Hat</SPAN
+>, <SPAN
+CLASS="PRODUCTNAME"
+>FreeBSD</SPAN
+>, and <SPAN
+CLASS="PRODUCTNAME"
+>NetBSD</SPAN
+>.  The installation through the package management systems in these environments may well reduce your work to simply <B
+CLASS="COMMAND"
+>make install</B
+>.  </P
+><P
+></P
+></DIV
+></TD
+></TR
+></TABLE
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="config.htm"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.htm"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="install.htm"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>How to build: Configure and make</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="build.htm"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Install <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

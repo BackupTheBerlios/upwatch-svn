@@ -1,0 +1,505 @@
+<HTML
+><HEAD
+><TITLE
+>Current Projects, Language Bindings, and Alternatives</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.57"><LINK
+REL="HOME"
+TITLE="FreeTDS User Guide"
+HREF="index.htm"><LINK
+REL="UP"
+TITLE="What is FreeTDS?"
+HREF="what.htm"><LINK
+REL="PREVIOUS"
+TITLE="History of FreeTDS"
+HREF="freetdshistory.htm"><LINK
+REL="NEXT"
+TITLE="Build FreeTDS"
+HREF="build.htm"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+><SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> User Guide: A Guide to Installing, Configuring, and Running <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="freetdshistory.htm"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 1. What is <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+>?</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="build.htm"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="PROJECTS"
+>Current Projects, Language Bindings, and Alternatives</A
+></H1
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CURRENT"
+>Current Projects</A
+></H2
+><P
+><SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> consists of two projects.  The <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> C libraries and <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+>/ <SPAN
+CLASS="ACRONYM"
+>JDBC</SPAN
+>.
+			</P
+><P
+></P
+><UL
+><LI
+STYLE="list-style-type: opencircle"
+><P
+>The <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> C libraries support three separate <SPAN
+CLASS="ACRONYM"
+>API</SPAN
+>s: <SPAN
+CLASS="SYSTEMITEM"
+>db-lib</SPAN
+>, <SPAN
+CLASS="SYSTEMITEM"
+>ct-lib</SPAN
+>, and <SPAN
+CLASS="SYSTEMITEM"
+>ODBC</SPAN
+>.  Underlying these three is libtds, which handles the low-level details of the <SPAN
+CLASS="ACRONYM"
+>TDS</SPAN
+> protocol, such as sending, receiving, and datatype conversion.  This document and the <A
+HREF="http://www.freetds.org/"
+TARGET="_top"
+>FreeTDS</A
+> website are dedicated to these libraries.  
+			</P
+></LI
+><LI
+STYLE="list-style-type: opencircle"
+><P
+>If Java is your game, we refer you to the <SPAN
+CLASS="PRODUCTNAME"
+>jTDS</SPAN
+> project on <A
+HREF="http://sourceforge.net/projects/jtds/"
+TARGET="_top"
+>SourceForge</A
+>.  It is a fork of the 
+<SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS/JDBC</SPAN
+> project, by Craig Spannring, and is a free, native 100% Java implementation of a Type 4  <SPAN
+CLASS="ACRONYM"
+>JDBC</SPAN
+> driver.  
+			</P
+></LI
+></UL
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="STATUS"
+>Status</A
+></H2
+><P
+>The <SPAN
+CLASS="SYSTEMITEM"
+>db-lib</SPAN
+> and <SPAN
+CLASS="SYSTEMITEM"
+>ct-lib</SPAN
+> <SPAN
+CLASS="ACRONYM"
+>API</SPAN
+>s have been usable for several years.  They have been successfully  substituted for Sybase's own libraries in a variety of venues, including <SPAN
+CLASS="PRODUCTNAME"
+>Perl</SPAN
+> and <SPAN
+CLASS="PRODUCTNAME"
+>PHP</SPAN
+>.  That is not to say that these drivers are complete; they're not.  But they faithfully implement an important subset of their <SPAN
+CLASS="ACRONYM"
+>API</SPAN
+>s, enough to be useful.  This 0.62 version boasts support for server-side cursors in <SPAN
+CLASS="SYSTEMITEM"
+>ct-lib</SPAN
+>.  
+			</P
+><P
+>In addition to the core <SPAN
+CLASS="SYSTEMITEM"
+>db-lib</SPAN
+> <SPAN
+CLASS="ACRONYM"
+>API</SPAN
+>, <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+>  includes a full implementation of <SPAN
+CLASS="SYSTEMITEM"
+>db-lib</SPAN
+>'s <SPAN
+CLASS="ACRONYM"
+>bcp</SPAN
+> functions, as well as <B
+CLASS="COMMAND"
+>freebcp</B
+>, a replacement for Sybase's <SPAN
+CLASS="APPLICATION"
+>bcp</SPAN
+> utility.  
+			</P
+><P
+>The <SPAN
+CLASS="SYSTEMITEM"
+>ODBC</SPAN
+> driver is younger, but has received much attention.  
+The <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> 0.60 ODBC driver was a vast improvement over earlier versions, and 0.61 began to comply with the ODBC 3.0 specification.
+0.62 should be fully ODBC 3.0 compatible and contain many fixes and improvements (<SPAN
+CLASS="SYSTEMITEM"
+>ODBC</SPAN
+>  <SPAN
+CLASS="ACRONYM"
+>RPC</SPAN
+> parameters, descriptors and others).  Any problems found in the currently implemented <SPAN
+CLASS="ACRONYM"
+>API</SPAN
+> subset are cheerfully  addressed.  
+			</P
+><P
+>Basic <SPAN
+CLASS="ACRONYM"
+>API</SPAN
+> coverage information is available at <A
+HREF="http://www.freetds.org/api_status.txt"
+TARGET="_top"
+>www.freetds.org</A
+> (that file is also shipped with the source distribution).  Detailed information about the extent of the <SPAN
+CLASS="ACRONYM"
+>API</SPAN
+> coverage is being prepared. 			
+			</P
+><P
+>How big is it?  <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> has almost 50,000 lines of C code, maintained by a handful of developers.  Patches arrive irregularly, varying in size from one-liners to thousand-line monsters.  Almost all are applied or used in some way.  The mailing list has some 700 or so subscribers at this writing.  Safe to say, <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+>'s success so far lies somewhere between the Beetle and the Edsel.  
+			</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="LANGUAGES"
+>Languages besides C and Java</A
+></H2
+><P
+>You may be wondering how these libraries fit with Perl, PHP, TCL, Python, or other popular scripting languages.  Most of these languages have bindings to Sybase that use either the <SPAN
+CLASS="SYSTEMITEM"
+>db-lib</SPAN
+> or <SPAN
+CLASS="SYSTEMITEM"
+>ct-lib</SPAN
+> <SPAN
+CLASS="ACRONYM"
+>API</SPAN
+>, for which <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> is intended as a drop-in replacement.  For instance, Michael Peppler's <SPAN
+CLASS="SYSTEMITEM"
+>DBD::Sybase</SPAN
+> works very well using <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> to access Sybase or Microsoft <SPAN
+CLASS="PRODUCTNAME"
+>SQL Server</SPAN
+>s.  <SPAN
+CLASS="PRODUCTNAME"
+>PHP</SPAN
+> has options for <TT
+CLASS="FILENAME"
+>sybase</TT
+> (<SPAN
+CLASS="SYSTEMITEM"
+>db-lib</SPAN
+>) and <TT
+CLASS="FILENAME"
+>sybase-ct</TT
+> (<SPAN
+CLASS="SYSTEMITEM"
+>ct-lib</SPAN
+>) <SPAN
+CLASS="ACRONYM"
+>API</SPAN
+>s.
+			</P
+><P
+><SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> is a source code library, though, not a binary one.  It has to be linked to a program.  For it to be useful to you in any way, you have to be prepared to break out your build tools.  
+			</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="ALTERNATIVES"
+>Alternatives</A
+></H2
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><P
+><B
+>Should <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> not suit your needs, some alternatives</B
+></P
+><DL
+><DT
+>Sybase OpenClient</DT
+><DD
+><P
+>In the time since <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> was started, Sybase (as well as most major <SPAN
+CLASS="ACRONYM"
+>DBMS</SPAN
+> vendors) has released its database for the Intel <SPAN
+CLASS="PRODUCTNAME"
+><SPAN
+CLASS="ACRONYM"
+>GNU</SPAN
+>/Linux</SPAN
+> platform.  The good: it is a solid product and supports <SPAN
+CLASS="ACRONYM"
+>TDS</SPAN
+> 4.2 and <SPAN
+CLASS="ACRONYM"
+>TDS</SPAN
+> 5.0.  The bad: it doesn't support <SPAN
+CLASS="ACRONYM"
+>TDS 7.0</SPAN
+> or Linux/*BSD on non-Intel platforms.  The ugly: Microsoft broke date handling for big endian Sybase clients.</P
+><P
+>Depending on platform, it may cost something.</P
+></DD
+><DT
+><SPAN
+CLASS="SYSTEMITEM"
+>ODBC</SPAN
+> bridge products</DT
+><DD
+><P
+>They use the <SPAN
+CLASS="SYSTEMITEM"
+>ODBC</SPAN
+> driver on the NT box where your <SPAN
+CLASS="PRODUCTNAME"
+>SQL Server</SPAN
+> runs so you'll never have trouble with new protocols and the like.  On the downside, they can be costly and may be inefficient.  We know of <SPAN
+CLASS="PRODUCTNAME"
+>EasySoft ODBC-ODBC Bridge</SPAN
+> from <A
+HREF="http://www.easysoft.com"
+TARGET="_top"
+>EasySoft</A
+>, <SPAN
+CLASS="PRODUCTNAME"
+>Universal Data Access Driver</SPAN
+> from <A
+HREF="http://www.openlinksw.com"
+TARGET="_top"
+>OpenLink Software</A
+>, <SPAN
+CLASS="PRODUCTNAME"
+>SequeLink</SPAN
+> from <A
+HREF="http://www.merant.com/"
+TARGET="_top"
+>Merant</A
+>, and 
+<SPAN
+CLASS="APPLICATION"
+><SPAN
+CLASS="SYSTEMITEM"
+>ODBC</SPAN
+> Router</SPAN
+> from <A
+HREF="http://www.augsoft.com/"
+TARGET="_top"
+>August Software</A
+> Corporation.  </P
+></DD
+><DT
+>Inline <SPAN
+CLASS="SYSTEMITEM"
+>ODBC</SPAN
+> driver</DT
+><DD
+><P
+>Based on <SPAN
+CLASS="SYSTEMITEM"
+>libtds</SPAN
+>, this is a native <SPAN
+CLASS="SYSTEMITEM"
+>ODBC</SPAN
+> driver for i386 *nix. It is free in price, but comes only as a binary at the present time.</P
+></DD
+><DT
+>DBD::Proxy</DT
+><DD
+><P
+>We have no direct experience with this Perl-only option.  It has the same caveats as an <SPAN
+CLASS="SYSTEMITEM"
+>ODBC</SPAN
+> bridge except it's free.</P
+></DD
+></DL
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="freetdshistory.htm"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.htm"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="build.htm"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>History of <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="what.htm"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Build <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+></TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>
