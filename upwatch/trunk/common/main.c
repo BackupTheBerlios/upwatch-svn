@@ -20,10 +20,19 @@
 int debug;
 int startsec;
 int forever=30;
+int sighup;
 char *progname;
 int every = ONE_SHOT;
 int daemonize = TRUE;
 int runcounter;
+
+void sighup_handler (int signum)
+{
+  if (debug > 1) {
+    LOG(LOG_NOTICE, "signal %d received", signum); 
+  }
+  sighup = 1;
+}
 
 void termination_handler (int signum)
 {
@@ -31,13 +40,13 @@ void termination_handler (int signum)
 
   if (forever == 0) {
     // been here before?
-    exit(0);
+    _exit(0);
   }
+  forever = 0;
 
   // Note: this function hangs when ElectricFence is used, don't know why
   LOG(LOG_NOTICE, "signal %d received - finishing up", signum); 
 
-  forever = 0;
 }
 
 void exit_function(void)
@@ -100,24 +109,26 @@ int main( int argc, char** argv, char **envp )
   sigemptyset (&new_action.sa_mask);
   new_action.sa_flags = 0;
   sigaction (SIGSEGV, &new_action, NULL);
-
+/*
   new_action.sa_handler = termination_handler;
   sigemptyset (&new_action.sa_mask);
   new_action.sa_flags = 0;
   sigaction (SIGTRAP, &new_action, NULL);
-
-  /* ignore SIGHUP/SIGPIPE */
-  new_action.sa_handler = SIG_IGN;
-  sigemptyset (&new_action.sa_mask);
-  new_action.sa_flags = 0;
-  sigaction (SIGHUP, &new_action, NULL);
-
+*/
+  /* ignore SIGPIPE */
   new_action.sa_handler = SIG_IGN;
   sigemptyset (&new_action.sa_mask);
   new_action.sa_flags = 0;
   sigaction (SIGPIPE, &new_action, NULL);
 
-  if (debug < 3 && daemonize) daemon(0, 0);
+  if (daemonize) {
+    new_action.sa_handler = sighup_handler;
+    sigemptyset (&new_action.sa_mask);
+    new_action.sa_flags = 0;
+    sigaction (SIGHUP, &new_action, NULL);
+
+    if (debug < 3) daemon(0, 0);
+  }
   do {
     struct timeval start;
     int i, now;
