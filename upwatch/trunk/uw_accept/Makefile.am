@@ -6,8 +6,7 @@ man_MANS = $(program).1
 conf_DATA = $(program).conf
 init_DATA = $(INITFILES)
 
-uw_accept_SOURCES = run.c cmd_options.c cmd_options.h $(SPECFILES) $(INITFILES) \
- $(program).redhat $(program).suse $(program).solaris
+uw_accept_SOURCES = run.c cmd_options.c cmd_options.h $(SPECFILES) $(INITFILES)
 uw_accept_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@
 BUILT_SOURCES = cmd_options.h $(SPECFILES) $(INITFILES) 
 INCLUDES = -I../upwatch -I $(INCL_ST)

@@ -20,6 +20,7 @@ endif
 
 SPECFILES = $(program).spec-requires $(program).spec-files
 INITFILES = $(program).redhat $(program).suse $(program).solaris
+PROBFILES  = probe.def_h probe.res_h probe.enum probe.mysql probe.mysql
 AGDEFINES = -Dconfdir=$(confdir) -Dsysconfdir=$(sysconfdir) -Dsbindir=$(sbindir) \
  -Dlogdir=$(logdir) -Dspooldir=$(spooldir)
 
@@ -65,6 +66,6 @@ $(program).spec-requires: cmd_options.def $(CMDDEF) $(SPECTPL)
 $(program).spec-files: cmd_options.def $(CMDDEF) $(SPECTPL)
 	autogen -b $(program) $(AGDEFINES) $(GENINCL) -T $(SPECTPL) cmd_options.def
 
-CLEANFILES = cmd_options.c cmd_options.h *.1 Makefile.in probe.def_h probe.res_h \
-  probe.enum probe.mysql $(SPECFILES) $(INITFILES)
+CLEANFILES = cmd_options.c cmd_options.h *.1 Makefile.in \
+  $(PROBFILES) $(SPECFILES) $(INITFILES)
 
