@@ -132,74 +132,66 @@ static void *get_def(module *probe, struct probe_result *res)
     def->stamp    = time(NULL);
 
     result = my_query(probe->db, 0,
-                      "select server, color, stattime, yellow, red "
+                      "select color "
                       "from   pr_status "
                       "where  class = '%u' and probe = '%u'", probe->class, res->probeid);
     if (result) {
       row = mysql_fetch_row(result);
       if (row) {
-        if (row[0]) def->server = atoi(row[0]);
-        if (row[1]) def->color  = atoi(row[1]);
-        if (row[2]) def->newest = atoi(row[2]);
-        if (row[3]) def->yellow = atof(row[3]);
-        if (row[4]) def->red    = atof(row[4]);
+        if (row[0]) def->color  = atoi(row[0]);
       } else {
         LOG(LOG_NOTICE, "pr_status record for %s id %u not found", res->name, res->probeid);
       }
       mysql_free_result(result);
     }
 
-    if (!def->server) { 
-      // couldn't find pr_status record? This shouldn't normally happen, as it should
-      // be created when the probe is created by the webpages. Anyway, this is not
-      // a disaster, it'll get added later on in the process.
-      // But get the server and yellow/red info from the def record for now
+    // Get the server and yellow/red info from the def record. Note the yellow/red may 
+    // have been changed by the user.
+    result = my_query(probe->db, 0,
+                      "select server, yellow, red "
+                      "from   pr_%s_def "
+                      "where  id = '%u'", res->name, res->probeid);
+    if (!result) return(NULL);
+
+    if (mysql_num_rows(result) == 0) { // DEF RECORD NOT FOUND
+      mysql_free_result(result);
+      if (!trust(res->name)) {
+        LOG(LOG_NOTICE, "pr_%s_def id %u not found and not trusted - skipped",
+                         res->name, res->probeid);
+        return(NULL);
+      }
+      if (res->server == 0) {
+        LOG(LOG_NOTICE, "pr_%s_def id %u not found trusted but we have no serverid - skipped",
+                         res->name, res->probeid);
+        return(NULL);
+      }
+      // at this point, we have a probe result, but we can't find the _def record
+      // for it. We apparantly trust this result, so we can create the definition
+      // ourselves. For that we need to fill in the server id and the ipaddress
+      // and we look into the result if the is anything useful in there.
+      result = my_query(probe->db, 0,
+                        "insert into pr_%s_def set server = '%d', "
+                        "        ipaddress = '%s', description = 'auto-added by system'",
+                        res->name, res->server, res->ipaddress?res->ipaddress:"");
+      mysql_free_result(result);
+      res->probeid = mysql_insert_id(probe->db);
+      if (mysql_affected_rows(probe->db) == 0) { // nothing was actually inserted
+        LOG(LOG_NOTICE, "insert missing pr_%s_def id %u: %s", 
+                         res->name, res->probeid, mysql_error(probe->db));
+      }
       result = my_query(probe->db, 0,
                         "select server, yellow, red "
                         "from   pr_%s_def "
                         "where  id = '%u'", res->name, res->probeid);
       if (!result) return(NULL);
-
-      if (mysql_num_rows(result) == 0) { // DEF RECORD NOT FOUND
-        mysql_free_result(result);
-        if (!trust(res->name)) {
-          LOG(LOG_NOTICE, "pr_%s_def id %u not found and not trusted - skipped",
-                           res->name, res->probeid);
-          return(NULL);
-        }
-        if (res->server == 0) {
-          LOG(LOG_NOTICE, "pr_%s_def id %u not found trusted but we have no serverid - skipped",
-                           res->name, res->probeid);
-          return(NULL);
-        }
-        // at this point, we have a probe result, but we can't find the _def record
-        // for it. We apparantly trust this result, so we can create the definition
-        // ourselves. For that we need to fill in the server id and the ipaddress
-        // and we look into the result if the is anything useful in there.
-        result = my_query(probe->db, 0,
-                          "insert into pr_%s_def set server = '%d', "
-                          "        ipaddress = '%s', description = 'auto-added by system'",
-                          res->name, res->server, res->ipaddress?res->ipaddress:"");
-        mysql_free_result(result);
-        res->probeid = mysql_insert_id(probe->db);
-        if (mysql_affected_rows(probe->db) == 0) { // nothing was actually inserted
-          LOG(LOG_NOTICE, "insert missing pr_%s_def id %u: %s", 
-                           res->name, res->probeid, mysql_error(probe->db));
-        }
-        result = my_query(probe->db, 0,
-                          "select server, yellow, red "
-                          "from   pr_%s_def "
-                          "where  id = '%u'", res->name, res->probeid);
-        if (!result) return(NULL);
-      }
-      row = mysql_fetch_row(result);
-      if (row) {
-        if (row[0]) def->server   = atoi(row[0]);
-        if (row[1]) def->yellow   = atof(row[1]);
-        if (row[2]) def->red      = atof(row[2]);
-      }
-      mysql_free_result(result);
     }
+    row = mysql_fetch_row(result);
+    if (row) {
+      if (row[0]) def->server   = atoi(row[0]);
+      if (row[1]) def->yellow   = atof(row[1]);
+      if (row[2]) def->red      = atof(row[2]);
+    }
+    mysql_free_result(result);
 
     result = my_query(probe->db, 0,
                       "select stattime from pr_%s_raw use index(probstat) "
