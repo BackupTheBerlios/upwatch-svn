@@ -226,6 +226,7 @@ struct mssql_result {
 struct mssql_def {
   STANDARD_PROBE_DEF;
 #include "../common/common.h"
+#include "../uw_mssql/probe.def_h"
 };
 
 /****************************** probe mysql ************************/
@@ -236,6 +237,7 @@ struct mysql_result {
 struct mysql_def {
   STANDARD_PROBE_DEF;
 #include "../common/common.h"
+#include "../uw_mysql/probe.def_h"
 };
 
 /****************************** probe ping ************************/

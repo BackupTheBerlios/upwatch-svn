@@ -33,6 +33,7 @@ struct typespec {
   int gmatch;               // how many times is the green matching done so far
   GPtrArray *yellow;        // same here
   GPtrArray *red;           // same here
+  GPtrArray *ignore;        // ignore these lines always
 };
 
 static GHashTable *files; // table of all files and the modification date
@@ -257,6 +258,16 @@ static void logregex_remove_file(struct typespec *ts, char *file)
       }
     }
   }
+  if (ts->ignore) {
+    for (i=0; i < ts->ignore->len; i++) {
+      struct regexspec *rs = g_ptr_array_index(ts->ignore, i);
+      if (strcmp(file, rs->file) == 0) {
+        g_ptr_array_remove_index(ts->ignore, i);
+        free_regexspec(rs);
+        i--;
+      }
+    }
+  }
 }
 
 static void free_typespec(gpointer data)
@@ -268,6 +279,7 @@ static void free_typespec(gpointer data)
   g_ptr_array_free(ts->green, TRUE);
   g_ptr_array_free(ts->yellow, TRUE);
   g_ptr_array_free(ts->red, TRUE);
+  g_ptr_array_free(ts->ignore, TRUE);
   g_free(ts);
 }
 
@@ -340,6 +352,9 @@ static void logregex_add_file(char *fullname, struct typespec *ts, char *file)
     if (strncmp("red", buffer, 3) == 0) {
       g_ptr_array_add(ts->red, spec);
     }
+    if (strncmp("ignore", buffer, 6) == 0) {
+      g_ptr_array_add(ts->ignore, spec);
+    }
     spec = NULL;
   }
   fclose(in);
@@ -365,6 +380,7 @@ void logregex_refresh_type(char *base, char *type)
     ts->green = g_ptr_array_new();
     ts->yellow = g_ptr_array_new();
     ts->red = g_ptr_array_new();
+    ts->ignore = g_ptr_array_new();
     g_hash_table_insert(types, strdup(type), ts);
   }
 
@@ -571,6 +587,20 @@ int logregex_matchline(char *type, char *buffer, int *color)
   //printf("matching: %s\n", buffer);
 
   ts->runs++;
+  if (ts->ignore) {
+    for (i=0; i < ts->ignore->len; i++) {
+      struct regexspec *rs = g_ptr_array_index(ts->ignore, i);
+
+      //printf("ignore %s\n", rs->regex);
+      ts->pondered++;
+      if (rs && regexec(&rs->preg,  buffer, 0, 0, 0) == 0) {
+        rs->match++;
+        *color = STAT_GREEN;
+        return TRUE;
+      }
+    }
+  }
+
   if (ts->red) {
     for (i=0; i < ts->red->len; i++) {
       struct regexspec *rs = g_ptr_array_index(ts->red, i);
