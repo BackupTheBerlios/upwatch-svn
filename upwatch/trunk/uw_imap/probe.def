@@ -1,0 +1,47 @@
+AutoGen Definitions imap;
+#include probe_generic.def
+
+probe = {
+  name = "imap";
+  id = 11;
+  descrip = "Test a IMAP server, optionally with user/password";
+  addbyhand = "yes";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+  yellow = "3";
+  red = "5";
+  message = "Optional error message";
+
+  def = {
+    name = "username";
+    type = "varchar";
+    length = 64;
+    null = false;
+    default = "";
+    descrip = "Username";
+  };
+  def = {
+    name = "password";
+    type = "char";
+    length = 16;
+    null = false;
+    default = "";
+    descrip = "Password";
+  };
+
+  result = {
+    name = "connect";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "time for connection to complete";
+  };
+  result = {
+    name = "total";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "total time needed";
+  };
+};

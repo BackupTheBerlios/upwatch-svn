@@ -1,6 +1,7 @@
 <!ELEMENT result	((ping|httpget|iptraf|sysstat|bb_disk|bb_bgp|bb_conn|bb_cpu|bb_dhcp|bb_dns|
                           bb_ftp|bb_http|bb_hylafax|bb_ismtp|bb_msgs|bb_mysql|bb_pop3|
-                          bb_procs|bb_radius|bb_smtp|bb_squid|bb_svcs|mysql|pop3|mssql|postgresql)*)>
+                          bb_procs|bb_radius|bb_smtp|bb_squid|bb_svcs|mysql|pop3|mssql|
+                          postgresql|imap)*)>
 <!ATTLIST result	fromhost NMTOKEN #REQUIRED	-- host where this result originated --
 			date NMTOKEN #REQUIRED		-- data/time generated-- 
 > 
@@ -101,6 +102,15 @@
 
 <!ELEMENT postgresql	(host,color,connect,total,info?)>
 <!ATTLIST postgresql	id NMTOKEN #REQUIRED 
+			investigate NMTOKEN #FIXED "tcptraceroute"
+			port NMTOKEN "80"
+			ipaddress NMTOKEN "127.0.0.1"
+			date NMTOKEN #REQUIRED 
+			expires NMTOKEN #REQUIRED
+			notify NMTOKEN "1" >
+
+<!ELEMENT imap		(host,color,connect,total,info?)>
+<!ATTLIST imap		id NMTOKEN #REQUIRED 
 			investigate NMTOKEN #FIXED "tcptraceroute"
 			port NMTOKEN "80"
 			ipaddress NMTOKEN "127.0.0.1"

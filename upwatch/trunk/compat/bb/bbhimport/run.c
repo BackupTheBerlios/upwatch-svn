@@ -165,5 +165,28 @@ void process(MYSQL *mysql, char *ip, char *hostname, char *args)
       printf("ALREADY THERE: pop3 %s %s \n", ip, hostname);
     }
   }
+
+  if ((p = strstr(args, "imap")) != NULL) {
+    int rows;
+
+    result = my_query(mysql, 0,
+                      "select id from pr_imap_def where server = '%d' and ipaddress = '%s'",
+                      serverid, ip);
+    if (!result) {
+      printf("internal error. Stop.\n");
+      exit(1);
+    }
+    rows = mysql_num_rows(result);
+    mysql_free_result(result);
+
+    if (rows == 0) { 
+      printf("INSERT imap %s %s\n", ip, hostname);
+      my_query(mysql, 0,
+               "insert into pr_imap_def set server = '%d', ipaddress = '%s', description = '%s'",
+               serverid, ip, hostname);
+    } else {
+      printf("ALREADY THERE: imap %s %s \n", ip, hostname);
+    }
+  }
 }
 
