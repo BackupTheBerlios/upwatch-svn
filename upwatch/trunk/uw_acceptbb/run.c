@@ -258,6 +258,9 @@ void runbb(char *cmd)
     char *message;
     char *p;
 
+    for (p=cmd; *p; p++) {
+      if (*p & 0x80) *p = ' ';
+    }
     memset(&probedate, 0, sizeof(struct tm));
     cmd += 6;
     if (*cmd == '+') {      // status+<delay> format - skip for now

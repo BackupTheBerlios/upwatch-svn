@@ -127,6 +127,7 @@ int run(void)
   unsigned int memfree,membuff,swapused, memcache, memused;
   unsigned int kb_per_page = sysconf(_SC_PAGESIZE) / 1024;
   unsigned int hz = sysconf(_SC_CLK_TCK); /* get ticks/s from system */
+  int systemp = 0;
 
   // compute sysstat
   //
@@ -166,6 +167,18 @@ int run(void)
     }
     unlink("tmp/.uw_sysstat.tmp");
   }
+  if (HAVE_OPT(SYSTEMP_COMMAND)) {
+    char cmd[1024];
+
+    sprintf(cmd, "%s > /tmp/.uw_sysstat.tmp", OPT_ARG(SYSTEMP_COMMAND));
+    system(cmd);
+    in = fopen("/tmp/.uw_sysstat.tmp", "r");
+    if (in) {
+      fscanf(in, "%d", &systemp);
+      fclose(in);
+    }
+    unlink("tmp/.uw_sysstat.tmp");
+  }
   doc = UpwatchXmlDoc("result");
   now = time(NULL);
 
@@ -191,6 +204,7 @@ int run(void)
   sprintf(buffer, "%u", membuff);		subtree = xmlNewChild(sysstat, NULL, "buffered", buffer);
   sprintf(buffer, "%u", memcache);		subtree = xmlNewChild(sysstat, NULL, "cached", buffer);
   sprintf(buffer, "%u", memused);		subtree = xmlNewChild(sysstat, NULL, "used", buffer);
+  sprintf(buffer, "%d", systemp);		subtree = xmlNewChild(sysstat, NULL, "systemp", buffer);
     subtree = xmlNewChild(sysstat, NULL, "info", info);
 
   spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc, NULL);

@@ -24,6 +24,15 @@ flag = {
     descrip   = "Numeric id of this server in the upwatch database";
 };
 
+flag = {
+    name      = systemp_command;
+    arg_type  = string;   /* option argument indication  */
+    descrip   = "command the produces the system temperature";
+    doc       =
+'This command is used to determine the temperature in the box.
+The command should print the termperature in Celsius to standard output';
+};
+
 // describe commandline flags
 flag = {
     name      = spooldir;

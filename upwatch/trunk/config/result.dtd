@@ -36,6 +36,7 @@
 <!ELEMENT buffered	(#PCDATA)>
 <!ELEMENT cached	(#PCDATA)>
 <!ELEMENT used		(#PCDATA)>
+<!ELEMENT systemp	(#PCDATA)>
 
 <!ELEMENT ping		(host,color,min,avg,max,info?)>
 <!ATTLIST ping		id NMTOKEN #REQUIRED 
@@ -59,7 +60,7 @@
 			notify NMTOKEN "1" >
 
 <!ELEMENT sysstat	(loadavg,user,system,nice,idle,swapin,swapout,
-			blockin,blockout,swapped,free,buffered,cached,used)>
+			blockin,blockout,swapped,free,buffered,cached,used,systemp)>
 <!ATTLIST sysstat	server NMTOKEN #REQUIRED 
 			date NMTOKEN #REQUIRED 
 			expires NMTOKEN #REQUIRED
