@@ -2,7 +2,6 @@
 #include <time.h>
 #include <stdlib.h>
 #include <sys/stat.h>
-#include <pcreposix.h>
 
 #include "generic.h"
 #include "logregex.h"
@@ -14,6 +13,7 @@ struct regexspec {
   char *file;   // basefilename this regex is originating from
   char *regex;  // regular expression
   regex_t preg; // compiled version
+  unsigned match; // number of times this regex matched
 };
 
 struct macrodef {
@@ -24,9 +24,13 @@ struct macrodef {
 
 struct typespec {
   char *name;
+  int runs;                 // total amount of matching runs
+  int pondered;             // total amount of regexes pondered
   GPtrArray *macros;        // points to list of macrodefs
   GPtrArray *rmacros;       // points to list of macrodefs
-  GPtrArray *ignore;        // points to list of regexspec structures
+  GPtrArray *green;         // points to list of regexspec structures
+  int gmatch;               // how many times is the green matching done so far
+  GPtrArray *yellow;        // same here
   GPtrArray *red;           // same here
 };
 
@@ -222,11 +226,21 @@ static void logregex_remove_file(struct typespec *ts, char *file)
   int i;
 
   //printf("remove %s:%s\n", ts->name, file);
-  if (ts->ignore) {
-    for (i=0; i < ts->ignore->len; i++) {
-      struct regexspec *rs = g_ptr_array_index(ts->ignore, i);
+  if (ts->green) {
+    for (i=0; i < ts->green->len; i++) {
+      struct regexspec *rs = g_ptr_array_index(ts->green, i);
       if (strcmp(file, rs->file) == 0) {
-        g_ptr_array_remove_index(ts->ignore, i);
+        g_ptr_array_remove_index(ts->green, i);
+        free_regexspec(rs);
+        i--;
+      }
+    }
+  }
+  if (ts->yellow) {
+    for (i=0; i < ts->yellow->len; i++) {
+      struct regexspec *rs = g_ptr_array_index(ts->yellow, i);
+      if (strcmp(file, rs->file) == 0) {
+        g_ptr_array_remove_index(ts->yellow, i);
         free_regexspec(rs);
         i--;
       }
@@ -250,7 +264,8 @@ static void free_typespec(gpointer data)
 
   g_free(ts->name);
   g_ptr_array_free(ts->macros, TRUE);
-  g_ptr_array_free(ts->ignore, TRUE);
+  g_ptr_array_free(ts->green, TRUE);
+  g_ptr_array_free(ts->yellow, TRUE);
   g_ptr_array_free(ts->red, TRUE);
   g_free(ts);
 }
@@ -288,7 +303,7 @@ static void logregex_add_file(char *fullname, struct typespec *ts, char *file)
 
     buffer[strlen(buffer)-1] = 0;          // strip trailing \n
     for (p=buffer; *p; p++) {
-      if (*p == ' ' || *p == '\t') break;  // find the end of the first word (probably red or ignore)
+      if (*p == ' ' || *p == '\t') break;  // find the end of the first word (probably red or green)
     }
     if (!*p) continue;
     for (*p++ = 0; *p; p++) {
@@ -315,8 +330,11 @@ static void logregex_add_file(char *fullname, struct typespec *ts, char *file)
     }
     spec->file = strdup(file);
     spec->regex = strdup(buffer2);
-    if (strncmp("ignore", buffer, 6) == 0) {
-      g_ptr_array_add(ts->ignore, spec);
+    if (strncmp("green", buffer, 6) == 0) {
+      g_ptr_array_add(ts->green, spec);
+    }
+    if (strncmp("yellow", buffer, 6) == 0) {
+      g_ptr_array_add(ts->yellow, spec);
     }
     if (strncmp("red", buffer, 3) == 0) {
       g_ptr_array_add(ts->red, spec);
@@ -342,7 +360,8 @@ static void logregex_refresh_type(char *path, char *type)
   if (!ts) {
     ts = g_malloc0(sizeof(struct typespec));
     ts->name = strdup(type);
-    ts->ignore = g_ptr_array_new();
+    ts->green = g_ptr_array_new();
+    ts->yellow = g_ptr_array_new();
     ts->red = g_ptr_array_new();
     g_hash_table_insert(types, strdup(type), ts);
   }
@@ -371,6 +390,40 @@ static void logregex_refresh_type(char *path, char *type)
     }
   }
   g_dir_close(dir);
+}
+
+static void logregex_print_1stat(gpointer key, gpointer value, gpointer user_data)
+{
+  char *type = (char *)user_data;
+  char *name = (char *)key;
+  struct typespec *ts = (struct typespec *) value;
+  if (type && strcmp(key, type)) return;
+
+  printf("%s: runs %u, avg pondered/run %u\n", name, ts->runs, ts->pondered/(ts->runs?ts->runs:1));
+}
+
+// print stats for all 
+// 
+void logregex_print_stats(char *type)
+{
+  if (types == NULL) return;
+  g_hash_table_foreach(types, logregex_print_1stat, type);
+}
+
+void logregex_expand_macros(char *type, char *in, char *out)
+{
+  struct typespec *ts;
+
+  if (!types) {
+    strcpy(out, in);
+    return;
+  }
+  ts = g_hash_table_lookup(types, type);
+  if (ts == NULL) {
+    strcpy(out, in);
+    return;
+  }
+  logregex_replace_macros(ts->macros, in, out);
 }
 
 // read all directories in the path
@@ -491,6 +544,17 @@ int logregex_rmatchline(char *type, char *line)
   return replaced;
 }
 
+// This function should return a negative integer if the first value 
+// comes before the second, 0 if they are equal, or a positive integer
+// if the first value comes after the second. 
+static gint regexspec_compare_func(gconstpointer a, gconstpointer b)
+{
+  struct regexspec *rs1 = *(struct regexspec **) a;
+  struct regexspec *rs2 = *(struct regexspec **) b;
+
+  return(rs2->match - rs1->match);
+}
+
 int logregex_matchline(char *type, char *buffer, int *color)
 {
   int i;
@@ -501,25 +565,49 @@ int logregex_matchline(char *type, char *buffer, int *color)
 
   //printf("matching: %s\n", buffer);
 
+  ts->runs++;
   if (ts->red) {
     for (i=0; i < ts->red->len; i++) {
       struct regexspec *rs = g_ptr_array_index(ts->red, i);
 
       //printf("red %s\n", rs->regex);
+      ts->pondered++;
       if (rs && regexec(&rs->preg,  buffer, 0, 0, 0) == 0) {
+        rs->match++;
         *color = STAT_RED;
         return TRUE;
       }
     }
   }
 
-  if (ts->ignore) {
-    for (i=0; i < ts->ignore->len; i++) {
-      struct regexspec *rs = g_ptr_array_index(ts->ignore, i);
+  if (ts->yellow) {
+    for (i=0; i < ts->yellow->len; i++) {
+      struct regexspec *rs = g_ptr_array_index(ts->yellow, i);
 
+      //printf("yellow %s\n", rs->regex);
+      ts->pondered++;
+      if (rs && regexec(&rs->preg,  buffer, 0, 0, 0) == 0) {
+        rs->match++;
+        *color = STAT_YELLOW;
+        return TRUE;
+      }
+    }
+  }
+
+  if (ts->green) {
+    ts->gmatch++;
+    if (ts->gmatch == 100 || ts->gmatch == 1000 || ts->gmatch == 10000 || ts->gmatch == 100000) {
+      g_ptr_array_sort(ts->green, regexspec_compare_func);
+    }
+    for (i=0; i < ts->green->len; i++) {
+      struct regexspec *rs = g_ptr_array_index(ts->green, i);
+
+      ts->pondered++;
       if (rs && regexec(&rs->preg,  buffer, 0, 0, 0) == 0) {
         match = 1;
-        //printf("MATCH yellow %s\n", rs->regex);
+        rs->match++;
+        break;
+        //printf("MATCH green%s\n", rs->regex);
       } 
     }
   }

@@ -24,9 +24,15 @@ int main (int argc, char *argv[])
     exit (1);
   }
 
+  setvbuf(stdout, (char *)NULL, _IOLBF, 0); // make stdout linebuffered
+
   logregex_refresh("/etc/upwatch.d/uw_sysstat.d");
 
-  in = fopen(*argv, "r");
+  if (strcmp(*argv, "-") == 0) {
+    in = stdin;
+  } else {
+    in = fopen(*argv, "r");
+  }
   if (!in) {
     perror(*argv);
     exit(1);
@@ -35,17 +41,31 @@ int main (int argc, char *argv[])
     int color = STAT_GREEN;
 
     line++;
-    buffer[strlen(buffer)-1] = 0;
-    if (HAVE_OPT(REVERSE)) {
-      logregex_rmatchline("syslog", buffer);
-      printf("%s\n", buffer);
-    } else {
-      if (logregex_matchline("syslog", buffer, &color)) {
-        printf("line %u: %d: %s\n", line, color, buffer);
+    
+    if (HAVE_OPT(STATS)) {
+      if ((line <= 100 && line % 10 == 0) ||
+         (line > 100 && line % 100 == 0)) {
+        fprintf(stderr, "%7d\b\b\b\b\b\b\b", line);
       }
+    }
+    buffer[strlen(buffer)-1] = 0;
+    if (HAVE_OPT(MATCH)) {
+      if (logregex_matchline(OPT_ARG(TYPE), buffer, &color)) {
+        if (HAVE_OPT(LINE_INFO)) {
+          printf("line %u: %d: ", line, color);
+        }
+        printf("%s\n", buffer);
+      }
+    }
+    if (HAVE_OPT(REVERSE)) {
+      logregex_rmatchline(OPT_ARG(TYPE), buffer);
+      printf("green %s\n", buffer);
     }
   }
   fclose(in);
+  if (HAVE_OPT(STATS)) {
+    logregex_print_stats(OPT_ARG(TYPE));
+  }
   return 0;
 }
 

@@ -2,9 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include <pcreposix.h>
+#include <logregex.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+
+int debug;
 
 int main(int argc, char *argv[])
 {
@@ -13,6 +15,7 @@ int main(int argc, char *argv[])
   line = readline("Enter inputline to match: ");
   while (1) {
     int err;
+    char buf[8192];
     regex_t preg;
     char *regexp = readline("Enter regexp: ");
     if (!regexp) break;
@@ -21,7 +24,10 @@ int main(int argc, char *argv[])
       break;
     }
 
-    err = regcomp(&preg, regexp, REG_EXTENDED|REG_NOSUB|REG_ICASE);
+    logregex_refresh("/etc/upwatch.d/uw_sysstat.d");
+    logregex_expand_macros("syslog", regexp, buf);
+
+    err = regcomp(&preg, buf, REG_EXTENDED|REG_NOSUB|REG_ICASE);
     if (err) {
       char buffer[256];
 

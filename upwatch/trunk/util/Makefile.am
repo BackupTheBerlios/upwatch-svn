@@ -2,7 +2,9 @@ include $(top_srcdir)/Makefile.am.path
 
 if HAVE_CURSES
 UWSAIDAR = uwsaidar
+if HAVE_LIBREADLINE
 UWREGEXP = uwregexp
+endif
 endif
 
 if SOLARIS
@@ -25,8 +27,8 @@ uwsaidar_LDADD = $(LIBSTATGRAB) $(SOLARISLIBS) @LIBCURSES_LIBS@
 uwsaidar_CFLAGS = -I$(INCL_STATGRAB) $(MYCFLAGS)
 
 uwregexp_SOURCES = uwregexp.c
-uwregexp_LDADD = $(SOLARISLIBS) @LIBPCRE_LIBS@ @LIBCURSES_LIBS@ -lreadline
-uwregexp_CFLAGS = @LIBPCRE_CFLAGS@ $(MYCFLAGS)
+uwregexp_LDADD = @LIBGLIB2_LIBS@ $(SOLARISLIBS) $(LIBUPWATCH) @LIBPCRE_LIBS@ @LIBCURSES_LIBS@ -lreadline
+uwregexp_CFLAGS = @LIBPCRE_CFLAGS@ $(MYCFLAGS) 
 endif
 
 include $(top_srcdir)/Makefile.am.common
@@ -73,7 +75,7 @@ slot.1: slot_options.def $(top_srcdir)/common/man1.tpl
 	autogen -b slot $(AGDEFINES) $(GENINCL) -T $(MAN1TPL) slot_options.def
 
 chklog_SOURCES = chklog.c chklog_options.c chklog_options.h chklog_options.def
-chklog_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@
+chklog_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ @LIBPCRE_CFLAGS@
 chklog_LDADD = @LIBGLIB2_LIBS@ @LIBPCRE_LIBS@ $(LIBOPTS) $(LIBUPWATCH) 
 BUILT_SOURCES += chklog_options.h
 EXTRA_DIST += chklog_options.def

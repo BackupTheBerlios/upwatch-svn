@@ -16,7 +16,7 @@
 
 # Makefile for libstatgrab
 # http://www.i-scream.org/
-# $Id: Makefile.in,v 1.1 2003/12/04 18:59:16 raarts Exp $
+# $Id: Makefile.in,v 1.2 2004/05/23 13:11:13 raarts Exp $
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@

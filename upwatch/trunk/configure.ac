@@ -7,7 +7,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.57 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.58 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -398,13 +398,22 @@ AM_CONDITIONAL(HAVE_LIBESMTP, test $HAVE_LIBESMTP -eq 1)
 AC_SUBST(LIBESMTP_LIBS)
 
 # snmp
-AC_CHECK_LIB([snmp], [snprint_value], [HAVE_LIBSNMP=1], [HAVE_LIBSNMP=0], -lcrypto)
+AC_CHECK_LIB([snmp], [snmp_errno], [HAVE_LIBSNMP=1], [HAVE_LIBSNMP=0], -lcrypto)
 if test $HAVE_LIBSNMP -eq 1
 then
 	LIBSNMP_LIBS=-lsnmp
 fi
 AM_CONDITIONAL(HAVE_LIBSNMP, test $HAVE_LIBSNMP -eq 1)
 AC_SUBST(LIBSNMP_LIBS)
+
+# readline
+AC_CHECK_LIB([readline], [readline], [HAVE_LIBREADLINE=1], [HAVE_LIBREADLINE=0], -lncurses -lcurses)
+if test $HAVE_LIBREADLINE -eq 1
+then
+	LIBREADLINE_LIBS=-lreadline
+fi
+AM_CONDITIONAL(HAVE_LIBREADLINE, test $HAVE_LIBREADLINE -eq 1)
+AC_SUBST(LIBREADLINE_LIBS)
 
 # tds
 AC_CHECK_LIB([tds], [tds_alloc_login], [HAVE_LIBTDS=1], [HAVE_LIBTDS=0])
@@ -494,6 +503,7 @@ fi
 
 echo "*********************************************************"
 echo 
+sleep 1
 
 # base
 AC_CONFIG_FILES([Makefile])
