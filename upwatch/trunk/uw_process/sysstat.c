@@ -201,13 +201,14 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
   struct sysstat_result *res = (struct sysstat_result *)probe_res;
   struct probe_def *def = (struct probe_def *)probe_def;
   int already_there = TRUE;
-  char *escmsg = strdup("");
+  char *escmsg;
 
   if (res->message) {
     escmsg = g_malloc(strlen(res->message) * 2 + 1);
     mysql_real_escape_string(mysql, escmsg, res->message, strlen(res->message)) ;
+  } else {
+    escmsg = strdup("");
   }
-
     
   result = my_query("insert into pr_sysstat_raw "
                     "set    probe = '%u', yellow = '%f', red = '%f', stattime = '%u', color = '%u', "

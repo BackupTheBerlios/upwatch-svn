@@ -51,11 +51,13 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
   struct ping_result *res = (struct ping_result *)probe_res;
   struct probe_def *def = (struct probe_def *)probe_def;
   int already_there = TRUE;
-  char *escmsg = strdup("");
+  char *escmsg;
 
   if (res->message) {
     escmsg = g_malloc(strlen(res->message) * 2 + 1);
     mysql_real_escape_string(mysql, escmsg, res->message, strlen(res->message)) ;
+  } else {
+    escmsg = strdup("");
   }
 
   result = my_query("insert into pr_ping_raw "
