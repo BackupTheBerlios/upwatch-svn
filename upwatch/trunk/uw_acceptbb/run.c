@@ -105,6 +105,7 @@ int run(void)
   signal (SIGTERM, ob_sig_term);
 
   /* Start the main loop */
+  uw_setproctitle("accepting connections");
   g_main_run(main_loop);
 
   return(1);
@@ -125,6 +126,7 @@ static void ob_server_func (GServer* server, GServerStatus status, struct _GConn
         if (debug) {
           LOG(LOG_DEBUG, "New connection from %s", gnet_inetaddr_get_canonical_name(conn->inetaddr));
         }
+        uw_setproctitle("connection from %s", gnet_inetaddr_get_canonical_name(conn->inetaddr));
         conn->func = ob_client_func;
         conn->user_data = g_malloc(16384);
         gnet_conn_readany(conn, conn->user_data, 16384, 30000);
@@ -183,6 +185,7 @@ void runbb(char *req);
           LOG(LOG_DEBUG, "%s closed connection", gnet_inetaddr_get_canonical_name(conn->inetaddr));
         }
         g_free (user_data);
+        uw_setproctitle("accepting connections");
         gnet_conn_delete (conn, TRUE);
         break;
       }
@@ -194,6 +197,7 @@ void runbb(char *req);
         }
         //LOG(LOG_DEBUG, "%s unexpected close", gnet_inetaddr_get_canonical_name(conn->inetaddr));
         g_free (user_data);
+        uw_setproctitle("accepting connections");
         gnet_conn_delete (conn, TRUE);
         break;
       }
@@ -204,6 +208,7 @@ void runbb(char *req);
         }
         LOG(LOG_DEBUG, "%s timeout", gnet_inetaddr_get_canonical_name(conn->inetaddr));
         g_free (user_data);
+        uw_setproctitle("accepting connections");
         gnet_conn_delete (conn, TRUE);
         break;
       }
@@ -214,6 +219,7 @@ void runbb(char *req);
         }
         LOG(LOG_DEBUG, "%s error", gnet_inetaddr_get_canonical_name(conn->inetaddr));
         g_free (user_data);
+        uw_setproctitle("accepting connections");
         gnet_conn_delete (conn, TRUE);
         break;
       }

@@ -99,6 +99,7 @@ int run(void)
   signal (SIGINT, ob_sig_term);
 
   /* Start the main loop */
+  uw_setproctitle("accepting connections");
   g_main_run(main_loop);
 
   return(1);
@@ -149,6 +150,7 @@ static void ob_server_func (GServer* server, GServerStatus status, struct _GConn
         if (debug) {
           LOG(LOG_DEBUG, "New connection from %s", gnet_inetaddr_get_canonical_name(conn->inetaddr));
         }
+        uw_setproctitle("connection from %s", gnet_inetaddr_get_canonical_name(conn->inetaddr));
         conn->func = ob_client_func;
         st = calloc(1, sizeof(struct conn_stat));
         st->buffer = malloc(4192);
@@ -195,10 +197,12 @@ int ob_client_func (GConn* conn, GConnStatus status,
               LOG(LOG_DEBUG, buffer);
               LOG(LOG_DEBUG, errhello);
             }
+            uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), errhello);
             gnet_conn_write (conn, strdup(errhello), strlen(errhello), 0);
           } else {
             strncpy(cs->user, buffer+5, sizeof(cs->user));
             cs->state = STATE_PWD;
+            uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), askpwd);
             gnet_conn_write (conn, strdup(askpwd), strlen(askpwd), 0);
           }
           break;
@@ -209,6 +213,7 @@ int ob_client_func (GConn* conn, GConnStatus status,
               LOG(LOG_DEBUG, buffer);
               LOG(LOG_DEBUG, erraskpwd);
             }
+            uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), erraskpwd);
             gnet_conn_write (conn, strdup(erraskpwd), strlen(erraskpwd), 0);
             break;
           }
@@ -216,10 +221,12 @@ int ob_client_func (GConn* conn, GConnStatus status,
           /* check the password first */
           if (!uw_password_ok(cs->user, cs->pwd)) {
             LOG(LOG_NOTICE, "%s: password failure (%s/%s)", gnet_inetaddr_get_canonical_name(conn->inetaddr), cs->user, cs->pwd);
+            uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), errbye);
             gnet_conn_write (conn, strdup(errbye), strlen(errbye), 0);
             cs->state = STATE_EXIT;
             break;
           }
+          uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), askcmd);
           gnet_conn_write (conn, strdup(askcmd), strlen(askcmd), 0);
           cs->state = STATE_CMD;
           break;
@@ -229,6 +236,7 @@ int ob_client_func (GConn* conn, GConnStatus status,
               LOG(LOG_DEBUG, buffer);
               LOG(LOG_DEBUG, erraskcmd);
             }
+            uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), erraskcmd);
             gnet_conn_write (conn, strdup(erraskcmd), strlen(erraskcmd), 0);
             break;
           }
@@ -238,6 +246,7 @@ int ob_client_func (GConn* conn, GConnStatus status,
               LOG(LOG_DEBUG, buffer);
               LOG(LOG_DEBUG, erraskcmd);
             }
+            uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), erraskcmd);
             gnet_conn_write (conn, strdup(erraskcmd), strlen(erraskcmd), 0);
             cs->length = 0;
             break;
@@ -248,10 +257,12 @@ int ob_client_func (GConn* conn, GConnStatus status,
               LOG(LOG_DEBUG, buffer);
               LOG(LOG_DEBUG, spoolerr);
             }
+            uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), spoolerr);
             gnet_conn_write (conn, strdup(spoolerr), strlen(spoolerr), 0);
             cs->state = STATE_EXIT;
             break;
           }
+          uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), askdata);
           gnet_conn_write (conn, strdup(askdata), strlen(askdata), 0);
           memset(cs->buffer, 0, 4192);
           gnet_conn_readany (conn, cs->buffer, cs->length > 4192 ? 4192 : cs->length, 10000 /* 10 seconds */);
@@ -263,8 +274,10 @@ int ob_client_func (GConn* conn, GConnStatus status,
             if (debug > 1) {
               LOG(LOG_DEBUG, spoolerr);
             }
+            uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), spoolerr);
             gnet_conn_write (conn, strdup(spoolerr), strlen(spoolerr), 0);
             spool_close(cs->sp_info, FALSE);
+            uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), bye);
             gnet_conn_write (conn, strdup(bye), strlen(bye), 0);
             cs->state = STATE_EXIT;
             break;
@@ -277,16 +290,19 @@ int ob_client_func (GConn* conn, GConnStatus status,
             if (debug > 1) {
               LOG(LOG_DEBUG, spoolerr);
             }
+            uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), spoolerr);
             gnet_conn_write (conn, strdup(spoolerr), strlen(spoolerr), 0);
           } else {
             if (debug) LOG(LOG_DEBUG, "spooled to %s", targ);
           }
           free(targ);
+          uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), datain);
           gnet_conn_write (conn, strdup(datain), strlen(datain), 0);
           cs->state = STATE_CMD;
           break;
         case STATE_ERROR:
           if (!strncasecmp(buffer, ".", 1)) {
+            uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), errbye);
             gnet_conn_write (conn, strdup(errbye), strlen(errbye), 0);
             cs->state = STATE_EXIT;
           }
@@ -312,6 +328,7 @@ int ob_client_func (GConn* conn, GConnStatus status,
     case GNET_CONN_STATUS_TIMEOUT:
     case GNET_CONN_STATUS_ERROR:
       {
+        uw_setproctitle("accepting connections");
         if (cs->state == STATE_DATA || cs->state == STATE_ERROR) {
           if (cs->sp_info) spool_close(cs->sp_info, FALSE);
           if (debug) {

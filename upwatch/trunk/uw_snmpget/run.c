@@ -159,8 +159,6 @@ int asynch_response(int operation, struct snmp_session *sp, int reqid,
       char buf[128];
 
       snprint_value(buf, sizeof(buf), vp->name, vp->name_length, vp);
-//    sprint_variable(buf, vp->name, vp->name_length, vp);
-      LOG(LOG_NOTICE, buf);
       switch (vp->type) {
       case ASN_INTEGER:
  	probe->value = (float) *vp->val.integer; 
@@ -177,16 +175,13 @@ int asynch_response(int operation, struct snmp_session *sp, int reqid,
         ;
       if (vp) {
         snprint_objid(buf, sizeof(buf), vp->name, vp->name_length);
-        // sprint_objid(buf, vp->name, vp->name_length);
       } else {
         strcpy(buf, "(none)");
       }
       sprintf(err, "%s: %s: %s", sp->peername, buf, snmp_errstring(pdu->errstat));
-      LOG(LOG_NOTICE, err);
       probe->msg = strdup(err);
     }
   } else {
-    LOG(LOG_NOTICE, "Timeout");
     probe->msg = strdup("Timeout");
   }
 
@@ -211,7 +206,6 @@ struct oid {
   s_oid.OidLen = sizeof(s_oid.Oid)/sizeof(s_oid.Oid[0]);
   s_oid.Name = probe->OID;
   if (!snmp_parse_oid(s_oid.Name, s_oid.Oid, &s_oid.OidLen)) {
-    LOG(LOG_NOTICE, snmp_api_errstring(snmp_errno));
     probe->msg = strdup(snmp_api_errstring(snmp_errno));
     return;
   }
@@ -224,7 +218,6 @@ struct oid {
   sess.callback = asynch_response;		/* default callback */
   sess.callback_magic = probe;
   if (!(probe->sess = snmp_open(&sess))) {
-    LOG(LOG_NOTICE, snmp_api_errstring(snmp_errno));
     probe->msg = strdup(snmp_api_errstring(snmp_errno));
     return;
   }
@@ -233,7 +226,6 @@ struct oid {
   if (snmp_send(probe->sess, req)) {
     active_hosts++;
   } else {
-    LOG(LOG_NOTICE, snmp_api_errstring(snmp_errno));
     probe->msg = strdup(snmp_api_errstring(snmp_errno));
     snmp_free_pdu(req);
   }

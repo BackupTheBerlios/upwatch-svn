@@ -71,6 +71,8 @@ int push(gpointer data, gpointer user_data)
   server.sin_family = AF_INET;
   memcpy((char *) &server.sin_addr, (char *) hp->h_addr, hp->h_length);
   server.sin_port = htons(OPT_VALUE_PORT);
+  uw_setproctitle("connecting to %s:%d", OPT_ARG(HOST), OPT_VALUE_PORT);
+  sock = socket( AF_INET, SOCK_STREAM, 0 );
   if (connect(sock, (struct sockaddr *) &server, sizeof server) == -1) {
     close(sock);
     LOG(LOG_WARNING, "connect: %m");
@@ -110,6 +112,7 @@ int pushto(int sock, char *filename)
   }
   fgets(buffer, sizeof(buffer), out);
   //fprintf(stderr, "%s", buffer);
+  uw_setproctitle("%s:%d: USER", OPT_ARG(HOST), OPT_VALUE_PORT);
   fprintf(out, "USER %s\n", OPT_ARG(UWUSER));
   buffer[0] = 0;
   if (fgets(buffer, sizeof(buffer), out) == NULL || buffer[0] != '+') {
@@ -119,6 +122,7 @@ int pushto(int sock, char *filename)
     return(0);
   }
   //fprintf(stderr, "%s", buffer);
+  uw_setproctitle("%s:%d: PASS", OPT_ARG(HOST), OPT_VALUE_PORT);
   fprintf(out, "PASS %s\n", OPT_ARG(UWPASSWD));
   buffer[0] = 0;
   if (fgets(buffer, sizeof(buffer), out) == NULL || buffer[0] != '+') {
@@ -127,6 +131,7 @@ int pushto(int sock, char *filename)
     fclose(out);
     return(0);
   }
+  uw_setproctitle("%s:%d: DATA", OPT_ARG(HOST), OPT_VALUE_PORT);
   fprintf(out, "DATA %d\n", filesize);
   buffer[0] = 0;
   if (fgets(buffer, sizeof(buffer), out) == NULL || buffer[0] != '+') {
@@ -136,6 +141,7 @@ int pushto(int sock, char *filename)
     return(0);
   }
   //fprintf(stderr, "%s", buffer);
+  uw_setproctitle("%s:%d: UPLOADING", OPT_ARG(HOST), OPT_VALUE_PORT);
   while ((i = fread(buffer, 1, sizeof(buffer), in)) == sizeof(buffer)) {
     if (fwrite(buffer, sizeof(buffer), 1, out) != 1) {
       LOG(LOG_WARNING, "socket write error: %m");
@@ -165,6 +171,7 @@ int pushto(int sock, char *filename)
     return(0);
   }
   //fprintf(stderr, "%s", buffer);
+  uw_setproctitle("%s:%d: QUIT", OPT_ARG(HOST), OPT_VALUE_PORT);
   fprintf(out, "QUIT\n");
   buffer[0] = 0;
   if (fgets(buffer, sizeof(buffer), out) == NULL || buffer[0] != '+') {
