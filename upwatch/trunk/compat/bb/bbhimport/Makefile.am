@@ -1,3 +1,5 @@
+include $(top_srcdir)/Makefile.am.path
+
 program = bbhimport
 bin_PROGRAMS = $(program)
 man_MANS = bbhimport.1

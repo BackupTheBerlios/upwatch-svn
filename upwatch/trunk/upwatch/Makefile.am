@@ -1,3 +1,5 @@
+include $(top_srcdir)/Makefile.am.path
+
 noinst_LIBRARIES = libupwatch.a libupwatcht.a
 
 if ENABLE_SERVER
@@ -26,5 +28,5 @@ libupwatch_a_SOURCES = $(sources)
 libupwatch_a_CFLAGS = @LIBXML2_CFLAGS@ @LIBGLIB2_CFLAGS@ @MYSQL_CFLAGS@ @LIBPCRE_CFLAGS@ $(AM_CFLAGS)
 
 libupwatcht_a_SOURCES = $(sources)
-libupwatcht_a_CFLAGS = @LIBXML2_CFLAGS@ @LIBGLIB2_CFLAGS@ @MYSQL_CFLAGS@ @LIBPCRE_CFLAGS@ -DWITH_THREADS
+libupwatcht_a_CFLAGS = @LIBXML2_CFLAGS@ @LIBGLIB2_CFLAGS@ @MYSQL_CFLAGS@ @LIBPCRE_CFLAGS@ $(AM_CFLAGS) -DWITH_THREADS
 
