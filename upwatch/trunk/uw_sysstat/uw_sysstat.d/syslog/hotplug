@@ -1,0 +1,3 @@
+green [LOGDATE] /etc/hotplug/net.agent: NET unregister event not supported
+green [LOGDATE] /etc/hotplug/net.agent: invoke ifup ipsec[NUM]
+

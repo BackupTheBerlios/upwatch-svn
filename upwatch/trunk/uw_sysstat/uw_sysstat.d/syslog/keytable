@@ -1,0 +1,4 @@
+green [LOGDATE] keytable:\s*$
+green [LOGDATE] keytable: Loading keymap: 
+green [LOGDATE] keytable: Loading [PATH]
+green [LOGDATE] keytable: Loading system font: 

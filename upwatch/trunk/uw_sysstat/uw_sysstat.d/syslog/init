@@ -1,0 +1,4 @@
+green [LOGDATE] init: Entering runlevel: [NUM] 
+green [LOGDATE] init: Re-reading inittab
+green [LOGDATE] init: Switching to runlevel: [NUM]
+green [LOGDATE] init: Trying to re-exec init

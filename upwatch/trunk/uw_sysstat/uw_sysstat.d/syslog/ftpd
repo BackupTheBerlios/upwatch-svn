@@ -1,0 +1,7 @@
+green [LOGDATE] ftpd[PID]: ANONYMOUS FTP LOGIN FROM [HOSTNAME] \[[IPADDR]\], [EMAIL]
+green [LOGDATE] ftpd[PID]: FTP LOGIN FROM [HOSTNAME] \[[IPADDR]\], [USER]
+green [LOGDATE] ftpd[PID]: FTP LOGIN FROM [IPADDR] \[[IPADDR]\], [USER]
+green [LOGDATE] ftpd[PID]: FTP session closed
+green [LOGDATE] ftpd[PID]: lost connection to [HOSTNAME] \[[IPADDR]\]
+green [LOGDATE] ftpd[PID]: lost connection to [IPADDR] \[[IPADDR]\]
+green [LOGDATE] ftpd[PID]: User [USER] timed out after [NUM] seconds at [SMONTH] [LOGDATE]

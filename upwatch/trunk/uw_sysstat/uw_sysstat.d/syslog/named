@@ -1,0 +1,78 @@
+green [LOGDATE] named: named shutdown failed
+green [LOGDATE] named[PID]: bad referral \([HOSTNAME] !< [HOSTNAME]\)
+green [LOGDATE] named[PID]: check_hints: A records for J\.ROOT-SERVERS\.NET class [NUM] do not match hint records
+green [LOGDATE] named[PID]: Cleaned cache of [NUM] RRset
+green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: bad zone transfer request: '[HOSTNAME]/IN': non-authoritative zone \(NOTAUTH\)
+green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: error sending response: host unreachable
+green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: error sending response: invalid file
+green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: no more recursive clients: quota reached
+green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: update forwarding denied
+green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: update '[HOSTNAME]/IN' denied
+green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: update '[NUM]\.[NUM]\.[NUM]\.IN-ADDR\.ARPA/IN' denied
+green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: zone transfer '[HOSTNAME]/IN' denied
+green [LOGDATE] named[PID]: command channel listening on [IPADDR]#[NUM]
+green [LOGDATE] named[PID]: couldn't create pid file '[PATH]'
+green [LOGDATE] named[PID]: dispatch [HEX]: shutting down due to TCP receive error: connection reset
+green [LOGDATE] named[PID]: dns_master_load: [PATH]:[NUM]: ignoring out-of-zone data \(.*\)
+green [LOGDATE] named[PID]: drained [NUM] queries \(delay [NUM] sec\)
+green [LOGDATE] named[PID]: exiting
+green [LOGDATE] named[PID]: Forwarding source address is \[[IPADDR]\]\.[NUM]
+green [LOGDATE] named[PID]: group = [NUM]
+green [LOGDATE] named[PID]: hint zone "" \(IN\) loaded \(serial [NUM]\)
+green [LOGDATE] named[PID]: "[HOSTNAME] IN MX" points to a CNAME \([HOSTNAME]\)
+green [LOGDATE] named[PID]: "[HOSTNAME] IN NS" points to a CNAME \([HOSTNAME]\)
+green [LOGDATE] named[PID]: [HOSTNAME]:[NUM]: no TTL specified; using SOA MINTTL instead
+green [LOGDATE] named[PID]: [HOSTNAME]v\.[NUM]\.[NUM]\.[NUM]:[NUM]: makename failed
+green [LOGDATE] named[PID]: Lame server on '.*' \(in '.*'\?\): \[[IPADDR]\]\.[NUM] '[HOSTNAME]'
+green [LOGDATE] named[PID]: lame server resolving '.*' \(in '.*'\?\): [IPADDR]#[NUM]
+green [LOGDATE] named[PID]: listening on \[[IPADDR]\]\.[NUM]
+green [LOGDATE] named[PID]: listening on IPv[NUM] interface
+green [LOGDATE] named[PID]: loading configuration from '[PATH]'
+green [LOGDATE] named[PID]: Malformed response from \[[IPADDR]\]\.[NUM] \(query section mismatch \([HOSTNAME] IN A\)\)
+green [LOGDATE] named[PID]: master zone "[HOSTNAME]" \(IN\) loaded \(serial [NUM]\)
+green [LOGDATE] named[PID]: master zone "[HOSTNAME]" \(IN\) rejected due to errors \(serial [NUM]\)
+green [LOGDATE] named[PID]: master zone "localhost" \(IN\) loaded \(serial [NUM]\)
+green [LOGDATE] named[PID]: master zone "nbs" \(IN\) loaded \(serial [NUM]\)
+green [LOGDATE] named[PID]: MAXQUERIES exceeded, possible data loop in resolving \([HOSTNAME]\)
+green [LOGDATE] named[PID]: named shutting down
+green [LOGDATE] named[PID]: no IPv[NUM] interfaces found
+green [LOGDATE] named[PID]: no longer listening on [IPADDR]#[NUM]
+green [LOGDATE] named[PID]: notify question section contains no SOA
+green [LOGDATE] named[PID]: ns_forw: query\([HOSTNAME]\) NS points to CNAME \([HOSTNAME]:\)
+green [LOGDATE] named[PID]: ns_forw: query\([IPADDR]\.[HOSTNAME]\) Bogus LOOPB[TCPFLAG] A RR \(localhost:[IPADDR]\)
+green [LOGDATE] named[PID]: ns_forw: query\([IPADDR]\.[HOSTNAME]\) NS points to CNAME \([HOSTNAME]:\)
+green [LOGDATE] named[PID]: ns_forw: query\([IPADDR]\.[HOSTNAME]\) NS points to CNAME \(NAMESERV\.LSUMC\.EDU:\)
+green [LOGDATE] named[PID]: ns_forw: sendto\(\[[IPADDR]\]\.[NUM]\): Operation not permitted
+green [LOGDATE] named[PID]: ns_resp: query\([IPADDR]\.[HOSTNAME]\) NS points to CNAME \([HOSTNAME]:\)
+green [LOGDATE] named[PID]: ns_resp: query\([IPADDR]\.[HOSTNAME]\) NS points to CNAME \(NAMESERV\.LSUMC\.EDU:\)
+green [LOGDATE] named[PID]: NSTATS
+green [LOGDATE] named[PID]: [PATH]:[NUM]: no TTL specified; using SOA MINTTL instead
+green [LOGDATE] named[PID]: Ready to answer queries\.
+green [LOGDATE] named[PID]: received notify for zone '[HOSTNAME]': not authoritative
+green [LOGDATE] named[PID]: reloading nameserver
+green [LOGDATE] named[PID]: Response from unexpected source \(\[[IPADDR]\]\.[NUM]\)
+green [LOGDATE] named[PID]: running
+green [LOGDATE] named[PID]: shutting down
+green [LOGDATE] named[PID]: socket\.c:[NUM]: unexpected error:
+green [LOGDATE] named[PID]: stopping command channel on [IPADDR]#[NUM]
+green [LOGDATE] named[PID]: suppressing duplicate notify \("[HOSTNAME]" IN SOA\)
+green [LOGDATE] named[PID]: sysquery: no addrs found for [USER] NS \(\)
+green [LOGDATE] named[PID]: sysquery: query\(localhost\) Bogus LOOPB[TCPFLAG] A RR \(localhost:[IPADDR]\)
+green [LOGDATE] named[PID]: sysquery: sendto\(\[[IPADDR]\]\.[NUM]\): Network is unreachable
+green [LOGDATE] named[PID]: sysquery: sendto\(\[[IPADDR]\]\.[NUM]\): Operation not permitted
+green [LOGDATE] named[PID]: transfer of '[HOSTNAME]/IN' from [IPADDR]#[NUM]: end of transfer
+green [LOGDATE] named[PID]: transfer of '[HOSTNAME]/IN' from [IPADDR]#[NUM]: failed while receiving responses: REFUSED
+green [LOGDATE] named[PID]: unrelated additional info '[HOSTNAME]' type A from \[[IPADDR]\]\.[NUM]
+green [LOGDATE] named[PID]: USAGE
+green [LOGDATE] named[PID]: user = [USER]
+green [LOGDATE] named[PID]: using [NUM] CPU
+green [LOGDATE] named[PID]: using [NUM] CPUs
+green [LOGDATE] named[PID]: XSTATS
+green [LOGDATE] named[PID]: zone double-U\.com/IN: refresh: failure trying master [IPADDR]#[NUM]: timed out
+green [LOGDATE] named[PID]: Zone "[HOSTNAME]" \(file [PATH]\): No default TTL set using SOA minimum instead
+green [LOGDATE] named[PID]: zone [HOSTNAME]/IN: loaded serial [NUM]
+green [LOGDATE] named[PID]: zone [HOSTNAME]/IN: refresh: failure trying master [IPADDR]#[NUM]: operation canceled
+green [LOGDATE] named[PID]: zone [HOSTNAME]/IN: refresh: failure trying master [IPADDR]#[NUM]: timed out
+green [LOGDATE] named[PID]: zone [HOSTNAME]/IN: refresh: non-authoritative answer from master [IPADDR]#[NUM]
+green [LOGDATE] named[PID]: zone [HOSTNAME]/IN: refresh: retry limit for master [IPADDR]#[NUM] exceeded
+green [LOGDATE] named[PID]: zone [HOSTNAME]/IN: transferr?ed serial [NUM]

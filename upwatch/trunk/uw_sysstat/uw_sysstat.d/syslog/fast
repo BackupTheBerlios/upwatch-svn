@@ -1,0 +1,2 @@
+green [LOGDATE] fast[PID]: ssh connection for [USER] to \(\) finished
+green [LOGDATE] fast[PID]: ssh connection for [USER] to [IPADDR] \(.*\) finished

@@ -1,0 +1,5 @@
+green [LOGDATE] login[PID]: FAILED LOGIN [NUM] FROM \(null\) FOR [USER], Authentication failure
+green [LOGDATE] login[PID]: FAILED LOGIN SESSION FROM \(null\) FOR [USER], Authentication failure
+green [LOGDATE] login[PID]: LOGIN ON tty[a-z][NUM] BY [USER] FROM [IPADDR]
+green [LOGDATE]  -- [USER][PID]: ROOT LOGIN ON
+green [LOGDATE]  -- [USER][PID]: LOGIN ON

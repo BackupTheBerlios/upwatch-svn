@@ -1,0 +1,33 @@
+green [LOGDATE] ipppd[PID]: bundle: [NUM]
+green [LOGDATE] ipppd[PID]: CCP enabled! Trying CCP\. 
+green [LOGDATE] ipppd[PID]: CCP: got ccp-unit [NUM] for link [NUM] \(protocol: [NUM]fd\)
+green [LOGDATE] ipppd[PID]: ccp_resetci! 
+green [LOGDATE] ipppd[PID]: closing fd [NUM] from unit [NUM]
+green [LOGDATE] ipppd[PID]: Connection terminated\.
+green [LOGDATE] ipppd[PID]: Connect[PID]: [PATH], fd: [NUM]
+green [LOGDATE] ipppd[PID]: Exit\.
+green [LOGDATE] ipppd[PID]: Found [NUM] device: 
+green [LOGDATE] ipppd[PID]: init_unit: [NUM]  
+green [LOGDATE] ipppd[PID]: ipppd[PID]: discr: [NUM] 
+green [LOGDATE] ipppd[PID]: ipppd[PID]: pap/chap-check passed 
+green [LOGDATE] ipppd[PID]: ipppd[PID]: passed [NUM] 
+green [LOGDATE] ipppd[PID]: LCP is down
+green [LOGDATE] ipppd[PID]: lcp layer is UP
+green [LOGDATE] ipppd[PID]: LCP terminated by peer
+green [LOGDATE] ipppd[PID]: LCP: timeout sending Config-Requests
+green [LOGDATE] ipppd[PID]: link [NUM] closed , linkunit: [NUM]
+green [LOGDATE] ipppd[PID]: local  IP address [IPADDR]
+green [LOGDATE] ipppd[PID]: Local number: [NUM], Remote number: [NUM], Type: outgoing
+green [LOGDATE] ipppd[PID]: Local number: [NUM], Remote number: , Type: incoming
+green [LOGDATE] ipppd[PID]: Local number: , Remote number: [NUM], Type: outgoing
+green [LOGDATE] ipppd[PID]: Modem hangup
+green [LOGDATE] ipppd[PID]: MPPP negotiation, He: No We: No
+green [LOGDATE] ipppd[PID]: MPPP negotiation, He: Yes We: Yes
+green [LOGDATE] ipppd[PID]: ok, found a valid bundle with linkunit [NUM]
+green [LOGDATE] ipppd[PID]: PHASE_WAIT -> PHASE_ESTABLISHED, ifunit: [NUM], linkunit: [NUM], fd: [NUM]
+green [LOGDATE] ipppd[PID]: ppp not replacing existing default route to ippp[NUM]\[[IPADDR]\]
+green [LOGDATE] ipppd[PID]: reinit_unit: [NUM] 
+green [LOGDATE] ipppd[PID]: remote IP address [IPADDR]
+green [LOGDATE] ipppd[PID]: Remote message: 
+green [LOGDATE] ipppd[PID]: taking down PHASE_DEAD link [NUM], linkunit: [NUM]
+green [LOGDATE] ipppd[PID]: Terminating on signal [NUM]\.

@@ -1,0 +1,8 @@
+green [LOGDATE] ntpdate[PID]: step time server [IPADDR] offset [NUM]\.[NUM] sec
+green [LOGDATE] ntpd[PID]: Connection re-established to [IPADDR]
+green [LOGDATE] ntpd[PID]: frequency initialized [NUM]\.[NUM] from [PATH]
+green [LOGDATE] ntpd[PID]: kernel time discipline status [NUM]
+green [LOGDATE] ntpd[PID]: ntpd [EMAIL] [SMONTH] [LOGDATE] [NUM] \([NUM]\)
+green [LOGDATE] ntpd[PID]: ntpd exiting on signal [NUM]
+green [LOGDATE] ntpd[PID]: precision = [NUM] usec
+

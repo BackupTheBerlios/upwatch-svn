@@ -1,0 +1,18 @@
+green [LOGDATE] mysqld: http://[HOSTNAME]
+green [LOGDATE] mysqld: Installing all prepared tables
+green [LOGDATE] mysqld: ln: [PATH]: No such file or directory
+green [LOGDATE] mysqld: mysqld shutdown failed
+green [LOGDATE] mysqld: [NUM]\w*[NUM]:[NUM]:[NUM]  
+green [LOGDATE] mysqld: [PATH]: Shutdown Complete
+green [LOGDATE] mysqld: [PATH] -u [USER] -h [HOSTNAME] -p password 'new-password'
+green [LOGDATE] mysqld: [PATH] -u [USER] -p password 'new-password'
+green [LOGDATE] mysqld: safe_mysqld shutdown failed
+green [LOGDATE] mysqld: Stopping MySQL:  failed
+green [LOGDATE] mysqld: Support MySQL by buying support/licenses at https://[HOSTNAME]
+green [LOGDATE] mysqld: The latest information about MySQL is available on the web at
+green [LOGDATE] mysqld: This is done with:
+green [LOGDATE] mysqld: To start mysqld at boot time you have to copy support-files/[HOSTNAME]rver
+green [LOGDATE] mysqld: to the right place for your system
+green [LOGDATE] mysqld: You can start the MySQL daemon with:
+green [LOGDATE] mysqld: You can test the MySQL daemon with the benchmarks in the 'sql-bench' directory:
+green [LOGDATE] \(mysql_auth\): .* login failed

@@ -1,0 +1,21 @@
+# macros for regex replacements
+# choose your macronames carefully. regular expressions should never
+# match a macroname!!
+# entries are matched in the order specified
+WLOGDATE (Mon|Tue|Wed|Thu|Fri|Sat|Sun) [A-Za-z]* [\d ]\d \d\d:\d\d:\d\d [-\/\dA-Za-z]+
+LOGDATE [A-Za-z]* [\d ]\d \d\d:\d\d:\d\d [-\/\dA-Za-z]+
+EMAIL   [-\.\$\w]+@[a-z\d][-a-z\d]*(\.[a-z\d][-a-z\d]+)*\.(arpa|com|edu|biz|org|gov|int|info|mil|net|name|museum|coop|aero|[a-z][a-z])
+HOSTNAME ([a-z\d][-a-z\d]*)(\.[a-z\d][-a-z\d]*)*(\.(arpa|com|edu|biz|org|gov|int|info|mil|net|name|museum|coop|aero|[a-z][a-z]))?
+IPADDR (25[0-5]|2[0-4][\d]|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}
+HOSTNAM [-\da-z]+
+MACADDR ([a-f\d][a-f\d])(:[a-f\d][a-f\d]){5,}
+PATH	/?[-_\.[:alnum:]]?(/[-_\.[:alnum:]]+)*/?
+SMONTH  (Mon|Tue|Wed|Thu|Fri|Sat|Sun)
+TCPFLAG (SYN|ACK|PSH|FIN|RST)(\ (SYN|ACK|PSH|FIN|RST))*
+USER=   user=[-\.\$\w]+
+USER_   user [-\.\$\w]+
+USER    [-\.\$\w]*
+WORD 	[-\.\dA-Za-z_]+
+HEX	(0x)?[\da-f]+
+NUM	[-+]?\d+
+PID 	\[\d+\]

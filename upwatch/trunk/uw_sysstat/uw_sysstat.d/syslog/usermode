@@ -1,0 +1,3 @@
+green [LOGDATE] userhelper: pam_timestamp: timestamp file `[PATH]:[USER]' is only [NUM] seconds old
+green [LOGDATE] userhelper: pam_timestamp: timestamp file `[PATH]:[USER]' is too old
+

@@ -1,0 +1,5 @@
+green [LOGDATE] dhcpd: Both dynamic and static leases present for [IPADDR]\.
+green [LOGDATE] dhcpd: DHCP(ACK|DISCOVER|INFORM|OFFER|RELEASE|REQUEST) (on|for|from) [IPADDR]
+green [LOGDATE] dhcpd: DHCPDISCOVER from [MACADDR]
+green [LOGDATE] dhcpd: Wrote [NUM] leases to leases file\.
+green [LOGDATE] dhcpd: No hostname for [IPADDR]

@@ -1,0 +1,11 @@
+green [LOGDATE] kudzu: aliased eth[NUM] as eepro[NUM] 
+green [LOGDATE] kudzu: aliased eth[NUM] as rtl[NUM] 
+green [LOGDATE] kudzu: aliased pre-remove sound-slot-[NUM] [PATH] -f [PATH] -S >[PATH] [NUM]>&[NUM] \|\| : as i[NUM]_audio 
+green [LOGDATE] kudzu: aliased usb-controller as usb-uhci 
+green [LOGDATE] kudzu: disabling sleep bit on potentially buggy eepro[NUM] hardware 
+green [LOGDATE] kudzu: Hardware configuration timed out\. 
+green [LOGDATE] kudzu: linked [PATH] to [PATH] 
+green [LOGDATE] kudzu: ran mouseconfig for psaux 
+green [LOGDATE] kudzu: ran netconfig for eth[NUM] 
+green [LOGDATE] kudzu: Run '[PATH]' from the command line to re-detect\. 
+green [LOGDATE] kudzu: Updating [PATH] failed 

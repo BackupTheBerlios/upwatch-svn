@@ -1,0 +1,34 @@
+green [LOGDATE] sophie: [PATH] placed in the background
+green [LOGDATE] sophie[PID]: Callbacks\?       : yes 
+green [LOGDATE] sophie[PID]: Error strings\?   : yes 
+green [LOGDATE] sophie[PID]: File '[PATH]' infected with virus '.*' 
+green [LOGDATE] sophie[PID]: limit_classif    : [NUM] 
+green [LOGDATE] sophie[PID]: limit_decompr    : [NUM] 
+green [LOGDATE] sophie[PID]: limit_nextfile   : [NUM] 
+green [LOGDATE] sophie[PID]: Log facility     : [NUM] \(syslog\) 
+green [LOGDATE] sophie[PID]: Logname          : sophie 
+green [LOGDATE] sophie[PID]: Log priority     : [NUM] \(notice\) 
+green [LOGDATE] sophie[PID]: Max processes    : [NUM]  
+green [LOGDATE] sophie[PID]: notice           : Configuration options set 
+green [LOGDATE] sophie[PID]: notice           : pSAVI cleaned up and released/terminated 
+green [LOGDATE] sophie[PID]: notice           : Removing existing socket 
+green [LOGDATE] sophie[PID]: notice           : Setting configuration options - please wait\.\.\. 
+green [LOGDATE] sophie[PID]: notice           : SIGNAL '[NUM]' caught - cleaning up and exiting\. 
+green [LOGDATE] sophie[PID]: [PATH] Placed in the background \[PID: [NUM]\] 
+green [LOGDATE] sophie[PID]: PID file         : [PATH] 
+green [LOGDATE] sophie[PID]: Running as user  : mail 
+green [LOGDATE] sophie[PID]: SAVI config      : [PATH] 
+green [LOGDATE] sophie[PID]: Show virus name\? : yes 
+green [LOGDATE] sophie[PID]: socket_check     : yes 
+green [LOGDATE] sophie[PID]: Socket group     : mail 
+green [LOGDATE] sophie[PID]: Socket path      : [PATH] 
+green [LOGDATE] sophie[PID]: Sophie child has timed-out \(no data received in [NUM] seconds\) - process killed 
+green [LOGDATE] sophie[PID]: Sophie IDE       : Sophos IDE version [NUM]\.[NUM] \(detects [NUM] viruses\) 
+green [LOGDATE] sophie[PID]: Sophie version   : [NUM]\.[NUM]rc[NUM] 
+green [LOGDATE] sophie[PID]: Sophos engine    : Sophos engine version [NUM]\.[NUM] 
+green [LOGDATE] sophie[PID]: Timeout          : [NUM] seconds 
+green [LOGDATE] sophie[PID]: Timestamps\?      : no 
+green [LOGDATE] sophie[PID]: Umask            : [NUM] 
+green [LOGDATE] sophie[PID]: warning          : Scan result => '[PATH]' infected with virus '.*' 
+green [LOGDATE] sophie[PID]: warning          : Socket '[PATH]' already exists! 
+green [LOGDATE] sophie: sophie shutdown failed

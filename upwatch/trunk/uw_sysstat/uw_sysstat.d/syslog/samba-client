@@ -1,0 +1,3 @@
+green [LOGDATE] mount.smbfs[PID]: \[.*, [NUM]\] client/smbmount.c:send_fs_socket\(405\)
+green [LOGDATE] mount.smbfs[PID]:   mount.smbfs: entering daemon mode for service
+

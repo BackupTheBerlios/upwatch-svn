@@ -1,0 +1,2 @@
+green [LOGDATE] crond[PID]: \(CRON\) STARTUP \(fork ok\) 
+green [LOGDATE] crond[PID]: \([USER]\) CMD \(.*\)

@@ -1,0 +1,3 @@
+green [LOGDATE] date: [SMONTH] [LOGDATE] [NUM] 
+green [LOGDATE] dd: [NUM]\+[NUM] records in
+green [LOGDATE] dd: [NUM]\+[NUM] records out

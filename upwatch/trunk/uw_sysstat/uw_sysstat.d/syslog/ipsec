@@ -1,0 +1,24 @@
+green [LOGDATE] ipsec: ipsec_setup:  \([PATH] = `[NUM]', should be [NUM]\)
+green [LOGDATE] ipsec: ipsec_setup: Stopping FreeS/WAN IPsec\.\.\.
+green [LOGDATE] ipsec: ipsec_setup: Using [PATH]
+green [LOGDATE] ipsec: ipsec_setup: WARNING: eth[NUM] has route filtering turned on, KLIPS may not work
+green [LOGDATE] ipsec__plutorun: [NUM] ".*" #[NUM]: max number of retransmissions \([NUM]\) reached STATE_MAIN_I[NUM]\.  No acceptable response to our first IKE message
+green [LOGDATE] ipsec__plutorun: [NUM] ".*" #[NUM]: STATE_MAIN_I[NUM]: initiate
+green [LOGDATE] ipsec__plutorun: [NUM] ".*" #[NUM]: STATE_MAIN_I[NUM]: ISAKMP SA established
+green [LOGDATE] ipsec__plutorun: [NUM] ".*" #[NUM]: STATE_MAIN_I[NUM]: retransmission; will wait [NUM]s for response
+green [LOGDATE] ipsec__plutorun: [NUM] ".*" #[NUM]: STATE_MAIN_I[NUM]: sent MI[NUM], expecting MR[NUM]
+green [LOGDATE] ipsec__plutorun: [NUM] ".*" #[NUM]: STATE_QUICK_I[NUM]: initiate
+green [LOGDATE] ipsec__plutorun: [NUM] ".*" #[NUM]: STATE_QUICK_I[NUM]: sent QI[NUM], IPsec SA established
+green [LOGDATE] ipsec_setup: doing cleanup anyway\.\.\.
+green [LOGDATE] ipsec_setup: \.\.\.FreeS/WAN IPsec stopped
+green [LOGDATE] ipsec_setup: KLIPS debug `none'
+green [LOGDATE] ipsec_setup: KLIPS ipsec[NUM] on eth[NUM] [IPADDR]/[IPADDR] broadcast [IPADDR] 
+green [LOGDATE] ipsec_setup: KLIPS ipsec[NUM] on ippp[NUM] [IPADDR]/[IPADDR] pointopoint [IPADDR] 
+green [LOGDATE] ipsec_setup:  \([PATH] = `[NUM]', should be [NUM]\)
+green [LOGDATE] ipsec_setup: Stopping FreeS/WAN IPsec\.\.\.
+green [LOGDATE] ipsec_setup: Using [PATH]
+green [LOGDATE] ipsec_setup: WARNING: (eth|ippp)[NUM] has route filtering turned on, KLIPS may not work
+red [LOGDATE] ipsec__plutorun: \.\.\.could not (add|route|start) conn ".*"
+red [LOGDATE] ipsec__plutorun: ipsec_auto: fatal error 
+red [LOGDATE] ipsec__plutorun: [NUM] ERROR: 
+red [LOGDATE] ipsec_setup: no default route, %defaultroute cannot cope!!!

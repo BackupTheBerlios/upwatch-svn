@@ -1,0 +1,8 @@
+green [LOGDATE] exportfs:   Assuming default behaviour \('sync'\)\.
+green [LOGDATE] exportfs: exportfs: No 'sync' or 'async' option specified for export "[IPADDR]:[PATH]"\.
+green [LOGDATE] exportfs:   NOTE: this default has changed from previous versions
+green [LOGDATE] exportfs[PID]: No 'sync' or 'async' option specified for export "[IPADDR]:[PATH]"\.   Assuming default behaviour \('sync'\)\.   NOTE: this default has changed from previous versions 
+green [LOGDATE] rpc.mountd: authenticated (un)?mount request from [IPADDR]:[NUM] for [PATH] \([PATH]\)
+green [LOGDATE] rpc.mountd: authenticated (un)?mount request from [HOSTNAME]:[NUM] for [PATH] \([PATH]\)
+green [LOGDATE] rpc.mountd: refused mount request from [HOSTNAME] for [PATH] \([PATH]\)
+

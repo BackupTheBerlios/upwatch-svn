@@ -1,0 +1,24 @@
+green [LOGDATE] icheckd: \s*
+green [LOGDATE] icheckd: ARNING: Changing [USER_] to [USER_]
+green [LOGDATE] icheckd: ARNING: Infected directory owned by sophos \(UID [NUM]\), icheckd running as [USER] \(UID [NUM]\)\.
+green [LOGDATE] icheckd: ARNING: Previous version of InterCheck may have terminated abnormally
+green [LOGDATE] icheckd: ARNING: Server directory owned by sophos \(UID [NUM]\), icheckd running as [USER] \(UID [NUM]\)\.
+green [LOGDATE] icheckd: Copyright \(c\) [NUM],[NUM] Sophos Plc, [HOSTNAME]
+green [LOGDATE] icheckd: icheckd
+green [LOGDATE] icheckd: Includes detection for [NUM] viruses, trojans and worms
+green [LOGDATE] icheckd: InterCheck is now active
+green [LOGDATE] icheckd: InterCheck is now stopped
+green [LOGDATE] icheckd: InterCheck process is not currently running on the system
+green [LOGDATE] icheckd: InterCheck Server virus detection utility
+green [LOGDATE] icheckd: Marker file '[PATH]' found\.
+green [LOGDATE] icheckd: Now restarting InterCheck\.
+green [LOGDATE] icheckd: Shutting down icheckd: 
+green [LOGDATE] icheckd: Useful lifetime of InterCheck has been exceeded\.
+green [LOGDATE] icheckd: Version [NUM]\.[NUM],
+green [LOGDATE] icheckd: W
+green [LOGDATE] icheckd: WARNING: Changing [USER_] to [USER_]
+green [LOGDATE] icheckd: WARNING: Comms directory owned by sophos \(UID [NUM]\), icheckd running as [USER] \(UID [NUM]\)\.
+green [LOGDATE] icheckd: WARNING: Infected directory owned by sophos \(UID [NUM]\), icheckd running as [USER] \(UID [NUM]\)\.
+green [LOGDATE] icheckd: WARNING: Previous version of InterCheck may have terminated abnormally
+green [LOGDATE] icheckd: WARNING: Server directory owned by sophos \(UID [NUM]\), icheckd running as [USER] \(UID [NUM]\)\.
+green [LOGDATE] icheckd: WARNING: Server directory owned by [USER] \(UID [NUM]\), icheckd running as sophos \(UID [NUM]\)\.
