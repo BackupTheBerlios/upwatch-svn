@@ -15,7 +15,7 @@ performs queries on each host. This happens in parallel,
 so uw_pop3 can process thousands of hosts in a very short period.';
 
 // this section is for the generated specfile
-spec-requires = "mysql-client glib2";
+spec-requires = "mysql glib2";
 spec-files = "%attr(0770,root,upwatch) /usr/sbin/uw_pop3";
 
 // describe commandline flags
