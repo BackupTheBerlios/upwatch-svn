@@ -221,6 +221,7 @@ void probe(gpointer data, gpointer user_data)
   struct hostinfo *host = (struct hostinfo *)data;
   CURL *curl;
   char buffer[BUFSIZ];
+  double result;
 
   if (!host) return;
   sprintf(buffer, "http://%s%s", host->hostname, host->uri);
@@ -237,24 +238,24 @@ void probe(gpointer data, gpointer user_data)
 
   // Pass a pointer to a double to receive the total transaction time in seconds for the
   // previous transfer.
-  curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &host->total);
-  host->total *= 1000.0; // convert to millesecs
+  curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &result);
+  host->total = result * 1000.0; // convert to millesecs
 
   // Pass a pointer to a double to receive the time, in seconds, it took from the start
   //until the name resolving was completed.
-  curl_easy_getinfo(curl, CURLINFO_NAMELOOKUP_TIME, &host->lookup);
-  host->lookup *= 1000.0; // convert to millesecs
+  curl_easy_getinfo(curl, CURLINFO_NAMELOOKUP_TIME, &result);
+  host->lookup = result * 1000.0; // convert to millesecs
 
   // Pass a pointer to a double to receive the time, in seconds, it took from the start
   // until the connect to the remote host (or proxy) was completed.
-  curl_easy_getinfo(curl, CURLINFO_CONNECT_TIME, &host->connect);
-  host->connect *= 1000.0; // convert to millesecs
+  curl_easy_getinfo(curl, CURLINFO_CONNECT_TIME, &result);
+  host->connect = result * 1000.0; // convert to millesecs
 
   // Pass a pointer to a double to receive the time, in seconds, it  took from the start
   // until the file transfer is just about to begin. This includes all pre-transfer com­
   // mands and negotiations that are specific to the particular protocol(s) involved.
-  curl_easy_getinfo(curl, CURLINFO_PRETRANSFER_TIME, &host->pretransfer);
-  host->pretransfer *= 1000.0; // convert to millesecs
+  curl_easy_getinfo(curl, CURLINFO_PRETRANSFER_TIME, &result);
+  host->pretransfer = result * 1000.0; // convert to millesecs
 
   if (host->info) host->info[512] = 0; // limit amount of data
 
