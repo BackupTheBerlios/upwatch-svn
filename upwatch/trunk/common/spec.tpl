@@ -21,9 +21,9 @@ Requires: upwatch [+spec-requires+]
 spec-files +]
 [+ ENDFOR +]
 
-%post [+prog-name+]
-/sbin/chkconfig --del [+prog-name+] 2>/dev/null || true # Make sure old versions aren't there anymore
-/sbin/chkconfig --add [+prog-name+] || true
+#%post [+prog-name+]
+#/sbin/chkconfig --del [+prog-name+] 2>/dev/null || true # Make sure old versions aren't there anymore
+#/sbin/chkconfig --add [+prog-name+] || true
 
 %preun [+prog-name+]
 /sbin/chkconfig --del [+prog-name+] 2>/dev/null || true

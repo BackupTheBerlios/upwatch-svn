@@ -7,10 +7,10 @@ LIBUPWATCH = ../upwatch/libupwatch.a @LIBXML2_LIBS@
 MAIN_O = main.o
 DB_O = db.o
 
-main.o: ../common/main.c
+main.o: ../common/main.c cmd_options.def ../common/generic_options.def
 	$(COMPILE) -c ../common/main.c
 
-db.o: ../common/db.c
+db.o: ../common/db.c cmd_options.def ../common/generic_options.def
 	$(COMPILE) -c ../common/db.c
 
 cmd_options.h: cmd_options.def ../common/generic_options.def 

@@ -44,8 +44,8 @@ int init(void)
 
 int run(void)
 {
-  xmlDocPtr doc;
-  int id=0;
+  xmlDocPtr doc, red;
+  int id=0, redcount=0;
   time_t now;
 
   if (debug > 0) LOG(LOG_DEBUG, "reading info from database");
@@ -62,6 +62,7 @@ int run(void)
 
     if (mysql_query(mysql, qry)) {
       LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql)); // if we can't read info from the database, use cached info
+      close_database();
       break;
     }
 
@@ -99,11 +100,6 @@ int run(void)
         free(hosts);
       }
       hosts = newh; // replace with new structure
-    } else if (hosts == NULL) {
-      LOG(LOG_ERR, mysql_error(mysql));
-      LOG(LOG_ERR, "no database, no cached info - bailing out");
-      close_database();
-      break;
     }
     close_database();
     if (debug > 0) LOG(LOG_DEBUG, "%d probes read", num_hosts);
@@ -111,6 +107,7 @@ int run(void)
   }
   if (hosts == NULL) {
     LOG(LOG_ERR, "no database, no cached info - bailing out");
+    close_database();
     return 0;
   }
 
@@ -119,9 +116,11 @@ int run(void)
   if (debug > 0) LOG(LOG_DEBUG, "done running probes");
 
   doc = UpwatchXmlDoc("result");
+  red = UpwatchXmlDoc("result");
   now = time(NULL);
 
   for (id=0; hosts[id]; id++) {
+    xmlDocPtr cur = doc;
     xmlNodePtr result, subtree, httpget, host;
     int color;
     char info[1024];
@@ -130,16 +129,20 @@ int run(void)
     info[0] = 0;
     if (hosts[id]->msg[0]) {
       color = STAT_RED;
+      cur = red;
+      redcount++;
     } else {
       if (hosts[id]->total_time < hosts[id]->yellowtime) {
         color = STAT_GREEN;
       } else if (hosts[id]->total_time > hosts[id]->redtime) {
         color = STAT_RED;
+        cur = red;
+        redcount++;
       } else {
         color = STAT_YELLOW;
       }
     }
-    httpget = xmlNewChild(xmlDocGetRootElement(doc), NULL, "httpget", NULL);
+    httpget = xmlNewChild(xmlDocGetRootElement(cur), NULL, "httpget", NULL);
     sprintf(buffer, "%d", hosts[id]->id);       xmlSetProp(httpget, "id", buffer);
     sprintf(buffer, "%d", (int) now);           xmlSetProp(httpget, "date", buffer);
     sprintf(buffer, "%d", ((int)now)+(2*60));   xmlSetProp(httpget, "expires", buffer);
@@ -163,6 +166,11 @@ int run(void)
     }
   }
   spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc);
+  if (redcount) {
+    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(INVESTIGATE), red);
+  }
+  xmlFreeDoc(doc);
+  xmlFreeDoc(red);
   return num_hosts;
 }
 
@@ -199,6 +207,7 @@ static size_t write_function(void *ptr, size_t size, size_t nmemb, void *stream)
   }
   memcpy(host->info + host->info_curlen, ptr, len);
   host->info_curlen += len;
+  *(host->info + host->info_curlen) = 0;
   return(len);
 }
 

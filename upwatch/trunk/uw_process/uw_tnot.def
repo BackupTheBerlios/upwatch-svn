@@ -44,6 +44,16 @@ These transactions are kept in the filename given with here';
 };
 
 flag = {
+    name      = copy;
+    value     = c;
+    arg_type  = string;
+    descrip   = "file to copy all transactions to";
+    doc       =
+'You can copy all transactions to the specified queue, for inspecting
+then later';
+};
+
+flag = {
     must-set;
     name      = dbtype;
     value     = T;        /* flag style option character */

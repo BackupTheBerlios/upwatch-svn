@@ -5,6 +5,7 @@
 CREATE TABLE pr_httpget_def (
   id int(8) NOT NULL auto_increment,
   server int(8) NOT NULL default '0',
+  notify int(11) NOT NULL default '1',
   address varchar(80) NOT NULL default '',
   uri varchar(255) NOT NULL default '',
   freq int(4) NOT NULL default '1',

@@ -4,7 +4,7 @@ Summary: UpWatch - The Best monitoring framework
 Vendor: http://www.upwatch.com
 Name: upwatch
 Version: 0.1
-Release: 2
+Release: 3
 Source: http://www.upwatch.com/%{name}-%{version}.tar.gz
 Packager: Ron Arts <raarts@upwatch.com>
 Copyright: Proprietary
@@ -56,6 +56,8 @@ mkdir -p $RPM_BUILD_ROOT/etc/cron.daily
 install -m 700 config/cron.daily $RPM_BUILD_ROOT/etc/cron.daily/upwatch
 
 mkdir -p $RPM_BUILD_ROOT/etc/rc.d/init.d
+install -m 770 config/upwatch.init $RPM_BUILD_ROOT/etc/rc.d/init.d/upwatch
+
 [+ FOR program +]
 # package specific files for [+program+]
 install -m 770 [+program+]/[+program+].init $RPM_BUILD_ROOT/etc/rc.d/init.d/[+program+]
@@ -87,14 +89,19 @@ install -m 660 [+program+]/[+program+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+prog
 /usr/sbin/useradd -M -o -r -d /usr/lib/upwatch -s /bin/bash \
         -c "Upwatch" -u 78 -g 78 upwatch > /dev/null 2>&1 || :
 
+%post
+/sbin/chkconfig --del upwatch 2>/dev/null || true # Make sure old versions aren't there anymore
+/sbin/chkconfig --add upwatch || true
+
 %files
 %defattr(0660,root,upwatch,0770)
 %attr(0644,root,root) %doc AUTHORS COPYING ChangeLog NEWS README doc/upwatch.html doc/upwatch.txt doc/upwatch.pdf doc/upwatch.xml
+%attr(0755,root,root) /etc/rc.d/init.d/upwatch
 %attr(0770,upwatch,upwatch) /usr/lib/upwatch
 /etc/logrotate.d/upwatch
 /etc/cron.daily/upwatch
 %dir /var/log/upwatch
-%dir /var/run/upwatch
+%attr(2770,upwatch,upwatch) %dir /var/run/upwatch
 %dir /var/spool/upwatch
 
 %changelog

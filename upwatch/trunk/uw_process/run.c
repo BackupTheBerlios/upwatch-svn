@@ -114,6 +114,9 @@ void process(gpointer data, gpointer user_data)
     xmlFreeDoc(doc);
     return;
   }
+  if (HAVE_OPT(COPY)) {
+    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(COPY), doc);
+  }
   /*
    * Now, walk the tree.
    */

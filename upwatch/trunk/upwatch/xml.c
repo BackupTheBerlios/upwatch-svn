@@ -18,49 +18,73 @@ xmlDocPtr UpwatchXmlDoc(const char *root)
 
 gfloat xmlNodeListGetFloat(xmlDocPtr doc, xmlNodePtr list, int inLine)
 {
+  gfloat ret = 0;
   xmlChar *tmp = xmlNodeListGetString(doc, list, inLine);
-  gfloat ret = atof(tmp);
-  xmlFree(tmp);
+
+  if (tmp) {
+    ret = atof(tmp);
+    xmlFree(tmp);
+  }
   return(ret);
 }
 
 gint xmlNodeListGetInt(xmlDocPtr doc, xmlNodePtr list, int inLine)
 {
+  gint ret = 0;
   xmlChar *tmp = xmlNodeListGetString(doc, list, inLine);
-  gint ret = atoi(tmp);
-  xmlFree(tmp);
+
+  if (tmp) {
+    ret = atoi(tmp);
+    xmlFree(tmp);
+  }
   return(ret);
 }
 
 glong xmlNodeListGetLong(xmlDocPtr doc, xmlNodePtr list, int inLine)
 {
+  glong ret = 0;
   xmlChar *tmp = xmlNodeListGetString(doc, list, inLine);
-  glong ret = atol(tmp);
-  xmlFree(tmp);
+
+  if (tmp) {
+    ret = atol(tmp);
+    xmlFree(tmp);
+  }
   return(ret);
 }
 
 gint xmlGetPropInt(xmlNodePtr node, const xmlChar *name)
 {
+  gint ret = 0;
   xmlChar *tmp = xmlGetProp(node, name);
-  gint ret = atoi(tmp);
-  xmlFree(tmp);
+
+  if (tmp) {
+    ret = atoi(tmp);
+    xmlFree(tmp);
+  }
   return(ret);
 }
 
 glong xmlGetPropLong(xmlNodePtr node, const xmlChar *name)
 {
+  glong ret = 0;
   xmlChar *tmp = xmlGetProp(node, name);
-  glong ret = atol(tmp);
-  xmlFree(tmp);
+
+  if (tmp) {
+    ret = atol(tmp);
+    xmlFree(tmp);
+  }
   return(ret);
 }
 
 gfloat xmlGetPropFloat(xmlNodePtr node, const xmlChar *name)
 {
+  gfloat ret = 0;
   xmlChar *tmp = xmlGetProp(node, name);
-  gfloat ret = atof(tmp);
-  xmlFree(tmp);
+
+  if (tmp) {
+    ret = atof(tmp);
+    xmlFree(tmp);
+  }
   return(ret);
 }
 

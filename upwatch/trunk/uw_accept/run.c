@@ -50,6 +50,7 @@ static int uw_password_ok(char *user, char *passwd)
     mysql_free_result(result);
     close_database();
   } else {
+    close_database();
     return(FALSE); // couldn't open database
   }
   return(TRUE);

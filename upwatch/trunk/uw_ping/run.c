@@ -146,8 +146,8 @@ int init(void)
 
 int run(void)
 {
-  xmlDocPtr doc;
-  int id = 0;
+  xmlDocPtr doc, red;
+  int id = 0, redcount = 0;
   struct hostinfo **newh = NULL;
   struct tm *tm;
   time_t now = time(NULL);
@@ -234,7 +234,7 @@ int run(void)
     close_database();
     break;
   }
-  if (hosts == NULL) {
+  if (hosts == NULL || num_hosts <= 0) {
     LOG(LOG_ERR, mysql_error(mysql));
     LOG(LOG_ERR, "no database, no cached info - bailing out");
     return 0;
@@ -245,6 +245,7 @@ int run(void)
   now = time(NULL);
   doc = UpwatchXmlDoc("result"); 
   for (id=0; hosts[id]; id++) {
+    xmlDocPtr cur = doc;
     xmlNodePtr result, subtree, ping, host;
     int color, prv_color;
     int missed;
@@ -262,6 +263,8 @@ int run(void)
     missed = hosts[id]->num_sent - hosts[id]->num_recv;
     if (missed >= hosts[id]->redmiss) {
       color = STAT_RED;
+      cur = red;
+      redcount++;
     } else if (missed >= hosts[id]->yellowmiss) {
       color = STAT_YELLOW;
     } else {
@@ -279,7 +282,7 @@ int run(void)
       strcat(info, tmp);
     }
 
-    ping = xmlNewChild(xmlDocGetRootElement(doc), NULL, "ping", NULL);
+    ping = xmlNewChild(xmlDocGetRootElement(cur), NULL, "ping", NULL);
     sprintf(buffer, "%d", hosts[id]->id);	xmlSetProp(ping, "id", buffer);
     sprintf(buffer, "%d", (int) now); 		xmlSetProp(ping, "date", buffer);
     sprintf(buffer, "%d", ((int)now)+(2*60)); 	xmlSetProp(ping, "expires", buffer);
@@ -295,29 +298,22 @@ int run(void)
     sprintf(buffer, "%.3f", ((float) hosts[id]->max_reply) / 1000.0);	
       subtree = xmlNewChild(ping, NULL, "max", buffer);
     if (info[0]) subtree = xmlNewChild(ping, NULL, "info", info);
-/*
- *
-<ping id="1">
-<hostname>www.netland.nl</hostname>
-<min>0.0030</min>
-<avg>0.0030</avg>
-<max>0.0030</max>
-</ping>
 
-      if (!spool_printf(spool, "%s %d %d %s %s %d %d %s %d %.3f %.3f %.3f %s%s\n", 
-          "ping", lines, hosts[id]->id, OPT_ARG(UWUSER), OPT_ARG(UWPASSWD), (int) now,
-          ((int)now)+(2*60), inet_ntoa(hosts[id]->saddr.sin_addr), color, 
-          ((float) hosts[id]->min_reply) / 1000.0, 
-          ((float) (hosts[id]->total_time / (hosts[id]->num_recv==0?1:hosts[id]->num_recv))) / 1000.0, 
-          ((float) hosts[id]->max_reply) / 1000.0, 
-          hosts[id]->name, buffer)) {
-        LOG(LOG_ERR, "can't write to spoolfile");
-        break;
-      }
-*/
+    // reset all counters
+    hosts[id]->num_sent = 0;
+    hosts[id]->num_recv = 0;
+    hosts[id]->done = 0;
+    memset(&hosts[id]->last_send_time, 0, sizeof(struct timeval));
+    hosts[id]->max_reply = 0;
+    hosts[id]->min_reply = 0;
+    hosts[id]->total_time = 0;
   }
   spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc);
+  if (redcount) {
+    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(INVESTIGATE), red);
+  }
   xmlFreeDoc(doc);
+  xmlFreeDoc(red);
   return(num_hosts); // amount of items processed
 }
 
@@ -450,7 +446,7 @@ static int wait_for_reply()
     return(0);
   }
 
-  if (icp->icmp_id   != our_pid) {
+  if (icp->icmp_id != our_pid) {
     return(0); /* packet received, but not the one we are looking for! */
   }
 

@@ -49,3 +49,46 @@ CREATE TABLE server (
   PRIMARY KEY  (id)
 ) TYPE=MyISAM;
 
+--
+-- Table structure for table 'notify'
+--
+
+CREATE TABLE notify (
+  id int(11) NOT NULL auto_increment,
+  name varchar(128) NOT NULL default '',
+  contact int(11) NOT NULL default 1,
+  mail int(11) NOT NULL default 1,
+  sms int(11) NOT NULL default 1,
+  status enum('enabled', 'disabled', 'ok') NOT NULL default 'enabled',
+  comment text NOT NULL,
+  PRIMARY KEY  (id),
+  KEY (contact)
+) TYPE=MyISAM;
+
+INSERT INTO notify set id = '1', name = 'empty', status = 'disabled', comment = 'do NOT delete!';
+
+--
+-- Table structure for table 'notifycond'
+--
+
+CREATE TABLE notifycond (
+  id int(11) NOT NULL auto_increment,
+  notify int(11) NOT NULL default 1,
+  bycolor enum('yes', 'no') NOT NULL default 'yes',
+  atcolor int(3) NOT NULL default '400',
+  consecutive int(2) NOT NULL default 1,
+  bydate enum('yes', 'no') NOT NULL default 'no',
+  fromwday int(1) NOT NULL default 0,
+  fromhour int(2) NOT NULL default 0,
+  frommin int(2) NOT NULL default 0,
+  towday int(1) NOT NULL default 0,
+  tohour int(2) NOT NULL default 0,
+  tomin int(2) NOT NULL default 0,
+  persist enum('yes', 'no') NOT NULL default 'no',
+  comment text NOT NULL,
+  PRIMARY KEY  (id),
+  KEY (notify)
+) TYPE=MyISAM;
+
+INSERT INTO notifycond set id = '1', notify = '1';
+

@@ -57,7 +57,7 @@ flag = {
     name      = investigate;
     value     = V;
     arg_type  = string;
-    arg-default = "uw_traceroute";
+    arg-default = "uw_investigate";
     descrip   = "Queue to drop commands for the investigate process";
     doc       =
 'The argument is taken to be a maildir under the directory `spooldir`.

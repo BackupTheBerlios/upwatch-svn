@@ -45,7 +45,7 @@ static void one_shot(void)
     struct timeval end;
 
     gettimeofday(&end, NULL);
-    LOG(LOG_DEBUG, "run took %f seconds", ((float)timeval_diff(&end, &start))/1000000.0);
+    LOG(LOG_DEBUG, "Processed %d items in %f seconds", runcounter, ret, ((float)timeval_diff(&end, &start))/1000000.0);
   }     
   return;
 }
@@ -66,7 +66,7 @@ static void every_second(void)
       struct timeval end;
 
       gettimeofday(&end, NULL);
-      LOG(LOG_DEBUG, "run %d took %f seconds", runcounter, ((float)timeval_diff(&end, &start))/1000000.0);
+      LOG(LOG_DEBUG, "run %d: processed %d items in %f seconds", runcounter, ret, ((float)timeval_diff(&end, &start))/1000000.0);
     }     
   }
   return;
@@ -88,7 +88,7 @@ static void every_5secs(void)
       struct timeval end;
 
       gettimeofday(&end, NULL);
-      LOG(LOG_DEBUG, "run %d took %f seconds", runcounter, ((float)timeval_diff(&end, &start))/1000000.0);
+      LOG(LOG_DEBUG, "run %d: processed %d items in %f seconds", runcounter, ret, ((float)timeval_diff(&end, &start))/1000000.0);
     }     
   }
   return;

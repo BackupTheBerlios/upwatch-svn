@@ -135,6 +135,10 @@ AC_CHECK_LIB([pcap], [pcap_close],
   [LIBPCAP_LIBS=-lpcap], [AC_MSG_ERROR([Sorry, we need -lpcap to continue])])
 AC_SUBST(LIBPCAP_LIBS)
 
+AC_CHECK_LIB([gdbm], [gdbm_close], 
+  [LIBGDBM_LIBS=-lgdbm], [AC_MSG_ERROR([Sorry, we need -lgdbm to continue])])
+AC_SUBST(LIBGDBM_LIBS)
+
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h malloc.h netdb.h netinet/in.h stdlib.h string.h sys/ioctl.h sys/socket.h sys/time.h syslog.h unistd.h])
@@ -160,11 +164,13 @@ AC_CONFIG_FILES([Makefile
                  upwatch/Makefile 
                  doc/Makefile 
                  uw_accept/Makefile 
+                 uw_acceptbb/Makefile 
                  uw_httpget/Makefile 
                  uw_ping/Makefile 
                  uw_process/Makefile 
                  uw_traceroute/Makefile 
                  uw_notify/Makefile 
+                 uw_investigate/Makefile 
                  uw_send/Makefile]
 )
 AC_OUTPUT

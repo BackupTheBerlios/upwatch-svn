@@ -1,24 +1,39 @@
 AutoGen Definitions options;
 #include ../common/generic_options.def
-export        = "#define progOptions uw_processOptions";
-prog-name     = uw_process;
-prog-title    = "Upwatch parallel probe daemon";
+export        = "#define progOptions uw_acceptbbOptions";
+prog-name     = uw_acceptbb;
+prog-title    = "Upwatch daemon for accepting reports from Big Brother clients";
 version       = "0.1";
-homerc        = "/etc/upwatch.d/uw_process.conf";
+homerc        = "/etc/upwatch.d/uw_acceptbb.conf";
 detail        = 
-'uw_process sends all files in the queue to a central server using 
-the uw_process protocol. This is a very simple protocol and looks
-something like POP3.';
+'uw_acceptbb listen on port 1984 for incoming reports from clients of the infamous 
+Big Brother package (www.bb4.com)';
 
-// this section is for the generated specfile
-spec-requires = "mysql glib2";
-spec-install  = "mkdir -p $RPM_BUILD_ROOT/var/spool/upwatch/uw_process/tmp";
-spec-install  = "mkdir -p $RPM_BUILD_ROOT/var/spool/upwatch/uw_process/new";
-spec-files    = "%attr(0770,root,upwatch) %dir /var/spool/upwatch/uw_process/new";
-spec-files    = "%attr(0770,root,upwatch) %dir /var/spool/upwatch/uw_process/tmp";
-spec-files    = "%attr(0770,root,upwatch) /usr/sbin/uw_process";
+// this section is for the generated specfile 
+spec-requires = "mysql glib2 gnet >= 1.1.2";
+spec-files = "%attr(0770,root,upwatch) /usr/sbin/uw_acceptbb";
 
 // describe commandline flags
+flag = {
+    must-set;
+    name      = listen;
+    value     = l;        /* flag style option character */
+    arg_default  = 1984;  /* option argument indication  */
+    arg_type  = number;   /* option argument indication  */
+    max       = NOLIMIT;  /* occurrence limit (none)     */
+    descrip   = "port to listen to";
+};
+
+flag = {
+    name      = output;
+    value     = O;
+    arg_type  = string;
+    descrip   = "name of queue to drop results";
+    doc       =
+'The argument is taken to be a maildir under the directory `spooldir`.
+All results are placed in this queue. This usually will be the uw_process queue';
+};
+
 flag = {
     name      = spooldir;
     value     = S;
@@ -31,26 +46,6 @@ this directory a directory `tmp` and `new` should exist. All files
 will finally reside in `new`. You should set up some cron job that
 removes any files in `tmp` that are older then 36 hours. For some more info
 about maildir see http://www.qmail.org/man/man5/maildir.html.';
-};
-
-flag = {
-    name      = failures;
-    value     = f;
-    arg_type  = string;
-    descrip   = "file to store failed transactions";
-    doc       =
-'For some reason storing results for a particular probe may fail.
-These transactions are kept in the filename given with here';
-};
-
-flag = {
-    name      = copy;
-    value     = c;
-    arg_type  = string;
-    descrip   = "file to copy all transactions to";
-    doc       =
-'You can copy all transactions to the specified queue, for inspecting
-then later';
 };
 
 flag = {
@@ -85,24 +80,24 @@ flag = {
     arg_type  = string;   /* option argument indication  */
     max       = NOLIMIT;  /* occurrence limit (none)     */
     descrip   = "Database host to connect to";
-    doc       = 
+    doc       =
 'This option denotes the internet hostname where the database resides. For MySQL this
 means the programs connects to port 3306 on this host. This hostname should be DNS
 resolvable of course, but an IP address may be specified';
-};  
-    
+};
+
 flag = {
-    must-set; 
+    must-set;
     name      = dbname;
     value     = n;        /* flag style option character */
     arg_type  = string;   /* option argument indication  */
     max       = NOLIMIT;  /* occurrence limit (none)     */
     descrip   = "Database name to connect to";
-};  
-    
+};
+
 flag = {
     must-set;
-    name      = dbuser;   
+    name      = dbuser;
     value     = u;        /* flag style option character */
     arg_type  = string;   /* option argument indication  */
     max       = NOLIMIT;  /* occurrence limit (none)     */
@@ -115,6 +110,7 @@ flag = {
     value     = p;        /* flag style option character */
     arg_type  = string;   /* option argument indication  */
     max       = NOLIMIT;  /* occurrence limit (none)     */
-    descrip   = "Database password"; 
-};  
+    descrip   = "Database password";
+};
+
 

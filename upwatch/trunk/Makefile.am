@@ -1,8 +1,9 @@
-PROGNAMES = uw_send uw_accept uw_httpget uw_ping uw_process uw_traceroute uw_notify
+PROGNAMES = uw_send uw_accept uw_httpget uw_ping uw_process uw_traceroute uw_notify uw_acceptbb uw_investigate
 SUBDIRS = doc upwatch ${PROGNAMES}
 
 EXTRA_DIST = Makefile.am.common upwatch-spec.def upwatch-spec.tpl upwatch.spec upwatch.mysql templates \
   config/upwatch.conf config/upwatch-base.mysql config/result.dtd config/logrotate config/cron.daily \
+  config/upwatch.init \
   common/db.c common/generic_options.def common/init.tpl common/main.c common/man1.tpl common/spec.tpl \
   doc/upwatch.xml doc/Makefile doc/upwatch.xsl doc/jadetex.cfg doc/style.dsl doc/style.xsl doc/style.css
 
