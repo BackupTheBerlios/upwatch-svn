@@ -382,21 +382,28 @@ static int resummarize(void)
   MYSQL_RES *result;
   MYSQL_ROW row;
 extern int forever;
-  char *probename = strtok(OPT_ARG(SUMMARIZE), ",");
-  res.stattime = atoi(strtok(NULL, ""));
-  res.name = probename;
+  guint lowtime, hightime; 
+  char *p;
+
+  res.name = strtok(OPT_ARG(SUMMARIZE), ",");
+  lowtime = 0;
+  hightime = time(NULL);
+  p = strtok(NULL, ",");
+  if (p && atoi(p)) lowtime = atoi(p);
+  p = strtok(NULL, ",");
+  if (p && atoi(p)) hightime = atoi(p);
   
-//  printf("%s: %s", probename, ctime(&res.stattime));
+//  printf("%s: %s", res.name, ctime(&res.stattime));
 
   memset(&def, 0, sizeof(def));
   memset(&res, 0, sizeof(res));
   for (found = 0, idx = 0; modules[idx]; idx++) {
     if (modules[idx]->accept_probe) {
-      if (modules[idx]->accept_probe(modules[idx], probename)) {
+      if (modules[idx]->accept_probe(modules[idx], res.name)) {
         found = 1; break;
       }
     } else {
-      if (!strcmp(probename, modules[idx]->module_name)) {
+      if (!strcmp(res.name, modules[idx]->module_name)) {
         found = 1; break;
       }
     }
@@ -404,7 +411,7 @@ extern int forever;
   if (!found) {
     char buf[256];
 
-    sprintf(buf, "unknown probe %s", probename);
+    sprintf(buf, "unknown probe %s", res.name);
     fprintf(stderr, "%s\n", buf);
     LOG(LOG_NOTICE, buf);
     return 0;
@@ -417,7 +424,7 @@ extern int forever;
   }
   modules_start_run();
   found = 0;
-  result = my_query(mysql, 1, "select id, server from pr_%s_def where id > 1", probename);
+  result = my_query(mysql, 1, "select id, server from pr_%s_def where id > 1", res.name);
   if (result == NULL) return(0);
   while ((row = mysql_fetch_row(result)) && forever) {
     MYSQL_RES *presult;
@@ -427,8 +434,9 @@ extern int forever;
     def.server = atoi(row[1]);
     //printf("%u server %u\n", def.probeid, def.server);
 
-    presult = my_query(mysql, 1, "select stattime from pr_%s_raw "
-                                 "where probe = '%u'", probename, def.probeid);
+    presult = my_query(mysql, 1, "select stattime from pr_%s_raw where probe = '%u' "
+                                 "and stattime >= '%u' and stattime <= '%u'", 
+                                 res.name, def.probeid, lowtime, hightime);
     if (presult == NULL) continue;
     while ((prow = mysql_fetch_row(presult)) && forever) {
       guint cur_slot, prev_slot;

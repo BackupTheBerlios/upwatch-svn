@@ -79,7 +79,9 @@ flag = {
 create the definition record with default values. This may result in
 spurios probe definitions is your input data is not bugfree, or comes
 from untrusted sources. You may specify this option for any probetype,
-or give the special values `all` or `none`';
+or give the special values `all` or `none`. For some probes this setting
+will be ignored because there is not enough information in the probe
+result block.';
 
 };
 
@@ -106,14 +108,15 @@ up to five `%s` sequences in the query, they will be replaced with the servernam
 flag = { 
     name      = summarize; 
     arg_type  = string;
-    arg_name  = "probe,ctime"; 
-    descrip   = "Re-summarize a named probe, starting at a given time";
+    arg_name  = "probe[,starttime[,enddtime]]"; 
+    descrip   = "Re-summarize a named probe in a certain period";
     doc       =
 'Occasionally you may want to recreate all or some summarized data for a probe.
 In this case determine the calendar time when to start, and specify it together
 with the probename. For example `uw_process --summarize ping,1041679172`  will 
 read all data from the pr_ping_raw table starting at Sat Jan  4 12:19:37 CET 2003
-and re-summarize it.  Use with -d3 if you want it to run in the foreground.';
+and re-summarize it.  You can use the `ctime` and `slot` programs to help in 
+determining the exact values. Use -d3 if you want to run in the foreground.';
 };
 
 #include dbase_options.def
