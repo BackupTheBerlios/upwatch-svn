@@ -98,7 +98,7 @@ int get_stats(void)
 }
 
 #if USE_XMBMON
-int get_hwstats(void)
+void get_hwstats(void)
 {
   getTemp(&hw.temp1, &hw.temp2, &hw.temp3);
   //printf("Temp.= %4.1f, %4.1f, %4.1f;",hw.temp1, hw.temp2, hw.temp3);
@@ -167,10 +167,12 @@ GString *check_logs(int *color)
   int i;
 
   string = g_string_new("");
-  logregex_refresh("/etc/upwatch.d/uw_sysstat.d");
 
   for (i=0; errlogspec[i].path; i++) {
-    int logcolor = check_log(string, i, color);
+    int logcolor;
+
+    logregex_refresh_type("/etc/upwatch.d/uw_sysstat.d", errlogspec[i].style);
+    logcolor = check_log(string, i, color);
     if (logcolor > *color) *color = logcolor;
   }
   out = fopen(STATFILE, "w");

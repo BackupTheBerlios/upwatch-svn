@@ -96,7 +96,8 @@ void *sysstat_get_def(trx *t, int create)
     if (row && row[0]) {
       res->server = atoi(row[0]);
     } else {
-      LOG(LOG_NOTICE, "%s def %u not found", res->name, res->probeid);
+      LOG(LOG_NOTICE, "%s:%u@%s: %s def %u not found", 
+          res->realm, res->stattime, t->fromhost, res->name, res->probeid);
       mysql_free_result(result);
       return(NULL);
     }
@@ -124,8 +125,8 @@ void *sysstat_get_def(trx *t, int create)
     if (mysql_num_rows(result) == 0) { // DEF RECORD NOT FOUND
       mysql_free_result(result);
       if (!create) {
-        LOG(LOG_NOTICE, "pr_%s_def for server %u not found and not trusted - skipped", 
-                         res->name, def->server);
+        LOG(LOG_NOTICE, "%s:%u@%s: pr_%s_def for server %u not found and not trusted - skipped", 
+                         res->realm, res->stattime, t->fromhost, res->name, def->server);
         return(NULL);
       }
       result = my_query(t->probe->db, 0,
@@ -135,7 +136,8 @@ void *sysstat_get_def(trx *t, int create)
                         t->fromhost ? t->fromhost : "automatically added");
       mysql_free_result(result);
       if (mysql_affected_rows(t->probe->db) == 0) { // nothing was actually inserted
-        LOG(LOG_NOTICE, "insert missing pr_%s_def id %u: %s", 
+        LOG(LOG_NOTICE, "%s:%u@%s: insert missing pr_%s_def id %u: %s", 
+                         res->realm, res->stattime, t->fromhost,
                          res->name, def->probeid, mysql_error(t->probe->db));
       }
       result = my_query(t->probe->db, 0,
@@ -146,7 +148,8 @@ void *sysstat_get_def(trx *t, int create)
     }
     row = mysql_fetch_row(result); 
     if (!row || !row[0]) {
-      LOG(LOG_NOTICE, "no pr_%s_def found for server %u - skipped", res->name, res->server);
+      LOG(LOG_NOTICE, "%s:%u@%s: no pr_%s_def found for server %u - skipped", 
+          res->realm, res->stattime, t->fromhost, res->name, res->server);
       mysql_free_result(result);
       return(NULL);
     }

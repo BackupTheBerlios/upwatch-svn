@@ -1,6 +1,7 @@
 #include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <logregex.h>
 #include <readline/readline.h>
@@ -11,7 +12,20 @@ int debug;
 int main(int argc, char *argv[])
 {
   char *line;
+  int c;
+  char *style = NULL;
 
+  while ((c = getopt(argc, argv, "t:")) != EOF) {
+    switch (c) {
+      case 't':   style = optarg; break;
+      default:    fprintf(stderr, "Usage: uwregexp -t <logfiletype>\n");
+                  exit(1);
+    }
+  }
+  if (!style) {
+    fprintf(stderr, "Usage: uwregexp -t <logfiletype>\n");
+    exit(1);
+  }
   line = readline("Enter inputline to match: ");
   while (1) {
     int err;
@@ -24,7 +38,7 @@ int main(int argc, char *argv[])
       break;
     }
 
-    logregex_refresh("/etc/upwatch.d/uw_sysstat.d");
+    logregex_refresh_type("/etc/upwatch.d/uw_sysstat.d", style);
     logregex_expand_macros("syslog", regexp, buf);
 
     err = regcomp(&preg, buf, REG_EXTENDED|REG_NOSUB|REG_ICASE);

@@ -78,7 +78,7 @@ void *bb_cpu_get_def(trx *t, int create)
     if (row && row[0]) {
       res->server   = atoi(row[0]);
     } else {
-      LOG(LOG_NOTICE, "%s: server %s not found", res->realm, res->hostname);
+      LOG(LOG_NOTICE, "%s:%u@%s: server %s not found", res->realm, res->stattime, t->fromhost, res->hostname);
       mysql_free_result(result);
       return(NULL);
     }
@@ -114,14 +114,16 @@ void *bb_cpu_get_def(trx *t, int create)
                          res->name, res->server, res->hostname);
       mysql_free_result(result);
       def->probeid = mysql_insert_id(t->probe->db);
-      LOG(LOG_NOTICE, "pr_%s_def created for %s, id = %u", res->name, res->hostname, def->probeid);
+      LOG(LOG_NOTICE, "%s:%u@%s: pr_%s_def created for %s, id = %u", 
+          res->realm, res->stattime, t->fromhost, res->name, res->hostname, def->probeid);
       result = my_query(t->probe->db, 0, "select id, yellow, red, contact, hide, email, delay "
                                       "from pr_%s_def where id = '%u'", 
                         res->name, def->probeid);
     }
     row = mysql_fetch_row(result);
     if (!row || !row[0]) {
-      LOG(LOG_NOTICE, "no pr_%s_def found for server %u - skipped", res->name, res->server);
+      LOG(LOG_NOTICE, "%s:%u@%s: no pr_%s_def found for server %u - skipped", 
+          res->realm, res->stattime, t->fromhost, res->name, res->server);
       mysql_free_result(result);
       g_free(def);
       return(NULL);
@@ -144,7 +146,8 @@ void *bb_cpu_get_def(trx *t, int create)
       if (row) {
         if (row[0]) def->color   = atoi(row[0]);
       } else {
-        LOG(LOG_NOTICE, "pr_status record for %s id %u not found", res->name, def->probeid);
+        LOG(LOG_NOTICE, "%s:%u@%s: pr_status record for %s id %u not found", 
+           res->realm, res->stattime, t->fromhost, res->name, def->probeid);
       }
       mysql_free_result(result);
     }

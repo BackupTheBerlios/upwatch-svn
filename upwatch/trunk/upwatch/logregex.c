@@ -347,7 +347,7 @@ static void logregex_add_file(char *fullname, struct typespec *ts, char *file)
 
 // refresh the data for a specific filetype (for example syslog)
 // 
-static void logregex_refresh_type(char *path, char *type)
+void logregex_refresh_type(char *path, char *type)
 {
   struct typespec *ts;
   GDir *dir;
@@ -427,6 +427,7 @@ void logregex_expand_macros(char *type, char *in, char *out)
   logregex_replace_macros(ts->macros, in, out);
 }
 
+#if 0
 // read all directories in the path
 // the name of these directories denote the filetype
 // for each filetype read regular expressions and macros
@@ -455,6 +456,7 @@ int logregex_refresh(char *path)
   g_dir_close(dir);
   return 1;
 }
+#endif
 
 int logregex_rmatchline(char *type, char *line)
 {

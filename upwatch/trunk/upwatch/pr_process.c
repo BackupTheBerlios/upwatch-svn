@@ -180,7 +180,8 @@ void *get_def(trx *t, int create)
       if (row) {
         if (row[0]) def->color   = atoi(row[0]);
       } else {
-        LOG(LOG_NOTICE, "pr_status record for %s id %u ip %s not found", res->name, res->probeid, res->ipaddress);
+        LOG(LOG_NOTICE, "%s:%u@%s: pr_status record for %s id %u ip %s not found", 
+            res->realm, res->stattime, t->fromhost, res->name, res->probeid, res->ipaddress);
       }
       mysql_free_result(result);
     }
@@ -196,13 +197,13 @@ void *get_def(trx *t, int create)
     if (mysql_num_rows(result) == 0) { // DEF RECORD NOT FOUND
       mysql_free_result(result);
       if (!create) {
-        LOG(LOG_NOTICE, "%s: pr_%s_def id %u not found - skipped",
-                         res->realm, res->name, res->probeid);
+        LOG(LOG_NOTICE, "%s:%u@%s: pr_%s_def id %u not found - skipped",
+                         res->realm, res->stattime, t->fromhost, res->name, res->probeid);
         return(NULL);
       }
       if (res->server == 0) {
-        LOG(LOG_NOTICE, "pr_%s_def id %u not found trusted but we have no serverid - skipped",
-                         res->name, res->probeid);
+        LOG(LOG_NOTICE, "%s:%u@%s: pr_%s_def id %u not found trusted but we have no serverid - skipped",
+                         res->realm, res->stattime, t->fromhost, res->name, res->probeid);
         return(NULL);
       }
       // at this point, we have a probe result, but we can't find the _def record
@@ -217,7 +218,8 @@ void *get_def(trx *t, int create)
       mysql_free_result(result);
       res->probeid = mysql_insert_id(t->probe->db);
       if (mysql_affected_rows(t->probe->db) == 0) { // nothing was actually inserted
-        LOG(LOG_NOTICE, "insert missing pr_%s_def id %u: %s", 
+        LOG(LOG_NOTICE, "%s:%u@%s: insert missing pr_%s_def id %u: %s", 
+                         res->realm, res->stattime, t->fromhost,
                          res->name, res->probeid, mysql_error(t->probe->db));
       }
       result = my_query(t->probe->db, 0,
@@ -296,7 +298,8 @@ void *get_def_by_servid(trx *t, int create)
                        res->hostname);
     mysql_free_result(result);
     def->probeid = mysql_insert_id(t->probe->db);
-    LOG(LOG_NOTICE, "pr_%s_def created for %s, id = %u", res->name, res->hostname, def->probeid);
+    LOG(LOG_NOTICE, "%s:%u@%s: pr_%s_def created for %s, id = %u", 
+        res->realm, res->stattime, t->fromhost, res->name, res->hostname, def->probeid);
     result = my_query(t->probe->db, 0,
                     "select id, contact, hide, email, delay from pr_%s_def "
                     "where  server = '%u'", res->server, res->name);
@@ -304,7 +307,8 @@ void *get_def_by_servid(trx *t, int create)
   }
   row = mysql_fetch_row(result);
   if (!row || !row[0]) {
-    LOG(LOG_NOTICE, "no pr_%s_def found for server %u - skipped", res->name, res->server);
+    LOG(LOG_NOTICE, "%s:%u@%s: no pr_%s_def found for server %u - skipped", 
+        res->realm, res->stattime, t->fromhost, res->name, res->server);
     mysql_free_result(result);
     return(NULL);
   }
@@ -328,8 +332,8 @@ void *get_def_by_servid(trx *t, int create)
       if (row[0]) def->color   = atoi(row[0]);
       if (row[1]) def->newest  = atoi(row[1]);
     } else {
-      LOG(LOG_NOTICE, "pr_status record for %s id %u (server %s) not found", 
-                       res->name, def->probeid, res->hostname);
+      LOG(LOG_NOTICE, "%s:%u@%s: pr_status record for %s id %u (server %s) not found", 
+                       res->realm, res->stattime, t->fromhost, res->name, def->probeid, res->hostname);
     }
     mysql_free_result(result);
   }

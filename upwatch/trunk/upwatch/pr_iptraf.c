@@ -79,7 +79,7 @@ void *iptraf_get_def(trx *t, int create)
       res->ipaddress = strdup(row[0]);
       inet_aton(res->ipaddress, &res->ipaddr);
     } else {
-      LOG(LOG_NOTICE, "iptraf def %u not found", res->probeid);
+      LOG(LOG_NOTICE, "%s:%u@%s: iptraf def %u not found", res->realm, res->stattime, t->fromhost, res->probeid);
       mysql_free_result(result);
       return(NULL);
     }
@@ -107,14 +107,14 @@ void *iptraf_get_def(trx *t, int create)
     if (mysql_num_rows(result) == 0) { // DEF RECORD NOT FOUND
       mysql_free_result(result);
       if (!create) {
-        LOG(LOG_NOTICE, "pr_%s_def ip %s not found - skipped",
-                         res->name, res->ipaddress);
+        LOG(LOG_NOTICE, "%s:%u@%s: pr_%s_def ip %s not found - skipped",
+                         res->realm, res->stattime, t->fromhost, res->name, res->ipaddress);
         return(NULL);
       }
       // okay, create a new probe definition.
       // first try to find out the server id
       if (!query_server_by_ip) {
-        LOG(LOG_ERR, "Don't know how to find a server by ip address");
+        LOG(LOG_ERR, "No SQL query for how to find a server by ip address");
         return(NULL);
       }
       result = my_query(t->probe->db, 0, query_server_by_ip, res->ipaddress, res->ipaddress,
@@ -124,7 +124,8 @@ void *iptraf_get_def(trx *t, int create)
       if (row && row[0]) {
         res->server   = atoi(row[0]);
       } else {
-        LOG(LOG_NOTICE, "iptraf for ip %s added without server id", res->ipaddress);
+        LOG(LOG_NOTICE, "%s:%u@%s: iptraf for ip %s added without server id", 
+            res->realm, res->stattime, t->fromhost, res->ipaddress);
         res->server = 1;
       }
       mysql_free_result(result);
@@ -135,10 +136,12 @@ void *iptraf_get_def(trx *t, int create)
                         res->name, res->ipaddress, res->server);
       mysql_free_result(result);
       if (mysql_affected_rows(t->probe->db) == 0) { // nothing was actually inserted
-        LOG(LOG_NOTICE, "insert missing pr_%s_def id %s: %s", 
+        LOG(LOG_NOTICE, "%s:%u@%s: insert missing pr_%s_def id %s: %s", 
+                         res->realm, res->stattime, t->fromhost, 
                          res->name, res->ipaddress, mysql_error(t->probe->db));
       } else {
-        LOG(LOG_NOTICE, "created pr_%s_def for ipaddress %s", 
+        LOG(LOG_NOTICE, "%s:%u@%s: created pr_%s_def for ipaddress %s", 
+                         res->realm, res->stattime, t->fromhost,
                          res->name, res->ipaddress);
       }
       result = my_query(t->probe->db, 0,
@@ -173,7 +176,8 @@ void *iptraf_get_def(trx *t, int create)
       if (row) {
         def->color   = atoi(row[0]);
       } else {
-        LOG(LOG_NOTICE, "pr_status record for %s id %u (%s) not found", res->name, def->probeid, res->ipaddress);
+        LOG(LOG_NOTICE, "%s:%u@%s: pr_status record for %s id %u (%s) not found", 
+            res->realm, res->stattime, t->fromhost, res->name, def->probeid, res->ipaddress);
         mysql_free_result(result);
         result = my_query(t->probe->db, 0,
                           "insert into pr_status set class = '%d', probe = '%d', server = '%d'",
@@ -181,7 +185,8 @@ void *iptraf_get_def(trx *t, int create)
       }
       mysql_free_result(result);
     } else {
-      LOG(LOG_NOTICE, "pr_status record for %s id %u (%s) not found", res->name, def->probeid, res->ipaddress);
+      LOG(LOG_NOTICE, "%s:%u@%s: pr_status record for %s id %u (%s) not found", 
+          res->realm, res->stattime, t->fromhost, res->name, def->probeid, res->ipaddress);
     }
 
     result = my_query(t->probe->db, 0,
@@ -215,8 +220,8 @@ void *iptraf_get_def(trx *t, int create)
       }
       mysql_free_result(result);
     } else {
-      LOG(LOG_NOTICE, "raw record for %s id %u not found between %u and %u", 
-                      res->name, def->probeid, slotlow, slothigh);
+      LOG(LOG_NOTICE, "%s:%u@%s: raw record for %s id %u not found between %u and %u", 
+                      res->realm, res->stattime, t->fromhost, res->name, def->probeid, slotlow, slothigh);
     }
     if (def->slotday_avg_yellow == 0) {
       def->slotday_avg_yellow = def->yellow;

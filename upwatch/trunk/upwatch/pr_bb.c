@@ -62,7 +62,8 @@ void *bb_get_def(trx *t, int create)
     if (res->server == 0) {
       // first we find the serverid, this will be used to find the probe definition in the database
       if (!query_server_by_name) {
-        LOG(LOG_WARNING, "don't know how to find %s by name", res->hostname);
+        LOG(LOG_WARNING, "%s:%u@%s: don't know how to find %s by name", 
+            res->realm, res->stattime, t->fromhost, res->hostname);
         g_free(def);
         return(NULL);
       }
@@ -76,7 +77,7 @@ void *bb_get_def(trx *t, int create)
       if (row && row[0]) {
         res->server   = atoi(row[0]);
       } else {
-        LOG(LOG_WARNING, "server %s not found", res->hostname);
+        LOG(LOG_WARNING, "%s:%u@%s: server %s not found", res->realm, res->stattime, t->fromhost, res->hostname);
         mysql_free_result(result);
         g_free(def);
         return(NULL);
@@ -102,7 +103,8 @@ void *bb_get_def(trx *t, int create)
                        res->hostname, res->bbname);
     mysql_free_result(result);
     def->probeid = mysql_insert_id(t->probe->db);
-    LOG(LOG_NOTICE, "pr_bb_def %s created for %s, id = %u", res->bbname, res->hostname, def->probeid);
+    LOG(LOG_NOTICE, "%s:%u@%s: pr_bb_def %s created for %s, id = %u", 
+        res->realm, res->stattime, t->fromhost, res->bbname, res->hostname, def->probeid);
     result = my_query(t->probe->db, 0,
                     "select id, contact, hide, email, delay from pr_bb_def "
                     "where  bbname = '%s' and server = '%u'", res->bbname, res->server);
@@ -110,7 +112,8 @@ void *bb_get_def(trx *t, int create)
   }
   row = mysql_fetch_row(result);
   if (!row || !row[0]) {
-    LOG(LOG_NOTICE, "no pr_%s_def found for server %u - skipped", res->name, res->server);
+    LOG(LOG_NOTICE, "%s:%u@%s: no pr_%s_def found for server %u - skipped", 
+         res->realm, res->stattime, t->fromhost, res->name, res->server);
     mysql_free_result(result);
     return(NULL);
   }
@@ -134,8 +137,8 @@ void *bb_get_def(trx *t, int create)
       if (row[0]) def->color   = atoi(row[0]);
       if (row[1]) def->newest  = atoi(row[1]);
     } else {
-      LOG(LOG_NOTICE, "pr_status record for %s id %u (server %s) not found", 
-                       res->name, def->probeid, res->hostname);
+      LOG(LOG_NOTICE, "%s:%u@%s: pr_status record for %s id %u (server %s) not found", 
+                       res->realm, res->stattime, t->fromhost, res->name, def->probeid, res->hostname);
     }
     mysql_free_result(result);
   }
