@@ -17,6 +17,8 @@ static int do_notification(trx *t);
 int notify(trx *t)
 {
   int notified = FALSE;
+  MYSQL_RES *result;
+  MYSQL_ROW row;
 
   if (debug > 3) fprintf(stderr, "%s %u %s (was %s). %s\n", t->probe->module_name, t->def->probeid, 
                   color2string(t->res->color), color2string(t->res->prevhistcolor), t->res->hostname);
@@ -25,6 +27,19 @@ int notify(trx *t)
     if (debug > 3) fprintf(stderr, "Not %s long enough\n", color2string(t->res->color));
     return(notified); // NOT YET
   }
+
+  result = my_query(t->probe->db, 0,
+                    "select   prv_color "
+                    "from     pr_hist  "
+                    "where    probe = '%u' and class = '%u' and stattime <= '%u' and notified = 'yes' "
+                    "order by stattime desc limit 1",
+                    t->def->probeid, t->probe->class, t->res->stattime);
+  if (!result) return(notified);
+  row = mysql_fetch_row(result);
+  if (row) {
+    t->res->prevhistcolor = atoi(row[0]);
+  }
+  mysql_free_result(result);
   notified = do_notification(t);
   return(notified);
 }
