@@ -10,7 +10,7 @@ Packager: Ron Arts <raarts@upwatch.com>
 Copyright: Proprietary
 Group: Application/Monitoring
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
-BuildRequires: gzip glib2-devel gnet-devel mysql-devel curl-devel autogen
+BuildRequires: gzip glib2-devel gnet-devel mysql-devel curl-devel autogen libxslt kdelibs lynx
 
 %define strip_binaries 1
 %define gzip_man 1
@@ -76,7 +76,7 @@ install -m 644 [+program+]/[+program+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+prog
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
 
 %files
-%doc AUTHORS COPYING ChangeLog NEWS README 
+%doc AUTHORS COPYING ChangeLog NEWS README doc/upwatch.html doc/upwatch.txt
 
 %changelog
 * Mon Sep 2 2002 Ron Arts <raarts@upwatch.com>

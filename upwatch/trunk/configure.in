@@ -116,6 +116,7 @@ AM_CONFIG_HEADER(config.h)
 
 AC_CONFIG_FILES([Makefile
                  upwatch/Makefile 
+                 doc/Makefile 
                  uw_accept/Makefile 
                  uw_httpget/Makefile 
                  uw_ping/Makefile 

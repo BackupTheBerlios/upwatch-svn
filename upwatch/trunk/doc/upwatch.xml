@@ -1,0 +1,21 @@
+<?xml version='1.0'?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD Docbook XML V4.1.2//EN"
+                  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<book id="upwatch" lang="en" status="draft">
+<bookinfo>
+  <title>Upwatch documentation</title>
+  <author><firstname>Ron</firstname><surname>Arts</surname></author>
+  <copyright><year>2002</year><holder>Ron Arts</holder></copyright>
+</bookinfo>
+<preface><title>Preface</title>
+<para>
+This is the preface</para>
+</preface>
+<chapter><title>My Chapter</title>
+<para> ... </para>
+<sect1><title>First Section</title>
+<para> ... </para>
+</sect1>
+</chapter>
+</book>
