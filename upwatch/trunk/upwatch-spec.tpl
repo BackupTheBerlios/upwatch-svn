@@ -4,7 +4,7 @@ Summary: UpWatch - The Best monitoring framework
 Vendor: http://www.upwatch.com
 Name: upwatch
 Version: 0.3
-Release: 1
+Release: 2
 Source: http://www.upwatch.com/%{name}-%{version}.tar.gz
 Packager: Ron Arts <raarts@upwatch.com>
 Copyright: Proprietary

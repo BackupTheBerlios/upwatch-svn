@@ -4,12 +4,11 @@ AC_CONFIG_SRCDIR(upwatch/spool.c)
 VERSION=0.3
 PACKAGE=upwatch
 AC_CONFIG_AUX_DIR(cfg)
-AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.1 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.2 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -182,7 +181,7 @@ AC_HEADER_TIME
 AC_STRUCT_TM
 
 # Checks for library functions.
-LIBOPTS_CHECK
+#LIBOPTS_CHECK
 AC_PROG_GCC_TRADITIONAL
 AC_FUNC_MALLOC
 AC_FUNC_MKTIME
@@ -193,7 +192,6 @@ AC_CHECK_FUNCS([alarm atexit dup2 gethostbyname gethostname gettimeofday inet_nt
 
 AC_CONFIG_FILES([Makefile
                  doc/Makefile
-                 libopts/Makefile
                  upwatch/Makefile
                  uw_accept/Makefile
                  uw_acceptbb/Makefile
