@@ -41,11 +41,13 @@ about maildir see http://www.qmail.org/man/man5/maildir.html.';
 flag = {
     name      = output;
     value     = O;
+    stack_arg;
     arg_type  = string;
     descrip   = "name of queue to drop results";
     doc       =
 'The argument is taken to be a maildir under the directory `spooldir`.
-All results are placed in this queue.';
+All results are placed in this queue.
+This flag may be given multiple times.';
 };
 
 flag = {

@@ -81,6 +81,9 @@ void process(gpointer data, gpointer user_data)
   xmlNsPtr ns;
   xmlNodePtr cur;
   int probe_count = 0;
+  int ct  = STACKCT_OPT(OUTPUT);
+  char **output = STACKLST_OPT(OUTPUT);
+  int i;
 
   if (debug) LOG(LOG_DEBUG, "Processing %s", filename);
 
@@ -191,7 +194,9 @@ void process(gpointer data, gpointer user_data)
       return;
     }
   }
-  spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc, NULL); // these don't need to be investigated
+  for (i=0; i < ct; i++) {
+    spool_result(OPT_ARG(SPOOLDIR), output[i], doc, NULL); // these don't need to be investigated
+  }
   xmlFreeDoc(doc);
   if (debug > 1) LOG(LOG_DEBUG, "Processed %d probes", probe_count);
   if (debug > 1) LOG(LOG_DEBUG, "unlink(%s)", filename);

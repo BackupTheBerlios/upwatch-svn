@@ -56,11 +56,13 @@ When a probe fails a request to notify the owner is put into this queue.';
 flag = {
     name      = output;
     value     = O;
+    stack_arg;
     arg_type  = string;
     descrip   = "name of queue to drop results";
     doc       =
 'The argument is taken to be a maildir under the directory `spooldir`.
-All results are placed in this queue.';
+All results are placed in this queue.
+This flag may be given multiple times.';
 };
 
 flag = {

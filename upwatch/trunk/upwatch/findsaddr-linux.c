@@ -33,7 +33,7 @@
 
 #ifndef lint
 static const char rcsid[] =
-    "@(#) $Id: findsaddr-linux.c,v 1.1 2003/02/19 22:49:28 raarts Exp $ (LBL)";
+    "@(#) $Id: findsaddr-linux.c,v 1.2 2003/02/20 23:44:42 raarts Exp $ (LBL)";
 #endif
 
 /* XXX linux is different (as usual) */
@@ -135,3 +135,16 @@ findsaddr(register const struct sockaddr_in *to,
 	setsin(from, al->addr);
 	return (NULL);
 }
+
+void
+setsin(register struct sockaddr_in *sin, register u_int32_t addr)
+{
+
+        memset(sin, 0, sizeof(*sin));
+#ifdef HAVE_SOCKADDR_SA_LEN
+        sin->sin_len = sizeof(*sin);
+#endif
+        sin->sin_family = AF_INET;
+        sin->sin_addr.s_addr = addr;
+}
+

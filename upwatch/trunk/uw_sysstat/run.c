@@ -13,7 +13,7 @@
 #include <dirent.h>
 #include <ctype.h>
 #include <fcntl.h>
-#include <ifaddrlist.h>
+#include <findsaddr.h>
 
 #define BUFFSIZE 8192
 static char buff[BUFFSIZE]; /* used in the procedures */
@@ -110,19 +110,24 @@ void getmeminfo(unsigned *memfree, unsigned *membuff, unsigned *swapused, unsign
 
 int init(void)
 {
-  int n;
-  struct ifaddrlist *al, *allist;
-  struct in_addr in;
-  char errbuf[256];
+  struct sockaddr_in from, to;
+  const char *msg;
 
   if (OPT_VALUE_SERVERID == 0) {
     fprintf(stderr, "Please set serverid first\n");
     return 0;
   }
-/*
-  strcpy(ipaddress, inet_ntoa(al->addr)); 
-  LOG(LOG_DEBUG, "using ipaddress %s", ipaddress);
-*/
+  // determine ip address for default gateway interface
+  setsin(&to, inet_addr("1.1.1.1"));
+  msg = findsaddr(&to, &from);
+  if (msg) {
+    LOG(LOG_NOTICE, msg);
+    strcpy(ipaddress, "127.0.0.1");
+  } else {
+    strcpy(ipaddress, inet_ntoa(from.sin_addr)); 
+  }
+  if (debug) LOG(LOG_DEBUG, "using ipaddress %s", ipaddress);
+
   daemonize = TRUE;
   every = EVERY_MINUTE;
   xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
@@ -145,8 +150,11 @@ int run(void)
   unsigned int duse,dsys,didl,div,divo2;
   unsigned int memfree,membuff,swapused, memcache, memused;
   unsigned int kb_per_page = sysconf(_SC_PAGESIZE) / 1024;
-  unsigned int hz = sysconf(_SC_CLK_TCK); /* get ticks/s from system */
+  //unsigned int hz = sysconf(_SC_CLK_TCK); /* get ticks/s from system */
   int systemp = 0;
+  int ct  = STACKCT_OPT(OUTPUT);
+  char **output = STACKLST_OPT(OUTPUT);
+  int i;
 
   // compute sysstat
   //
@@ -205,9 +213,10 @@ int run(void)
 
   sysstat = xmlNewChild(xmlDocGetRootElement(doc), NULL, "sysstat", NULL);
   sprintf(buffer, "%ld", OPT_VALUE_SERVERID);	xmlSetProp(sysstat, "server", buffer);
-  sprintf(buffer, "%s", "127.0.0.1");		xmlSetProp(sysstat, "ipaddress", buffer);
+  xmlSetProp(sysstat, "ipaddress", ipaddress);
   sprintf(buffer, "%d", (int) now);		xmlSetProp(sysstat, "date", buffer);
-  sprintf(buffer, "%d", ((int)now)+(OPT_VALUE_EXPIRES*60));	xmlSetProp(sysstat, "expires", buffer);
+  sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60));
+    xmlSetProp(sysstat, "expires", buffer);
   sprintf(buffer, "%d", color);			subtree = xmlNewChild(sysstat, NULL, "color", buffer);
   sprintf(buffer, "%.1f", lavg);		subtree = xmlNewChild(sysstat, NULL, "loadavg", buffer);
   sprintf(buffer, "%u", duse);			subtree = xmlNewChild(sysstat, NULL, "user", buffer);
@@ -229,7 +238,9 @@ int run(void)
   sprintf(buffer, "%d", systemp);		subtree = xmlNewChild(sysstat, NULL, "systemp", buffer);
     subtree = xmlNewChild(sysstat, NULL, "info", info);
 
-  spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc, NULL);
+  for (i=0; i < ct; i++) {
+    spool_result(OPT_ARG(SPOOLDIR), output[i], doc, NULL);
+  }
   xmlFreeDoc(doc);
   return(ret);
 }

@@ -1,6 +1,5 @@
 #include "config.h"
 #define _XOPEN_SOURCE /* glibc2 needs this for strptime */
-#include <time.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -12,6 +11,7 @@
 #include <ctype.h>
 
 #include <generic.h>
+#include <time.h>
 #include <st.h>
 #include "cmd_options.h"
 
@@ -177,7 +177,12 @@ extern int forever;
 
     if (debug > 2) LOG(LOG_DEBUG, "timeout function");
     if (doc) {
-      spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc, NULL);
+      int ct  = STACKCT_OPT(OUTPUT);
+      char **output = STACKLST_OPT(OUTPUT);
+
+      for (i=0; i < ct; i++) {
+        spool_result(OPT_ARG(SPOOLDIR), output[i], doc, NULL);
+      }
       xmlFreeDoc(doc);
       doc = NULL;
     }

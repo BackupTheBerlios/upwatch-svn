@@ -152,6 +152,10 @@ int run(void)
   struct hostinfo **newh = NULL;
   struct tm *tm;
   time_t now = time(NULL);
+  int ct  = STACKCT_OPT(OUTPUT);
+  char **output = STACKLST_OPT(OUTPUT);
+  int i;
+
 
   tm = gmtime(&now);
   if (debug > 0) LOG(LOG_DEBUG, "reading ping info from database");
@@ -169,7 +173,7 @@ int run(void)
                  "FROM   pr_ping_def "
                  "WHERE  pr_ping_def.id > 1 and pr_ping_def.disabled <> 'yes'"
                  "       and pr_ping_def.pgroup = '%d'",
-                OPT_VALUE_GROUPID);
+                (unsigned)OPT_VALUE_GROUPID);
 
     if (mysql_query(mysql, qry)) {
       LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql));
@@ -257,7 +261,7 @@ int run(void)
   red = UpwatchXmlDoc("result"); 
   for (id=0; hosts[id]; id++) {
     xmlDocPtr cur = doc;
-    xmlNodePtr subtree, ping, host;
+    xmlNodePtr subtree, ping;
     int color;
     int missed;
     char info[1024];
@@ -297,7 +301,8 @@ int run(void)
     sprintf(buffer, "%d", hosts[id]->id);	xmlSetProp(ping, "id", buffer);
     sprintf(buffer, "%d", (int) now); 		xmlSetProp(ping, "date", buffer);
     sprintf(buffer, "%s", inet_ntoa(hosts[id]->saddr.sin_addr)); xmlSetProp(ping, "ipaddress", buffer);
-    sprintf(buffer, "%d", ((int)now)+(OPT_VALUE_EXPIRES*60)); 	xmlSetProp(ping, "expires", buffer);
+    sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60)); 
+      xmlSetProp(ping, "expires", buffer);
     if (color == STAT_RED) xmlSetProp(ping, "investigate", "icmptraceroute");
     sprintf(buffer, "%d", color); 		subtree = xmlNewChild(ping, NULL, "color", buffer);
     sprintf(buffer, "%f", ((float) hosts[id]->min_reply) * 0.000001);
@@ -317,7 +322,9 @@ int run(void)
     hosts[id]->min_reply = 0;
     hosts[id]->total_time = 0;
   }
-  spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc, NULL);
+  for (i=0; i < ct; i++) {
+    spool_result(OPT_ARG(SPOOLDIR), output[i], doc, NULL);
+  }
   if (redcount) {
     spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(INVESTIGATE), red, NULL);
   }

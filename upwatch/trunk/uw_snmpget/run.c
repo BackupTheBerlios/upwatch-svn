@@ -324,8 +324,14 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
 
 void write_results(void)
 {
+  int ct  = STACKCT_OPT(OUTPUT);
+  char **output = STACKLST_OPT(OUTPUT);
+  int i;
+
   xmlDocPtr doc = UpwatchXmlDoc("result");
   g_hash_table_foreach(cache, write_probe, doc);
-  spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc, NULL);
+  for (i=0; i < ct; i++) {
+     spool_result(OPT_ARG(SPOOLDIR), output[i], doc, NULL);
+  }
   xmlFreeDoc(doc);
 }

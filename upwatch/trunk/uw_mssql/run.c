@@ -99,7 +99,7 @@ void refresh_database(MYSQL *mysql)
                 "FROM   pr_mssql_def "
                 "WHERE  pr_mssql_def.id > 1 and pr_mssql_def.disabled <> 'yes'"
                 "       and pr_mssql_def.pgroup = '%d'",
-                OPT_VALUE_GROUPID);
+                (unsigned)OPT_VALUE_GROUPID);
 
   result = my_query(mysql, 1, qry);
   if (!result) {
@@ -196,7 +196,8 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   sprintf(buffer, "%d", probe->id);           xmlSetProp(mssql, "id", buffer);
   sprintf(buffer, "%s", probe->ipaddress);    xmlSetProp(mssql, "ipaddress", buffer);
   sprintf(buffer, "%d", (int) now);           xmlSetProp(mssql, "date", buffer);
-  sprintf(buffer, "%d", ((int)now)+(OPT_VALUE_EXPIRES*60));   xmlSetProp(mssql, "expires", buffer);
+  sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60));
+    xmlSetProp(mssql, "expires", buffer);
   sprintf(buffer, "%d", color);               subtree = xmlNewChild(mssql, NULL, "color", buffer);
   sprintf(buffer, "%f", probe->connect);      subtree = xmlNewChild(mssql, NULL, "connect", buffer);
   sprintf(buffer, "%f", probe->total);        subtree = xmlNewChild(mssql, NULL, "total", buffer);
@@ -209,9 +210,15 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
 
 void write_results(void)
 {
+  int ct  = STACKCT_OPT(OUTPUT);
+  char **output = STACKLST_OPT(OUTPUT);
+  int i;
+
   xmlDocPtr doc = UpwatchXmlDoc("result");
   g_hash_table_foreach(cache, write_probe, doc);
-  spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc, NULL);
+  for (i=0; i < ct; i++) {
+    spool_result(OPT_ARG(SPOOLDIR), output[i], doc, NULL);
+  }
   xmlFreeDoc(doc);
 }
 
