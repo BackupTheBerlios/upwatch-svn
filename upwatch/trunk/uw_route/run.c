@@ -183,7 +183,9 @@ static int handle_file(gpointer data, gpointer user_data)
   xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
   if (HAVE_OPT(COPY) && strcmp(OPT_ARG(COPY), "none")) {
     char *name = filebase;
-    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(COPY), doc, &name);
+    if (spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(COPY), doc, &name)) {
+      free(name);
+    }
   }
 
   cur = xmlDocGetRootElement(doc);
@@ -287,7 +289,9 @@ static int handle_file(gpointer data, gpointer user_data)
       // ensure they have unique filenames, or clashes are inevitable
       // in a queue further on in the process.
       sprintf(buffer, "%s-%u", filebase, i);
-      spool_result(OPT_ARG(SPOOLDIR), route[i].queue, route[i].doc, &name);
+      if (spool_result(OPT_ARG(SPOOLDIR), route[i].queue, route[i].doc, &name)) {
+        free(name); // the returned name
+      }
       xmlFreeDoc(route[i].doc);
       route[i].doc = NULL;
     }
