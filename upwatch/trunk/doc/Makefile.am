@@ -17,5 +17,5 @@ upwatch.txt: ${XMLSOURCE}
 upwatch.pdf: ${XMLSOURCE}
 	jw -c /etc/sgml/catalog -f docbook -b pdf -d style.dsl upwatch.xml
 
-CLEANFILES = upwatch.txt upwatch.html Makefile.in
+CLEANFILES = upwatch.pdf upwatch.txt upwatch.html Makefile.in
 
