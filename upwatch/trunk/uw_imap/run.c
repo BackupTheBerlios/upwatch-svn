@@ -104,7 +104,7 @@ void refresh_database(MYSQL *mysql)
                 "       pr_imap_def.ipaddress, pr_imap_def.username, "
                 "       pr_imap_def.password, "
                 "       pr_imap_def.yellow,  pr_imap_def.red "
-                "FROM   pr_imap_defi, pr_domain "
+                "FROM   pr_imap_def, pr_domain "
                 "WHERE  pr_imap_def.id > 1 and pr_imap_def.disable <> 'yes'"
                 "       and pr_imap_def.pgroup = '%d' and pr_domain.id = pr_imap_def.domid",
                 (unsigned)OPT_VALUE_GROUPID);

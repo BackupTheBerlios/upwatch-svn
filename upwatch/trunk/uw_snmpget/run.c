@@ -104,7 +104,7 @@ void refresh_database(MYSQL *mysql)
                 "       pr_snmpget_def.ipaddress, pr_snmpget_def.community, "
                 "       pr_snmpget_def.OID, pr_snmpget_def.mode, pr_snmpget_def.multiplier, "
                 "       pr_snmpget_def.yellow,  pr_snmpget_def.red "
-                "FROM   pr_snmpget_def "
+                "FROM   pr_snmpget_def, pr_domain "
                 "WHERE  pr_snmpget_def.id > 1 and pr_snmpget_def.disable <> 'yes'"
                 "       and pr_snmpget_def.pgroup = '%d'",
                 (unsigned) OPT_VALUE_GROUPID);

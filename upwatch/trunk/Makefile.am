@@ -36,7 +36,7 @@ endif
 
 if ENABLE_MONITORS
 MONITORPROG = uw_httpget uw_ping uw_mysql uw_pop3 uw_imap \
- ${UW_IPTRAF} ${UW_POSTGRESQL} ${UW_SNMPGET} ${UW_MSSQL}
+ ${UW_POSTGRESQL} ${UW_SNMPGET} ${UW_MSSQL}
 ENABLE_MONITOR = --enable-monitors
 endif
 

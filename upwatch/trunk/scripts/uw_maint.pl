@@ -132,11 +132,11 @@ sub process_options {
 # Actually delete rows, optionally showing progress
 #------------------------------------------------------------
 sub delete_rows {
-  my ($db, $q, $limit) = @_;
+  my ($domain, $db, $q, $limit) = @_;
   my $total_deleted;
   my $deleted;
 
-  if ($opt_v) { print "$q\n"; }
+  if ($opt_v) { print "$domain: $q\n"; }
   $total_deleted = 0;
   do {
     printf("Deleted %u rows. Working..    \b\b\b\b", $total_deleted);
@@ -165,24 +165,17 @@ sub delete_rows {
 #  $obj->unlock("/tmp/fill_probe_description");
 #}
 
+
 #------------------------------------------------------------
-# main
-#
+# do one database
 #------------------------------------------------------------
-sub main {
-  my $tmp;		# temp string variable
+sub maint {
+  my ($domain, $name, $host, $port, $user, $password) = @_;
   my $cursor;		# database cursor
   my $rc;		# return code
   my $row;		# row for hashref
 
-#  &get_fill_probe_description_lock();
-
-  log_error(__LINE__, 'notice', "start");
-
-  process_options();
-  parse_config("/etc/upwatch.conf");
-
-  my $db = DBI->connect("DBI:$dbtype:database=$dbname;host=$dbhost;port=3306", $dbuser, $dbpasswd ) || 
+  my $db = DBI->connect("DBI:mysql:database=$name;host=$host;port=$port", $user, $password ) || 
     die_with_exit(__LINE__, 1, DBI::errstr);
 
   $cursor = $db->prepare("select name, graphgroup from probe where id > 1 order by name");
@@ -210,100 +203,100 @@ sub main {
     }
     #print "$probename $lastid\n";
 
-#    for (my $probe = 2; $probe <= $lastid; $probe++) {
-#      my $deleted;
-#      my $limit = $opt_l;
-#      my $total_deleted;
-#
-#      $q = "delete from pr_${probename}_raw where probe = $probe and " .
-#           "stattime < UNIX_TIMESTAMP() - ($opt_r * 86400) LIMIT $limit";
-#      delete_rows($db, $q, $limit);
-#
-#      $q = "delete from pr_${probename}_day where probe = $probe and " .
-#           "stattime < UNIX_TIMESTAMP() - ($opt_d * 86400) LIMIT $limit";
-#      delete_rows($db, $q, $limit);
-#
-#      $q = "delete from pr_${probename}_week where probe = $probe and " .
-#           "stattime < UNIX_TIMESTAMP() - ($opt_w * 86400*7) LIMIT $limit";
-#      delete_rows($db, $q, $limit);
-#
-#      $q = "delete from pr_${probename}_month where probe = $probe and " .
-#           "stattime < UNIX_TIMESTAMP() - ($opt_m * 86400*7*31) LIMIT $limit";
-#      delete_rows($db, $q, $limit);
-#
-#      $q = "delete from pr_${probename}_year where probe = $probe and " .
-#           "stattime < UNIX_TIMESTAMP() - ($opt_y * 86400*365) LIMIT $limit";
-#      delete_rows($db, $q, $limit);
-#
-#      $q = "delete from pr_${probename}_5year where probe = $probe and " .
-#           "stattime < UNIX_TIMESTAMP() - ($opt_5 * 86400*365) LIMIT $limit";
-#      delete_rows($db, $q, $limit);
-#    }
-
     $q = "delete from pr_${probename}_raw where " . 
          "probe >= 2 and probe <= $lastid and " .
          "stattime < UNIX_TIMESTAMP() - ($opt_r * 86400) LIMIT $limit";
-    delete_rows($db, $q, $limit);
+    delete_rows($domain, $db, $q, $limit);
 
     $q = "delete from pr_${probename}_day where " . 
          "probe >= 2 and probe <= $lastid and " .
          "stattime < UNIX_TIMESTAMP() - ($opt_d * 86400) LIMIT $limit";
-    delete_rows($db, $q, $limit);
+    delete_rows($domain, $db, $q, $limit);
 
     $q = "delete from pr_${probename}_week where " . 
          "probe >= 2 and probe <= $lastid and " .
          "stattime < UNIX_TIMESTAMP() - ($opt_w * 86400*7) LIMIT $limit";
-    delete_rows($db, $q, $limit);
+    delete_rows($domain, $db, $q, $limit);
 
     $q = "delete from pr_${probename}_month where " . 
          "probe >= 2 and probe <= $lastid and " .
          "stattime < UNIX_TIMESTAMP() - ($opt_m * 86400*31) LIMIT $limit";
-    delete_rows($db, $q, $limit);
+    delete_rows($domain, $db, $q, $limit);
 
     $q = "delete from pr_${probename}_year where " . 
          "probe >= 2 and probe <= $lastid and " .
          "stattime < UNIX_TIMESTAMP() - ($opt_y * 86400*365) LIMIT $limit";
-    delete_rows($db, $q, $limit);
+    delete_rows($domain, $db, $q, $limit);
 
     $q = "delete from pr_${probename}_5year where " . 
          "probe >= 2 and probe <= $lastid and " .
          "stattime < UNIX_TIMESTAMP() - ($opt_5 * 86400*365) LIMIT $limit";
-    delete_rows($db, $q, $limit);
+    delete_rows($domain, $db, $q, $limit);
 
     if ($opt_o) {
       $q = "optimize table pr_${probename}_raw";
-      if ($opt_v) { print "$q\n"; }
+      if ($opt_v) { print "$domain: $q\n"; }
       $db->do($q);
       sleep 5;
 
       $q = "optimize table pr_${probename}_day";
-      if ($opt_v) { print "$q\n"; }
+      if ($opt_v) { print "$domain: $q\n"; }
       $db->do($q);
       sleep 5;
 
       $q = "optimize table pr_${probename}_week";
-      if ($opt_v) { print "$q\n"; }
+      if ($opt_v) { print "$domain: $q\n"; }
       $db->do($q);
       sleep 5;
 
       $q = "optimize table pr_${probename}_month";
-      if ($opt_v) { print "$q\n"; }
+      if ($opt_v) { print "$domain: $q\n"; }
       $db->do($q);
       sleep 5;
 
       $q = "optimize table pr_${probename}_year";
-      if ($opt_v) { print "$q\n"; }
+      if ($opt_v) { print "$domain: $q\n"; }
       $db->do($q);
       sleep 5;
 
       $q = "optimize table pr_${probename}_5year";
-      if ($opt_v) { print "$q\n"; }
+      if ($opt_v) { print "$domain: $q\n"; }
       $db->do($q);
       sleep 5;
     }
   }
 
   $db->disconnect;
+}
+
+#------------------------------------------------------------
+# main
+#
+#------------------------------------------------------------
+sub main {
+  my $tmp;		# temp string variable
+  my $cursor;		# database cursor
+  my $rc;		# return code
+  my $row;		# row for hashref
+
+#  &get_fill_probe_description_lock();
+
+  log_error(__LINE__, 'notice', "start " . @ARGV);
+
+  process_options();
+  parse_config("/etc/upwatch.conf");
+
+  my $db = DBI->connect("DBI:$dbtype:database=$dbname;host=$dbhost;port=3306", $dbuser, $dbpasswd ) || 
+    die_with_exit(__LINE__, 1, DBI::errstr);
+
+  $cursor = $db->prepare("select * from pr_domain where id > 1");
+  $rc = $cursor->execute || die_with_exit(__LINE__, 0, $db->errstr);
+  if ($cursor->rows == 0) {
+    die_with_exit(__LINE__, 0, "table probe is empty?? Please fix");
+  }
+  while ( $row = $cursor->fetchrow_hashref ) {
+    maint($row->{name}, $row->{db}, $row->{host}, $row->{port}, $row->{user}, $row->{password}); 
+  }
 
 #  &remove_fill_probe_description_lock();
 
