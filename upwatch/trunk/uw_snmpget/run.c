@@ -16,6 +16,8 @@ struct probedef {
 #include "probe.def_h"
 #include "../common/common.h"
 #include "probe.res_h"
+  float          prev_val;      /* previous value for relative results */
+  int            firsttime;     /* true if this is our first result */
   char		*msg;           /* last error message */
 };
 GHashTable *cache;
@@ -95,12 +97,12 @@ void refresh_database(MYSQL *mysql)
 
   sprintf(qry,  "SELECT pr_snmpget_def.id, "
                 "       pr_snmpget_def.ipaddress, pr_snmpget_def.community, "
-                "       pr_snmpget_def.passwd, pr_snmpget_def.OID, "
+                "       pr_snmpget_def.OID, pr_snmpget_def.mode, pr_snmpget_def.multiplier, "
                 "       pr_snmpget_def.yellow,  pr_snmpget_def.red "
                 "FROM   pr_snmpget_def "
-                "WHERE  pr_snmpget_def.id > 1 and pr_snmpget_def.disabled <> 'yes'"
+                "WHERE  pr_snmpget_def.id > 1 and pr_snmpget_def.disable <> 'yes'"
                 "       and pr_snmpget_def.pgroup = '%d'",
-                OPT_VALUE_GROUPID);
+                (unsigned) OPT_VALUE_GROUPID);
 
   result = my_query(mysql, 1, qry);
   if (!result) {
@@ -116,6 +118,7 @@ void refresh_database(MYSQL *mysql)
     if (!probe) {
       probe = g_malloc0(sizeof(struct probedef));
       probe->id = id;
+      probe->firsttime = 1;
       g_hash_table_insert(cache, guintdup(id), probe);
     }
 
@@ -123,12 +126,12 @@ void refresh_database(MYSQL *mysql)
     probe->ipaddress = strdup(row[1]);
     if (probe->community) g_free(probe->community);
     probe->community = strdup(row[2]);
-    if (probe->passwd) g_free(probe->passwd);
-    probe->passwd = strdup(row[3]);
     if (probe->OID) g_free(probe->OID);
-    probe->OID = strdup(row[4]);
-    probe->yellow = atof(row[5]);
-    probe->red = atof(row[6]);
+    probe->OID = strdup(row[3]);
+    strcpy(probe->mode, row[4]);
+    probe->multiplier = atof(row[5]);
+    probe->yellow = atof(row[6]);
+    probe->red = atof(row[7]);
     if (probe->msg) g_free(probe->msg);
     probe->msg = NULL;
     probe->seen = 1;
@@ -150,22 +153,42 @@ int asynch_response(int operation, struct snmp_session *sp, int reqid,
 		    struct snmp_pdu *pdu, void *magic)
 {
   struct probedef *probe = (struct probedef *)magic;
+  int rel = (strcmp(probe->mode, "relative") == 0);
 
   if (operation == RECEIVED_MESSAGE) {
     struct variable_list *vp = pdu->variables;
 
     if (pdu->errstat == SNMP_ERR_NOERROR) {
       char buf[128];
+      float val=0, value=0;
 
       snprint_value(buf, sizeof(buf), vp->name, vp->name_length, vp);
       switch (vp->type) {
       case ASN_INTEGER:
- 	probe->value = (float) *vp->val.integer; 
+ 	val = (float) *vp->val.integer; 
+        break;
+      case ASN_COUNTER:
+ 	val = (float) *(unsigned int *)vp->val.integer; 
         break;
       case ASN_FLOAT:
- 	probe->value = (float) *vp->val.floatVal; 
+ 	val = (float) *vp->val.floatVal; 
+        break;
+      default:
+        LOG(LOG_NOTICE, "unsupported type %d", vp->type);
         break;
       }
+      if (rel) {
+        if (val < probe->prev_val) { // wrapped around
+          value = (2^32)-1 - probe->prev_val + val; 
+        } else {
+          value = val - probe->prev_val; 
+        }
+      } else {
+        value = val; 
+      }
+      LOG(LOG_NOTICE, "received=%f, prev=%f, new=%f", val, probe->prev_val, value);
+      probe->prev_val = val;
+      probe->value = value;
     } else {
       int ix;
       char buf[128], err[256];
@@ -265,6 +288,13 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   char buffer[1024];
   time_t now = time(NULL);
 
+  if (probe->firsttime) {
+    probe->firsttime = 0;
+    if (!strcmp(probe->mode, "relative")) {
+      return; // don't write a result the first time through when doing relative
+    }
+  }
+
   info[0] = 0;
   if (probe->msg) {
     color = STAT_RED;
@@ -282,10 +312,10 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   sprintf(buffer, "%d", probe->id);           xmlSetProp(snmpget, "id", buffer);
   sprintf(buffer, "%s", probe->ipaddress);    xmlSetProp(snmpget, "ipaddress", buffer);
   sprintf(buffer, "%d", (int) now);           xmlSetProp(snmpget, "date", buffer);
-  sprintf(buffer, "%d", ((int)now)+(OPT_VALUE_EXPIRES*60));   xmlSetProp(snmpget, "expires", buffer);
+  sprintf(buffer, "%d", ((int)now)+((int)OPT_VALUE_EXPIRES*60));   xmlSetProp(snmpget, "expires", buffer);
   sprintf(buffer, "%d", color);               subtree = xmlNewChild(snmpget, NULL, "color", buffer);
+  probe->value *= probe->multiplier;
   sprintf(buffer, "%f", probe->value);        subtree = xmlNewChild(snmpget, NULL, "value", buffer);
-  probe->value = 0;
   if (probe->msg) {
     subtree = xmlNewTextChild(snmpget, NULL, "info", probe->msg);
     free(probe->msg);

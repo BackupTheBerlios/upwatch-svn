@@ -20,16 +20,68 @@ CREATE TABLE pr_[+name+]_def (
   freq smallint unsigned NOT NULL default '1',	-- frequency in minutes
   yellow float NOT NULL default '[+yellow+]',	-- value for yellow alert
   red float NOT NULL default '[+red+]', 	-- value for red alert [+ 		
-FOR def +]
+FOR def +][+
+CASE type +][+
+== float +]
   [+name+] [+type+][+
-IF length +]([+length+])[+ 
-ENDIF +] [+
-IF unsigned +]unsigned [+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
+== varchar +]
+  [+name+] [+type+][+
+IF length +]([+length+])[+
+ENDIF +][+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
+== text +]
+  [+name+] [+type+][+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
+== char +]
+  [+name+] [+type+][+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
+== bool +]
+  [+name+] enum('yes', 'no')[+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
+== enum +]
+  [+name+] enum([+enumval+]) [+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
+== tinyint +]
+  [+name+] [+type+][+
+IF unsigned +] unsigned[+
 ENDIF+][+
-IF null +][+ 
-ELSE +]NOT [+
-ENDIF null +]NULL default '[+default+]',	-- [+descrip+][+ 
-ENDFOR def +]
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
+== int +]
+  [+name+] [+type+][+
+IF unsigned +] unsigned[+
+ENDIF+][+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL [+
+IF auto +]auto_increment,       -- [+descrip+][+
+ELSE +]default '[+default+]',   -- [+descrip+][+
+ENDIF +][+
+== bigint +]
+  [+name+] [+type+][+
+IF unsigned +] unsigned[+
+ENDIF+][+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL [+
+IF auto +]auto_increment,       -- [+descrip+][+
+ELSE +]default '[+default+]',   -- [+descrip+][+
+ENDIF +][+
+ESAC type +][+ ENDFOR def+]
   PRIMARY KEY  (id),
   KEY server (server),
   KEY notify (notify),
@@ -57,14 +109,63 @@ CREATE TABLE pr_[+name+]_raw (
   red float NOT NULL default '[+red+]',         -- value for red alert
   stattime int unsigned NOT NULL default '0',   -- time when result was generated
   color smallint unsigned NOT NULL default '200', -- color value [+
-FOR result +]
+FOR result +][+
+CASE type +][+
+== float +]
+  [+name+] [+type+][+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
+== varchar +]
   [+name+] [+type+][+
 IF length +]([+length+])[+
-ENDIF +] [+
+ENDIF +][+
 IF null +][+
-ELSE +]NOT [+
-ENDIF null +]NULL default '[+default+]',        -- [+descrip+][+
-ENDFOR result +]
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
+== text +]
+  [+name+] [+type+][+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
+== char +]
+  [+name+] [+type+][+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
+== bool +]
+  [+name+] enum('yes', 'no')[+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
+== tinyint +]
+  [+name+] [+type+][+
+IF unsigned +] unsigned[+
+ENDIF+][+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
+== int +]
+  [+name+] [+type+][+
+IF unsigned +] unsigned[+
+ENDIF+][+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL [+
+IF auto +]auto_increment,       -- [+descrip+][+
+ELSE +]default '[+default+]',   -- [+descrip+][+
+ENDIF +][+
+== bigint +]
+  [+name+] [+type+][+
+IF unsigned +] unsigned[+
+ENDIF+][+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL [+
+IF auto +]auto_increment,       -- [+descrip+][+
+ELSE +]default '[+default+]',   -- [+descrip+][+
+ENDIF +][+
+ESAC type +][+ ENDFOR result+]
   message text NOT NULL default '',
   PRIMARY KEY (id),
   UNIQUE KEY probstat (probe,stattime)
@@ -105,7 +206,9 @@ ENDFOR result +]
 /* probe specific part of C struct for [+table+] definition */
 [+ FOR probe+][+ FOR def +][+ CASE type +][+ 
 == float +]
-  float *[+name+];	/* [+descrip+] */[+ 
+  float [+name+];	/* [+descrip+] */[+ 
+== enum +]
+  char [+name+][24];    /* [+descrip+] */[+
 == varchar +]
   char *[+name+];	/* [+descrip+] */[+ 
 == text +]
@@ -125,23 +228,23 @@ ENDIF+]
 [+(dne " * ")+]
  */
 /* probe specific part of C struct for [+table+] results */
-[+ FOR probe +][+ FOR result +][+ CASE type +][+ 
+[+ FOR probe +][+ FOR result +][+ CASE type +][+
 == float +]
-  float [+name+];	/* [+descrip+] */[+ 
+  float [+name+];       /* [+descrip+] */[+
+== enum +]
+  char [+name+][24];    /* [+descrip+] */[+
 == varchar +]
-  char *[+name+];	/* [+descrip+] */[+ 
+  char *[+name+];       /* [+descrip+] */[+
 == text +]
-  char *[+name+];	/* [+descrip+] */[+
+  char *[+name+];       /* [+descrip+] */[+
 == char +]
-  char *[+name+];	/* [+descrip+] */[+
-== tinyint +][+
-IF unsigned +]unsigned [+
-ENDIF+]
-  int [+name+];	/* [+descrip+] */[+
-== int +][+
-IF unsigned +]unsigned [+
-ENDIF+]
-  int [+name+];	/* [+descrip+] */[+ ESAC type +][+ ENDFOR def+][+ ENDFOR probe +]
+  char *[+name+];       /* [+descrip+] */[+
+== tinyint +]
+  [+ IF unsigned +]unsigned [+
+ENDIF+]int [+name+];    /* [+descrip+] */[+
+== int +]
+  [+ IF unsigned +]unsigned [+
+ENDIF+]int [+name+];    /* [+descrip+] */[+ ESAC type +][+ ENDFOR result+][+ ENDFOR probe +]
 [+ == enum +][+ FOR probe 
 +]PROBE_[+name+] = [+id+],
 [+ ENDFOR probe +][+ ESAC +]
