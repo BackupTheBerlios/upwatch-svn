@@ -100,7 +100,7 @@ void refresh_database(MYSQL *mysql)
                 "       pr_postgresql_def.dbuser, pr_postgresql_def.dbpasswd,"
                 "       pr_postgresql_def.query, "
                 "       pr_postgresql_def.yellow,  pr_postgresql_def.red "
-                "FROM   pr_postgresql_def "
+                "FROM   pr_postgresql_def, pr_domain "
                 "WHERE  pr_postgresql_def.id > 1 and pr_postgresql_def.disable <> 'yes'"
                 "       and pr_postgresql_def.pgroup = '%d'",
                 (unsigned)OPT_VALUE_GROUPID);
