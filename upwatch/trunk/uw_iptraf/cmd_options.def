@@ -80,8 +80,20 @@ flag = {
     descrip   = "internal network in CIDR format";
     doc       =
 'iptraf needs to know which network are internal and which are external,
-specificy thosr with one or more -n options. Note only CIDR format is supported
+specificy those with one or more -n options. Note only CIDR format is supported
 (192.168.170.0/24)';
+};
+
+flag = {
+    name      = extignore;
+    value     = n;
+    arg_type  = string;
+    stack_arg;
+    descrip   = "external network (in CIDR format) to ignore";
+    doc       =
+"Don't count packets to of from the internal network if they come
+from or to the specified network. Note only CIDR format is supported
+(192.168.170.0/24)";
 };
 
 #include generic_options.def

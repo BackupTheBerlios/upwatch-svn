@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.24 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.25 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -261,12 +261,12 @@ echo "* CONFIGURATION:                                        *"
 echo "*                                                       *"
 echo "* using RPM program: $RPMBUILD                        *"
 
-if test $HAVE_LIBNET -eq 0
-then
-echo "* libnet not found, uw_investigate will not be built    *"
-else
-AC_CONFIG_FILES([uw_investigate/Makefile])
-fi
+#if test $HAVE_LIBNET -eq 0
+#then
+#echo "* libnet not found, uw_investigate will not be built    *"
+#else
+#AC_CONFIG_FILES([uw_investigate/Makefile])
+#fi
 if test $HAVE_LIBPCAP -eq 0
 then
 echo "* libpcap not found, uw_iptraf will not be built        *"

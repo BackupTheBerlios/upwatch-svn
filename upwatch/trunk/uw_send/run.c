@@ -281,14 +281,15 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
   filesize = (int) st.st_size;
   if (filesize == 0) {
     LOG(LOG_WARNING, "zero size: %s", td->filename);
-    return(1);
+    return 1;
   }
 
   // expect: +OK UpWatch Acceptor v0.3. Please login
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
-  if (len == ETIME) {
-    LOG(LOG_WARNING, "timeout on greeting string");
+  if (len == -1) {
+    if (errno == ETIME) LOG(LOG_WARNING, "timeout reading login request string");
+    else LOG(LOG_WARNING, "%m");
     return 0;
   }
   if (debug > 3) fprintf(stderr, "%s[%u] < %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
@@ -301,20 +302,18 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
   uw_setproctitle("%s:%d %s", q->host, q->port, buffer);
   if (debug > 3) fprintf(stderr, "%s[%u] > %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
-  if (len == ETIME) {
-    LOG(LOG_WARNING, "timeout on greeting string");
-    return 0;
-  }
   if (len == -1) {
-    LOG(LOG_WARNING, "%m");
+    if (errno == ETIME) LOG(LOG_WARNING, "timeout writing %s", buffer);
+    else LOG(LOG_WARNING, "%m");
     return 0;
   }
 
   // expect here: +OK Please enter password
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
-  if (len == ETIME) {
-    LOG(LOG_WARNING, "timeout on USER response");
+  if (len == -1) {
+    if (errno == ETIME) LOG(LOG_WARNING, "timeout reading OK enter password");
+    else LOG(LOG_WARNING, "%m");
     return 0;
   }
   if (debug > 3) fprintf(stderr, "%s[%u] < %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
@@ -327,20 +326,18 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
   uw_setproctitle("%s:%d PASS xxxxxxxx", q->host, q->port);
   if (debug > 3) fprintf(stderr, "%s[%u] > %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
-  if (len == ETIME) {
-    LOG(LOG_WARNING, "timeout on greeting string");
-    return 0;
-  }
   if (len == -1) {
-    LOG(LOG_WARNING, "%m");
+    if (errno == ETIME) LOG(LOG_WARNING, "timeout writing %s", buffer);
+    else LOG(LOG_WARNING, "%m");
     return 0;
   }
 
   // expect here: +OK logged in, enter command
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
-  if (len == ETIME) {
-    LOG(LOG_WARNING, "timeout on PASS response");
+  if (len == -1) {
+    if (errno == ETIME) LOG(LOG_WARNING, "timeout reading enter command");
+    else LOG(LOG_WARNING, "%m");
     return 0;
   }
   if (debug > 3) fprintf(stderr, "%s[%u] < %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
@@ -353,20 +350,18 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
   uw_setproctitle("%s:%d %s", q->host, q->port, buffer);
   if (debug > 3) fprintf(stderr, "%s[%u] > %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
-  if (len == ETIME) {
-    LOG(LOG_WARNING, "timeout on greeting string");
-    return 0;
-  }
   if (len == -1) {
-    LOG(LOG_WARNING, "%m");
+    if (errno == ETIME) LOG(LOG_WARNING, "timeout writing %s", buffer);
+    else LOG(LOG_WARNING, "%m");
     return 0;
   }
 
   // expect here: +OK start sending your file
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
-  if (len == ETIME) {
-    LOG(LOG_WARNING, "timeout on DATA response");
+  if (len == -1) {
+    if (errno == ETIME) LOG(LOG_WARNING, "timeout reading DATA response");
+    else LOG(LOG_WARNING, "%m");
     return 0;
   }
   if (debug > 3) fprintf(stderr, "%s[%u] < %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
@@ -385,13 +380,9 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
   while ((i = fread(buffer, 1, sizeof(buffer), in)) == sizeof(buffer)) {
     //LOG(LOG_DEBUG, "read %d from input", i);
     len = st_write(rmt_nfd, buffer, i, TIMEOUT);
-    if (len == ETIME) {
-      LOG(LOG_WARNING, "timeout on greeting string");
-    fclose(in);
-      return 0;
-    }
     if (len == -1) {
-      LOG(LOG_WARNING, "%m");
+      if (errno == ETIME) LOG(LOG_WARNING, "timeout writing %s", buffer);
+      else LOG(LOG_WARNING, "%m");
       fclose(in);
       return 0;
     }
@@ -413,8 +404,9 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
   // expect here: +OK Thank you. Enter command
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
-  if (len == ETIME) {
-    LOG(LOG_WARNING, "timeout on DATA response");
+  if (len == -1) {
+    if (errno == ETIME) LOG(LOG_WARNING, "timeout reading enter command");
+    else LOG(LOG_WARNING, "%m");
     return 0;
   }
   if (debug > 3) fprintf(stderr, "%s[%u] < %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
@@ -427,20 +419,19 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
   uw_setproctitle("%s:%d %s", q->host, q->port, buffer);
   if (debug > 3) fprintf(stderr, "%s[%u] > %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
-  if (len == ETIME) {
-    LOG(LOG_WARNING, "timeout on greeting string");
-    return 0;
-  } 
   if (len == -1) {
-    LOG(LOG_WARNING, "%m");
+    if (errno == ETIME) LOG(LOG_WARNING, "timeout writing %s", buffer);
+    else LOG(LOG_WARNING, "%m");
     return 0;
   }
 
   // expect here: +OK Nice talking to you. Bye
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
-  if (len == ETIME) {
-    LOG(LOG_WARNING, "timeout on QUIT response");
+  if (len == -1) {
+    if (errno == ETIME) LOG(LOG_WARNING, "timeout reading QUIT response", buffer);
+    else LOG(LOG_WARNING, "%m");
+    return 0;
   }
   if (debug > 3) fprintf(stderr, "%s[%u] < %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
   return 1;

@@ -1,9 +1,9 @@
 PROBES = uw_httpget uw_ping uw_sysstat uw_acceptbb uw_mysql \
   uw_pop3 uw_imap
 
-if HAVE_LIBNET
-USE_LIBNET = uw_investigate
-endif
+#if HAVE_LIBNET
+#USE_LIBNET = uw_investigate
+#endif
 
 if HAVE_LIBPCAP
 USE_LIBPCAP = uw_iptraf
