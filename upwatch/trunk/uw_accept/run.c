@@ -343,7 +343,7 @@ login:
   chop(buffer, len);
   strncpy(passwd, buffer+5, sizeof(passwd)); passwd[sizeof(passwd)-1] = 0;
   if (!uw_password_ok(user, passwd)) {
-    LOG(LOG_WARNING, "%s: Login error: %s/%s", remotehost, user, passwd);
+    LOG(LOG_WARNING, "%s: Login error: -%s/%s-", remotehost, user, passwd);
     st_sleep(1);
     sprintf(buffer, "-ERR Please login\n");
     if (++errors < 4) goto login;

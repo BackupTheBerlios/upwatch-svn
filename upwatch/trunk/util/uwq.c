@@ -24,7 +24,7 @@ int main (int argc, char *argv[])
     only = *argv;
   }
 
-  if (strcmp(only, "create") == 0) {
+  if (only && strcmp(only, "create") == 0) {
     char buffer[PATH_MAX];
     struct passwd *up;
 

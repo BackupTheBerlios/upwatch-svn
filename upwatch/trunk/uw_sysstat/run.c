@@ -111,7 +111,7 @@ void get_hwstats(void)
 #endif
 
 #define STATFILE "/var/run/upwatch/uw_sysstat.stat"
-int check_log(GString *string, int idx, int *color)
+int check_log(GString *string, int idx)
 {
   FILE *in;
   struct stat st;
@@ -181,11 +181,12 @@ GString *check_logs(int *color)
 
   string = g_string_new("");
 
+  *color = STAT_GREEN;
   for (i=0; errlogspec[i].path; i++) {
     int logcolor;
 
     logregex_refresh_type("/etc/upwatch.d/uw_sysstat.d", errlogspec[i].style);
-    logcolor = check_log(string, i, color);
+    logcolor = check_log(string, i);
     if (logcolor > *color) *color = logcolor;
   }
   out = fopen(STATFILE, "w");
