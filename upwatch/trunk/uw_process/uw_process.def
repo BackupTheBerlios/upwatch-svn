@@ -39,11 +39,12 @@ flag = {
     name      = input;
     value     = I;
     arg_type  = string;
-    arg-default = uw_process;
+    stack_arg;
     descrip   = "name of queue to read from";
     doc       =
 'The argument is taken to be a maildir under the directory `spooldir`.
-Everything placed in this queue is transferred.';
+Everything placed in this queue is transferred. May be specified more then once.
+For every input queue given a new reader process is started';
 };
 
 flag = {

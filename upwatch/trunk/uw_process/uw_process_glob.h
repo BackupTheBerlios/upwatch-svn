@@ -101,7 +101,6 @@ struct summ_spec {
 
 typedef struct transaction {
   module *probe;		// point to the module processing this transaction
-  struct resfile *rf;   	// points to results file description
   void *def;			// probe definition data
   void *loc;			// local data ptr
   struct probe_result *res;	// probe result pointer

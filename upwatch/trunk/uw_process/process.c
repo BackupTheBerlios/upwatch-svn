@@ -553,6 +553,12 @@ int process(module *probe, trx *t)
   struct probe_result *prv=NULL;
   int err = 1; /* default ok */
 
+  if (!probe->db) {
+    probe->db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
+                              OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
+                              OPT_VALUE_DBCOMPRESS);
+  }
+
   if (debug > 3) fprintf(stderr, "fix_result\n");
   if (probe->fix_result) {
     probe->fix_result(probe, t->res); // do some final calculations on the result

@@ -62,7 +62,7 @@ void notify(module *probe, struct probe_def *def, struct probe_result *res, stru
     break;
 
   case STAT_YELLOW:
-    if (prv->color == STAT_RED) {
+    if (prv->color == STAT_RED || prv->color == STAT_GREEN) {
       if (def->email[0] == 0) {
         if (debug > 3) fprintf(stderr, "No email address\n");
         break; // nowhere to email to

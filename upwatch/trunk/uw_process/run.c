@@ -2,6 +2,7 @@
 #include <generic.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <unistd.h>
 
 #include <netdb.h>
@@ -21,58 +22,10 @@
 static int handle_file(gpointer data, gpointer user_data);
 extern  int process(module *module, trx *t);
 extern struct summ_spec summ_info[]; 
-void process_probes(gpointer data);
-gpointer process_probes_thread(gpointer data);
-gpointer read_input_files_thread(gpointer data);
 
-struct resfile {
-  char *filename;
-  char *fromhost;
-  time_t fromdate;
-  int count; // number of results in this file
-};
-GStaticRecMutex resfile_mutex = G_STATIC_REC_MUTEX_INIT;
-GPtrArray *resfile_arr;
-
-static void resfile_free(void *p)
-{
-  struct resfile *rf = (struct resfile *)p;
-
-  if (rf->filename) { g_free(rf->filename); rf->filename = NULL; }
-  if (rf->fromhost) { g_free(rf->fromhost); rf->fromhost = NULL; }
-  g_free(rf);
-}
-
-void resfile_remove(struct resfile *rf, int ondisk)
-{
-  g_static_rec_mutex_lock (&resfile_mutex);
-  if (ondisk) { 
-    unlink(rf->filename);
-    if (debug > 3) { fprintf(stderr, "%s: deleted\n", rf->filename); }
-  }
-  g_ptr_array_remove(resfile_arr, rf);
-  resfile_free(rf);
-  g_static_rec_mutex_unlock (&resfile_mutex);
-}
-
-void resfile_incr(struct resfile *rf)
-{
-  g_static_rec_mutex_lock (&resfile_mutex);
-  rf->count++;
-  g_static_rec_mutex_unlock (&resfile_mutex);
-}
-
-void resfile_decr(struct resfile *rf)
-{
-  g_static_rec_mutex_lock (&resfile_mutex);
-  if (rf) {
-    rf->count--;
-    if (rf->count < 1) {
-      resfile_remove(rf, TRUE);
-    }
-  }
-  g_static_rec_mutex_unlock (&resfile_mutex);
-}
+static int master = 1;
+static pid_t childpid[256];
+static int childpidcnt;
 
 static void modules_end_run(void)
 {
@@ -97,7 +50,7 @@ static void modules_end_run(void)
       strcat(buf, wrk);
     }
   }
-  if (debug) { 
+  if (debug > 1 && total) { 
     LOG(LOG_DEBUG, "Processed: Total:%u (%s)", total, buf);
   }
 }
@@ -152,9 +105,27 @@ static void modules_start_run(void)
   int i;
 
   for (i = 0; modules[i]; i++) {
+    MYSQL_RES *result;
+
     modules[i]->db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
                                      OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
                                      OPT_VALUE_DBCOMPRESS);
+    if (modules[i]->db) {
+      result = my_query(modules[i]->db, 0, "select fuse from probe where id = '%d'", modules[i]->class);
+      if (result) {
+        MYSQL_ROW row;
+        row = mysql_fetch_row(result);
+        if (row) {
+          if (row[0]) modules[i]->fuse  = (strcmp(row[0], "yes") == 0) ? 1 : 0;
+        } else {
+          LOG(LOG_NOTICE, "probe record for id %u not found", modules[i]->class);
+        }
+        mysql_free_result(result);
+      }
+      close_database(modules[i]->db);
+      modules[i]->db = NULL;
+    }
+
     if (modules[i]->start_run) {
       modules[i]->start_run(modules[i]);
     }
@@ -182,18 +153,49 @@ static void modules_init(void)
   }
 }
 
+void child_termination_handler (int signum)
+{
+  for (;;) {
+    pid_t pid;
+    int i, status;
+
+    pid = waitpid(-1, &status, WNOHANG);
+    if (pid < 0) {
+      if (errno != ECHILD) {
+        LOG(LOG_NOTICE, "waitpid: %u %m", errno);
+      }
+      return;
+    }
+    if (pid == 0) return;
+    for (i = 0; i < childpidcnt; i++) {
+      if (childpid[i] == pid) { // wipe pid from list
+        childpid[i] = 0;
+        break;
+      }
+    }
+    if (WIFEXITED(status)) {
+      LOG(LOG_NOTICE, "child %u exited with status %d", pid, WEXITSTATUS(status));
+    }
+    if (WIFSIGNALED(status)) {
+      LOG(LOG_NOTICE, "child %u exited by signal %d", pid, WTERMSIG(status));
+    }
+#ifdef WCOREDUMP
+    if (WCOREDUMP(status)) {
+      LOG(LOG_NOTICE, "cure dumped");
+    }
+#endif
+  }
+}
+
 int init(void)
 {
+  struct sigaction new_action;
+
   daemonize = TRUE;
   if (HAVE_OPT(RUN_QUEUE) || HAVE_OPT(SUMMARIZE)) {
     every = ONE_SHOT;
   } else {
-#ifdef USE_THREADS
-    every = ONE_SHOT;
-    g_thread_init(NULL);
-#else
     every = EVERY_5SECS;
-#endif
   }
 
   // check trust option strings
@@ -223,8 +225,18 @@ int init(void)
       } 
     }
   }
+  if (!HAVE_OPT(INPUT)) {
+    LOG(LOG_NOTICE, "Error: no input queue given");
+    return(0);
+  }
+
+  /* set up SIGCHLD handler */
+  new_action.sa_handler = child_termination_handler;
+  sigemptyset (&new_action.sa_mask);
+  new_action.sa_flags = SA_RESTART|SA_NOCLDSTOP; // not interested in children that stopped
+  sigaction (SIGCHLD, &new_action, NULL);
+
   xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
-  resfile_arr = g_ptr_array_new();
   modules_init();
   atexit(modules_cleanup);
   return(1);
@@ -264,7 +276,7 @@ static int mystrcmp(char **a, char **b)
 //************************************************************************
 // read all files in the directory, sort and process them
 //***********************************************************************
-void read_input_files(char *path)
+int read_input_files(char *path)
 {
   int count = 0;
   G_CONST_RETURN gchar *filename;
@@ -276,9 +288,9 @@ void read_input_files(char *path)
 extern int forever;
   dir = g_dir_open (path, 0, &error);
   if (dir == NULL) {
-    LOG(LOG_NOTICE, "g_dir_open: %s", error);
+    LOG(LOG_NOTICE, "g_dir_open %s: (%m) %s", path, error);
     g_ptr_array_free(arr, TRUE);
-    return;
+    return 0;
   }
   while ((filename = g_dir_read_name(dir)) != NULL) {
     char buffer[PATH_MAX];
@@ -292,49 +304,29 @@ extern int forever;
 
   if (!files) {
     g_ptr_array_free(arr, TRUE);
-    return;
+    return 0;
   }
   g_ptr_array_sort(arr, mystrcmp);
   if (debug > 3) { fprintf(stderr, "%u files in directory\n", files); sleep(3); }
 
   // now we have a sorted list of files 
-  // walk the list, and add resfile descriptions for files we aren't processing yet
   // 
   for (i=0; i < arr->len && forever; i++) {
-    struct resfile *rf;
-    int j, found = 0;
-
-    if (resfile_arr->len >= OPT_VALUE_BATCH_SIZE) {
-      free(g_ptr_array_index(arr,i));
-      if (debug > 3) { fprintf(stderr, "%u ", i); }
-      continue;
-    }
-    if (debug > 3) { fprintf(stderr, "%u: %s: ", i, g_ptr_array_index(arr,i)); }
-    for (j=0; j < resfile_arr->len; j++) { // are we already working on this file?
-      rf = g_ptr_array_index(resfile_arr, j);
-      if (!strcmp(rf->filename, g_ptr_array_index(arr,i))) {
-        found = 1; // file already in the list -> already working on it
-        break;
-      }
-    }
-    if (found) {
-      fprintf(stderr, "already working on it\n");
-      free(g_ptr_array_index(arr,i));
-      continue;
-    }
-    rf = g_malloc0(sizeof(struct resfile));
-    rf->filename = g_ptr_array_remove_index(arr,i);
-    uw_setproctitle("reading %s", rf->filename);
-    g_ptr_array_add(resfile_arr, rf); 
-    if (debug > 3) { fprintf(stderr, "IMPORTED\n"); }
-    handle_file(rf, NULL); // extract probe results and queue them
+    if (debug > 3) { fprintf(stderr, "%u: %s: ", i, (char *)g_ptr_array_index(arr,i)); }
+    uw_setproctitle("reading %s", (char *)g_ptr_array_index(arr,i));
+    handle_file(g_ptr_array_index(arr,i), NULL); // extract probe results and queue them
     count++;
   }
   g_ptr_array_free(arr, TRUE);
+  return(count);
 }
+
+static char path[PATH_MAX];
 
 int run(void)
 {
+  int count = 0;
+  struct hostent *host;
 static int resummarize(void);
 
   if (debug > 3) { LOG(LOG_DEBUG, "run()"); }
@@ -343,154 +335,46 @@ static int resummarize(void);
     return(resummarize()); // --summarize
   }
 
-#ifdef USE_THREADS
-  {
-    GError *error=NULL;
-    GThread *tid;
-    int sep;
-    int     ct  = STACKCT_OPT( SEPARATE );
-    char**  pn = STACKLST_OPT( SEPARATE );
+  // the following statement ensures the nss-*.so libraries are loaded
+  // before fork() is called. If not, AND this program is run under gdb
+  // children will get a SIGTRAP when THEY load nss-*.so libs, and will
+  // be killed.
+  host = gethostbyname("localhost");
 
-    for (sep=0; sep < ct; sep++) { // for all 'separate' flags
-      char buf[1024], tmp[1024], *p;
-      char *tmp2 = tmp;
-      int found = 0;
+  if (master) {
+    int     ct  = STACKCT_OPT( INPUT );
+    char**  pn = STACKLST_OPT( INPUT );
 
-      strcpy(buf, pn[sep]);
-      p = strtok_r(buf, " ,;:\n\r\t/", &tmp2);  // split the argument into probenames
-      while (p) {
-        int j;
-        for (j=0; modules[j]; j++) {
-          if (strcmp(modules[j]->module_name, p) == 0) {
-            modules[j]->sep = sep;  // if found, set separate group number
-            found = 1;
-            break;
-          }
+    childpidcnt = ct;
+    for (ct--; ct; ct--) {
+      if (childpid[ct] == 0) { 
+        pid_t pid;
+
+        sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), pn[ct]);
+        pid = fork();
+        if (pid == -1) {
+          LOG(LOG_NOTICE, "fork: %m");
+          return 1;
         }
-        if (found) { // fork a thread for this separate group
-          g_thread_create(process_probes_thread, (gpointer)sep, FALSE, &error);
-          if (debug > 3) { LOG(LOG_NOTICE, "%d %s", sep, pn[sep]); }
+        if (pid == 0) {
+          master = FALSE; 
+          break;
         }
-        p = strtok_r(NULL, " ,;:\n\r\t/", &tmp2);
+        LOG(LOG_NOTICE, "started [%u] on %s", pid, path);
+        childpid[ct] = pid;
+        sleep(1);
       }
-    }
-    g_thread_create(process_probes_thread, (gpointer)-1, FALSE, &error);
-    tid = g_thread_create(read_input_files_thread, NULL, TRUE, &error);
-    g_thread_join(tid);
-    modules_cleanup();
+    } 
   }
-#else
-  {
-    char path[PATH_MAX];
-    sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), OPT_ARG(INPUT));
-    uw_setproctitle("listing %s", path);
-    read_input_files(path);
-    process_probes((gpointer)-1);
-  }
-#endif
-  return(resfile_arr->len);
-}
+  if (master) return 0;
 
-gpointer process_probes_thread(gpointer data)
-{
-extern int forever;
-  while (forever) {
-    sleep(1);
-    if (debug > 3) { LOG(LOG_NOTICE, "Processing probes"); }
-    process_probes(data);
-  }
-  return(NULL);
-}
+  uw_setproctitle("listing %s", path);
 
-gpointer read_input_files_thread(gpointer data)
-{
-  char path[PATH_MAX];
-extern int forever;
-  while (forever) {
-    sleep(5);
-
-    if (resfile_arr->len < 10) {
-      sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), OPT_ARG(INPUT));
-      uw_setproctitle("listing %s", path);
-      if (debug > 3) { LOG(LOG_NOTICE, "Reading from %s", path); }
-      read_input_files(path);
-      uw_setproctitle("sleeping");
-    }
-  }
-  return(NULL);
-}
-
-void process_probes(gpointer data)
-{
-extern int forever;
-  int failures = 0;
-  int i, sep;
-  if (debug> 3) { LOG(LOG_DEBUG, "processing %u file entries", resfile_arr->len); }
-
-  sep = (int) data;
-  // Now we have the queues updated, process all results
-  //
-  for (i = 0; modules[i]; i++) {
-    unsigned count = 0;
-    char buf[20];
-    MYSQL_RES *result;
-
-    if (modules[i]->sep != sep) continue;
-    modules[i]->db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
-                                     OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
-                                     OPT_VALUE_DBCOMPRESS);
-    if (modules[i]->db == NULL) return;
-
-    result = my_query(modules[i]->db, 0, "select fuse from probe where id = '%d'", modules[i]->class);
-    if (result) {
-      MYSQL_ROW row;
-      row = mysql_fetch_row(result);
-      if (row) {
-        if (row[0]) modules[i]->fuse  = (strcmp(row[0], "yes") == 0) ? 1 : 0;
-      } else {
-        LOG(LOG_NOTICE, "probe record for id %u not found", modules[i]->class);
-      }
-      mysql_free_result(result);
-    }
-
-    if (modules[i]->start_run) {
-      modules[i]->start_run(modules[i]);
-    }
-    buf[0] = 0;
-    while (forever) {
-      trx *t;
-      int ret;
-
-      g_static_mutex_lock (&modules[i]->queue_mutex);
-      t = g_queue_pop_head(modules[i]->queue);
-      g_static_mutex_unlock (&modules[i]->queue_mutex);
-      if (t == NULL) break;
-
-      if (debug > 3) { fprintf(stderr, "%s %s@%s", buf, t->res->name, t->rf->fromhost); }
-      if (buf[0] == 0 || count % 100 == 0) {
-        strftime(buf, sizeof(buf), "%Y-%m-%d %T", gmtime(&t->rf->fromdate));
-        uw_setproctitle("%s %s@%s", buf, t->res->name, t->rf->fromhost);
-      }
-      ret = process(modules[i], t);
-      if (ret == 0 || ret == -1) { // error in processing this probe
-        failures++; // should log this somewhere
-      } else if (ret == -2) {
-        break; // fatal database error
-      } else {
-        count++;
-      }
-      resfile_decr(t->rf);
-      g_free(t);
-    }
-    if (modules[i]->end_run) { 
-      modules[i]->end_run(modules[i]);
-    }
-    close_database(modules[i]->db);
-    modules[i]->db = NULL;
-    if (debug && count) {
-      LOG(LOG_DEBUG, "Processed: %s:%u", modules[i]->module_name, count);
-    }
-  }
+  modules_start_run();
+  count = read_input_files(path);
+  modules_end_run();
+ 
+  return(count);
 }
 
 //*******************************************************************
@@ -564,44 +448,48 @@ static void *extract_info_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur,
   return(res);
 }
 
-
 /*
  * Reads a results file
 */
 static int handle_file(gpointer data, gpointer user_data)
 {
-  struct resfile *rf = (struct resfile *)data;
+  char *filename = (char *)data;
   xmlDocPtr doc; 
   xmlNsPtr ns;
   xmlNodePtr cur;
   char *p;
+  char *fromhost = NULL;
+  time_t fromdate;
   int failures=0;
   struct stat st;
   int filesize;
   int i;
 
-  if (debug) { LOG(LOG_DEBUG, "Processing %s", rf->filename); }
+  if (debug) { LOG(LOG_DEBUG, "Processing %s", filename); }
 
-  if (stat(rf->filename, &st)) {
-    LOG(LOG_WARNING, "%s: %m", rf->filename);
-    resfile_remove(rf, FALSE);
+  if (stat(filename, &st)) {
+    LOG(LOG_WARNING, "%s: %m", filename);
+    unlink(filename);
+    free(filename);
     return 0;
   }
   filesize = (int) st.st_size;
   if (filesize == 0) {
-    LOG(LOG_WARNING, "%s: size 0, removed", rf->filename);
-    resfile_remove(rf, TRUE);
+    LOG(LOG_WARNING, "%s: size 0, removed", filename);
+    unlink(filename);
+    free(filename);
     return 0;
   }
 
-  doc = xmlParseFile(rf->filename);
+  doc = xmlParseFile(filename);
   if (doc == NULL) {
     char cmd[2048];
 
-    LOG(LOG_NOTICE, "%s: %m", rf->filename);
-    sprintf(cmd, "cat %s >> %s", rf->filename, OPT_ARG(FAILURES));
+    LOG(LOG_NOTICE, "%s: %m", filename);
+    sprintf(cmd, "cat %s >> %s", filename, OPT_ARG(FAILURES));
     system(cmd);
-    resfile_remove(rf, TRUE);
+    unlink(filename);
+    free(filename);
     return 0;
   }
   if (HAVE_OPT(COPY) && strcmp(OPT_ARG(COPY), "none")) {
@@ -610,30 +498,33 @@ static int handle_file(gpointer data, gpointer user_data)
 
   cur = xmlDocGetRootElement(doc);
   if (cur == NULL) {
-    LOG(LOG_NOTICE, "%s: empty document", rf->filename);
-    resfile_remove(rf, TRUE);
+    LOG(LOG_NOTICE, "%s: empty document", filename);
+    unlink(filename);
+    free(filename);
     xmlFreeDoc(doc);
     return 0;
   }
   ns = xmlSearchNsByHref(doc, cur, (const xmlChar *) NAMESPACE_URL);
   if (ns == NULL) {
-    LOG(LOG_NOTICE, "%s: wrong type, result namespace not found", rf->filename);
-    resfile_remove(rf, TRUE);
+    LOG(LOG_NOTICE, "%s: wrong type, result namespace not found", filename);
+    unlink(filename);
+    free(filename);
     xmlFreeDoc(doc);
     return 0;
   }
   if (xmlStrcmp(cur->name, (const xmlChar *) "result")) {
-    LOG(LOG_NOTICE, "%s: wrong type, root node is not 'result'", rf->filename);
-    resfile_remove(rf, TRUE);
+    LOG(LOG_NOTICE, "%s: wrong type, root node is not 'result'", filename);
+    unlink(filename);
+    free(filename);
     xmlFreeDoc(doc);
     return 0;
   }
   p = xmlGetProp(cur, (const xmlChar *) "fromhost");
   if (p) {
-    rf->fromhost = strdup(p);
+    fromhost = strdup(p);
     xmlFree(p);
   }
-  rf->fromdate = (time_t) xmlGetPropUnsigned(cur, (const xmlChar *) "date");
+  fromdate = (time_t) xmlGetPropUnsigned(cur, (const xmlChar *) "date");
 
   /*
    * Now, walk the tree.
@@ -644,15 +535,19 @@ static int handle_file(gpointer data, gpointer user_data)
     cur = cur->next;
   }
   if (cur == 0) {
-    LOG(LOG_NOTICE, "%s: empty file", rf->filename);
-    resfile_remove(rf, TRUE);
+    LOG(LOG_NOTICE, "%s: empty file", filename);
+    unlink(filename);
+    free(filename);
     xmlFreeDoc(doc);
     return 0;
   }
   /* Second level is a list of probes, but be laxist */
   for (failures = 0; cur != NULL;) {
     int found = 0;
+    char buf[20];
+    int count = 0;
 
+    buf[0] = 0;
     if (xmlIsBlankNode(cur)) {
       cur = cur->next;
       continue;
@@ -660,6 +555,7 @@ static int handle_file(gpointer data, gpointer user_data)
     for (i = 0; modules[i]; i++) {
       trx *t;
       xmlNodePtr del = cur;
+      int ret;
 
       if (modules[i]->accept_probe) {
         if (!modules[i]->accept_probe(modules[i], cur->name)) continue;
@@ -668,17 +564,27 @@ static int handle_file(gpointer data, gpointer user_data)
       } 
 
       if (cur->ns != ns) {
-        LOG(LOG_ERR, "method found, but namespace incorrect on %s", cur->name);
-        continue;
+        LOG(LOG_ERR, "%s: namespace %s != %s", cur->name, cur->ns, ns);
+        //continue;
       }
       found = 1;
-      resfile_incr(rf);
       t = (trx *)g_malloc0(sizeof(trx));
-      t->rf = rf;
       t->res = extract_info_from_xml(modules[i], doc, cur, ns);
-      g_static_mutex_lock (&modules[i]->queue_mutex);
-      g_queue_push_tail(modules[i]->queue, t);
-      g_static_mutex_unlock (&modules[i]->queue_mutex);
+
+      if (buf[0] == 0 || count % 100 == 0) {
+        strftime(buf, sizeof(buf), "%Y-%m-%d %T", gmtime(&fromdate));
+        uw_setproctitle("%s %s@%s", buf, t->res->name, fromhost);
+      }
+      if (debug > 3) { fprintf(stderr, "%s %s@%s", buf, t->res->name, fromhost); }
+      ret = process(modules[i], t);
+      free(t);
+      if (ret == 0 || ret == -1) { // error in processing this probe
+        failures++; // should log this somewhere
+      } else if (ret == -2) {
+        goto errexit; // fatal database error
+      } else {
+        count++;
+      }
       cur = cur->next;
       xmlUnlinkNode(del); // succeeded, remove this node from the XML tree
       xmlFreeNode(del);
@@ -693,7 +599,12 @@ static int handle_file(gpointer data, gpointer user_data)
   if (failures) {
     xmlSaveFormatFile(OPT_ARG(FAILURES), doc, 1);
   }
+  unlink(filename);
+
+errexit:
+  free(filename);
   xmlFreeDoc(doc);
+  if (fromhost) free(fromhost);
   return 0;
 }
 

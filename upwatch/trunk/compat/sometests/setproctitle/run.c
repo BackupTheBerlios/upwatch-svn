@@ -11,8 +11,9 @@ int init(void)
 
 int run(void)
 {
-  LOG(LOG_NOTICE, "perror: %d \%m %m %s", 45, "test string");
+//  LOG(LOG_NOTICE, "perror: %d \%m %m %s", 45, "test string");
   uw_setproctitle("Hallo %s", "Ron");
-  sleep (1);
+  fprintf(stderr, "Hallo!\n");
+  every = EVERY_SECOND;
 }
 

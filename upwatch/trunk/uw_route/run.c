@@ -217,7 +217,7 @@ static int handle_file(gpointer data, gpointer user_data)
       continue;
     }
     for (i = 0; route[i].name; i++) {
-      xmlNodePtr new;
+      xmlNodePtr node, new;
 
       if (strcmp(cur->name, route[i].name)) {
         continue;
@@ -232,14 +232,13 @@ static int handle_file(gpointer data, gpointer user_data)
         route[i].doc = UpwatchXmlDoc("result");
         xmlSetDocCompressMode(route[i].doc, OPT_VALUE_COMPRESS);
       }
-      new = xmlCopyNode(cur, 1);
-      if (route[i].doc->children == NULL) {
-        xmlAddChild((xmlNodePtr)route[i].doc, new);
-      } else {
-        xmlAddNextSibling(route[i].doc->children, new);
-      }
-      //xmlDocFormatDump(stderr, route[i].doc, TRUE);
+      node = cur;
       cur = cur->next;
+      xmlUnlinkNode(node);
+      new = xmlCopyNode(node, 1);
+      xmlFreeNode(node);
+      xmlAddChild(xmlDocGetRootElement(route[i].doc), new);
+      //xmlDocFormatDump(stderr, route[i].doc, TRUE);
       break;
     }
     if (!found) {
@@ -255,6 +254,7 @@ static int handle_file(gpointer data, gpointer user_data)
 
   for (i = 0; route[i].name; i++) {
     if (route[i].doc) {
+      //xmlReconciliateNs(route[i].doc, xmlDocGetRootElement(route[i].doc));
       spool_result(OPT_ARG(SPOOLDIR), route[i].queue, route[i].doc, NULL);
       xmlFreeDoc(route[i].doc);
       route[i].doc = NULL;

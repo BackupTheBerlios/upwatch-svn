@@ -16,17 +16,20 @@
 #include "dmalloc.h"
 #endif
 
-static void wait_to_start(void);
-
 int debug;
 int startsec;
 int forever=30;
-static int runcounter;
 char *progname;
-
 
 void termination_handler (int signum)
 {
+  if (signum == SIGTRAP) return;
+
+  if (forever == 0) {
+    // been here before?
+    exit(0);
+  }
+
   // Note: this function hangs when ElectricFence is used, don't know why
   LOG(LOG_NOTICE, "signal %d received - finishing up", signum); 
 
@@ -35,103 +38,13 @@ void termination_handler (int signum)
 
 void exit_function(void)
 {
-  if (debug > 1) LOG(LOG_NOTICE, "exit");
+  if (debug > 1) {
+    LOG(LOG_NOTICE, "exit");
+  }
 }
 
 int every = ONE_SHOT;
 int daemonize = TRUE;
-
-static void one_shot(void)
-{
-  int ret;
-  struct timeval start;
-
-  gettimeofday(&start, NULL);
-  ret = run(); 	/* this will run once */
-  if (debug > 0 && ret) {
-    struct timeval end;
-
-    gettimeofday(&end, NULL);
-    LOG(LOG_DEBUG, "run lasted %f seconds", ((float)timeval_diff(&end, &start))/1000000.0);
-  }     
-  return;
-}
-
-static void every_second(void)
-{
-  int ret;
-
-  while (forever) {
-    struct timeval start;
-
-    uw_setproctitle("sleeping");
-    sleep(1);
-    if (!forever) break; // kill -TERM ?
-    gettimeofday(&start, NULL);
-    ++runcounter;
-    uw_setproctitle("processing");
-    ret = run(); 	/* this will run every second */
-    if (debug > 0 && ret) {
-      struct timeval end;
-
-      gettimeofday(&end, NULL);
-      LOG(LOG_DEBUG, "run %d: processed %d items in %f seconds", runcounter, ret, ((float)timeval_diff(&end, &start))/1000000.0);
-    }     
-  }
-  return;
-}
-
-static void every_5secs(void)
-{
-  int ret;
-
-  while (forever) {
-    struct timeval start;
-    int i;
-
-    uw_setproctitle("sleeping");
-    for (i=0; i < 5 && forever; i++) {
-      sleep(1);
-    }
-    if (!forever) break; // kill -TERM ?
-    gettimeofday(&start, NULL);
-    ++runcounter;
-    uw_setproctitle("processing");
-    ret = run(); 	/* this will run every 5 seconds */
-    if (debug > 0 && ret) {
-      struct timeval end;
-
-      gettimeofday(&end, NULL);
-      LOG(LOG_DEBUG, "run %d: processed %d items in %f seconds", runcounter, ret, ((float)timeval_diff(&end, &start))/1000000.0);
-    }     
-  }
-  return;
-}
-
-static void every_minute(void)
-{
-  int ret;
-
-  while (forever) {
-    struct timeval start;
-
-    uw_setproctitle("sleeping");
-    wait_to_start();
-    if (!forever) break; // kill -TERM ?
-    ++runcounter;
-    gettimeofday(&start, NULL);
-    uw_setproctitle("processing");
-    ret = run(); 	/* run every minute - returns amount of items processed */
-    if (debug > 0 && ret) {
-      struct timeval end;
-
-      gettimeofday(&end, NULL);
-      LOG(LOG_DEBUG, "run %d: processed %d items in %f seconds", runcounter, ret, ((float)timeval_diff(&end, &start))/1000000.0);
-    }     
-    sleep(1); // just in case the above run() function lasts less then a second
-  }
-  return;
-}
 
 /****************************
  main
@@ -158,7 +71,6 @@ int main( int argc, char** argv, char **envp )
   }
   //fprintf(stderr, "%s\n", progname);
 
-
   umask(002); // all created files must be group-writable
   arg_ct = optionProcess( &progOptions, argc, newArgv );
   argc -= arg_ct;
@@ -166,7 +78,9 @@ int main( int argc, char** argv, char **envp )
 
   debug = OPT_VALUE_DEBUG;
 
-  if (debug > 1) LOG(LOG_NOTICE, "start");
+  if (debug > 1) {
+    LOG(LOG_NOTICE, "start");
+  }
   atexit(exit_function);
   if (!init()) exit(1);
 
@@ -186,6 +100,11 @@ int main( int argc, char** argv, char **envp )
   new_action.sa_flags = 0;
   sigaction (SIGSEGV, &new_action, NULL);
 
+  new_action.sa_handler = termination_handler;
+  sigemptyset (&new_action.sa_mask);
+  new_action.sa_flags = 0;
+  sigaction (SIGTRAP, &new_action, NULL);
+
   /* ignore SIGHUP/SIGPIPE */
   new_action.sa_handler = SIG_IGN;
   sigemptyset (&new_action.sa_mask);
@@ -198,51 +117,67 @@ int main( int argc, char** argv, char **envp )
   sigaction (SIGPIPE, &new_action, NULL);
 
   if (debug < 3 && daemonize) daemon(0, 0);
-  switch(every) {
-    case EVERY_MINUTE:  every_minute(); break;
-    case EVERY_5SECS:   every_5secs(); break;
-    case EVERY_SECOND:  every_second(); break;
-    case ONE_SHOT:      one_shot(); break;
-  }
+  do {
+    struct timeval start;
+    int runcounter=0;
+    int i, now;
+    time_t now_t;
+    struct tm *gmt;
+    int sleep_seconds = 0;
+
+    sleep(1);  // ensure second rolls over
+    uw_setproctitle("sleeping");
+    switch(every) {
+    case EVERY_SECOND:
+      // already slept 1 second
+      break;
+    case EVERY_5SECS:
+      sleep_seconds = 5;
+      break;
+    case EVERY_MINUTE:
+      time(&now_t);
+      gmt = gmtime(&now_t);
+      now = gmt->tm_sec;
+  
+      if (debug > 3) { 
+        sleep_seconds = 3;
+        fprintf(stderr, "waiting %d seconds..\n", sleep_seconds);
+      } else {
+        if (now >= startsec) {
+          sleep_seconds = startsec - now + 60;
+        } else {
+          sleep_seconds = startsec - now;
+        }
+      }
+      break;
+    case ONE_SHOT:
+    default:
+      break;
+    }
+    if (debug > 3) { 
+      LOG(LOG_DEBUG, "sleeping for %d seconds", sleep_seconds);
+    }
+    for (i=0; i < sleep_seconds && forever; i++) {
+      sleep(1);
+    }
+    ++runcounter;
+    gettimeofday(&start, NULL);
+    uw_setproctitle("processing");
+    ret = run();
+    if (debug > 0 && ret) {
+      struct timeval end;
+
+      gettimeofday(&end, NULL);
+      LOG(LOG_DEBUG, "run %d: processed %d items in %f seconds", runcounter, ret, 
+                      ((float)timeval_diff(&end, &start))/1000000.0);
+    }
+  } while (forever && (every != ONE_SHOT));
   exit(ret);
 }
 
 /****************************
  time functions
  ***************************/
-static int cur_second(void)
-{
-  time_t now;
-  struct tm *gmt;
-
-  time(&now);
-  gmt = gmtime(&now);
-  return(gmt->tm_sec);
-}
-
-int sleep_seconds = 0;
-
-static void wait_to_start(void)
-{
-  int now = cur_second();
-  int i;
-  
-  if (debug > 3) { 
-    sleep_seconds = 3;
-    fprintf(stderr, "waiting %d seconds..\n", sleep_seconds);
-  } else {
-    if (now >= startsec) {
-      sleep_seconds = startsec - now + 60;
-    } else {
-      sleep_seconds = startsec - now;
-    }
-    if (debug > 1) LOG(LOG_DEBUG, "sleeping for %d seconds", sleep_seconds);
-  }
-  for (i=0; i < sleep_seconds && forever; i++) {
-    sleep(1);
-  }
-}
-
 /* compute time diff in microsecs */
 long timeval_diff(struct timeval *a,struct timeval *b)
 {
@@ -295,7 +230,7 @@ static unsigned prv;
       return;
     }
   }
-  // at this point it is not the same message, or 5 minutes have passed
+  // at this point it either isn't the same message, or 5 minutes have passed
   if (rpt) {
     char buf[256];
 

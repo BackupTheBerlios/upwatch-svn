@@ -21,4 +21,15 @@ LDADD = $(DB_O) $(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @MYSQL_LIBS@ \
   @LIBGLIB2_LIBS@ @LIBXML2_LIBS@ $(SOLARISLIBS)
 include $(top_srcdir)/Makefile.am.common
 
+install-data-local:
+	if test `${ID} -u` -eq 0; then \
+	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/$(program) ;\
+	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/$(program)/new ;\
+	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/$(program)/tmp ;\
+	else \
+	  mkdir -p ${DESTDIR}${spooldir}/$(program) ;\
+	  mkdir -p ${DESTDIR}${spooldir}/$(program)/new ;\
+	  mkdir -p ${DESTDIR}${spooldir}/$(program)/tmp ;\
+	fi
+
 

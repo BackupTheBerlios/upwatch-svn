@@ -171,7 +171,8 @@ ENDIF +][+
 ESAC type +][+ ENDFOR result+]
   message text NOT NULL default '',
   PRIMARY KEY (id),
-  UNIQUE KEY probstat (probe,stattime)
+  UNIQUE KEY probstat (probe,stattime),
+  UNIQUE KEY statprob (stattime,probe)
 ) TYPE=MyISAM [+
 IF max_rows +] MAX_ROWS=[+max_rows+] [+
 ENDIF+][+
@@ -201,7 +202,8 @@ ENDIF null +]NULL default '[+default+]',	-- [+descrip+][+
 ENDFOR result +]
   message text NOT NULL default '',
   PRIMARY KEY (id),
-  UNIQUE KEY probstat (probe,stattime)
+  UNIQUE KEY probstat (probe,stattime),
+  UNIQUE KEY statprob (stattime,probe)
 ) TYPE=MyISAM;
 [+ ENDFOR period +]
 [+ ENDIF  result +]

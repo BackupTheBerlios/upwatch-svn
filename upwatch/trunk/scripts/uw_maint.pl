@@ -6,7 +6,7 @@ uw_maint.pl - maintenance script.
 
 =head1 SYNOPSIS
 
-uw_maint.pl [-v] [-r days] [-d days] [-w weeks] [-m months] [-y years] [-5 years]
+uw_maint.pl [-v] [-o] [-s seconds] [-r days] [-d days] [-w weeks] [-m months] [-y years] [-5 years]
 
 =head1 DESCRIPTION
 
@@ -32,6 +32,15 @@ This script deletes old data from the database. It reads the database info from 
 -5 years
    how many years to keep 5-year results - default 10
 
+-o
+  optimize tables
+
+-s seconds
+   how many seconds to sleep between queries
+
+-l limit
+   how many records to delete in one query
+
 -v
   verbose
 
@@ -48,8 +57,10 @@ use strict;
 use DBI;
 use Getopt::Std;
 #use LockFile::Simple;
-use vars qw/ $opt_r $opt_d $opt_w $opt_m $opt_y $opt_5 $opt_v /;
+use vars qw/ $opt_s $opt_l $opt_o $opt_r $opt_d $opt_w $opt_m $opt_y $opt_5 $opt_v /;
 use vars qw/ $dbtype $dbhost $dbuser $dbpasswd $dbname /;
+
+$|=1;
 
 #------------------------------------------------------------
 # log error message to the system log
@@ -112,7 +123,29 @@ sub process_options {
   $opt_m = 24;
   $opt_y = 2;
   $opt_5 = 10;
-  getopts('r:d:w:m:y:5:v');
+  $opt_s = 1;
+  $opt_l = 500;
+  getopts('ol:s:r:d:w:m:y:5:v');
+}
+
+#------------------------------------------------------------
+# Actually delete rows, optionally showing progress
+#------------------------------------------------------------
+sub delete_rows {
+  my ($db, $q, $limit) = @_;
+  my $total_deleted;
+  my $deleted;
+
+  if ($opt_v) { print "$q\n"; }
+  $total_deleted = 0;
+  do {
+    printf("Deleted %u rows. Working..    \b\b\b\b", $total_deleted);
+    $deleted = $db->do($q);
+    $total_deleted += $deleted;
+    if ($opt_v) { printf("\rDeleted %u rows.", $total_deleted); }
+    if ($total_deleted > 100) { printf(" Sleeping.."); sleep $opt_s; printf("\r"); }
+  } while ($deleted eq $limit);
+  print "\n";
 }
 
 #------------------------------------------------------------
@@ -150,7 +183,7 @@ sub main {
   my $db = DBI->connect("DBI:$dbtype:database=$dbname;host=$dbhost;port=3306", $dbuser, $dbpasswd ) || 
     die_with_exit(__LINE__, 1, DBI::errstr);
 
-  $cursor = $db->prepare("select name, graphgroup from probe where id > 1");
+  $cursor = $db->prepare("select name, graphgroup from probe where id > 1 order by name");
   $rc = $cursor->execute || die_with_exit(__LINE__, 0, $db->errstr);
   if ($cursor->rows == 0) {
     die_with_exit(__LINE__, 0, "table probe is empty?? Please fix");
@@ -164,6 +197,7 @@ sub main {
 
   foreach my $probename (@probes) {
     my $lastid;
+    my $q;
 
     $cursor = $db->prepare("select id from pr_${probename}_def order by id desc limit 1");
     $rc = $cursor->execute || die_with_exit(__LINE__, 0, $db->errstr);
@@ -173,44 +207,96 @@ sub main {
     }
     #print "$probename $lastid\n";
 
-    for (my $probe = 2; $probe <= $lastid; $probe++) {
-      my $q;
+#    for (my $probe = 2; $probe <= $lastid; $probe++) {
+#      my $deleted;
+#      my $limit = $opt_l;
+#      my $total_deleted;
+#
+#      $q = "delete from pr_${probename}_raw where probe = $probe and " .
+#           "stattime < UNIX_TIMESTAMP() - ($opt_r * 86400) LIMIT $limit";
+#      delete_rows($db, $q, $limit);
+#
+#      $q = "delete from pr_${probename}_day where probe = $probe and " .
+#           "stattime < UNIX_TIMESTAMP() - ($opt_d * 86400) LIMIT $limit";
+#      delete_rows($db, $q, $limit);
+#
+#      $q = "delete from pr_${probename}_week where probe = $probe and " .
+#           "stattime < UNIX_TIMESTAMP() - ($opt_w * 86400*7) LIMIT $limit";
+#      delete_rows($db, $q, $limit);
+#
+#      $q = "delete from pr_${probename}_month where probe = $probe and " .
+#           "stattime < UNIX_TIMESTAMP() - ($opt_m * 86400*7*31) LIMIT $limit";
+#      delete_rows($db, $q, $limit);
+#
+#      $q = "delete from pr_${probename}_year where probe = $probe and " .
+#           "stattime < UNIX_TIMESTAMP() - ($opt_y * 86400*365) LIMIT $limit";
+#      delete_rows($db, $q, $limit);
+#
+#      $q = "delete from pr_${probename}_5year where probe = $probe and " .
+#           "stattime < UNIX_TIMESTAMP() - ($opt_5 * 86400*365) LIMIT $limit";
+#      delete_rows($db, $q, $limit);
+#    }
 
-      $q = "delete from pr_${probename}_raw where probe = $probe and " .
-           "stattime < UNIX_TIMESTAMP() - ($opt_r * 86400)";
-      if ($opt_v) { print "$q\n"; }
-      $cursor = $db->prepare($q);
-      $rc = $cursor->execute || die_with_exit(__LINE__, 0, $db->errstr);
+    $q = "delete from pr_${probename}_raw where " . 
+         "probe >= 2 and probe <= $lastid and " .
+         "stattime < UNIX_TIMESTAMP() - ($opt_r * 86400) LIMIT $limit";
+    delete_rows($db, $q, $limit);
 
-      $q = "delete from pr_${probename}_day where probe = $probe and " .
-           "stattime < UNIX_TIMESTAMP() - ($opt_d * 86400)";
-      if ($opt_v) { print "$q\n"; }
-      $cursor = $db->prepare($q);
-      $rc = $cursor->execute || die_with_exit(__LINE__, 0, $db->errstr);
+    $q = "delete from pr_${probename}_day where " . 
+         "probe >= 2 and probe <= $lastid and " .
+         "stattime < UNIX_TIMESTAMP() - ($opt_d * 86400) LIMIT $limit";
+    delete_rows($db, $q, $limit);
 
-      $q = "delete from pr_${probename}_week where probe = $probe and " .
-           "stattime < UNIX_TIMESTAMP() - ($opt_w * 86400*7)";
-      if ($opt_v) { print "$q\n"; }
-      $cursor = $db->prepare($q);
-      $rc = $cursor->execute || die_with_exit(__LINE__, 0, $db->errstr);
+    $q = "delete from pr_${probename}_week where " . 
+         "probe >= 2 and probe <= $lastid and " .
+         "stattime < UNIX_TIMESTAMP() - ($opt_w * 86400*7) LIMIT $limit";
+    delete_rows($db, $q, $limit);
 
-      $q = "delete from pr_${probename}_month where probe = $probe and " .
-           "stattime < UNIX_TIMESTAMP() - ($opt_m * 86400*7*31)";
-      if ($opt_v) { print "$q\n"; }
-      $cursor = $db->prepare($q);
-      $rc = $cursor->execute || die_with_exit(__LINE__, 0, $db->errstr);
+    $q = "delete from pr_${probename}_month where " . 
+         "probe >= 2 and probe <= $lastid and " .
+         "stattime < UNIX_TIMESTAMP() - ($opt_m * 86400*31) LIMIT $limit";
+    delete_rows($db, $q, $limit);
 
-      $q = "delete from pr_${probename}_year where probe = $probe and " .
-           "stattime < UNIX_TIMESTAMP() - ($opt_y * 86400*365)";
-      if ($opt_v) { print "$q\n"; }
-      $cursor = $db->prepare($q);
-      $rc = $cursor->execute || die_with_exit(__LINE__, 0, $db->errstr);
+    $q = "delete from pr_${probename}_year where " . 
+         "probe >= 2 and probe <= $lastid and " .
+         "stattime < UNIX_TIMESTAMP() - ($opt_y * 86400*365) LIMIT $limit";
+    delete_rows($db, $q, $limit);
 
-      $q = "delete from pr_${probename}_5year where probe = $probe and " .
-           "stattime < UNIX_TIMESTAMP() - ($opt_5 * 86400*365)";
+    $q = "delete from pr_${probename}_5year where " . 
+         "probe >= 2 and probe <= $lastid and " .
+         "stattime < UNIX_TIMESTAMP() - ($opt_5 * 86400*365) LIMIT $limit";
+    delete_rows($db, $q, $limit);
+
+    if ($opt_o) {
+      $q = "optimize table pr_${probename}_raw";
       if ($opt_v) { print "$q\n"; }
-      $cursor = $db->prepare($q);
-      $rc = $cursor->execute || die_with_exit(__LINE__, 0, $db->errstr);
+      $db->do($q);
+      sleep 5;
+
+      $q = "optimize table pr_${probename}_day";
+      if ($opt_v) { print "$q\n"; }
+      $db->do($q);
+      sleep 5;
+
+      $q = "optimize table pr_${probename}_week";
+      if ($opt_v) { print "$q\n"; }
+      $db->do($q);
+      sleep 5;
+
+      $q = "optimize table pr_${probename}_month";
+      if ($opt_v) { print "$q\n"; }
+      $db->do($q);
+      sleep 5;
+
+      $q = "optimize table pr_${probename}_year";
+      if ($opt_v) { print "$q\n"; }
+      $db->do($q);
+      sleep 5;
+
+      $q = "optimize table pr_${probename}_5year";
+      if ($opt_v) { print "$q\n"; }
+      $db->do($q);
+      sleep 5;
     }
   }
 
