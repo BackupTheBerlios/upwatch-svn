@@ -160,8 +160,8 @@ int run(void)
     MYSQL_ROW row;
     char qry[256]; 
 
-    sprintf(qry, "SELECT pr_ping_def.id, pr_ping_def.count, pr_ping_def.yellowmiss, " 
-                 "       pr_ping_def.redmiss, %s.%s, pr_ping_def.ipaddress as ip, "
+    sprintf(qry, "SELECT pr_ping_def.id, pr_ping_def.count, pr_ping_def.yellow, " 
+                 "       pr_ping_def.red, %s.%s, pr_ping_def.ipaddress as ip, "
                  "       pr_ping_def.freq "
                  "FROM   pr_ping_def, server "
                  "WHERE  pr_ping_def.server = %s.%s ", 
