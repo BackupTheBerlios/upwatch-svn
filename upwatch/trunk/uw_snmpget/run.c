@@ -10,7 +10,9 @@
 #define RECEIVED_MESSAGE   1
 
 struct probedef {
-  int		id;             /* server probe id */
+  int           id;             /* unique probe id */
+  int           probeid;        /* server probe id */
+  char          *domain;        /* database domain */
   int		seen;           /* seen */
   struct snmp_session *sess;    /* snmp_session */
   char		*ipaddress;     /* server name */
@@ -27,6 +29,8 @@ void free_probe(void *probe)
 {
   struct probedef *r = (struct probedef *)probe;
 
+  if (r->ipaddress) g_free(r->ipaddress);
+  if (r->domain) g_free(r->domain);
   if (r->OID) g_free(r->OID);
   if (r->community) g_free(r->community);
   g_free(r);
@@ -96,7 +100,7 @@ void refresh_database(MYSQL *mysql)
   MYSQL_ROW row;
   char qry[1024];
 
-  sprintf(qry,  "SELECT pr_snmpget_def.id, "
+  sprintf(qry,  "SELECT pr_snmpget_def.id, pr_snmpget_def.domid, pr_snmpget_def.tblid, pr_domain.name, "
                 "       pr_snmpget_def.ipaddress, pr_snmpget_def.community, "
                 "       pr_snmpget_def.OID, pr_snmpget_def.mode, pr_snmpget_def.multiplier, "
                 "       pr_snmpget_def.yellow,  pr_snmpget_def.red "
@@ -118,21 +122,26 @@ void refresh_database(MYSQL *mysql)
     probe = g_hash_table_lookup(cache, &id);
     if (!probe) {
       probe = g_malloc0(sizeof(struct probedef));
-      probe->id = id;
+      if (atoi(row[1]) > 1) {
+        probe->probeid = atoi(row[2]);
+        probe->domain = strdup(row[3]);
+      } else {
+        probe->probeid = probe->id;
+      }
       probe->firsttime = 1;
       g_hash_table_insert(cache, guintdup(id), probe);
     }
 
     if (probe->ipaddress) g_free(probe->ipaddress);
-    probe->ipaddress = strdup(row[1]);
+    probe->ipaddress = strdup(row[4]);
     if (probe->community) g_free(probe->community);
-    probe->community = strdup(row[2]);
+    probe->community = strdup(row[5]);
     if (probe->OID) g_free(probe->OID);
-    probe->OID = strdup(row[3]);
-    strcpy(probe->mode, row[4]);
-    probe->multiplier = atof(row[5]);
-    probe->yellow = atof(row[6]);
-    probe->red = atof(row[7]);
+    probe->OID = strdup(row[6]);
+    strcpy(probe->mode, row[7]);
+    probe->multiplier = atof(row[8]);
+    probe->yellow = atof(row[9]);
+    probe->red = atof(row[10]);
     if (probe->msg) g_free(probe->msg);
     probe->msg = NULL;
     probe->seen = 1;
@@ -309,7 +318,10 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   }
 
   snmpget = xmlNewChild(xmlDocGetRootElement(doc), NULL, "snmpget", NULL);
-  sprintf(buffer, "%d", probe->id);           xmlSetProp(snmpget, "id", buffer);
+  if (probe->domain) {
+    xmlSetProp(snmpget, "domain", probe->domain);
+  }
+  sprintf(buffer, "%d", probe->probeid);      xmlSetProp(snmpget, "id", buffer);
   sprintf(buffer, "%s", probe->ipaddress);    xmlSetProp(snmpget, "ipaddress", buffer);
   sprintf(buffer, "%d", (int) now);           xmlSetProp(snmpget, "date", buffer);
   sprintf(buffer, "%d", ((int)now)+((int)OPT_VALUE_EXPIRES*60));   xmlSetProp(snmpget, "expires", buffer);

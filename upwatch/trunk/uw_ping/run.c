@@ -16,7 +16,9 @@
 #include "uw_ping.h"
 
 struct hostinfo {
-  int 			id;		/* server probe id */
+  int           id;             /* unique probe id */
+  int           probeid;        /* server probe id */
+  char          *domain;        /* database domain */
   char 			*ipaddress;	/* server name */
   int			count;		/* amount of packets to send */
   int			yellow;	        /* amount to miss before turning yellow */
@@ -167,7 +169,8 @@ int run(void)
     MYSQL_ROW row;
     char qry[256]; 
 
-    sprintf(qry, "SELECT pr_ping_def.id, pr_ping_def.count, pr_ping_def.yellow, " 
+    sprintf(qry, "SELECT pr_ping_def.id, pr_ping_def.domid, pr_ping_def.tblid, pr_domain.name, "
+                 "       pr_ping_def.count, pr_ping_def.yellow, " 
                  "       pr_ping_def.red, pr_ping_def.ipaddress as ip, "
                  "       pr_ping_def.freq "
                  "FROM   pr_ping_def "
@@ -189,12 +192,12 @@ int run(void)
       u_int ip;
       struct in_addr *ipa = (struct in_addr *)&ip;
 
-      char *ipaddress = row[4];
+      char *ipaddress = row[7];
       int probeid = atoi(row[0]);
-      int count = atoi(row[1]);
-      int yellow = atoi(row[2]);
-      int red = atoi(row[3]);
-      int freq = atoi(row[5]); // every # minutes
+      int count = atoi(row[4]);
+      int yellow = atoi(row[5]);
+      int red = atoi(row[6]);
+      int freq = atoi(row[8]); // every # minutes
 
       if (tm->tm_min % freq != 0) continue;
       if ((ip = inet_addr(ipaddress)) == -1) {
@@ -228,6 +231,8 @@ int run(void)
 
     if (hosts != NULL) {
       for (id=0; hosts[id]; id++) {
+        if (hosts[id]->ipaddress) free(hosts[id]->ipaddress);
+        if (hosts[id]->domain) free(hosts[id]->domain);
         if (hosts[id]->msg) {
           //printf("%s\n", hosts[id]->msg);
           free(hosts[id]->msg);
@@ -298,7 +303,10 @@ int run(void)
     }
 
     ping = xmlNewChild(xmlDocGetRootElement(cur), NULL, "ping", NULL);
-    sprintf(buffer, "%d", hosts[id]->id);	xmlSetProp(ping, "id", buffer);
+    if (hosts[id]->domain) {
+      xmlSetProp(ping, "domain", hosts[id]->domain);
+    }
+    sprintf(buffer, "%d", hosts[id]->probeid);	xmlSetProp(ping, "id", buffer);
     sprintf(buffer, "%d", (int) now); 		xmlSetProp(ping, "date", buffer);
     sprintf(buffer, "%s", inet_ntoa(hosts[id]->saddr.sin_addr)); xmlSetProp(ping, "ipaddress", buffer);
     sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60)); 

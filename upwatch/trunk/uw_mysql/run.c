@@ -5,7 +5,9 @@
 #include "uw_mysql.h"
 
 struct probedef {
-  int		id;             /* server probe id */
+  int           id;             /* unique probe id */
+  int           probeid;        /* server probe id */
+  char          *domain;        /* database domain */
   int		seen;           /* seen */
   char		*ipaddress;     /* server name */
 #include "probe.def_h"
@@ -19,6 +21,7 @@ void free_probe(void *probe)
 {
   struct probedef *r = (struct probedef *)probe;
 
+  if (r->ipaddress) g_free(r->ipaddress);
   if (r->dbname) g_free(r->dbname);
   if (r->dbuser) g_free(r->dbuser);
   if (r->dbpasswd) g_free(r->dbpasswd);
@@ -90,14 +93,14 @@ void refresh_database(MYSQL *mysql)
   MYSQL_ROW row;
   char qry[1024];
 
-  sprintf(qry,  "SELECT pr_mysql_def.id, "
+  sprintf(qry,  "SELECT pr_mysql_def.id, pr_mysql_def.domid, pr_mysql_def.tblid, pr_domain.name, "
                 "       pr_mysql_def.ipaddress, pr_mysql_def.dbname, "
                 "       pr_mysql_def.dbuser, pr_mysql_def.dbpasswd,"
                 "       pr_mysql_def.query, "
                 "       pr_mysql_def.yellow,  pr_mysql_def.red "
-                "FROM   pr_mysql_def "
+                "FROM   pr_mysql_def, pr_domain "
                 "WHERE  pr_mysql_def.id > 1 and pr_mysql_def.disable <> 'yes'"
-                "       and pr_mysql_def.pgroup = '%d'",
+                "       and pr_mysql_def.pgroup = '%d' and pr_domain.id = pr_mysql_def.domid",
                 (unsigned)OPT_VALUE_GROUPID);
 
   result = my_query(mysql, 1, qry);
@@ -113,22 +116,27 @@ void refresh_database(MYSQL *mysql)
     probe = g_hash_table_lookup(cache, &id);
     if (!probe) {
       probe = g_malloc0(sizeof(struct probedef));
-      probe->id = id;
+      if (atoi(row[1]) > 1) {
+        probe->probeid = atoi(row[2]);
+        probe->domain = strdup(row[3]);
+      } else {
+        probe->probeid = probe->id;
+      }
       g_hash_table_insert(cache, guintdup(id), probe);
     }
 
     if (probe->ipaddress) g_free(probe->ipaddress);
-    probe->ipaddress = strdup(row[1]);
+    probe->ipaddress = strdup(row[4]);
     if (probe->dbname) g_free(probe->dbname);
-    probe->dbname = strdup(row[2]);
+    probe->dbname = strdup(row[5]);
     if (probe->dbuser) g_free(probe->dbuser);
-    probe->dbuser = strdup(row[3]);
+    probe->dbuser = strdup(row[6]);
     if (probe->dbpasswd) g_free(probe->dbpasswd);
-    probe->dbpasswd = strdup(row[4]);
+    probe->dbpasswd = strdup(row[7]);
     if (probe->query) g_free(probe->query);
-    probe->query = strdup(row[5]);
-    probe->yellow = atof(row[6]);
-    probe->red = atof(row[7]);
+    probe->query = strdup(row[8]);
+    probe->yellow = atof(row[9]);
+    probe->red = atof(row[10]);
     if (probe->msg) g_free(probe->msg);
     probe->msg = NULL;
     probe->seen = 1;
@@ -190,7 +198,10 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   }
 
   mysql = xmlNewChild(xmlDocGetRootElement(doc), NULL, "mysql", NULL);
-  sprintf(buffer, "%d", probe->id);           xmlSetProp(mysql, "id", buffer);
+  if (probe->domain) {
+    xmlSetProp(mysql, "domain", probe->domain);
+  }
+  sprintf(buffer, "%d", probe->probeid);      xmlSetProp(mysql, "id", buffer);
   sprintf(buffer, "%s", probe->ipaddress);    xmlSetProp(mysql, "ipaddress", buffer);
   sprintf(buffer, "%d", (int) now);           xmlSetProp(mysql, "date", buffer);
   sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60)); 
