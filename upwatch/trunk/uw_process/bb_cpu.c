@@ -76,7 +76,7 @@ static void *get_def(module *probe, void *probe_res)
   time_t now = time(NULL);
 
   // first we find the serverid, this will be used to find the probe definition in the hashtable
-  result = my_query(probe->db, 0, OPT_ARG(SERVERQUERY), res->hostname, res->hostname, 
+  result = my_query(probe->db, 0, OPT_ARG(QUERY_SERVER_BY_NAME), res->hostname, res->hostname, 
                     res->hostname, res->hostname, res->hostname);
   if (!result) {
     return(NULL);
@@ -239,7 +239,7 @@ static void summarize(module *probe, void *probe_def, void *probe_res, char *fro
   row = mysql_fetch_row(result);
   if (!row) {
     mysql_free_result(result);
-    LOG(LOG_ERR, mysql_error(probe->db));
+    LOG(LOG_ERR, (char *)mysql_error(probe->db));
     return;
   }
   if (row[0] == NULL) {

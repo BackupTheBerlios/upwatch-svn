@@ -243,7 +243,7 @@ int run(void)
     break;
   }
   if (hosts == NULL || num_hosts <= 0) {
-    LOG(LOG_ERR, mysql_error(mysql));
+    LOG(LOG_ERR, (char *)mysql_error(mysql));
     LOG(LOG_ERR, "no database, no cached info - bailing out");
     return 0;
   }

@@ -14,7 +14,7 @@
 #define LOG pthread_mutex_lock(&_logmutex),_logsrce=__FILE__,_logline=__LINE__,_LOG
 #define LOGRAW pthread_mutex_lock(&_logmutex),_logsrce=__FILE__,_logline=__LINE__,_LOGRAW
 void _LOG(int level, char *fmt, ...);
-void _LOGRAW(int level, const char *fmt);
+void _LOGRAW(int level, char *fmt);
 extern pthread_mutex_t _logmutex;
 extern char *_logsrce;
 extern char *progname;

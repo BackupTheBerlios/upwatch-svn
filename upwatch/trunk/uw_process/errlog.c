@@ -43,7 +43,7 @@ static void *get_def(module *probe, void *probe_res)
 
   // first we find the serverid, this will be used to find the probe definition in the hashtable
   result = my_query(probe->db, 0,
-                    OPT_ARG(SERVERQUERY), res->hostname, res->hostname, 
+                    OPT_ARG(QUERY_SERVER_BY_NAME), res->hostname, res->hostname, 
                     res->hostname, res->hostname, res->hostname);
   if (!result) return(NULL);
   row = mysql_fetch_row(result);

@@ -1,7 +1,8 @@
 #include "config.h"
+#define _XOPEN_SOURCE /* glibc2 needs this for strptime */
+#define _GNU_SOURCE
 #include <generic.h>
 #include <time.h>
-#define _XOPEN_SOURCE /* glibc2 needs this for strptime */
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>

@@ -101,7 +101,7 @@ void ct_summarize(module *probe, void *probe_def, void *probe_res, char *from, c
 
   row = mysql_fetch_row(result);
   if (!row) {
-    LOG(LOG_ERR, mysql_error(probe->db));
+    LOG(LOG_ERR, (char *) mysql_error(probe->db));
     mysql_free_result(result);
     return;
   }

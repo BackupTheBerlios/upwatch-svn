@@ -67,8 +67,8 @@ void writeXMLresult(struct ipnetw *ipnets, int count_ipnets)
       sprintf(buffer, "%u", (int) OPT_VALUE_INTERVAL); 
         xmlSetProp(iptraf, "interval", buffer);
       if (net->count[j].in || net->count[j].out) {
-        sprintf(buffer, "%u", net->count[j].in);    xmlNewChild(iptraf, NULL, "in", buffer);
-        sprintf(buffer, "%u", net->count[j].out);   xmlNewChild(iptraf, NULL, "out", buffer);
+        sprintf(buffer, "%u", net->count[j].in);    xmlNewChild(iptraf, NULL, "incoming", buffer);
+        sprintf(buffer, "%u", net->count[j].out);   xmlNewChild(iptraf, NULL, "outgoing", buffer);
       }
     }
     free(net->count);

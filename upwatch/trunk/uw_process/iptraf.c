@@ -55,12 +55,12 @@ static void get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr 
 {
   struct iptraf_result *res = (struct iptraf_result *)probe_res;
 
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "in")) && (cur->ns == ns)) {
-    res->in = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "incoming")) && (cur->ns == ns)) {
+    res->incoming = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "out")) && (cur->ns == ns)) {
-    res->out = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "outgoing")) && (cur->ns == ns)) {
+    res->outgoing = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
     return;
   }
 }
@@ -102,10 +102,26 @@ static void *get_def(module *probe, void *probe_res)
                          res->name, res->ipaddress);
         return(NULL);
       }
+      // okay, create a new probe definition.
+      // first try to find out the server id
       result = my_query(probe->db, 0,
-                        "insert into pr_%s_def set ipaddress = '%s', "
+                        OPT_ARG(QUERY_SERVER_BY_IP), res->ipaddress, res->ipaddress,
+                        res->ipaddress, res->ipaddress, res->ipaddress);
+      if (!result) return(NULL);
+      row = mysql_fetch_row(result);
+      if (row && row[0]) {
+        res->server   = atoi(row[0]);
+      } else {
+        LOG(LOG_NOTICE, "server %s not found", res->hostname);
+        mysql_free_result(result);
+        return(NULL);
+      }
+      mysql_free_result(result);
+
+      result = my_query(probe->db, 0,
+                        "insert into pr_%s_def set ipaddress = '%s', server = '%u', "
                         "        description = 'auto-added by system'",
-                        res->name, res->ipaddress);
+                        res->name, res->server, res->ipaddress);
       mysql_free_result(result);
       if (mysql_affected_rows(probe->db) == 0) { // nothing was actually inserted
         LOG(LOG_NOTICE, "insert missing pr_%s_def id %s: %s", 
@@ -192,7 +208,7 @@ static void *get_def(module *probe, void *probe_res)
     g_hash_table_insert(probe->cache, guintdup(*(unsigned *)&res->ipaddr), def);
   }
   if (res->color == 0) { // no color given in the result?
-    float largest = res->in > res->out ? res->in : res->out;
+    float largest = res->incoming > res->outgoing ? res->incoming : res->outgoing;
     res->color = 200;
     if ((largest/8)/res->interval > (def->yellow*1024)) {
       res->color = STAT_YELLOW;
@@ -215,14 +231,14 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
   struct iptraf_def *def = (struct iptraf_def *)probe_def;
     
   *seen_before = FALSE;
-  def->slotday_in += res->in;
-  def->slotday_out += res->out;
+  def->slotday_in += res->incoming;
+  def->slotday_out += res->outgoing;
   if (res->color > def->slotday_max_color) {
     def->slotday_max_color = res->color;
   }
   sprintf(buf, "(DEFAULT, '%u', '%f', '%f', '0', '%u', '%u', '%f', '%f', '')",
                def->probeid, def->yellow, def->red, res->stattime, res->color,
-               res->in, res->out);
+               res->incoming, res->outgoing);
 
   if (HAVE_OPT(MULTI_VALUE_INSERTS)) {
     mod_ic_add(probe, "pr_iptraf_raw", strdup(buf));
@@ -250,15 +266,15 @@ static void summarize(module *probe, void *probe_def, void *probe_res, char *fro
   struct iptraf_def *def = (struct iptraf_def *)probe_def;
   struct iptraf_result *res = (struct iptraf_result *)probe_res;
   float avg_yellow, avg_red;
-  float in, out;
+  float incoming, outgoing;
   guint stattime;
   guint max_color;
 
   stattime = slotlow + ((slothigh-slotlow)/2);
 
   if (strcmp(into, "day") == 0 && res->stattime > def->newest) {
-    in = def->slotday_in;
-    out = def->slotday_out;
+    incoming = def->slotday_in;
+    outgoing = def->slotday_out;
     max_color = def->slotday_max_color;
     avg_yellow = def->slotday_avg_yellow;
     avg_red = def->slotday_avg_red;
@@ -269,7 +285,7 @@ static void summarize(module *probe, void *probe_def, void *probe_res, char *fro
     def->slotday_avg_red = def->red;
   } else {
     result = my_query(probe->db, 0,
-                      "select sum(in), sum(out), max(color), avg(yellow), avg(red) "
+                      "select sum(incoming), sum(outgoing), max(color), avg(yellow), avg(red) "
                       "from   pr_iptraf_%s use index(probstat) "
                       "where  probe = '%u' and stattime >= '%u' and stattime < '%u'",
                       from, def->probeid, slotlow, slothigh);
@@ -284,7 +300,7 @@ static void summarize(module *probe, void *probe_def, void *probe_res, char *fro
 
     row = mysql_fetch_row(result);
     if (!row) {
-      LOG(LOG_ERR, mysql_error(probe->db));
+      LOG(LOG_ERR, (char *)mysql_error(probe->db));
       mysql_free_result(result);
       return;
     }
@@ -295,8 +311,8 @@ static void summarize(module *probe, void *probe_def, void *probe_res, char *fro
       return;
     }
 
-    in    = atof(row[0]);
-    out   = atof(row[1]);
+    incoming    = atof(row[0]);
+    outgoing    = atof(row[1]);
     max_color   = atoi(row[2]);
     avg_yellow  = atof(row[3]);
     avg_red     = atof(row[4]);
@@ -312,10 +328,10 @@ static void summarize(module *probe, void *probe_def, void *probe_res, char *fro
   }
   result = my_query(probe->db, 0,
                     "insert into pr_iptraf_%s "
-                    "set    in = '%f', out = '%f', "
+                    "set    incoming = '%f', outgoing = '%f', "
                     "       probe = '%u', color = '%u', stattime = '%u', "
                     "       yellow = '%f', red = '%f', slot = '%u'",
-                    into, in, out, def->probeid, max_color, stattime, 
+                    into, incoming, outgoing, def->probeid, max_color, stattime, 
                     avg_yellow, avg_red, slot);
   mysql_free_result(result);
 }

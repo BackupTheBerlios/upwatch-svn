@@ -263,7 +263,7 @@ int _logline;
 char *_logfile;
 static void _ll_lograw(int level, const char *msg);
 
-void _LOGRAW(int level, const char *buffer)
+void _LOGRAW(int level, char *buffer)
 {
   char *p, *file;
   char msg[2*16384];
