@@ -135,6 +135,7 @@ extern int forever;
         st_usleep(10000); /* 10 ms */
       }
     }
+    g_dir_close(dir);
     uw_setproctitle("sleeping");
     for (i=5; i && forever; i--) {
       st_sleep(1); // give it some rest before retrying
