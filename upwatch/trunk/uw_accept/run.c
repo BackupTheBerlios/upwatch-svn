@@ -184,29 +184,23 @@ void handle_session(st_netfd_t rmt_nfd, char *remotehost)
   sprintf(buffer, "+OK UpWatch Acceptor v" UW_ACCEPT_VERSION ". Please login\n");
 login:
   uw_setproctitle("%s: %s", remotehost, buffer);
-  if (debug > 3) fprintf(stderr, "> %s", buffer);
+  if (debug > 3) fprintf(stderr, "%s[%u] > %s", remotehost, st_netfd_fileno(rmt_nfd), buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
-  if (len == ETIME) {
-    LOG(LOG_WARNING, "timeout on greeting string");
-    return;
-  }
   if (len == -1) {
-    LOG(LOG_WARNING, "%m");
+    if (errno == ETIME) LOG(LOG_WARNING, "timeout on greeting string");
+    else LOG(LOG_WARNING, "%m");
     return;
   }
 
   // expect here: USER xxxxxxx
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
-  if (len == ETIME) {
-    LOG(LOG_WARNING, "timeout on USER response");
-    return;
-  }
   if (len == -1) {
-    LOG(LOG_WARNING, "%m");
+    if (errno == ETIME) LOG(LOG_WARNING, "timeout reading USER string");
+    else LOG(LOG_WARNING, "%m");
     return;
   }
-  if (debug > 3) fprintf(stderr, "< %s", buffer);
+  if (debug > 3) fprintf(stderr, "%s[%u] < %s", remotehost, st_netfd_fileno(rmt_nfd), buffer);
   chop(buffer, len);
   if (strncasecmp(buffer, "QUIT", 4) == 0) goto end;
   if (strncasecmp(buffer, "USER ", 5)) goto syntax; 
@@ -215,31 +209,24 @@ login:
 
   sprintf(buffer, "+OK Please enter password\n");
   uw_setproctitle("%s: %s", remotehost, buffer);
-  if (debug > 3) fprintf(stderr, "> %s", buffer);
+  if (debug > 3) fprintf(stderr, "%s[%u] > %s", remotehost, st_netfd_fileno(rmt_nfd), buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
-  if (len == ETIME) {
-    LOG(LOG_WARNING, "timeout on password string");
-    return;
-  }
   if (len == -1) {
-    LOG(LOG_WARNING, "%m");
+    if (errno == ETIME) LOG(LOG_WARNING, "timeout writing password string");
+    else LOG(LOG_WARNING, "%m");
     return;
   }
 
   // expect here: PASS xxxxxxx
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
-  if (len == ETIME) {
-    LOG(LOG_WARNING, "timeout on PASS response");
-    return;
-  }
   if (len == -1) {
-    LOG(LOG_WARNING, "%m");
+    if (errno == ETIME) LOG(LOG_WARNING, "timeout reading PASS response");
+    else LOG(LOG_WARNING, "%m");
     return;
   }
-  if (strncasecmp(buffer, "QUIT", 4) == 0) goto end;
+  if (debug > 3) fprintf(stderr, "%s[%u] < %s", remotehost, st_netfd_fileno(rmt_nfd), buffer);
   chop(buffer, len);
-  if (debug > 3) fprintf(stderr, "< %s", buffer);
   if (strncasecmp(buffer, "QUIT", 4) == 0) goto end;
   if (strncasecmp(buffer, "PASS ", 5)) goto syntax; 
 
@@ -248,36 +235,30 @@ login:
   if (!uw_password_ok(user, passwd)) {
     LOG(LOG_WARNING, "Login error: %s/%s", user, passwd);
     st_sleep(2);
-    sprintf(buffer, "+ERR Please login\n");
+    sprintf(buffer, "-ERR Please login\n");
     goto login;
   }
 
   sprintf(buffer, "+OK logged in, enter command\n");
 logged_in:
   uw_setproctitle("%s: %s", remotehost, buffer);
-  if (debug > 3) fprintf(stderr, "> %s", buffer);
+  if (debug > 3) fprintf(stderr, "%s[%u] > %s", remotehost, st_netfd_fileno(rmt_nfd), buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
-  if (len == ETIME) {
-    LOG(LOG_WARNING, "timeout on password string");
-    return;
-  }
   if (len == -1) {
-    LOG(LOG_WARNING, "%m");
+    if (errno == ETIME) LOG(LOG_WARNING, "timeout writing ENTER COMMAND");
+    else LOG(LOG_WARNING, "%m");
     return;
   }
 
   // expect here: DATA size filename
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
-  if (len == ETIME) {
-    LOG(LOG_WARNING, "timeout on PASS response");
-    return;
-  }
   if (len == -1) {
-    LOG(LOG_WARNING, "%m");
+    if (errno == ETIME) LOG(LOG_WARNING, "timeout reading DATA statement");
+    else LOG(LOG_WARNING, "%m");
     return;
   }
-  if (debug > 3) fprintf(stderr, "< %s", buffer);
+  if (debug > 3) fprintf(stderr, "%s[%u] < %s", remotehost, st_netfd_fileno(rmt_nfd), buffer);
   chop(buffer, len);
   if (strncasecmp(buffer, "QUIT", 4) == 0) goto end;
   if (strncasecmp(buffer, "DATA ", 5)) goto syntax; 
@@ -298,14 +279,11 @@ logged_in:
 
   sprintf(buffer, "+OK start sending your file\n");
   uw_setproctitle("%s: %s", remotehost, buffer);
-  if (debug > 3) fprintf(stderr, "> %s", buffer);
+  if (debug > 3) fprintf(stderr, "%s[%u] > %s", remotehost, st_netfd_fileno(rmt_nfd), buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
-  if (len == ETIME) {
-    LOG(LOG_WARNING, "timeout on upload command");
-    return;
-  }
   if (len == -1) {
-    LOG(LOG_WARNING, "%m");
+    if (errno == ETIME) LOG(LOG_WARNING, "timeout writing %s", buffer);
+    else LOG(LOG_WARNING, "%m");
     return;
   }
 
@@ -314,12 +292,9 @@ logged_in:
     length = filesize > sizeof(buffer) ? sizeof(buffer) : filesize;
     //fprintf(stderr, "reading %u bytes", length);
     len = st_read(rmt_nfd, buffer, length, TIMEOUT);
-    if (len == ETIME) {
-      LOG(LOG_WARNING, "timeout on PASS response");
-      return;
-    }
     if (len == -1) {
-      LOG(LOG_WARNING, "%m");
+      if (errno == ETIME) LOG(LOG_WARNING, "timeout reading fileblock");
+      else LOG(LOG_WARNING, "%m");
       spool_close(sp_info, FALSE);
       goto end;
     }
@@ -344,13 +319,13 @@ logged_in:
 
 syntax:
   LOG(LOG_WARNING, buffer);
-  sprintf(buffer, "+ERR unknown command\n");
+  sprintf(buffer, "-ERR unknown command\n");
   goto login;
 
 end:
   sprintf(buffer, "+OK Arrivederci\n");
   uw_setproctitle("%s: %s", remotehost, buffer);
-  if (debug > 3) fprintf(stderr, "> %s", buffer);
+  if (debug > 3) fprintf(stderr, "%s[%u] > %s", remotehost, st_netfd_fileno(rmt_nfd), buffer);
   st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
   uw_setproctitle("accepting connections");
 }
