@@ -273,6 +273,7 @@ void handle_session(st_netfd_t rmt_nfd, char *remotehost)
   void *sp_info;
   char *targ;
   int length, len;
+  int errors = 0;
 
   sprintf(buffer, "+OK UpWatch Acceptor v" UW_ACCEPT_VERSION ". Please login\n");
 login:
@@ -281,7 +282,7 @@ login:
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
   if (len == -1) {
     if (errno == ETIME) { 
-      LOG(LOG_WARNING, "%s: timeout on greeting string", remotehost);
+      LOG(LOG_WARNING, "%s: timeout sending greeting string", remotehost);
     } else {
       LOG(LOG_WARNING, "%s: %m", remotehost);
     }
@@ -339,9 +340,10 @@ login:
   strncpy(passwd, buffer+5, sizeof(passwd)); passwd[sizeof(passwd)-1] = 0;
   if (!uw_password_ok(user, passwd)) {
     LOG(LOG_WARNING, "%s: Login error: %s/%s", remotehost, user, passwd);
-    st_sleep(2);
+    st_sleep(1);
     sprintf(buffer, "-ERR Please login\n");
-    goto login;
+    if (++errors < 4) goto login;
+    goto end;
   }
 
   sprintf(buffer, "+OK logged in, enter command\n");
@@ -385,7 +387,8 @@ logged_in:
   sp_info = spool_open(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), filename);
   if (sp_info == NULL) {
     sprintf(buffer, "-ERR Sorry, error spooling file - enter command\n");
-    goto logged_in;
+    if (++errors < 4) goto logged_in;
+    goto end;
   }
 
   sprintf(buffer, "+OK start sending your file\n");
@@ -440,7 +443,7 @@ logged_in:
 syntax:
   LOG(LOG_WARNING, "%s: %s", remotehost, buffer);
   sprintf(buffer, "-ERR unknown command\n");
-  goto login;
+  if (++errors < 4) goto login;
 
 end:
   sprintf(buffer, "+OK Arrivederci\n");

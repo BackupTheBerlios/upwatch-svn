@@ -5546,7 +5546,7 @@ B.14.2. hwstat database layout
 
    YES
 
-                                          target ipaddress
+                                            target ipaddress
 
    description
 
@@ -5554,7 +5554,7 @@ B.14.2. hwstat database layout
 
    NO
 
-                                          description
+                                            description
 
    freq
 
@@ -5572,9 +5572,7 @@ B.14.2. hwstat database layout
 
    NO
 
-   40
-
-   value for yellow alert
+                                            value for yellow alert
 
    red
 
@@ -5582,9 +5580,7 @@ B.14.2. hwstat database layout
 
    NO
 
-   50
-
-   value for red alert
+                                            value for red alert
 
    disable
 
@@ -5605,6 +5601,96 @@ B.14.2. hwstat database layout
    no
 
    hide probe results from viewing
+
+   temp1_yellow
+
+   int
+
+   NO
+
+   60
+
+   Temperature at which temp1 turns yellow
+
+   temp1_red
+
+   int
+
+   NO
+
+   70
+
+   Temperature at which temp1 turns red
+
+   temp2_yellow
+
+   int
+
+   NO
+
+   60
+
+   Temperature at which temp2 turns yellow
+
+   temp2_red
+
+   int
+
+   NO
+
+   70
+
+   Temperature at which temp2 turns red
+
+   temp3_yellow
+
+   int
+
+   NO
+
+   60
+
+   Temperature at which temp3 turns yellow
+
+   temp3_red
+
+   int
+
+   NO
+
+   70
+
+   Temperature at which temp3 turns red
+
+   rot1_red
+
+   int
+
+   NO
+
+   0
+
+   Turn red when fan 1 gets slower then this
+
+   rot2_red
+
+   int
+
+   NO
+
+   0
+
+   Turn red when fan 1 gets slower then this
+
+   rot3_red
+
+   int
+
+   NO
+
+   0
+
+   Turn red when fan 1 gets slower then this
 
    Table hwstat result record layout. hwstat result record layout
 
@@ -5646,9 +5732,7 @@ B.14.2. hwstat database layout
 
    NO
 
-   40
-
-   value for yellow alert
+                                                  value for yellow alert
 
    red
 
@@ -5656,9 +5740,7 @@ B.14.2. hwstat database layout
 
    NO
 
-   50
-
-   value for red alert
+                                                  value for red alert
 
    stattime
 

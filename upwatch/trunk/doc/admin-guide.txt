@@ -130,9 +130,9 @@ Chapter 2. Installation
 
 2.1. Getting upwatch
 
-   Currently,  upwatch  is  not  released,  and  is  not  allowed  to  be
-   distributed.  The only way to get it, is through written permission of
-   UpWatch BV.
+   Currently,   the  UpWatch  server  and  monitoring  software  are  not
+   released,  and  are not allowed to be distributed. The only way to get
+   it, is through written permission of UpWatch BV.
 
    If  you  aquired  that, you will either receive access to CVS, or will
    receive a tar.gz file, or .RPM's.
@@ -179,7 +179,8 @@ Chapter 2. Installation
    the  normal GNU compilation tools, and the development versions of the
    above  mentioned packages, you'll need the following on your system to
    build upwatch:
-     * autogen 5.3.6 (autogen.sourceforge.net)
+     * autogen  5.3.6  (autogen.sourceforge.net)  which  itself  requires
+       guile and umb-scheme.
      * if you also want to rebuild the manual: lynx 2.8.4, libxslt 1.0.15
        and  docbook  1.48,  including  the  entire  toolchain:  openjade,
        jadetex, tetex, netpbm, perl-SGMLSpm.
@@ -242,10 +243,10 @@ Chapter 2. Installation
 
    uw_access,  and  uw_accessbb  are  the  programs  most  vulnerable  to
    crackers,  as  they  wait  for  incoming  connections  on  a  TCP port
-   (1985/1984).  If  possible,  use  chroot  and  firewall rules to limit
-   connections  to  real  probes only. Something similar holds for mysql.
-   Most  probes  will want access, and passwords can be sniffed. For real
-   security use ssh-tunnels.
+   (1985/1984).  If possible, use chroot, NX where available and firewall
+   rules  to  limit  connections  to  real probes only. Something similar
+   holds  for  mysql.  Most probes will want access, and passwords can be
+   sniffed. For real security use ssh-tunnels.
 
 2.7. Database
 
@@ -287,6 +288,12 @@ Chapter 3. Configuration
    3.2. Database configuration
 
 3.1. Probe configuration
+
+   First: it is extremely important your host clock is set correctly, and
+   please  use NTP to keep it up-to-date. If you don't, you will see very
+   strange  things  happening,  and  what's  more,  if this gets into the
+   database,  it  will  be impossible to correct (apart from deleting all
+   results alltogether).
 
    Each    probe    first    reads   the   general   configuration   file
    /etc/upwatch.conf and then its own configurationfile in /etc/upwatch.d

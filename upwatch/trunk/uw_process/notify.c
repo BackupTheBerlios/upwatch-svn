@@ -103,6 +103,7 @@ int mail(char *to, char *subject, char *body, time_t date)
   char buf[128];
   FILE *fp;
   time_t now = time(NULL);
+  char rcpt[1024], *s;
 
   session = smtp_create_session ();
   sprintf(buf, "%s:%lu", OPT_ARG(SMTPSERVER), OPT_VALUE_SMTPSERVERPORT);
@@ -111,7 +112,13 @@ int mail(char *to, char *subject, char *body, time_t date)
   message = smtp_add_message (session);
   smtp_set_reverse_path (message, OPT_ARG(FROM_EMAIL));
   smtp_set_header (message, "Date", date ? &date : &now);
-  smtp_add_recipient (message, to);
+  strncpy(rcpt, to, sizeof(rcpt));
+  s = strtok(rcpt, ", ");
+  if (s) {
+    if (strlen(s) > 5) smtp_add_recipient (message, s);
+    if (strlen(s) > 5) smtp_add_recipient (message, s);
+    s = strtok(NULL, ", ");
+  }
 
   fp = tmpfile();
   if (!fp) {
