@@ -38,15 +38,18 @@ static void resfile_free(void *p)
 {
   struct resfile *rf = (struct resfile *)p;
 
-  if (rf->filename) g_free(rf->filename);
-  if (rf->fromhost) g_free(rf->fromhost);
+  if (rf->filename) { g_free(rf->filename); rf->filename = NULL; }
+  if (rf->fromhost) { g_free(rf->fromhost); rf->fromhost = NULL; }
   g_free(rf);
 }
 
 void resfile_remove(struct resfile *rf, int ondisk)
 {
   g_static_rec_mutex_lock (&resfile_mutex);
-  if (ondisk) unlink(rf->filename);
+  if (ondisk) { 
+    unlink(rf->filename);
+    //fprintf(stderr, "%s: deleted\n", rf->filename);
+  }
   g_ptr_array_remove(resfile_arr, rf);
   resfile_free(rf);
   g_static_rec_mutex_unlock (&resfile_mutex);
@@ -62,9 +65,11 @@ void resfile_incr(struct resfile *rf)
 void resfile_decr(struct resfile *rf)
 {
   g_static_rec_mutex_lock (&resfile_mutex);
-  rf->count--;
-  if (rf->count < 1) {
-    resfile_remove(rf, TRUE);
+  if (rf) {
+    rf->count--;
+    if (rf->count < 1) {
+      resfile_remove(rf, TRUE);
+    }
   }
   g_static_rec_mutex_unlock (&resfile_mutex);
 }
@@ -107,12 +112,15 @@ extern void free_res(void *res);
     }
 */
     if (modules[i]->queue) {
+#if 0
       trx *t;
 
-      g_static_mutex_lock (&modules[i]->queue_mutex);
-      t = g_queue_pop_head(modules[i]->queue);
-      g_static_mutex_unlock (&modules[i]->queue_mutex);
-      if (t) {
+      while (1) {
+        g_static_mutex_lock (&modules[i]->queue_mutex);
+        t = g_queue_pop_head(modules[i]->queue);
+        g_static_mutex_unlock (&modules[i]->queue_mutex);
+        if (t == NULL) break;
+
         // free the result block
         if (t->res) {
           if (modules[i]->free_res) {
@@ -123,7 +131,7 @@ extern void free_res(void *res);
         resfile_decr(t->rf);
         g_free(t);
       }
-
+#endif
       g_queue_free(modules[i]->queue);
     }
     if (modules[i]->cache) {
@@ -293,14 +301,21 @@ extern int forever;
         break;
       }
     }
-    if (found || resfile_arr->len >= 100) {
+    if (found) {
+      //fprintf(stderr, "%s: already working on that one\n", g_ptr_array_index(arr,i));
       free(g_ptr_array_index(arr,i));
       continue;
     }
+    if (resfile_arr->len >= 100) {
+      free(g_ptr_array_index(arr,i));
+      //fprintf(stderr, "we already have 100 files in memory\n");
+      continue;
+    }
     rf = g_malloc0(sizeof(struct resfile));
-    rf->filename = g_ptr_array_index(arr,i);
+    rf->filename = g_ptr_array_remove_index(arr,i);
     uw_setproctitle("reading %s", rf->filename);
     g_ptr_array_add(resfile_arr, rf); 
+    //fprintf(stderr, "%s: imported\n", rf->filename);
     handle_file(rf, NULL); // extract probe results and queue them
     count++;
   }
@@ -382,10 +397,14 @@ gpointer read_input_files_thread(gpointer data)
 extern int forever;
   while (forever) {
     sleep(5);
-    sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), OPT_ARG(INPUT));
-    uw_setproctitle("listing %s", path);
-    if (debug > 3) LOG(LOG_NOTICE, "Reading from %s", path);
-    read_input_files(path);
+
+    if (resfile_arr->len < 10) {
+      sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), OPT_ARG(INPUT));
+      uw_setproctitle("listing %s", path);
+      if (debug > 3) LOG(LOG_NOTICE, "Reading from %s", path);
+      read_input_files(path);
+      uw_setproctitle("sleeping");
+    }
   }
   return(NULL);
 }

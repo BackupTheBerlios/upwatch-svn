@@ -52,14 +52,14 @@ MYSQL_RES *my_query(MYSQL *mysql, int log_dupes, char *fmt, ...)
     case ER_DUP_ENTRY:
         if (!log_dupes) break;
     default:
-      LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql));
+      LOG(LOG_ERR, "%s:[%u] %s", qry, mysql_errno(mysql), mysql_error(mysql));
       break;
     }
     return(NULL);
   }
   result = mysql_store_result(mysql);
   if (mysql_errno(mysql)) {
-    LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql));
+    LOG(LOG_ERR, "%s: [%u] %s", qry, mysql_errno(mysql), mysql_error(mysql));
   }
   return(result);
 }

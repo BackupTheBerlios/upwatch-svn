@@ -26,7 +26,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <glib.h>
+#include <pthread.h>
 
 #if defined(HAVE_NSGETENVIRON) && defined(HAVE_CRT_EXTERNS_H)
 # include <sys/time.h>
@@ -290,17 +290,17 @@ setproctitle(const char *fmt, ...)
 void
 uw_setproctitle(const char *fmt, ...)
 {
-GStaticMutex buf_mutex = G_STATIC_MUTEX_INIT;
+static  pthread_mutex_t buf_mutex;
 static	char buf[SPT_BUFSIZE];
 	va_list ap;
 
-        g_static_mutex_lock(&buf_mutex);
+        pthread_mutex_lock(&buf_mutex);
 	va_start(ap, fmt);
 	(void) vsnprintf(buf, SPT_BUFSIZE, fmt, ap);
 	va_end(ap);
 
 	setproctitle("%s", buf);
-        g_static_mutex_unlock(&buf_mutex);
+        pthread_mutex_unlock(&buf_mutex);
 }
 
 
