@@ -36,14 +36,53 @@ static char *chop(char *s, int i)
   return(s);
 }
 
+void init_dblist(void)
+{
+  MYSQL *db;
+
+  db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
+                     OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
+  if (db) {
+    MYSQL_RES *result;
+
+    if (dblist) free(dblist);
+    dblist = calloc(100, sizeof(struct dbspec));
+
+    result = my_query(db, 0, "select pr_realm.name, pr_realm.host, "
+                             "       pr_realm.port, pr_realm.db, pr_realm.user, "
+                             "       pr_realm.password "
+                             "from   pr_realm "
+                             "where  pr_realm.id > 1");
+    if (result) {
+      MYSQL_ROW row;
+      while ((row = mysql_fetch_row(result)) != NULL) {
+        strcpy(dblist[dblist_cnt].realm, row[0]);
+        strcpy(dblist[dblist_cnt].host, row[1]);
+        dblist[dblist_cnt].port = atoi(row[2]);
+        strcpy(dblist[dblist_cnt].db, row[3]);
+        strcpy(dblist[dblist_cnt].user, row[4]);
+        strcpy(dblist[dblist_cnt].password, row[5]);
+        dblist_cnt++;
+      }
+      mysql_free_result(result);
+    }
+    close_database(db);
+  }
+}
+
 MYSQL *open_realm(char *realm)
 {
   int i;
   MYSQL *mysql;
+static int call_cnt = 0;
 
-  if (!dblist) {
-    LOG(LOG_ERR, "open_realm but no dblist found");
-    return NULL;
+  if (!dblist || ++call_cnt == 100) {
+    call_cnt = 0;
+    init_dblist();
+    if (!dblist) {
+      LOG(LOG_ERR, "open_realm but no dblist found");
+      return NULL;
+    }
   }
   if (realm == NULL || realm[0] == 0) {
     mysql = open_database(dblist[0].host, dblist[0].port,
@@ -100,37 +139,9 @@ static int uw_password_ok(char *user, char *passwd)
   return(TRUE);
 }
 
+
 int init(void)
 {
-  MYSQL *db;
-
-  db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
-                     OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
-  if (db) {
-    MYSQL_RES *result;
-    dblist = calloc(100, sizeof(struct dbspec));
-
-    result = my_query(db, 0, "select pr_realm.name, pr_realm.host, "
-                             "       pr_realm.port, pr_realm.db, pr_realm.user, "
-                             "       pr_realm.password "
-                             "from   pr_realm "
-                             "where  pr_realm.id > 1");
-    if (result) {
-      MYSQL_ROW row;
-      while ((row = mysql_fetch_row(result)) != NULL) {
-        strcpy(dblist[dblist_cnt].realm, row[0]);
-        strcpy(dblist[dblist_cnt].host, row[1]);
-        dblist[dblist_cnt].port = atoi(row[2]);
-        strcpy(dblist[dblist_cnt].db, row[3]);
-        strcpy(dblist[dblist_cnt].user, row[4]);
-        strcpy(dblist[dblist_cnt].password, row[5]);
-        dblist_cnt++;
-      }
-      mysql_free_result(result);
-    }
-    close_database(db);
-  }
-
   spooldir_strlen = strlen(OPT_ARG(SPOOLDIR))+1;
   daemonize = TRUE;
   every = ONE_SHOT;
