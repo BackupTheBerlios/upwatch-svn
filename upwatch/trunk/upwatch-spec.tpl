@@ -3,7 +3,7 @@ Summary: UpWatch - The Best monitoring framework
 Vendor: http://www.upwatch.com
 Name: upwatch
 Version: [+ version +]
-Release: 0
+Release: 1
 Source: http://www.upwatch.com/%{name}-%{version}.tar.gz
 Packager: Ron Arts <raarts@upwatch.com>
 Copyright: Proprietary
@@ -109,6 +109,9 @@ install -m 660 [+program+]/[+program+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+prog
 %dir /var/spool/upwatch
 
 %changelog
+* Fri Dec 27 2002 Ron Arts <raarts@upwatch.com>
+- Added ChangeLog, removed xml files from doc dir
+
 * Mon Sep 2 2002 Ron Arts <raarts@upwatch.com>
 - Rel. 1: First package version
 
