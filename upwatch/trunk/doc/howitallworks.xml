@@ -35,11 +35,11 @@
     </sect1>
     <sect1 id="What_happens_to_the_probe_results">
         <title>What happens to the probe results?</title>
-        <para> The probe results are always picked up by the <varname>uw_notify</varname> process.
-           It reads the file, looks at the probe status, and at previous statuses, and decides (1) if someone
-           should be notified about some status change and (2) if we want to investigate why a particular error
-           happened. If it has to be investigated the queue file is placed in the <varname>uw_examine</varname>
-           queue (along with some instructions), else it goes into the outgoing queue
+        <para>First, all results with status red are handed over to <varname>uw_examine</varname>, which tries to
+           find out why the probe failed, and attaches a report to the probe. After this these red results are put in
+           the same queue as every other probe: <varname>uw_notify</varname>.
+           <varname>uw_notify</varname> reads the result, looks at the probe status, and at previous statuses, and 
+           decides if someone should be notified.
         </para>
         <para> The outgoing queue may be either the <varname>uw_process</varname> queue, or an
            <varname>uw_send</varname> queue, which is emptied by the uw_send process which sends
@@ -65,6 +65,80 @@
         <para> Status changes are logged in status history tables (pr_probe_hist), in a total overview
           table (pr_status), and in a total overview history file (pr_hist). The last two
           accomodate for easy retrieval by the webpages.</para>
+      <para>
+         <table pgwide="1"><title>queries make by uw_process</title>
+         <tgroup cols = "2">
+            <colspec colname = "1" colnum = "1" colwidth = "1.0in"/>
+            <colspec colname = "2" colnum = "2" colwidth = "4.0in"/>
+            <tbody>
+               <row>
+                  <entry colname = "1"><para><emphasis>Condition:</emphasis></para></entry>
+                  <entry colname = "2"><para><emphasis>Queries</emphasis></para></entry>
+               </row>
+               <row>
+                  <entry colname = "1">
+                     <para>Always</para>
+                  </entry>
+                  <entry colname = "2">
+                     <para>select server, color, lasthist, stattime from pr_ping_def where id = %d
+                     </para>
+                  </entry>
+               </row>
+              <row>
+                  <entry colname = "1">
+                     <para>First result for this probe</para>
+                  </entry>
+                  <entry colname = "2">
+                     <para>insert into pr_status set class = '%d', probe = '%d', server = '%d', color = '%d'
+                     </para>
+                  </entry>
+               </row>
+              <row>
+                  <entry colname = "1">
+                     <para>Color changed</para>
+                  </entry>
+                  <entry colname = "2">
+                     <para>insert into pr_ping_hist set probe = '%d', stattime = %d, color = '%d', message = '%s'</para>
+                     <para>insert into pr_hist set server = '%d', class = '%d', probe = '%d', stattime = %d,
+                      prv_color = '%d', prv_hist = '%d', color = '%d', hist = '%d', message = '%s'</para>
+                      <para>update pr_status set color = '%d' where  class = '%d' and probe = '%d'</para>
+                      <para>select max(color) as max_color from pr_status where server = '%d'</para>
+                      <para>update server set color = '%d' where id = '%d'</para>
+                  </entry>
+               </row>
+              <row>
+                  <entry colname = "1">
+                     <para>Always</para>
+                  </entry>
+                  <entry colname = "2">
+                     <para>insert into pr_ping_raw set probe = '%d',  hist = '%d', stattime = %d, color = '%d', lowest = '%f', value = '%f', highest = '%f'
+                     </para>
+                  </entry>
+               </row>
+              <row>
+                  <entry colname = "1">
+                     <para>On summarizing</para>
+                  </entry>
+                  <entry colname = "2">
+                     <para>select avg(lowest), avg(value), avg(highest), max(color) from pr_ping_%s where  probe = '%d' and stattime &gt;= %d and stattime &lt; %d
+                     </para>
+                     <para>(do some processing)</para>
+                     <para>insert into pr_ping_%s set value = %f, lowest = %f, highest = %f, probe = %d, color = '%u', stattime = %d</para>
+                  </entry>
+               </row>
+             <row>
+                  <entry colname = "1">
+                     <para>Always</para>
+                  </entry>
+                  <entry colname = "2">
+                     <para>update pr_ping_def set stattime = %d, expires = %d, color = '%d', lasthist = '%d', message = '%s' where  id = '%d'
+                     </para>
+                  </entry>
+               </row>
+            </tbody>
+         </tgroup>
+      </table>
+      </para>
     </sect1>
     <sect1 id="Scaling_up">
         <title>Scaling up</title>
