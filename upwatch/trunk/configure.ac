@@ -10,7 +10,7 @@ AC_SUBST(VERSION)
 
 AC_DEFINE_UNQUOTED([RELEASE], ["${RELEASE}"], [Package release string])
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.73 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.74 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -615,7 +615,7 @@ AC_CONFIG_FILES([uw_iptraf/Makefile])
 fi
 
 ( cd libstatgrab ; ./configure --disable-manpages --disable-examples \
-  --disable-statgrab --disable-saidar --disable-shared --disable-deprecated ; cd .. )
+  --disable-statgrab --disable-saidar --disable-shared ; cd .. )
 
 if test "$enable_xmbmon" = "yes"
 then

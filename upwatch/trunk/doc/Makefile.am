@@ -12,7 +12,8 @@ else
 DIST_DOC = upwatch.html upwatch.txt upwatch.pdf 
 endif
 
-UPWATCH_SOURCE = upwatch.xml client-about.xml client-install.xml client-configuration.xml
+UPWATCH_SOURCE = upwatch.xml client-about.xml client-install.xml \
+  client-configuration.xml utilities.xml
 
 ADMIN_SOURCE = admin-guide.xml administration.xml configuration.xml \
   installation.xml about.xml

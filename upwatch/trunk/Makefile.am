@@ -79,7 +79,7 @@ if ENABLE_SERVER
 SERVER_DIST = probes.enum 
 endif
 
-EXTRA_DIST = Makefile.am.common Makefile.am.libs Makefile.am.path VERSION libtool ChangeLog \
+EXTRA_DIST = Makefile.am.common Makefile.am.libs Makefile.am.path VERSION RELEASE libtool ChangeLog \
   upwatch-spec.def upwatch-spec.tpl upwatch.spec templates \
   patches/libpcap-linux-timeout.patch \
   ${SERVER_DIST} \
