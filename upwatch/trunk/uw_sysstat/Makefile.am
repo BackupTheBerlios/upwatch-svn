@@ -1,5 +1,7 @@
 include $(top_srcdir)/Makefile.am.path
 
+SUBDIRS = os
+
 if SOLARIS
 SOLARISLIBS = -lkstat -ldevinfo
 endif
@@ -36,11 +38,11 @@ install-data-local:
 	if test `${ID} -u` -eq 0; then \
 	  ${INSTALL} -d -m 770  -o upwatch -g upwatch ${DESTDIR}${confdir}/uw_sysstat.d ;\
 	  cp -r uw_sysstat.d/* ${DESTDIR}${confdir}/uw_sysstat.d ; \
-	  find ${DESTDIR}${confdir}/uw_sysstat.d -type d -name CVS | xargs rm -rf ; \
+	  find ${DESTDIR}${confdir}/uw_sysstat.d -type d -name CVS -o -name .svn | xargs rm -rf ; \
 	  chown -R upwatch:upwatch ${DESTDIR}${confdir}/uw_sysstat.d ; \
 	else \
 	  mkdir -p ${DESTDIR}${confdir}/uw_sysstat.d ;\
 	  cp -r uw_sysstat.d/* ${DESTDIR}${confdir}/uw_sysstat.d ;\
-	  find ${DESTDIR}${confdir}/uw_sysstat.d -type d -name CVS | xargs rm -rf ; \
+	  find ${DESTDIR}${confdir}/uw_sysstat.d -type d -name CVS -o -name .svn | xargs rm -rf ; \
 	fi
 

@@ -6,6 +6,7 @@
 #include "generic.h"
 #include "logregex.h"
 
+char *progname;
 int debug = 0;
 
 int main (int argc, char *argv[])
@@ -14,6 +15,12 @@ int main (int argc, char *argv[])
   FILE *in;
   char buffer[2048];
   int line=0;
+
+  if ((progname = strrchr(argv[0], '/')) != NULL) {
+    progname++;
+  } else {
+    progname = argv[0];
+  }
 
   arg_ct = optionProcess( &progOptions, argc, argv );
   argc -= arg_ct;

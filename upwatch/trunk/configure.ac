@@ -579,6 +579,7 @@ AC_CONFIG_FILES([upwatch/Makefile])
 AC_CONFIG_FILES([util/Makefile])
 AC_CONFIG_FILES([uw_send/Makefile])
 AC_CONFIG_FILES([uw_sysstat/Makefile])
+AC_CONFIG_FILES([uw_sysstat/os/Makefile])
 AC_CONFIG_FILES([uw_null/Makefile])
 
 # server 

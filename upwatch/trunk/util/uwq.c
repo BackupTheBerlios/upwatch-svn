@@ -8,6 +8,8 @@
 #include <uwq_options.h>
 #include "generic.h"
 
+char *progname;
+
 int main (int argc, char *argv[])
 {
   int arg_ct;
@@ -15,6 +17,12 @@ int main (int argc, char *argv[])
   GError *error=NULL;
   G_CONST_RETURN gchar *filename;
   char *only = NULL;
+
+  if ((progname = strrchr(argv[0], '/')) != NULL) {
+    progname++;
+  } else {
+    progname = argv[0];
+  }
 
   arg_ct = optionProcess( &progOptions, argc, argv );
   argc -= arg_ct;
