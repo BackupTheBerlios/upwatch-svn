@@ -21,12 +21,15 @@
 
 <!ELEMENT ping		(host,color,min,avg,max,info?)>
 <!ATTLIST ping		id NMTOKEN #REQUIRED 
+			investigate NMTOKEN #FIXED "icmptraceroute"
 			date NMTOKEN #REQUIRED 
 			expires NMTOKEN #REQUIRED
 			notify NMTOKEN "1" >
 
 <!ELEMENT httpget	(host,color,lookup,connect,pretransfer,total,info?)>
 <!ATTLIST httpget	id NMTOKEN #REQUIRED 
+			investigate NMTOKEN #FIXED "tcptraceroute"
+			port NMTOKEN "80"
 			date NMTOKEN #REQUIRED 
 			expires NMTOKEN #REQUIRED
 			notify NMTOKEN "1" >

@@ -1,6 +1,6 @@
 program = uw_investigate
-uw_investigate_SOURCES = run.c cmd_options.c cmd_options.h cmd_options.def $(program).spec-generic \
- $(program).init
+uw_investigate_SOURCES = run.c cmd_options.c cmd_options.h traceroute.c traceroute.h \
+  cmd_options.def $(program).spec-generic  $(program).init
 BUILT_SOURCES = cmd_options.h  $(program).spec-generic $(program).init $(program).spec-install
 INCLUDES = -I../upwatch 
 EXTRA_DIST = cmd_options.def $(program).mysql

@@ -27,11 +27,6 @@ struct hostinfo {
 static struct hostinfo **hosts;
 static int num_hosts;
 
-static void exit_probes(void)
-{
-  close_database();
-}
-
 void probe(gpointer data, gpointer user_data);
 int init(void)
 {
@@ -45,6 +40,7 @@ int init(void)
 
 int run(void)
 {
+int run_actual_probes(int count);
   xmlDocPtr doc, red;
   int id=0, redcount=0;
   time_t now;
@@ -122,8 +118,8 @@ int run(void)
 
   for (id=0; hosts[id]; id++) {
     xmlDocPtr cur = doc;
-    xmlNodePtr result, subtree, httpget, host;
-    int color;
+    xmlNodePtr subtree, httpget, host;
+    int color, investigate = 0;
     char info[1024];
     char buffer[1024];
 
@@ -131,6 +127,7 @@ int run(void)
     if (hosts[id]->msg[0]) {
       color = STAT_RED;
       cur = red;
+      investigate = 1;
       redcount++;
     } else {
       if (hosts[id]->total_time < hosts[id]->yellowtime) {
@@ -147,6 +144,10 @@ int run(void)
     sprintf(buffer, "%d", hosts[id]->id);       xmlSetProp(httpget, "id", buffer);
     sprintf(buffer, "%d", (int) now);           xmlSetProp(httpget, "date", buffer);
     sprintf(buffer, "%d", ((int)now)+(2*60));   xmlSetProp(httpget, "expires", buffer);
+    if (investigate) { 
+      xmlSetProp(httpget, "investigate", "tcptraceroute");
+      xmlSetProp(httpget, "port", "80");
+    } 
     host = xmlNewChild(httpget, NULL, "host", NULL);
     sprintf(buffer, "%s", hosts[id]->name);     subtree = xmlNewChild(host, NULL, "hostname", buffer);
     //sprintf(buffer, "%s", inet_ntoa(hosts[id]->saddr.sin_addr));
@@ -172,9 +173,9 @@ int run(void)
       subtree = xmlNewChild(httpget, NULL, "info", hosts[id]->msg);
     }
   }
-  spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc);
+  spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc, NULL);
   if (redcount) {
-    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(INVESTIGATE), red);
+    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(INVESTIGATE), red, NULL);
   }
   xmlFreeDoc(doc);
   xmlFreeDoc(red);
@@ -223,7 +224,6 @@ void probe(gpointer data, gpointer user_data)
   struct hostinfo *host = (struct hostinfo *)data;
   CURL *curl;
   char buffer[BUFSIZ];
-  long headerlen = 0;
 
   if (!host) return;
   sprintf(buffer, "http://%s%s", host->host, host->uri);

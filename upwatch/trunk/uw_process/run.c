@@ -100,7 +100,7 @@ void process(gpointer data, gpointer user_data)
   }
 
   if (HAVE_OPT(COPY)) {
-    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(COPY), doc);
+    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(COPY), doc, NULL);
   }
 
   cur = xmlDocGetRootElement(doc);

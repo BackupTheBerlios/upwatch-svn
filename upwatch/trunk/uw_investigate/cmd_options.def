@@ -9,11 +9,15 @@ detail        =
 'uw_investigate does the following: ';
 
 // this section is for the generated specfile
-spec-requires = "libpcap mysql glib2 gnet >= 1.1.2 curl >= 7.9.3 libnet >= 1.0.2";
+spec-requires = "libpcap mysql glib2 >= 2.0.4 gnet >= 1.1.2 curl >= 7.9.3 libnet >= 1.0.2";
 spec-install  = "mkdir -p $RPM_BUILD_ROOT/var/spool/upwatch/uw_investigate/tmp";
 spec-install  = "mkdir -p $RPM_BUILD_ROOT/var/spool/upwatch/uw_investigate/new";
+spec-install  = "mkdir -p $RPM_BUILD_ROOT/var/spool/upwatch/uw_investigate_work/tmp";
+spec-install  = "mkdir -p $RPM_BUILD_ROOT/var/spool/upwatch/uw_investigate_work/new";
 spec-files    = "%dir /var/spool/upwatch/uw_investigate/new";
 spec-files    = "%dir /var/spool/upwatch/uw_investigate/tmp";
+spec-files    = "%dir /var/spool/upwatch/uw_investigate_work/new";
+spec-files    = "%dir /var/spool/upwatch/uw_investigate_work/tmp";
 
 // describe commandline flags
 flag = {
@@ -30,4 +34,23 @@ removes any files in `tmp` that are older then 36 hours. For some more info
 about maildir see http://www.qmail.org/man/man5/maildir.html.';
 };
 
+flag = {
+    name      = output;
+    value     = O;
+    arg_type  = string;
+    descrip   = "name of queue to drop results";
+    doc       =
+'The argument is taken to be a maildir under the directory `spooldir`.
+All results are placed in this queue.';
+};
+
+flag = {
+    name      = workqueue;
+    value     = Q;
+    arg_type  = string;
+    descrip   = "name of queue to keep temporary files";
+    doc       =
+'The argument is taken to be a maildir under the directory `spooldir`.
+Probe results currently being investigated are kept here.';
+};
 

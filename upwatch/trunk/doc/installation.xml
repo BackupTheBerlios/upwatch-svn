@@ -17,7 +17,7 @@
                 (or in the spec file for the probe, here's a list of everything we expect on a
                 machine running all probes, and the database (I'll also list the version we use ourselves):</para>
             <itemizedlist>
-                <listitem><para>glib2 2.0.1</para></listitem>
+                <listitem><para>glib2 >= 2.0.4</para></listitem>
                 <listitem><para>gnet 1.1.2</para></listitem>
                 <listitem><para>mysql 3.23.49</para></listitem>
                 <listitem><para>cURL 7.9.5</para></listitem>

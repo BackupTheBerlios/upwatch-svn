@@ -10,7 +10,7 @@ AC_PROG_LIBTOOL
 AC_PROG_LN_S
 
 # compile with optimization and without debugging by default
-CFLAGS="-O ${CFLAGS}"
+CFLAGS="-O -Wall ${CFLAGS}"
 
 AC_ARG_ENABLE(debug,
     [  --enable-debug          Turn on compiler debugging information (default=no)],

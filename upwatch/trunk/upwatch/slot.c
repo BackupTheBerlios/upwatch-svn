@@ -57,7 +57,7 @@ int uw_slot(int type, gulong when, gulong *lowest, gulong *highest)
 {
   struct tm *tm;
   double diff;
-  int seconds_per_period;
+  int seconds_per_period = 86400;
   int seconds_per_slot;
   int slot;
 

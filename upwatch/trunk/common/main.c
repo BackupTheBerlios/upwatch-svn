@@ -7,6 +7,8 @@
 #include <options.h>
 #include <time.h>
 #include <sys/time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "cmd_options.h"
 #include "generic.h"
 
@@ -192,7 +194,7 @@ static void wait_to_start(void)
   } else {
     wait = startsec - now;
   }
-  if (debug > 0) LOG(LOG_DEBUG, "sleeping for %d seconds", wait);
+  if (debug > 1) LOG(LOG_DEBUG, "sleeping for %d seconds", wait);
   sleep(wait);
 }
 

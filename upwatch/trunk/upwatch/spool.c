@@ -26,11 +26,10 @@ static char *mk_tempfile(void);
 static void alarm_handler(int sig); 
 static void set_handler(int sig, void (*h)());
  
-int spool_result(char *basedir, char *target, xmlDocPtr doc)
+int spool_result(char *basedir, char *target, xmlDocPtr doc, char **targetname)
 {
   struct stat filestat;
   int count;
-  int outfd;
   char buffer[BUFSIZ];
   char *outfile;
   struct spoolinfo *si = calloc(1, sizeof(struct spoolinfo));
@@ -88,7 +87,7 @@ int spool_result(char *basedir, char *target, xmlDocPtr doc)
   set_handler(SIGALRM, alarm_handler);
   alarm(86400);
   if (xmlSaveFormatFile(si->temp_filename, doc, 1) == -1) {
-    LOG(LOG_ERR, "couldn't save %s", si->temp_filename);
+    LOG(LOG_ERR, "%s: %m", si->temp_filename);
     free(si->temp_filename);
     free(si->targ_filename);
     free(si);
@@ -106,6 +105,7 @@ int spool_result(char *basedir, char *target, xmlDocPtr doc)
     return 0;
   }
   /* We've succeeded!  Now, no matter what, we return "success" */
+  if (targetname) *targetname = strdup(si->targ_filename);
   if (debug) LOG(LOG_DEBUG, "spooled to %s", si->targ_filename);
 
   /* Okay, delete the temporary file. If it fails, bummer. */

@@ -30,7 +30,7 @@ gboolean writexmlfile(gpointer data)
   if (debug > 2) LOG(LOG_DEBUG, "timeout function");
   g_static_rec_mutex_lock(&mutex_doc);
   if (doc) {
-    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc);
+    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc, NULL);
     xmlFreeDoc(doc);
     doc = NULL;
   }
@@ -40,10 +40,10 @@ gboolean writexmlfile(gpointer data)
 
 void add_to_xml_document(char *hostname, char *probename, char *colorstr, struct tm *probedate, char *message)
 {
-  xmlNodePtr result, subtree, probe, host;
+  xmlNodePtr subtree, probe, host;
   time_t date = mktime(probedate);
   char buffer[1024];
-  int color;
+  int color = STAT_GREEN;
 
   g_static_rec_mutex_lock(&mutex_doc);
   if (doc == NULL) doc = UpwatchXmlDoc("result");
@@ -80,7 +80,6 @@ int init(void)
 
 int run(void)
 {
-  int ret = 0;
   GMainLoop* main_loop;
   GInetAddr* addr;
   GServer* server;

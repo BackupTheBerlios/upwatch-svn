@@ -14,6 +14,12 @@ int pushto(int sock, char *filename);
 
 int init(void)
 {
+  struct hostent *hp;
+
+  if ((hp = gethostbyname(OPT_ARG(HOST))) == (struct hostent *) 0) {
+    LOG(LOG_NOTICE, "can't resolve %s: %s", OPT_ARG(HOST), hstrerror(h_errno));
+    return 0;
+  } 
   daemonize = TRUE;
   every = EVERY_5SECS;
   g_thread_init(NULL);

@@ -245,10 +245,11 @@ int run(void)
 
   now = time(NULL);
   doc = UpwatchXmlDoc("result"); 
+  red = UpwatchXmlDoc("result"); 
   for (id=0; hosts[id]; id++) {
     xmlDocPtr cur = doc;
-    xmlNodePtr result, subtree, ping, host;
-    int color, prv_color;
+    xmlNodePtr subtree, ping, host;
+    int color;
     int missed;
     char info[1024];
     char buffer[1024];
@@ -287,6 +288,7 @@ int run(void)
     sprintf(buffer, "%d", hosts[id]->id);	xmlSetProp(ping, "id", buffer);
     sprintf(buffer, "%d", (int) now); 		xmlSetProp(ping, "date", buffer);
     sprintf(buffer, "%d", ((int)now)+(2*60)); 	xmlSetProp(ping, "expires", buffer);
+    if (color == STAT_RED) xmlSetProp(ping, "investigate", "icmptraceroute");
     host = xmlNewChild(ping, NULL, "host", NULL);
     sprintf(buffer, "%s", hosts[id]->name);	subtree = xmlNewChild(host, NULL, "hostname", buffer);
     sprintf(buffer, "%s", inet_ntoa(hosts[id]->saddr.sin_addr));	
@@ -309,9 +311,9 @@ int run(void)
     hosts[id]->min_reply = 0;
     hosts[id]->total_time = 0;
   }
-  spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc);
+  spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc, NULL);
   if (redcount) {
-    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(INVESTIGATE), red);
+    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(INVESTIGATE), red, NULL);
   }
   xmlFreeDoc(doc);
   xmlFreeDoc(red);

@@ -40,9 +40,7 @@ void close_database(void)
 
 void my_transaction(char *what)
 {
-  MYSQL_RES *result;
-
-  if (!mysql) return(NULL);
+  if (!mysql) return;
   mysql_query(mysql, what);
 }
 

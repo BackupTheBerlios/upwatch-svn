@@ -19,18 +19,14 @@ int process_httpget(xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
-  gchar user[4096];
-  gchar passwd[4096];
-  gchar dummy[4096];
   gint probe;
   gulong stattime;
   gulong expires;
   gchar ip[4096];
-  guint color;
-  gfloat lookup, connect, pretransfer, total;
+  guint color = 200;
+  gfloat lookup = 0.0, connect = 0.0, pretransfer = 0.0, total = 0.0;
   gchar hostname[4096];
   gchar message[4096];
-  gint fields;
 
   guint server = 0;
   guint prv_color = 0;

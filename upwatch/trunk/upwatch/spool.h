@@ -5,3 +5,4 @@ int spool_close(void *sp_info, int complete);
 char *spool_tmpfilename(void *sp_info);
 char *spool_targfilename(void *sp_info);
 
+int spool_result(char *basedir, char *target, xmlDocPtr doc, char **targetname);

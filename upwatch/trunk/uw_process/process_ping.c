@@ -19,18 +19,14 @@ int process_ping(xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
-  gchar user[4096];
-  gchar passwd[4096];
-  gchar dummy[4096];
   gint probe;
   gulong stattime;
   gulong expires;
   gchar ip[4096];
-  guint color;
-  gfloat lowest, value, highest;
+  guint color = 200;
+  gfloat lowest = 0.0, value = 0.0, highest = 0.0;
   gchar hostname[4096];
   gchar message[4096];
-  gint fields;
 
   guint server = 0;
   guint prv_color = 0;
