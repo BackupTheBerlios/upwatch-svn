@@ -56,6 +56,7 @@ void init_dblist(void)
                              "where  pr_realm.id > 1");
     if (result) {
       MYSQL_ROW row;
+      dblist_cnt = 0;
       while ((row = mysql_fetch_row(result)) != NULL) {
         strcpy(dblist[dblist_cnt].realm, row[0]);
         strcpy(dblist[dblist_cnt].host, row[1]);

@@ -69,7 +69,7 @@ static void hwstat_summarize(trx *t, char *from, char *into, guint slot, guint s
   stattime = slotlow + ((slothigh-slotlow)/2);
 
   result = my_query(t->probe->db, 0,
-                    "select avg(temp1), avg(temp2), avg(temp3) "
+                    "select avg(temp1), avg(temp2), avg(temp3), "
                     "       avg(rot1), avg(rot2), avg(rot3), "
                     "       avg(vc0), avg(vc1), avg(v33), avg(v50p), "
                     "       avg(v50n), avg(v50n), max(color), avg(yellow), avg(red) " 
