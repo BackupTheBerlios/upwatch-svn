@@ -34,7 +34,7 @@ syslog-ignore master\[[0-9]*\]: process [0-9]* exited, status [0-9]*
 syslog-ignore service-pop3\[[0-9]*\]: executed
 syslog-ignore service-lmtp\[[0-9]*\]: executed
 syslog-ignore service-imap\[[0-9]*\]: executed
-syslog-ignore saslpasswd: failed to set plaintext secret for cyrus: requested change was not needed 
+syslog-ignore requested change was not needed 
 
 # cron
 syslog-ignore crond\[[0-9]*\]: \(CRON\) STARTUP
@@ -116,12 +116,12 @@ syslog-ignore sshd(pam_unix)\[[0-9]*\]: check pass; user unknown
 syslog-ignore authentication failure
 syslog-ignore Accepted password for
 syslog-ignore Connection closed by
-syslog-ignore sshd\[[0-9]*\]: log: Connection to [-0-9a-zA-Z.]* from 
 syslog-ignore but this does not map back to the address
 syslog-ignore scanned from [0-9.]* with .*.  Don't panic
 syslog-ignore Did not receive identification string from
 syslog-ignore sshd:
 syslog-ignore Server listening on
+syslog-ignore sshd\[[0-9]*\]: log: Connection to [-0-9a-zA-Z.]* from 
 syslog-ignore sshd\[[0-9]*\]: Received signal [0-9]*; terminating
 syslog-ignore sshd\[[0-9]*\]: log: RhostsRsa authentication not available for connections from unprivileged port
 syslog-ignore sshd\[[0-9]*\]: log: Password authentication for root accepted.
@@ -134,6 +134,7 @@ syslog-ignore sshd\[[0-9]*\]: error: accept: Connection reset by peer
 syslog-ignore sshd\[[0-9]*\]: WARNING: /etc/ssh/moduli does not exist, using old modulus
 syslog-ignore sshd\[[0-9]*\]: WARNING: /etc/ssh/primes does not exist, using old prime
 syslog-ignore sshd\[[0-9]*\]: Accepted publickey for
+syslog-ignore sshd\[[0-9]*\]: Accepted rsa for
 syslog-ignore sshd\[[0-9]*\]: log: Could not reverse map address
 syslog-ignore sshd\[[0-9]*\]: Could not reverse map address
 syslog-ignore sshd\[[0-9]*\]: reverse mapping checking getaddrinfo for
@@ -474,7 +475,7 @@ syslog-ignore kudzu:  succeeded
 syslog-ignore iptables: (Flushing|Clearing) all current rules and user defined chains: succeeded
 syslog-ignore iptables: Applying iptables firewall rules succeeded
 syslog-ignore keytable: Loading 
-
+syslog-ignore firewall\[[0-9]*\]: Firewall stopping
 
 syslog-ignore sysctl:
 syslog-ignore Setting [0-9]*mbps full-duplex based on
