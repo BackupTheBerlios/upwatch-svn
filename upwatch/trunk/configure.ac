@@ -10,7 +10,7 @@ AC_SUBST(VERSION)
 
 AC_DEFINE_UNQUOTED([RELEASE], ["${RELEASE}"], [Package release string])
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.72 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.73 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -24,6 +24,16 @@ unset MFLAGS MAKEFLAGS MAKELEVEL 2>/dev/null
 
 ifdef([AC_LIBTOOL_WIN32_DLL], AC_LIBTOOL_WIN32_DLL)
 AM_WITH_DMALLOC
+
+# do this early because we totally override CFLAGS here
+AC_ARG_ENABLE(debug,
+    [  --enable-debug          Turn on compiler debugging information (default=no)],
+    [if eval "test x$enable_debug = xyes"; then
+        CFLAGS="-g -Wall"  # override
+    else
+        CFLAGS="${CFLAGS} -Wall -O2"
+    fi]
+)
 
 # ----------------------------------------------------------------------
 # Set some global things based on os type
@@ -158,15 +168,6 @@ then
   AC_PATH_PROG(RPMBUILD, echo)
 fi
  
-AC_ARG_ENABLE(debug,
-    [  --enable-debug          Turn on compiler debugging information (default=no)],
-    [if eval "test x$enable_debug = xyes"; then
-        CFLAGS="${CFLAGS} -g -Wall"
-    else
-        CFLAGS="${CFLAGS} -Wall -O2"
-    fi]
-)
-
 AC_ARG_ENABLE(profile,
     [  --enable-profile        Turn on profiling flags (default=no)],
     [if eval "test x$enable_profile = xyes"; then

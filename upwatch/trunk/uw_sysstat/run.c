@@ -28,7 +28,7 @@ struct _errlogspec {
 } errlogspec[256];
 
 typedef struct {
-  sg_cpu_stats *cpu;
+  sg_cpu_percents *cpu;
   sg_mem_stats *mem;
   sg_swap_stats *swap;
   sg_load_stats *load;
@@ -71,7 +71,7 @@ hwstats_t hw;
 
 int get_stats(void)
 {
-  st.cpu = sg_get_cpu_stats();
+  st.cpu = sg_get_cpu_percents();
   if (!st.cpu) { LOG(LOG_INFO, "could not sg_get_cpu_stats"); }
   st.mem = sg_get_mem_stats();
   if (!st.mem) { LOG(LOG_INFO, "could not sg_get_mem_stats"); }
@@ -345,7 +345,7 @@ void add_cpu(xmlNodePtr node)
   if (st.cpu) {
     sprintf(buffer, "%u", (int) (st.cpu->user + st.cpu->nice));
     xmlNewChild(node, NULL, "user", buffer);
-    sprintf(buffer, "%u", (int) (st.cpu->kernel + st.cpu->iowait + st.cpu->swap));
+    sprintf(buffer, "%u", (int) (st.cpu->kernel /* + st.cpu->iowait + st.cpu->swap */));
     xmlNewChild(node, NULL, "system", buffer);
     sprintf(buffer, "%u", (int) (st.cpu->idle));
     xmlNewChild(node, NULL, "idle", buffer);

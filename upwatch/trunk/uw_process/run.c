@@ -227,6 +227,7 @@ static void modules_start_run(void)
   if (db) {
     MYSQL_RES *result;
     dblist = calloc(100, sizeof(struct dbspec));
+    dblist_cnt = 0;
     
     result = my_query(db, 0, "select pr_realm.name, pr_realm.host, "
                              "       pr_realm.port, pr_realm.db, pr_realm.user, "

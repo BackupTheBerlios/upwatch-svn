@@ -46,9 +46,12 @@ void termination_handler (int signum)
 
 }
 
+static int logexit = TRUE;
 void exit_function(void)
 {
-  LOG(LOG_NOTICE, "exit");
+  if (logexit) {
+    LOG(LOG_NOTICE, "exit");
+  }
 }
 
 /****************************
@@ -126,7 +129,11 @@ int main( int argc, char** argv, char **envp )
     new_action.sa_flags = 0;
     sigaction (SIGHUP, &new_action, NULL);
 
-    if (debug < 3) daemon(0, 0);
+    if (debug < 3) {
+      logexit = FALSE;
+      daemon(0, 0);
+      logexit = TRUE;
+    }
   }
   do {
     struct timeval start;
