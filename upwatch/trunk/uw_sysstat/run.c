@@ -377,6 +377,9 @@ extern int forever;
   color = STAT_GREEN;
   log = check_log(OPT_ARG(SYSLOG_FILE), &color, FALSE);
   errlog = xmlNewChild(xmlDocGetRootElement(doc), NULL, "errlog", NULL);
+  if (HAVE_OPT(DOMAIN)) {
+    xmlSetProp(sysstat, "domain", OPT_ARG(DOMAIN));
+  }
   sprintf(buffer, "%ld", OPT_VALUE_SERVERID);	xmlSetProp(errlog, "server", buffer);
   xmlSetProp(errlog, "ipaddress", ipaddress);
   sprintf(buffer, "%d", (int) now);		xmlSetProp(errlog, "date", buffer);
@@ -434,6 +437,9 @@ extern int forever;
   }
 
   diskfree = xmlNewChild(xmlDocGetRootElement(doc), NULL, "diskfree", NULL);
+  if (HAVE_OPT(DOMAIN)) {
+    xmlSetProp(sysstat, "domain", OPT_ARG(DOMAIN));
+  }
   sprintf(buffer, "%ld", OPT_VALUE_SERVERID);	xmlSetProp(diskfree, "server", buffer);
   xmlSetProp(diskfree, "ipaddress", ipaddress);
   sprintf(buffer, "%d", (int) now);		xmlSetProp(diskfree, "date", buffer);

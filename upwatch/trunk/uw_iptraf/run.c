@@ -60,6 +60,9 @@ void writeXMLresult(struct ipnetw *ipnets, int count_ipnets)
 
       ip.s_addr = htonl(net->network + j);
       iptraf = xmlNewChild(xmlDocGetRootElement(cur), NULL, "iptraf", NULL);
+      if (HAVE_OPT(DOMAIN)) {
+        xmlSetProp(iptraf, "domain", OPT_ARG(DOMAIN));
+      }
       sprintf(buffer, "%s", inet_ntoa(ip));       xmlSetProp(iptraf, "ipaddress", buffer);
       sprintf(buffer, "%u", (int) now);           xmlSetProp(iptraf, "date", buffer);
       sprintf(buffer, "%u", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60)); 
