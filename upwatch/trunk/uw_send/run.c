@@ -229,7 +229,7 @@ int pushto(st_netfd_t rmt_nfd, char *filename)
   uw_setproctitle("%s:%d: UPLOADING, size=%u %s", OPT_ARG(HOST), OPT_VALUE_PORT,
                 filesize, filename);
   while ((i = fread(buffer, 1, sizeof(buffer), in)) == sizeof(buffer)) {
-    LOG(LOG_DEBUG, "read %d from input", i);
+    //LOG(LOG_DEBUG, "read %d from input", i);
     len = st_write(rmt_nfd, buffer, i, TIMEOUT);
     if (len == ETIME) {
       LOG(LOG_WARNING, "timeout on greeting string");
@@ -241,7 +241,7 @@ int pushto(st_netfd_t rmt_nfd, char *filename)
       fclose(in);
       return 0;
     }
-    LOG(LOG_DEBUG, "written %d to output", len);
+    //LOG(LOG_DEBUG, "written %d to output", len);
   }
 
   if (!feof(in)) {
