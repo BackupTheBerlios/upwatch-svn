@@ -236,7 +236,7 @@ static int handle_file(gpointer data, gpointer user_data)
   xmlNodePtr cur;
   char *p, *fromhost=NULL;
   time_t fromdate = 0;
-  int found=0, failures=0;
+  int failures=0;
   int probe_count = 0;
   struct stat st;
   int filesize;
@@ -314,11 +314,13 @@ static int handle_file(gpointer data, gpointer user_data)
   }
   /* Second level is a list of probes, but be laxist */
   for (failures = 0; cur != NULL;) {
+    int found = 0;
+
     if (xmlIsBlankNode(cur)) {
       cur = cur->next;
       continue;
     }
-    for (found = 0, i = 0; modules[i]; i++) {
+    for (i = 0; modules[i]; i++) {
       int ret;
       char buf[20];
 
@@ -338,10 +340,10 @@ static int handle_file(gpointer data, gpointer user_data)
       strftime(buf, sizeof(buf), "%F %T", gmtime(&fromdate));
       uw_setproctitle("%s %s@%s", buf, cur->name, fromhost);
       ret = process(modules[i], doc, cur, ns);
-      if (ret == 0) {
+      if (ret == 0 || ret == -1) {
         failures++;
         cur = cur->next;
-      } else if (ret == -1) {
+      } else if (ret == -2) {
         fatal = TRUE;
         break;
       } else {

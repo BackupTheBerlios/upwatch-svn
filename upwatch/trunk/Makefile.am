@@ -19,7 +19,7 @@ EXTRA_DIST = Makefile.am.common Makefile.am.libs VERSION libtool ChangeLog \
   common/probe.tpl common/probe_generic.def common/common.h \
   doc/upwatch.xml doc/Makefile doc/upwatch.xsl doc/jadetex.cfg doc/style.dsl \
   doc/style.xsl doc/style.css \
-  cfg/install-sh cfg/config.sub cfg/mkinstalldirs cfg/depcomp
+  cfg/install-sh cfg/config.sub cfg/mkinstalldirs cfg/depcomp cfg/cvs2cl.pl
 
 upwatch.spec: upwatch-spec.def upwatch-spec.tpl uw_*/*.spec-generic uw_*/*.spec-install
 	autogen -b upwatch upwatch-spec.def

@@ -486,15 +486,21 @@ int slot_is_complete(module *probe, char *name, guint probeid, int i, guint slot
  *   ENDIF
  * ENDIF
  *
+ * returns:
+ *  1 in case of success
+ *  0 in case of database failure where trying again later might help
+ * -1 in case of malformed input, never try again
+ * -2 in case of a fatal error, just skip this batch
  */
 int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
 {
   int seen_before=0, must_update_def=0;
   struct probe_def *def=NULL;
   struct probe_result *res=NULL, *prv=NULL;
+  int err = 1; /* default ok */
 
   res = extract_info_from_xml(probe, doc, cur, ns); // EXTRACT INFO FROM XML NODE
-  if (!res) return 1;
+  if (!res) return -1; 
 
   if (probe->fix_result) {
     probe->fix_result(probe, res); // do some final calculations on the result
@@ -506,16 +512,16 @@ int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
     def = get_def(probe, res);
   }
   if (!def) {  // Oops, def record not found. Skip this probe
-    if (probe->free_res) {
-      if (res) probe->free_res(res);
-    } else {
-      if (res) g_free(res);
-    }
-    return 1;  
+    err = 0; /* database error - try again later */
+    goto exit_with_res;
   }
 
   if (probe->store_results) {
-    seen_before = probe->store_results(probe, def, res); // STORE RAW RESULTS
+    int ret = probe->store_results(probe, def, res, &seen_before); // STORE RAW RESULTS
+    if (!ret) { /* error return? */
+      err = -2; /* database fatal error - try again later */
+      goto exit_with_res;
+    }
   } else {
     seen_before = FALSE;
   }
@@ -531,81 +537,84 @@ int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
   if (def->newest == 0) { // IF THIS IS THE FIRST RESULT EVER FOR THIS PROBE
     insert_pr_status(probe, def, res);
     must_update_def = TRUE;
+    goto finish;
+  }
+  if (seen_before) {
+    goto finish;
+  }
+  // IF COLOR DIFFERS FROM PRECEDING RAW RECORD
+  if (res->color != prv->color) {
+    struct probe_result *nxt;
+    create_pr_hist(probe, def, res, prv); // CREATE PR_HIST
+    nxt = get_following_record(probe, def, res); // RETRIEVE FOLLOWING RAW RECORD
+    if (nxt && nxt->color) { // IF FOUND
+      if (nxt->color == res->color) {  // IF COLOR OF FOLLOWING IS THE SAME AS CURRENT
+        delete_history(probe, def, nxt); // DELETE POSSIBLE HISTORY RECORDS FOR FOLLOWING RECORD
+      }
+      g_free(nxt);
+    }
+    if (res->stattime > def->newest) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED
+      update_pr_status(probe, def, res);  // UPDATE PR_STATUS
+      update_server_color(probe, def, res); // UPDATE SERVER COLOR
+      must_update_def = TRUE;
+    }
   } else {
-    if (!seen_before) {
-      // IF COLOR DIFFERS FROM PRECEDING RAW RECORD
-      if (res->color != prv->color) {
-        struct probe_result *nxt;
-        create_pr_hist(probe, def, res, prv); // CREATE PR_HIST
-        nxt = get_following_record(probe, def, res); // RETRIEVE FOLLOWING RAW RECORD
-        if (nxt && nxt->color) { // IF FOUND
-          if (nxt->color == res->color) {  // IF COLOR OF FOLLOWING IS THE SAME AS CURRENT
-            delete_history(probe, def, nxt); // DELETE POSSIBLE HISTORY RECORDS FOR FOLLOWING RECORD
-          }
-          g_free(nxt);
-        }
-        if (res->stattime > def->newest) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED
-          update_pr_status(probe, def, res);  // UPDATE PR_STATUS
-          update_server_color(probe, def, res); // UPDATE SERVER COLOR
-          must_update_def = TRUE;
-        }
-      } else {
-        if (res->stattime > def->newest) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED
-          must_update_def = TRUE;
+    if (res->stattime > def->newest) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED
+      must_update_def = TRUE;
+    }
+  }
+  if (probe->summarize) { // if we have a summarisation function
+    if (res->stattime > def->newest) { // IF CURRENT RAW RECORD IS THE MOST RECENT
+      guint cur_slot, prev_slot;
+      gulong slotlow, slothigh;
+      gulong dummy_low, dummy_high;
+      gint i;
+
+      for (i=0; summ_info[i].period != -1; i++) { // FOR EACH PERIOD
+        prev_slot = uw_slot(summ_info[i].period, prv->stattime, &slotlow, &slothigh);
+        cur_slot = uw_slot(summ_info[i].period, res->stattime, &dummy_low, &dummy_high);
+        if (cur_slot != prev_slot) { // IF WE ENTERED A NEW SLOT, SUMMARIZE PREVIOUS SLOT
+          //if (strcmp(res->name, "sysstat") == 0) {
+          //  LOG(LOG_DEBUG, "cur(%u for %u) != prv(%u for %u), summarizing %s from %u to %u",
+          //                 cur_slot, res->stattime, prev_slot, prv->stattime,
+          //                 summ_info[i].from, slotlow, slothigh);
+          //}
+          probe->summarize(probe, def, res, summ_info[i].from, summ_info[i].to, 
+                           cur_slot, slotlow, slothigh, 0);
         }
       }
-      if (probe->summarize) { // if we have a summarisation function
-        if (res->stattime > def->newest) { // IF CURRENT RAW RECORD IS THE MOST RECENT
-          guint cur_slot, prev_slot;
-          gulong slotlow, slothigh;
-          gulong dummy_low, dummy_high;
-          gint i;
+    } else {
+      guint cur_slot;
+      gulong slotlow, slothigh;
+      gulong not_later_then = UINT_MAX;
+      gint i;
 
-          for (i=0; summ_info[i].period != -1; i++) { // FOR EACH PERIOD
-            prev_slot = uw_slot(summ_info[i].period, prv->stattime, &slotlow, &slothigh);
-            cur_slot = uw_slot(summ_info[i].period, res->stattime, &dummy_low, &dummy_high);
-            if (cur_slot != prev_slot) { // IF WE ENTERED A NEW SLOT, SUMMARIZE PREVIOUS SLOT
-              //if (strcmp(res->name, "sysstat") == 0) {
-              //  LOG(LOG_DEBUG, "cur(%u for %u) != prv(%u for %u), summarizing %s from %u to %u",
-              //                 cur_slot, res->stattime, prev_slot, prv->stattime,
-              //                 summ_info[i].from, slotlow, slothigh);
-              //}
-              probe->summarize(probe, def, res, summ_info[i].from, summ_info[i].to, 
-                               cur_slot, slotlow, slothigh, 0);
-            }
-          }
+      if (debug > 2) {
+        LOG(LOG_DEBUG, "stattime = %u, newest = %u for %s %u", res->stattime, def->newest,
+          res->name, res->probeid);
+      }
+      for (i=0; summ_info[i].period != -1; i++) { // FOR EACH PERIOD
+        cur_slot = uw_slot(summ_info[i].period, res->stattime, &slotlow, &slothigh);
+        if (slothigh > not_later_then) continue; // we already know there are none later then this
+        // IF THIS SLOT IS COMPLETE
+        if (slot_is_complete(probe, res->name, def->probeid, i, slotlow, slothigh)) {
+          // RE-SUMMARIZE CURRENT SLOT
+          probe->summarize(probe, def, res, summ_info[i].from, summ_info[i].to, 
+                           cur_slot, slotlow, slothigh, 0);
         } else {
-          guint cur_slot;
-          gulong slotlow, slothigh;
-          gulong not_later_then = UINT_MAX;
-          gint i;
-
-          if (debug > 2) {
-            LOG(LOG_DEBUG, "stattime = %u, newest = %u for %s %u", res->stattime, def->newest,
-              res->name, res->probeid);
-          }
-          for (i=0; summ_info[i].period != -1; i++) { // FOR EACH PERIOD
-            cur_slot = uw_slot(summ_info[i].period, res->stattime, &slotlow, &slothigh);
-            if (slothigh > not_later_then) continue; // we already know there are none later then this
-            // IF THIS SLOT IS COMPLETE
-            if (slot_is_complete(probe, res->name, def->probeid, i, slotlow, slothigh)) {
-              // RE-SUMMARIZE CURRENT SLOT
-              probe->summarize(probe, def, res, summ_info[i].from, summ_info[i].to, 
-                               cur_slot, slotlow, slothigh, 0);
-            } else {
-              not_later_then = slothigh;
-            }
-          }
+          not_later_then = slothigh;
         }
       }
     }
   }
+finish:
   if (must_update_def) {
     def->newest = res->stattime;
     def->color = res->color;
   }
   g_free(prv);
 
+exit_with_res:
   // free the result block
   if (res) {
     if (probe->free_res) {
@@ -615,6 +624,6 @@ int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
   }
 
   // note we don't free the *def here, because that structure is owned by the hashtable
-  return 1;
+  return err;
 }
 

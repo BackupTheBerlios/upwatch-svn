@@ -56,7 +56,7 @@ typedef struct _module {
   void (*get_from_xml)(struct _module *probe, xmlDocPtr, xmlNodePtr, xmlNsPtr, void *res);
   int  (*fix_result)(struct _module *probe, void *res);
   void *(*get_def)(struct _module *probe, void *res);
-  gint (*store_results)(struct _module *probe, void *def, void *res);
+  gint (*store_results)(struct _module *probe, void *def, void *res, guint *seen_before);
   void (*summarize)(struct _module *probe, void *def, void *res, char *from, char *into, 
                     guint slot, guint slotlow, guint slothigh, gint ignoredupes);
   void (*end_run)(void);
@@ -82,7 +82,7 @@ typedef struct transaction {
 
 /* generic functions */
 extern void ct_get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res);
-extern gint ct_store_raw_result(struct _module *probe, void *probe_def, void *probe_res);
+extern gint ct_store_raw_result(struct _module *probe, void *probe_def, void *probe_res, guint *seen_before);
 extern void ct_summarize(module *probe, void *probe_def, void *probe_res, char *from, char *into, 
                          guint slot, guint slotlow, guint slothigh, gint resummarize);
 

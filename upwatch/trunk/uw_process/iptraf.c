@@ -196,13 +196,13 @@ static void *get_def(module *probe, void *probe_res)
 //*******************************************************************
 // STORE RAW RESULTS
 //*******************************************************************
-static gint store_raw_result(struct _module *probe, void *probe_def, void *probe_res)
+static gint store_raw_result(struct _module *probe, void *probe_def, void *probe_res, guint *seen_before)
 {
   MYSQL_RES *result;
   struct iptraf_result *res = (struct iptraf_result *)probe_res;
   struct iptraf_def *def = (struct iptraf_def *)probe_def;
-  int already_there = TRUE;
     
+  *seen_before = FALSE;
   def->slotday_in_total += res->in_total;
   def->slotday_out_total += res->out_total;
   if (res->color > def->slotday_max_color) {
@@ -215,11 +215,13 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
                     "       in_total = '%f', out_total = '%f'",
                     def->probeid, def->yellow, def->red, res->stattime, res->color, 
                     res->in_total, res->out_total);
-  mysql_free_result(result);
-  if (mysql_affected_rows(probe->db) > 0) { // something was actually inserted
-    already_there = FALSE;
+  if (result) mysql_free_result(result);
+  if (mysql_errno(probe->db) == ER_DUP_ENTRY) {
+    *seen_before = TRUE;
+  } else if (mysql_errno(probe->db)) {
+    return 0; // other failure
   }
-  return(already_there); // the record was already in the database
+  return 1; // success
 }
 
 //*******************************************************************

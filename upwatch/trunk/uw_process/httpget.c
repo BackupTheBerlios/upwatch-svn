@@ -44,14 +44,14 @@ static void get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr 
 //*******************************************************************
 // STORE RAW RESULTS
 //*******************************************************************
-static gint store_raw_result(struct _module *probe, void *probe_def, void *probe_res)
+static gint store_raw_result(struct _module *probe, void *probe_def, void *probe_res, guint *seen_before)
 {
   MYSQL_RES *result;
   struct httpget_result *res = (struct httpget_result *)probe_res;
   struct probe_def *def = (struct probe_def *)probe_def;
-  int already_there = TRUE;
   char *escmsg;
 
+  *seen_before = FALSE;
   if (res->message) {
     escmsg = g_malloc(strlen(res->message) * 2 + 1);
     mysql_real_escape_string(probe->db, escmsg, res->message, strlen(res->message)) ;
@@ -66,13 +66,14 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
                     "       message = '%s' ",
                     def->probeid, def->yellow, def->red, res->stattime, res->color, 
                     res->lookup, res->connect, res->pretransfer, res->total, escmsg);
-
-  mysql_free_result(result);
-  if (mysql_affected_rows(probe->db) > 0) { // something was actually inserted
-    already_there = FALSE;
-  }
   g_free(escmsg);
-  return(already_there); // the record was already in the database
+  if (result) mysql_free_result(result);
+  if (mysql_errno(probe->db) == ER_DUP_ENTRY) {
+    *seen_before = TRUE;
+  } else if (mysql_errno(probe->db)) {
+    return 0; // other failure
+  }
+  return 1; // success
 }
 
 //*******************************************************************
