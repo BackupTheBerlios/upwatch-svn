@@ -9,16 +9,16 @@ cd libstatgrab
 #  patch -p1 < libstatgrab-openbsd.patch
   aclocal
   libtoolize
-  automake --gnu --add-missing
   autoconf
-fi
+  automake --gnu --add-missing
+#fi
 cd ..
 
 aclocal \
 && autoheader \
 && libtoolize \
-&& automake --gnu --add-missing \
-&& autoconf
+&& autoconf \
+&& automake --gnu --add-missing 
 
 cd xmbmon203
 autoconf
