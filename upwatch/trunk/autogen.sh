@@ -2,6 +2,8 @@
 set -x
 
 rm -f config.cache 
+#gettextize --force --copy
+libtoolize --force --copy
 aclocal 
 autoheader
 autoconf

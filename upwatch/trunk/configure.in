@@ -160,7 +160,7 @@ AC_CHECK_FUNCS([alarm atexit gethostbyname gethostname gettimeofday inet_ntoa me
 
 AM_CONFIG_HEADER(config.h)
 
-AC_CONFIG_FILES([Makefile
+AC_CONFIG_FILES([Makefile 
                  upwatch/Makefile 
                  doc/Makefile 
                  uw_accept/Makefile 

@@ -34,7 +34,8 @@
             <itemizedlist>
                 <listitem><para>autogen 5.3.6 (autogen.sourceforge.net)</para></listitem>
                 <listitem><para>libxslt 1.0.15</para></listitem>
-                <listitem><para>docbook 1.48</para></listitem>
+                <listitem><para>docbook 1.48, including the entire toolchain: openjade, jadetex, tetex, netpbm, perl-SGMLSpm 
+                          </para></listitem>
                 <listitem><para>lynx 2.8.4</para></listitem>
                 <listitem><para>RPM tools, if you want to build RPM's</para></listitem>
             </itemizedlist>

@@ -15,7 +15,7 @@ upwatch.txt: ${XMLSOURCE}
 	lynx -nolist -dump upwatch.html > upwatch.txt
 
 upwatch.pdf: ${XMLSOURCE}
-	jw -f docbook -b pdf -d style.dsl upwatch.xml
+	jw -c /etc/sgml/catalog -f docbook -b pdf -d style.dsl upwatch.xml
 
 CLEANFILES = upwatch.txt upwatch.html Makefile.in
 
