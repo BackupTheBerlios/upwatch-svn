@@ -107,12 +107,12 @@ int uw_slot(int type, gulong when, gulong *lowest, gulong *highest)
   }
   seconds_per_slot = seconds_per_period / 100;
 
-  *lowest = (gulong) mktime(tm);          // period start time
-  diff = difftime(when, (time_t)*lowest); // # of seconds since period started
-  slot = diff/seconds_per_slot;           // slotnumber within this period
+  *lowest = (gulong) mktime(tm);            // period start time
+  diff = difftime(when, (time_t)*lowest);   // # of seconds since period started
+  slot = diff/seconds_per_slot;             // slotnumber within this period
 
-  *lowest += (slot * seconds_per_slot);   // starttime of this slot.
-  *highest = *lowest + seconds_per_slot;  // endtime of this slot
+  *lowest += (slot * seconds_per_slot);     // starttime of this slot.
+  *highest = *lowest + seconds_per_slot -1; // endtime of this slot
 
   //printf(ctime((time_t*)lowest));
   //printf(ctime((time_t*)highest));
