@@ -66,7 +66,7 @@ EXTRA_DIST = Makefile.am.common Makefile.am.libs Makefile.am.path VERSION libtoo
   upwatch-spec.def upwatch-spec.tpl upwatch.spec templates upwatch.mysql \
   patches/libpcap-linux-timeout.patch patches/libstatgrab-configure.gnu \
   ${SERVER_DIST} \
-  cfg/install-sh cfg/config.sub cfg/mkinstalldirs cfg/depcomp cfg/cvs2cl.pl
+  install-sh config.sub mkinstalldirs depcomp cfg/cvs2cl.pl
 
 upwatch.spec: upwatch-spec.def upwatch-spec.tpl common/spec.tpl \
   uw_*/*.spec-files uw_*/*.spec-requires 
