@@ -1,6 +1,6 @@
 program = bbhimport
 bin_PROGRAMS = bbhimport
-bbhimport_SOURCES = run.c cmd_options.c cmd_options.h
+bbhimport_SOURCES = run.c cmd_options.c cmd_options.h bbhimport.h
 BUILT_SOURCES = cmd_options.h 
 INCLUDES = -I$(top_srcdir)/upwatch 
 EXTRA_DIST = cmd_options.def

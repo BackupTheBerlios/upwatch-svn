@@ -100,8 +100,7 @@ install -m 660 [+program+]/[+program+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+prog
 %attr(0755,root,root) /usr/bin/bbhimport
 %attr(0755,root,root) /usr/bin/ctime
 %attr(0755,root,root) /usr/bin/slot
-/usr/share/man/man1/ctime.1.gz
-/usr/share/man/man1/slot.1.gz
+/usr/share/man/man1/*
 %attr(0770,upwatch,upwatch) /usr/lib/upwatch
 /etc/logrotate.d/upwatch
 /etc/cron.daily/upwatch
