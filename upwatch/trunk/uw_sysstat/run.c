@@ -276,6 +276,9 @@ xmlNodePtr newnode(xmlDocPtr doc, char *name)
   if (HAVE_OPT(DOMAIN)) {
     xmlSetProp(node, "domain", OPT_ARG(DOMAIN));
   }
+  if (HAVE_OPT(REALM)) {
+    xmlSetProp(node, "realm", OPT_ARG(DOMAIN));
+  }
   sprintf(buffer, "%ld", OPT_VALUE_SERVERID);	xmlSetProp(node, "server", buffer);
   xmlSetProp(node, "ipaddress", ipaddress);
   sprintf(buffer, "%d", (int) now);		xmlSetProp(node, "date", buffer);
