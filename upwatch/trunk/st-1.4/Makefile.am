@@ -4,7 +4,9 @@ libst_a_CFLAGS = -DUSE_POLL -DLINUX
 
 EXTRA_DIST = osguess.sh
 
-st.h: public.h
+sched.c: st.h
+
+st.h:
 	cp public.h st.h
 	sed "s/@VERSION@/1.4/g" < st.pc.in > st.pc
 
