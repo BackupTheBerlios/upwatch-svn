@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.40 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.41 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -488,28 +488,25 @@ then
   AC_CONFIG_FILES([uw_acceptbb/Makefile])
   AC_CONFIG_FILES([uw_process/Makefile])
   AC_CONFIG_FILES([uw_notify/Makefile])
-  AC_CONFIG_FILES([compat/Makefile])
-  AC_CONFIG_FILES([compat/bb/Makefile])
-  AC_CONFIG_FILES([compat/bb/bbhimport/Makefile])
-  AC_CONFIG_FILES([compat/sometests/Makefile])
-  AC_CONFIG_FILES([compat/sometests/setproctitle/Makefile])
 fi
 
 echo "*********************************************************"
 echo 
 
-
-AC_CONFIG_FILES([Makefile
-                 doc/Makefile
-                 config/Makefile
-                 common/Makefile
-                 st-1.4/Makefile
-                 upwatch/Makefile
-                 util/Makefile
-                 scripts/Makefile
-                 uw_send/Makefile
-                 uw_sysstat/Makefile
-])
+AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([config/Makefile])
+AC_CONFIG_FILES([common/Makefile])
+AC_CONFIG_FILES([st-1.4/Makefile])
+AC_CONFIG_FILES([upwatch/Makefile])
+AC_CONFIG_FILES([util/Makefile])
+AC_CONFIG_FILES([scripts/Makefile])
+AC_CONFIG_FILES([uw_send/Makefile])
+AC_CONFIG_FILES([uw_sysstat/Makefile])
+AC_CONFIG_FILES([compat/Makefile])
+AC_CONFIG_FILES([compat/bb/Makefile])
+AC_CONFIG_FILES([compat/bb/bbhimport/Makefile])
+AC_CONFIG_FILES([compat/sometests/Makefile])
+AC_CONFIG_FILES([compat/sometests/setproctitle/Makefile])
 
 cp patches/libstatgrab-configure.gnu libstatgrab/configure.gnu
 AC_CONFIG_SUBDIRS(libstatgrab)

@@ -207,7 +207,7 @@ extern int forever;
   sprintf(buffer, "%llu", st.mem->cache/1024);	subtree = xmlNewChild(sysstat, NULL, "cached", buffer);
   sprintf(buffer, "%llu", st.mem->used/1024);	subtree = xmlNewChild(sysstat, NULL, "used", buffer);
   sprintf(buffer, "%d", systemp);		subtree = xmlNewChild(sysstat, NULL, "systemp", buffer);
-  subtree = xmlNewChild(sysstat, NULL, "info", info);
+  subtree = xmlNewTextChild(sysstat, NULL, "info", info);
 
   if (HAVE_OPT(HPQUEUE)) {
     if (color != prv_color) {

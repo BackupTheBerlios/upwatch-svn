@@ -24,6 +24,7 @@ int forever=30;
 static int runcounter;
 char *progname;
 
+
 void termination_handler (int signum)
 {
   // Note: this function hangs when ElectricFence is used, don't know why
@@ -338,18 +339,59 @@ static void _ll_lograw(int level, const char *msg)
   pthread_mutex_unlock(&_logmutex);
 }
 
-void _LOG(int level, const char *fmt, ...)
+void _LOG(int level, char *fmt, ...)
 {
   char buffer[16384];
-  char *p;
+  char newfmt[16585];
+  char *p, *q;
   va_list arg;
+
+static int firsttime = 1;
+static int snprintf_does_errno;  // set to true if snprintf does %m conversions
+
+  if (firsttime) {
+    char tmp[256];
+
+    firsttime = 0;
+    snprintf(tmp, sizeof(tmp), "%m");
+    if (strcmp(tmp, strerror(errno))) {
+      snprintf_does_errno = 0;
+    } else {
+      snprintf_does_errno = 1;
+    }
+  }
 
   if (fmt == NULL) fmt = "(null)";
 
+  // expand %m if needed
+  if (!snprintf_does_errno) {
+    for (p = fmt, q = &newfmt[0]; *p;) {
+      switch(*p) {
+      case '\\': 
+        *q++ = *p++; 
+        if (*p) *q++ = *p++; /* escape a character */
+        break; 
+      case '%':   
+        if (*(p+1) == 'm') {
+          strcpy(q, strerror(errno));
+          p += 2;
+          q += strlen(strerror(errno));
+          break;
+        }
+      default:
+        *q++ = *p++;
+        break;
+      }
+    }
+    *q = 0;
+    fmt = newfmt;
+  }
+
   va_start(arg, fmt);
-  vsnprintf(buffer, sizeof(buffer), fmt, arg);
+  vsnprintf(buffer, sizeof(buffer)-256 /* extra space for %m expansions */, fmt, arg);
   va_end(arg);
 
+      
   // kill trailing blanks (xml errors have this a lot)
   for (p = &buffer[(char)(strlen(buffer) - 1)]; isspace(*p); p--) {
     *p = 0;

@@ -1,1 +1,5 @@
-SUBDIRS = bb sometests
+if ENABLE_SERVER
+SERVERONLY = bb
+endif
+
+SUBDIRS = ${SERVERONLY} sometests
