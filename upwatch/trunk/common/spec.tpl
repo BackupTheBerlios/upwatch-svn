@@ -12,8 +12,8 @@ spec-files +]
 [+ ENDFOR +]
 [+ == spec-requires
 +][= AutoGen5 template spec =]
-Requires: [+ FOR spec-requires +][+ spec-requires +][+ ENDFOR +]
+[+ IF spec-buildrequires +]Requires: [+ FOR spec-requires +][+ spec-requires +][+ ENDFOR +][+ ENDIF +]
 [+ == spec-buildrequires
 +][= AutoGen5 template spec =]
-BuildRequires: [+ FOR spec-buildrequires +][+ spec-buildrequires +][+ ENDFOR +]
+[+ IF spec-buildrequires +]BuildRequires: [+ FOR spec-buildrequires +][+ spec-buildrequires +][+ ENDFOR +][+ ENDIF +]
 [+ ESAC +]
