@@ -201,6 +201,10 @@ login:
     LOG(LOG_WARNING, "timeout on USER response");
     return;
   }
+  if (len == -1) {
+    LOG(LOG_WARNING, "%m");
+    return;
+  }
   if (debug > 3) fprintf(stderr, "< %s", buffer);
   chop(buffer, len);
   if (strncasecmp(buffer, "QUIT", 4) == 0) goto end;
@@ -226,6 +230,10 @@ login:
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
   if (len == ETIME) {
     LOG(LOG_WARNING, "timeout on PASS response");
+    return;
+  }
+  if (len == -1) {
+    LOG(LOG_WARNING, "%m");
     return;
   }
   if (strncasecmp(buffer, "QUIT", 4) == 0) goto end;
@@ -264,6 +272,10 @@ logged_in:
     LOG(LOG_WARNING, "timeout on PASS response");
     return;
   }
+  if (len == -1) {
+    LOG(LOG_WARNING, "%m");
+    return;
+  }
   if (debug > 3) fprintf(stderr, "< %s", buffer);
   chop(buffer, len);
   if (strncasecmp(buffer, "QUIT", 4) == 0) goto end;
@@ -292,11 +304,16 @@ logged_in:
   while (filesize > 0) {
     memset(buffer, 0, sizeof(buffer));
     length = filesize > sizeof(buffer) ? sizeof(buffer) : filesize;
-    fprintf(stderr, "reading %u bytes", length);
+    //fprintf(stderr, "reading %u bytes", length);
     len = st_read(rmt_nfd, buffer, length, TIMEOUT);
     if (len == ETIME) {
       LOG(LOG_WARNING, "timeout on PASS response");
       return;
+    }
+    if (len == -1) {
+      LOG(LOG_WARNING, "%m");
+      spool_close(sp_info, FALSE);
+      goto end;
     }
     if (spool_write(sp_info, buffer, len) == -1) {
       LOG(LOG_NOTICE, "spoolfile write error");
