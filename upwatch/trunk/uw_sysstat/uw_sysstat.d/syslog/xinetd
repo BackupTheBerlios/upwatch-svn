@@ -1,0 +1,6 @@
+ignore [LOGDATE] xinetd[PID]: Exiting...
+ignore [LOGDATE] xinetd[PID]: Started working: [NUM] available service
+ignore [LOGDATE] xinetd[PID]: Started working: [NUM] available services
+ignore [LOGDATE] xinetd[PID]: xinetd Version [NUM].[NUM].[NUM] started with libwrap loadavg options compiled in.
+ignore [LOGDATE] xinetd: xinetd shutdown succeeded
+ignore [LOGDATE] xinetd: xinetd startup succeeded

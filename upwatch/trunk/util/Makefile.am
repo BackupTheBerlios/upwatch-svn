@@ -13,11 +13,11 @@ if CYGWIN
 MYCFLAGS = -DCYGWIN
 endif
 
-bin_PROGRAMS = ctime slot $(UWSAIDAR) $(UWREGEXP) uwq
-man_MANS = ctime.1 slot.1 uwq.1
+bin_PROGRAMS = ctime slot $(UWSAIDAR) $(UWREGEXP) uwq chklog
+man_MANS = ctime.1 slot.1 uwq.1 chklog.1
 INCLUDES = -I../upwatch 
 BUILT_SOURCES = 
-EXTRA_DIST = ctime.1 slot.1 uwq.1
+EXTRA_DIST = ctime.1 slot.1 uwq.1 chklog.1
 
 if HAVE_CURSES
 uwsaidar_SOURCES = uwsaidar.c
@@ -25,8 +25,8 @@ uwsaidar_LDADD = $(LIBSTATGRAB) $(SOLARISLIBS) @LIBCURSES_LIBS@
 uwsaidar_CFLAGS = -I$(INCL_STATGRAB) $(MYCFLAGS)
 
 uwregexp_SOURCES = uwregexp.c
-uwregexp_LDADD = $(SOLARISLIBS) @LIBCURSES_LIBS@ -lreadline
-uwregexp_CFLAGS = $(MYCFLAGS)
+uwregexp_LDADD = $(SOLARISLIBS) @LIBPCRE_LIBS@ @LIBCURSES_LIBS@ -lreadline
+uwregexp_CFLAGS = @LIBPCRE_CFLAGS@ $(MYCFLAGS)
 endif
 
 include $(top_srcdir)/Makefile.am.common
@@ -71,4 +71,18 @@ slot_options.h: slot_options.def ../common/minimal_options.def
 
 slot.1: slot_options.def $(top_srcdir)/common/man1.tpl
 	autogen -b slot $(AGDEFINES) $(GENINCL) -T $(MAN1TPL) slot_options.def
+
+chklog_SOURCES = chklog.c chklog_options.c chklog_options.h chklog_options.def
+chklog_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@
+chklog_LDADD = @LIBGLIB2_LIBS@ @LIBPCRE_LIBS@ $(LIBOPTS) $(LIBUPWATCH) 
+BUILT_SOURCES += chklog_options.h
+EXTRA_DIST += chklog_options.def
+CLEAN_FILES +=  chklog_options.c chklog_options.h
+
+chklog_options.h: chklog_options.def ../common/minimal_options.def
+	autogen -b chklog_options $(AGDEFINES) $(GENINCL) -L $(top_srcdir)/common chklog_options.def
+	autogen -b chklog $(AGDEFINES) $(GENINCL) -T $(top_srcdir)/common/man1.tpl -L $(top_srcdir)/common chklog_options.def
+
+chklog.1: chklog_options.def $(top_srcdir)/common/man1.tpl
+	autogen -b chklog $(AGDEFINES) $(GENINCL) -T $(MAN1TPL) chklog_options.def
 

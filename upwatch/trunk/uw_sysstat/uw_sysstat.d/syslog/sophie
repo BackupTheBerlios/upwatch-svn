@@ -1,0 +1,42 @@
+ignore [LOGDATE] sophie: [PATH] placed in the background
+ignore [LOGDATE] sophie[PID]: Callbacks\?       : yes 
+ignore [LOGDATE] sophie[PID]: Error strings\?   : yes 
+ignore [LOGDATE] sophie[PID]: File '[PATH]' infected with virus '.*' 
+ignore [LOGDATE] sophie[PID]: limit_classif    : [NUM] 
+ignore [LOGDATE] sophie[PID]: limit_decompr    : [NUM] 
+ignore [LOGDATE] sophie[PID]: limit_nextfile   : [NUM] 
+ignore [LOGDATE] sophie[PID]: Log facility     : [NUM] \(syslog\) 
+ignore [LOGDATE] sophie[PID]: Logname          : sophie 
+ignore [LOGDATE] sophie[PID]: Log priority     : [NUM] \(notice\) 
+ignore [LOGDATE] sophie[PID]: Max processes    : [NUM]  
+ignore [LOGDATE] sophie[PID]: notice           : Configuration options set 
+ignore [LOGDATE] sophie[PID]: NOTICE           : Configuration options set 
+ignore [LOGDATE] sophie[PID]: notice           : pSAVI cleaned up and released/terminated 
+ignore [LOGDATE] sophie[PID]: NOTICE           : pSAVI cleaned up and released/terminated 
+ignore [LOGDATE] sophie[PID]: notice           : Removing existing socket 
+ignore [LOGDATE] sophie[PID]: NOTICE           : Removing existing socket 
+ignore [LOGDATE] sophie[PID]: notice           : Setting configuration options - please wait... 
+ignore [LOGDATE] sophie[PID]: NOTICE           : Setting configuration options - please wait... 
+ignore [LOGDATE] sophie[PID]: notice           : SIGNAL '[NUM]' caught - cleaning up and exiting. 
+ignore [LOGDATE] sophie[PID]: NOTICE           : SIGNAL '[NUM]' caught - cleaning up and exiting. 
+ignore [LOGDATE] sophie[PID]: [PATH] Placed in the background [PID: [NUM]] 
+ignore [LOGDATE] sophie[PID]: PID file         : [PATH] 
+ignore [LOGDATE] sophie[PID]: Running as user  : mail 
+ignore [LOGDATE] sophie[PID]: SAVI config      : [PATH] 
+ignore [LOGDATE] sophie[PID]: Show virus name\? : yes 
+ignore [LOGDATE] sophie[PID]: socket_check     : yes 
+ignore [LOGDATE] sophie[PID]: Socket group     : mail 
+ignore [LOGDATE] sophie[PID]: Socket path      : [PATH] 
+ignore [LOGDATE] sophie[PID]: Sophie child has timed-out \(no data received in [NUM] seconds\) - process killed 
+ignore [LOGDATE] sophie[PID]: Sophie IDE       : Sophos IDE version [NUM].[NUM] \(detects [NUM] viruses\) 
+ignore [LOGDATE] sophie[PID]: Sophie version   : [NUM].[NUM]rc[NUM] 
+ignore [LOGDATE] sophie[PID]: Sophos engine    : Sophos engine version [NUM].[NUM] 
+ignore [LOGDATE] sophie[PID]: Timeout          : [NUM] seconds 
+ignore [LOGDATE] sophie[PID]: Timestamps\?      : no 
+ignore [LOGDATE] sophie[PID]: Umask            : [NUM] 
+ignore [LOGDATE] sophie[PID]: warning          : Scan result => '[PATH]' infected with virus '.*' 
+ignore [LOGDATE] sophie[PID]: WARNING          : Scan result => '[PATH]' infected with virus '.*' 
+ignore [LOGDATE] sophie[PID]: warning          : Socket '[PATH]' already exists! 
+ignore [LOGDATE] sophie[PID]: WARNING          : Socket '[PATH]' already exists! 
+ignore [LOGDATE] sophie: sophie shutdown succeeded
+ignore [LOGDATE] sophie: sophie startup succeeded

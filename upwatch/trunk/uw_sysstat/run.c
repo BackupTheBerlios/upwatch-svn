@@ -14,9 +14,15 @@
 #include <ctype.h>
 #include <fcntl.h>
 #include <findsaddr.h>
-#include <regex.h>
+#include <logregex.h>
 
 char ipaddress[24];
+
+struct _errlogspec {
+  char *style;
+  char *path;
+  long long offset;
+} errlogspec[256];
 
 typedef struct{
   cpu_percent_t *cpu;
@@ -40,145 +46,103 @@ typedef struct{
 } stats_t;
 stats_t st;
 
-struct regexspec {
-  char *regex;  // regular expression
-  regex_t preg; // compiled version
-};
-GSList *syslog_ignore;
-GSList *syslog_red;
-
 int get_stats(void)
 {
   st.cpu = cpu_percent_usage();
-  if (!st.cpu) {
-    LOG(LOG_INFO, "could not get cpu_percent_usage");
-  }
+  if (!st.cpu) { LOG(LOG_INFO, "could not get cpu_percent_usage"); }
   st.mem = get_memory_stats();
-  if (!st.cpu) {
-    LOG(LOG_INFO, "could not get_memory_stats");
-  }
+  if (!st.cpu) { LOG(LOG_INFO, "could not get_memory_stats"); }
   st.swap = get_swap_stats();
-  if (!st.cpu) {
-    LOG(LOG_INFO, "could not get_swap_stats");
-  }
+  if (!st.cpu) { LOG(LOG_INFO, "could not get_swap_stats"); }
   st.load = get_load_stats();
-  if (!st.cpu) {
-    LOG(LOG_INFO, "could not get_load_stats");
-  }
+  if (!st.cpu) { LOG(LOG_INFO, "could not get_load_stats"); }
   st.process = get_process_stats();
-  if (!st.cpu) {
-    LOG(LOG_INFO, "could not get_process_stats");
-  }
+  if (!st.cpu) { LOG(LOG_INFO, "could not get_process_stats"); }
   st.paging = get_page_stats_diff();
-  if (!st.cpu) {
-    LOG(LOG_INFO, "could not get_page_stats_diff");
-  }
+  if (!st.cpu) { LOG(LOG_INFO, "could not get_page_stats_diff"); }
   st.network = get_network_stats_diff(&(st.network_entries));
-  if (!st.cpu) {
-    LOG(LOG_INFO, "could not get_network_stats_diff");
-  }
+  if (!st.cpu) { LOG(LOG_INFO, "could not get_network_stats_diff"); }
   st.diskio = get_diskio_stats_diff(&(st.diskio_entries));
-  if (!st.cpu) {
-    LOG(LOG_INFO, "could not get_diskio_stats_diff");
-  }
+  if (!st.cpu) { LOG(LOG_INFO, "could not get_diskio_stats_diff"); }
   st.disk = get_disk_stats(&(st.disk_entries));
-  if (!st.cpu) {
-    LOG(LOG_INFO, "could not get_disk_stats");
-  }
+  if (!st.cpu) { LOG(LOG_INFO, "could not get_disk_stats"); }
   st.general = get_general_stats();
-  if (!st.cpu) {
-    LOG(LOG_INFO, "could not get_general_stats");
-  }
+  if (!st.cpu) { LOG(LOG_INFO, "could not get_general_stats"); }
   st.user = get_user_stats();
-  if (!st.cpu) {
-    LOG(LOG_INFO, "could not get_user_stats");
-  }
+  if (!st.cpu) { LOG(LOG_INFO, "could not get_user_stats"); }
 
   return 1;
 }
 
 #define STATFILE "/var/run/upwatch/uw_sysstat.stat"
+int check_log(GString *string, int idx, int *color)
+{
+  FILE *in;
+  struct stat st;
+  char buffer[8192];
+  int firstmatch = TRUE;
+  int logcolor = STAT_GREEN;
+
+  in = fopen(errlogspec[idx].path, "r");
+  if (!in) {
+    errlogspec[idx].offset = 0;
+    return STAT_GREEN;
+  }
+  if (fstat(fileno(in), &st)) {
+    char buf2[PATH_MAX+4];
+
+    sprintf(buf2, "%s: %m\n", errlogspec[idx].path);
+    g_string_append(string, buf2);
+    LOG(LOG_WARNING, buf2);
+    fclose(in);
+    errlogspec[idx].offset = 0;
+    return STAT_YELLOW;
+  }
+  if (st.st_size < errlogspec[idx].offset) {
+    errlogspec[idx].offset = 0;
+  }
+  fseek(in, errlogspec[idx].offset, SEEK_SET);
+  while (fgets(buffer, sizeof(buffer), in)) {
+    int color;
+
+    if (logregex_matchline(errlogspec[idx].style, buffer, &color)) {
+      if (firstmatch) {
+        char buf2[PATH_MAX+4];
+
+        sprintf(buf2, "%s:\n", errlogspec[idx].path);
+        g_string_append(string, buf2);
+        firstmatch = FALSE;
+      }
+      g_string_append(string, buffer);
+    }
+    if (color > logcolor) logcolor = color;
+  }
+  errlogspec[idx].offset = st.st_size;
+  fclose(in);
+  return logcolor;
+}
+
 //
 // check the system log for funny things. Set appropriate color
-GString *check_log(char *syslogfile, int *color, int testmode)
+GString *check_logs(int *color)
 {
-  long offset = 0;
-  long size = 0;
-  FILE *in;
-  char buffer[32768];
   GString* string;
+  FILE *out;
+  int i;
 
   string = g_string_new("");
+  logregex_refresh("/etc/upwatch.d/uw_sysstat.d");
 
-  // find previous last position
-  if ((in = fopen(STATFILE, "r")) != NULL) {
-    fscanf(in, "%lu", &offset);
-    fclose(in);
+  for (i=0; errlogspec[i].path; i++) {
+    int logcolor = check_log(string, i, color);
+    if (logcolor > *color) *color = logcolor;
   }
-  
-  // open logfile
-  if ((in = fopen(syslogfile, "r")) == NULL) {
-    LOG(LOG_ERR, "%s: %m", syslogfile);
-    return(NULL);
-  }
-  fseek(in, 0, SEEK_END);
-  size = ftell(in);
-  if (offset > size) {
-    //truncated? restart
-    offset = 0;
-  }
-  if (testmode) offset = 0;
-  fseek(in, offset, SEEK_SET);
-  while (fgets(buffer, sizeof(buffer), in)) {
-    int add = FALSE;
-    int match = FALSE;
-
-    // first check the red conditions
-    GSList* list = g_slist_nth(syslog_red, 0);
-
-    while (list) {
-      struct regexspec *spec = list->data;
-      if (spec && regexec(&spec->preg,  buffer, 0, 0, 0) == 0) {
-        // match a red condition. Set color to red and add this logline
-        if (*color < STAT_RED) *color = STAT_RED;
-        add = TRUE;
-        if (testmode) {
-          printf("RED match: %s %s", spec->regex, buffer);
-        }
-        break;
-      }
-      list = g_slist_next(list);
+  out = fopen(STATFILE, "w");
+  if (out) {
+    for (i=0; errlogspec[i].path; i++) {
+      fprintf(out, "%s %Ld\n", errlogspec[i].path, errlogspec[i].offset);
     }
-
-    list = g_slist_nth(syslog_ignore, 0);
-    while (list && !add) {
-      struct regexspec *spec = list->data;
-      if (spec && regexec(&spec->preg,  buffer, 0, 0, 0) == 0) {
-        match = TRUE; // for the ignore list. At least one needs to match
-        break;
-      }
-      list = g_slist_next(list);
-    }
-    if (!match && *color < STAT_YELLOW) {
-      *color = STAT_YELLOW;
-      if (testmode) {
-        printf("match YELLOW: %s", buffer);
-      }
-      add = TRUE;
-    } 
-    if (add) {
-      string = g_string_append(string, buffer);
-    }
-  }
-  offset = ftell(in);
-  fclose(in);
-  if (!testmode) {
-    if ((in = fopen(STATFILE, "w")) != NULL) {
-      fprintf(in, "%lu", offset);
-      fclose(in);
-    } else {
-      LOG(LOG_WARNING, "%s: %m", STATFILE);
-    }
+    fclose(out);
   }
   return(string);
 }
@@ -187,69 +151,61 @@ int init(void)
 {
   struct sockaddr_in from, to;
   const char *msg;
+  int i, idx;
+  FILE *in;
 
   if (OPT_VALUE_SERVERID == 0) {
     fprintf(stderr, "Please set serverid first\n");
     return 0;
   }
 
-  // compile & store the regular expressions for the loglines to be ignored
-  if (HAVE_OPT(SYSLOG_IGNORE)) {
-    struct regexspec *spec = NULL;
-    int     ct  = STACKCT_OPT( SYSLOG_IGNORE );
-    char**  pn = STACKLST_OPT( SYSLOG_IGNORE );
-
-    while (ct--) {
-      int err;
-
-      if (!spec) {
-        spec = malloc(sizeof(struct regexspec));
+  if (HAVE_OPT(ERRLOG)) {
+    int ct  = STACKCT_OPT(ERRLOG);
+    char **errlog = STACKLST_OPT(ERRLOG);
+    for (idx=0, i=0; i < ct && idx < 255; i++) {
+      char *start, *end;
+  
+      start = end = errlog[i];
+      while (*end && !isspace(*end)) {
+        end++;
       }
-      err = regcomp(&spec->preg, pn[ct], REG_EXTENDED|REG_NOSUB);
-      if (err) {
-        char buffer[256];
-
-        regerror(err, &spec->preg, buffer, sizeof(buffer));
-        LOG(LOG_ERR, buffer);
+      if (!*end) {
+        LOG(LOG_WARNING, "Illegal format: %s", errlog[i]);
         continue;
       }
-      spec->regex = pn[ct];
-      syslog_ignore = g_slist_append(syslog_ignore, spec);
-      spec = NULL;
-    }
-  }
+      *end++ = 0;
+      errlogspec[idx].style = start;
 
-  // compile & store the regular expressions for the loglines that are code red
-  if (HAVE_OPT(SYSLOG_RED)) {
-    struct regexspec *spec = NULL;
-    int     ct  = STACKCT_OPT( SYSLOG_RED );
-    char**  pn = STACKLST_OPT( SYSLOG_RED );
-
-    while (ct--) {
-      int err;
-
-      if (!spec) {
-        spec = malloc(sizeof(struct regexspec));
+      while (*end && isspace(*end)) {
+        end++;
       }
-      err = regcomp(&spec->preg, pn[ct], REG_EXTENDED|REG_NOSUB);
-      if (err) {
-        char buffer[256];
-
-        regerror(err, &spec->preg, buffer, sizeof(buffer));
-        LOG(LOG_ERR, buffer);
+      if (!*end) {
+        LOG(LOG_WARNING, "Illegal format: %s", errlog[i]);
         continue;
       }
-      spec->regex = pn[ct];
-      syslog_red = g_slist_append(syslog_red, spec);
-      spec = NULL;
+      start = end;
+      while (*end && !isspace(*end)) {
+        end++;
+      }
+      *end = 0;
+      errlogspec[idx++].path = start;
     }
-  }
+    in = fopen(STATFILE, "r");
+    if (in) {
+      while (!feof(in)) {
+        char path[PATH_MAX];
+        long long offset;
+        int i;
 
-  if (HAVE_OPT(SYSLOG_TEST)) {
-    int logcolor = STAT_GREEN;
-    check_log(OPT_ARG(SYSLOG_FILE), &logcolor, TRUE);
-    printf("color = %d\n", logcolor);
-    exit(0);
+        if (fscanf(in, "%s %Ld", path, &offset) != 2) continue;
+        for (i=0; errlogspec[i].path; i++) {
+          if (strcmp(errlogspec[i].path, path)) continue;
+          errlogspec[i].offset = offset;
+          break;
+        }
+      }
+      fclose(in);
+    }
   }
 
   // determine ip address for default gateway interface
@@ -270,38 +226,67 @@ int init(void)
   return 1;
 }
 
-static int prv_color = STAT_GREEN;
-
-int run(void)
+xmlNodePtr newnode(xmlDocPtr doc, char *name)
 {
-  xmlDocPtr doc;
-  xmlNodePtr subtree, sysstat, errlog, diskfree;
-  int ret = 0;
-  int color = STAT_GREEN;
-  time_t now;
-  char buffer[1024];
-  float fullest = 0.0;
-  char info[32768];
-  int systemp = 0;
-  long long rt=0, wt=0;
-  int ct  = STACKCT_OPT(OUTPUT);
-  char **output = STACKLST_OPT(OUTPUT);
-  GString *log;
-  int i;
-extern int forever;
+  char buffer[24];
+  xmlNodePtr node;
+  time_t now = time(NULL);
 
-  for (i=0; i < OPT_VALUE_INTERVAL; i++) { // wait some minutes
-    sleep(1);
-    if (!forever)  {
-      return(0);
-    }
+  node = xmlNewChild(xmlDocGetRootElement(doc), NULL, name, NULL);
+  if (HAVE_OPT(DOMAIN)) {
+    xmlSetProp(node, "domain", OPT_ARG(DOMAIN));
   }
+  sprintf(buffer, "%ld", OPT_VALUE_SERVERID);	xmlSetProp(node, "server", buffer);
+  xmlSetProp(node, "ipaddress", ipaddress);
+  sprintf(buffer, "%d", (int) now);		xmlSetProp(node, "date", buffer);
+  sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60));
+    xmlSetProp(node, "expires", buffer);
+  xmlSetProp(node, "color", "200");
+  sprintf(buffer, "%ld", OPT_VALUE_INTERVAL);	xmlSetProp(node, "interval", buffer);
+  return node;
+}
 
-  info[0] = 0;
+void add_loadavg(xmlNodePtr node)
+{
+  char buffer[24];
 
-  // compute sysstat
-  //
-  get_stats();
+  if (st.load) {
+    sprintf(buffer, "%.1f", st.load->min1);	
+    xmlNewChild(node, NULL, "loadavg", buffer);
+  }
+}
+
+void add_cpu(xmlNodePtr node)
+{
+  char buffer[24];
+
+  if (st.cpu) {
+    sprintf(buffer, "%u", (int) (st.cpu->user + st.cpu->nice));
+    xmlNewChild(node, NULL, "user", buffer);
+    sprintf(buffer, "%u", (int) (st.cpu->kernel + st.cpu->iowait + st.cpu->swap));
+    xmlNewChild(node, NULL, "system", buffer);
+    sprintf(buffer, "%u", (int) (st.cpu->idle));
+    xmlNewChild(node, NULL, "idle", buffer);
+  }
+}
+
+void add_paging(xmlNodePtr node)
+{
+  char buffer[24];
+
+  if (st.paging) {
+    sprintf(buffer, "%llu", st.paging->pages_pagein);
+    xmlNewChild(node, NULL, "swapin", buffer);
+    sprintf(buffer, "%llu", st.paging->pages_pageout);
+    xmlNewChild(node, NULL, "swapout", buffer);
+  }
+}
+
+void add_blockio(xmlNodePtr node)
+{
+  char buffer[24];
+  long long rt=0, wt=0;
+
   if (st.diskio != NULL) { 
     diskio_stat_t *diskio_stat_ptr = st.diskio;
     int counter;
@@ -316,13 +301,74 @@ extern int forever;
     }
   }
 
+  sprintf(buffer, "%llu", rt/1024);
+  xmlNewChild(node, NULL, "blockin", buffer);
+  sprintf(buffer, "%llu", wt/1024);
+  xmlNewChild(node, NULL, "blockout", buffer);
+}
+
+void add_swap(xmlNodePtr node)
+{
+  char buffer[24];
+
+  if (st.swap) {
+    sprintf(buffer, "%llu", st.swap->used/1024);
+    xmlNewChild(node, NULL, "swapped", buffer);
+  }
+}
+
+void add_memory(xmlNodePtr node)
+{
+  char buffer[24];
+
+  if (st.mem) {
+    sprintf(buffer, "%llu", st.mem->free/1024);
+    xmlNewChild(node, NULL, "free", buffer);
+    sprintf(buffer, "%u", 0);
+    xmlNewChild(node, NULL, "buffered", buffer);
+    sprintf(buffer, "%llu", st.mem->cache/1024);
+    xmlNewChild(node, NULL, "cached", buffer);
+    sprintf(buffer, "%llu", st.mem->used/1024);
+    xmlNewChild(node, NULL, "used", buffer);
+  }
+}
+
+void add_systemp(xmlNodePtr node)
+{
+  char buffer[24];
+  int systemp = 0;
+
+  if (HAVE_OPT(SYSTEMP_COMMAND)) {
+    char cmd[1024];
+    FILE *in;
+
+    sprintf(cmd, "%s > /tmp/.uw_sysstat.tmp", OPT_ARG(SYSTEMP_COMMAND));
+    uw_setproctitle("running %s", OPT_ARG(SYSTEMP_COMMAND));
+    system(cmd);
+    in = fopen("/tmp/.uw_sysstat.tmp", "r");
+    if (in) {
+      fscanf(in, "%d", &systemp);
+      fclose(in);
+    }
+    unlink("tmp/.uw_sysstat.tmp");
+  }
+  sprintf(buffer, "%d", systemp);
+  xmlNewChild(node, NULL, "systemp", buffer);
+}
+
+void add_sysstat_info(xmlNodePtr node)
+{
+  char info[32768];
+
   if (st.load) {
     if (st.load->min1 >= atof(OPT_ARG(LOADAVG_YELLOW))) { 
       char cmd[1024];
+      char buffer[24];
       FILE *in;
 
-      if (st.load->min1 >= atof(OPT_ARG(LOADAVG_YELLOW))) color = STAT_YELLOW;
-      if (st.load->min1 >= atof(OPT_ARG(LOADAVG_RED))) color = STAT_RED;
+      if (st.load->min1 >= atof(OPT_ARG(LOADAVG_YELLOW))) sprintf(buffer, "%d", STAT_YELLOW);
+      if (st.load->min1 >= atof(OPT_ARG(LOADAVG_RED))) sprintf(buffer, "%d", STAT_RED);
+      xmlSetProp(node, "color", buffer);
 
       sprintf(cmd, "%s > /tmp/.uw_sysstat.tmp", OPT_ARG(TOP_COMMAND));
       LOG(LOG_INFO, cmd);
@@ -346,97 +392,16 @@ extern int forever;
         strcpy(info, strerror(errno));
       }
       unlink("/tmp/.uw_sysstat.tmp");
+      xmlNewTextChild(node, NULL, "info", info);
     }
   }
+}
 
-  if (HAVE_OPT(SYSTEMP_COMMAND)) {
-    char cmd[1024];
-    FILE *in;
+void add_diskfree_info(xmlNodePtr node)
+{
+  float fullest = 0.0;
+  char info[32768];
 
-    sprintf(cmd, "%s > /tmp/.uw_sysstat.tmp", OPT_ARG(SYSTEMP_COMMAND));
-    uw_setproctitle("running %s", OPT_ARG(SYSTEMP_COMMAND));
-    system(cmd);
-    in = fopen("/tmp/.uw_sysstat.tmp", "r");
-    if (in) {
-      fscanf(in, "%d", &systemp);
-      fclose(in);
-    }
-    unlink("tmp/.uw_sysstat.tmp");
-  }
-
-  doc = UpwatchXmlDoc("result", NULL);
-  xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
-  now = time(NULL);
-
-  sysstat = xmlNewChild(xmlDocGetRootElement(doc), NULL, "sysstat", NULL);
-  if (HAVE_OPT(DOMAIN)) {
-    xmlSetProp(sysstat, "domain", OPT_ARG(DOMAIN));
-  }
-  sprintf(buffer, "%ld", OPT_VALUE_SERVERID);	xmlSetProp(sysstat, "server", buffer);
-  xmlSetProp(sysstat, "ipaddress", ipaddress);
-  sprintf(buffer, "%d", (int) now);		xmlSetProp(sysstat, "date", buffer);
-  sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60));
-    xmlSetProp(sysstat, "expires", buffer);
-  sprintf(buffer, "%d", color);  		xmlSetProp(sysstat, "color", buffer);
-  sprintf(buffer, "%ld", OPT_VALUE_INTERVAL);	xmlSetProp(sysstat, "interval", buffer);
-
-  if (st.load) {
-    sprintf(buffer, "%.1f", st.load->min1);	
-      subtree = xmlNewChild(sysstat, NULL, "loadavg", buffer);
-  }
-
-  if (st.cpu) {
-    sprintf(buffer, "%u", (int) (st.cpu->user + st.cpu->nice));
-      subtree = xmlNewChild(sysstat, NULL, "user", buffer);
-    sprintf(buffer, "%u", (int) (st.cpu->kernel + st.cpu->iowait + st.cpu->swap));
-      subtree = xmlNewChild(sysstat, NULL, "system", buffer);
-    sprintf(buffer, "%u", (int) (st.cpu->idle));
-      subtree = xmlNewChild(sysstat, NULL, "idle", buffer);
-  }
-
-  if (st.paging) {
-    sprintf(buffer, "%llu", st.paging->pages_pagein);
-      subtree = xmlNewChild(sysstat, NULL, "swapin", buffer);
-    sprintf(buffer, "%llu", st.paging->pages_pageout);
-      subtree = xmlNewChild(sysstat, NULL, "swapout", buffer);
-  }
-
-  sprintf(buffer, "%llu", rt/1024);	subtree = xmlNewChild(sysstat, NULL, "blockin", buffer);
-  sprintf(buffer, "%llu", wt/1024);	subtree = xmlNewChild(sysstat, NULL, "blockout", buffer);
-
-  if (st.swap) {
-    sprintf(buffer, "%llu", st.swap->used/1024);	subtree = xmlNewChild(sysstat, NULL, "swapped", buffer);
-  }
-
-  if (st.mem) {
-    sprintf(buffer, "%llu", st.mem->free/1024);	subtree = xmlNewChild(sysstat, NULL, "free", buffer);
-    sprintf(buffer, "%u", 0);			subtree = xmlNewChild(sysstat, NULL, "buffered", buffer);
-    sprintf(buffer, "%llu", st.mem->cache/1024);	subtree = xmlNewChild(sysstat, NULL, "cached", buffer);
-    sprintf(buffer, "%llu", st.mem->used/1024);	subtree = xmlNewChild(sysstat, NULL, "used", buffer);
-  }
-
-  sprintf(buffer, "%d", systemp);		subtree = xmlNewChild(sysstat, NULL, "systemp", buffer);
-  subtree = xmlNewTextChild(sysstat, NULL, "info", info);
-
-  color = STAT_GREEN;
-  log = check_log(OPT_ARG(SYSLOG_FILE), &color, FALSE);
-  errlog = xmlNewChild(xmlDocGetRootElement(doc), NULL, "errlog", NULL);
-  if (HAVE_OPT(DOMAIN)) {
-    xmlSetProp(errlog, "domain", OPT_ARG(DOMAIN));
-  }
-  sprintf(buffer, "%ld", OPT_VALUE_SERVERID);	xmlSetProp(errlog, "server", buffer);
-  xmlSetProp(errlog, "ipaddress", ipaddress);
-  sprintf(buffer, "%d", (int) now);		xmlSetProp(errlog, "date", buffer);
-  sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60));
-    xmlSetProp(errlog, "expires", buffer);
-  sprintf(buffer, "%d", color);			subtree = xmlNewChild(errlog, NULL, "color", buffer);
-  sprintf(buffer, "%ld", OPT_VALUE_INTERVAL);	xmlSetProp(sysstat, "interval", buffer);
-  if (log && log->str && strlen(log->str) > 0) {
-    subtree = xmlNewTextChild(errlog, NULL, "info", log->str);
-  }
-
-  // see which filesystems are full
-  color = STAT_GREEN;
   if (st.disk) {
     disk_stat_t *disk_stat_ptr = st.disk;
     int counter;
@@ -449,13 +414,14 @@ extern int forever;
     }
   }
 
-  info[0] = 0;
   if (fullest > OPT_VALUE_DISKFREE_YELLOW) { // if some disk is more then 80% full give `df` listing
     char cmd[1024];
+    char buffer[24];
     FILE *in;
 
-    if (fullest > OPT_VALUE_DISKFREE_YELLOW) color = STAT_YELLOW;
-    if (fullest > OPT_VALUE_DISKFREE_RED) color = STAT_RED;
+    if (fullest > OPT_VALUE_DISKFREE_YELLOW) sprintf(buffer, "%d", STAT_YELLOW);
+    if (fullest > OPT_VALUE_DISKFREE_RED) sprintf(buffer, "%d", STAT_RED);
+    xmlSetProp(node, "color", buffer);
 
     sprintf(cmd, "%s > /tmp/.uw_sysstat.tmp", OPT_ARG(DF_COMMAND));
     LOG(LOG_INFO, cmd);
@@ -479,23 +445,71 @@ extern int forever;
       strcpy(info, strerror(errno));
     }
     unlink("/tmp/.uw_sysstat.tmp");
+    xmlNewTextChild(node, NULL, "info", info);
   }
 
-  diskfree = xmlNewChild(xmlDocGetRootElement(doc), NULL, "diskfree", NULL);
-  if (HAVE_OPT(DOMAIN)) {
-    xmlSetProp(diskfree, "domain", OPT_ARG(DOMAIN));
+}
+
+static int prv_highest_color = STAT_GREEN;
+
+int run(void)
+{
+  xmlDocPtr doc;
+  xmlNodePtr node;
+  int ct  = STACKCT_OPT(OUTPUT);
+  char **output = STACKLST_OPT(OUTPUT);
+  GString *log;
+  int i;
+  int color;
+  int highest_color = STAT_GREEN;
+  char buf[24];
+extern int forever;
+
+  for (i=0; i < OPT_VALUE_INTERVAL; i++) { // wait some minutes
+    sleep(1);
+    if (!forever)  {
+      return(0);
+    }
   }
-  sprintf(buffer, "%ld", OPT_VALUE_SERVERID);	xmlSetProp(diskfree, "server", buffer);
-  xmlSetProp(diskfree, "ipaddress", ipaddress);
-  sprintf(buffer, "%d", (int) now);		xmlSetProp(diskfree, "date", buffer);
-  sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60));
-    xmlSetProp(diskfree, "expires", buffer);
-  sprintf(buffer, "%d", color);			subtree = xmlNewChild(diskfree, NULL, "color", buffer);
-  sprintf(buffer, "%ld", OPT_VALUE_INTERVAL);	xmlSetProp(sysstat, "interval", buffer);
-  subtree = xmlNewTextChild(diskfree, NULL, "info", info);
+
+  get_stats();
+  doc = UpwatchXmlDoc("result", NULL);
+  xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
+
+  // do the sysstat
+  node = newnode(doc, "sysstat");
+  add_loadavg(node);
+  add_cpu(node);
+  add_paging(node);
+  add_blockio(node);
+  add_swap(node);
+  add_memory(node);
+  add_systemp(node);
+  add_sysstat_info(node);
+  color = xmlGetPropInt(node, "color");
+  if (color > highest_color) highest_color = color;
+
+  // do the errlog
+  node = newnode(doc, "errlog");
+  log = check_logs(&color);
+  if (color > highest_color) highest_color = color;
+  sprintf(buf, "%u", color);
+  xmlSetProp(node, "color", buf);
+  if (log) {
+    if (log->str && strlen(log->str) > 0) {
+      xmlNewTextChild(node, NULL, "info", log->str);
+    }
+    g_string_free(log, TRUE);
+  }
+
+  // do the diskfree
+  node = newnode(doc, "diskfree");
+  add_diskfree_info(node);
+  color = xmlGetPropInt(node, "color");
+  if (color > highest_color) highest_color = color;
 
   if (HAVE_OPT(HPQUEUE)) {
-    if (color != prv_color) {
+    if (highest_color != prv_highest_color) {
       // if status changed, it needs to be sent immediately. So drop into
       // the high priority queue. Else just drop in the normal queue where
       // uw_send in batched mode will pick it up later
@@ -505,7 +519,7 @@ extern int forever;
   for (i=0; i < ct; i++) {
     spool_result(OPT_ARG(SPOOLDIR), output[i], doc, NULL);
   }
-  prv_color = color; // remember for next time
+  prv_highest_color = highest_color; // remember for next time
   xmlFreeDoc(doc);
-  return(ret);
+  return 0;
 }

@@ -1,0 +1,30 @@
+ignore [LOGDATE] login\(pam_unix\)[PID]: authentication failure; logname=LOGIN uid=[NUM] euid=[NUM] tty=tty[NUM] ruser= rhost= 
+ignore [LOGDATE] login\(pam_unix\)[PID]: bad username 
+ignore [LOGDATE] login\(pam_unix\)[PID]: check pass; [USER_]
+ignore [LOGDATE] login\(pam_unix\)[PID]: session closed for [USER_]
+ignore [LOGDATE] login\(pam_unix\)[PID]: session opened for [USER_] by LOGIN\(uid=[NUM]\)
+ignore [LOGDATE] login\(pam_unix\)[PID]: session opened for [USER_] by \(uid=[NUM]\)
+ignore [LOGDATE] ftpd[PID]: PAM-listfile: Refused [USER_] for service ftp
+ignore [LOGDATE] pam_limits[PID]: can not read settings from [PATH]
+ignore [LOGDATE] pam_limits[PID]: error parsing the configuration file
+ignore [LOGDATE] PAM_pwdb[PID]: authentication failure; \(uid=[NUM]\) -> [USER] for [WORD] service
+ignore [LOGDATE] PAM_pwdb[PID]: check pass; [USER_]
+ignore [LOGDATE] PAM_pwdb[PID]: get passwd; pwdb: request not recognized
+ignore [LOGDATE] PAM_pwdb[PID]: \(login\) session closed for [USER_]
+ignore [LOGDATE] PAM_pwdb[PID]: \(login\) session opened for [USER_] by \(uid=[NUM]\)
+ignore [LOGDATE] PAM_pwdb[PID]: \(sshd\) session closed for [USER_]
+ignore [LOGDATE] PAM_pwdb[PID]: \(sshd\) session opened for [USER_] by [USER]\(uid=[NUM]\)
+ignore [LOGDATE] PAM_pwdb[PID]: \(ssh\) session closed for [USER_]
+ignore [LOGDATE] PAM_pwdb[PID]: \(ssh\) session opened for [USER_] by \(uid=[NUM]\)
+ignore [LOGDATE] PAM_pwdb[PID]: \(su\) session closed for [USER_]
+ignore [LOGDATE] PAM_pwdb[PID]: \(su\) session opened for user [USER] by [USER]\\(uid=[NUM]\\)
+ignore [LOGDATE] PAM_pwdb[PID]: \(su\) session opened for user [USER] by \\(uid=[NUM]\\)
+ignore [LOGDATE] PAM_pwdb[PID]: \(su\) session opened for [USER_] by \(uid=[NUM]\)
+ignore [LOGDATE] PAM_unix[PID]: authentication failure; LOGIN\(uid=[NUM]\) -> [USER] for [WORD] service
+ignore [LOGDATE] PAM_unix[PID]: check pass; [USER_]
+ignore [LOGDATE] PAM_unix[PID]: \(sshd\) session opened for [USER_] by root\(uid=[NUM]\)
+ignore [LOGDATE] PAM_unix[PID]: \(su\) session closed for [USER_]
+ignore [LOGDATE] PAM_unix[PID]: \(su\) session opened for [USER_] by \(uid=[NUM]\)
+ignore [LOGDATE] PAM_unix[PID]: \(system-auth\) session opened for [USER_] by LOGIN\(uid=[NUM]\)
+ignore [LOGDATE] sshd[PID]: error: PAM: Authentication failure
+

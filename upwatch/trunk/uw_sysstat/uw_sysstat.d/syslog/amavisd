@@ -1,0 +1,4 @@
+ignore [LOGDATE] amavisd: No pid_file [PATH], can't stop the process
+ignore [LOGDATE] amavisd: Shutting down amavisd: failed
+ignore [LOGDATE] amavisd: Shutting down amavisd: succeeded
+ignore [LOGDATE] amavisd: Starting amavisd: succeeded

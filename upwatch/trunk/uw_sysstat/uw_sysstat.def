@@ -5,23 +5,20 @@ prog-title    = "Upwatch probe daemon";
 version       = `cat ../VERSION`;
 homerc        = `echo $sysconfdir/upwatch.conf`;
 homerc        = `echo $confdir/uw_sysstat.conf`;
-homerc        = `echo $confdir/uw_sysstat.logexp`;
-homerc        = `echo $confdir/uw_sysstat.logexp.local`;
 homerc        = "$HOME/.upwatchrc";
 homerc        = "$HOME/.uw_sysstatrc";
-homerc        = "$HOME/.uw_sysstat.logexp";
-homerc        = "$HOME/.uw_sysstat.logexp.local";
 homerc        = "$$/upwatch.conf";
 homerc        = "$$/uw_sysstat.conf";
-homerc        = "$$/uw_sysstat.logexp";
-homerc        = "$$/uw_sysstat.logexp.local";
 detail        = 
 'uw_sysstat does the following: ';
 
 // this section is for the generated specfile
 spec-requires = "glib2";
 spec-files = `echo "%attr(4770,root,upwatch)" $sbindir/uw_sysstat`;
-spec-files = `echo "%config" $confdir/uw_sysstat.logexp`;
+spec-files = `echo "%dir" $confdir/uw_sysstat.d`;
+// repeat these two lines for every logfile format
+spec-files = `echo "%dir" $confdir/uw_sysstat.d/syslog`;
+spec-files = `for i in \`find uw_sysstat.d/syslog | grep -v CVS\` ; do echo $confdir/$i; done`;
 
 // describe commandline flags
 flag = {
@@ -108,38 +105,11 @@ flag = {
 };
 
 flag = {
-    name      = syslog-test;
-    value     = t;
-    descrip   = "Test current regular expressions setup";
-};
-
-flag = {
     must-set; 
-    name      = syslog-file;
+    name      = errlog;
     arg_type  = string;   /* option argument indication  */
-    arg_default = "/var/log/messages";
-    descrip   = "The full path to the system log file";
-};
-
-flag = {      
-    name      = syslog-ignore;
     stack_arg;
-    arg_type  = string;
-    descrip   = "regular expression for loglines to be ignored";
-    doc       =
-'When inspecting the system log, many lines should be ignored.
-With --syslog-ignore you can give regexps for those.
-This flag may be given multiple times.';
-};
-
-flag = {      
-    name      = syslog-red;
-    stack_arg;
-    arg_type  = string;
-    descrip   = "regular expression for loglines that give a RED condition";
-    doc       =
-'With --syslog-red you can give regexps for loglines that indicate a RED condition.
-This flag may be given multiple times.';
+    descrip   = "The format and the full path to a file to check";
 };
 
 flag = {

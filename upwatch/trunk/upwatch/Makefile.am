@@ -1,10 +1,10 @@
 noinst_LIBRARIES = libupwatch.a libupwatcht.a
 
 sources = pr_process.c slot.c spool.c uwstat.c xml.c util.c setproctitle.c ifaddrlist.c \
- findsaddr-linux.c setsin.c compat.c log.c pr_bb.c pr_bb_cpu.c pr_httpget.c \
+ findsaddr-linux.c setsin.c compat.c log.c logregex.c pr_bb.c pr_bb_cpu.c pr_httpget.c \
  pr_ping.c pr_snmpget.c pr_sysstat.c pr_iptraf.c pr_generic.c \
  compat.h db.h generic.h slot.h spool.h uwstat.h xml.h setproctitle.h ifaddrlist.h \
- findsaddr.h gnuc.h  probe.h
+ findsaddr.h gnuc.h logregex.h probe.h
 
 pr_process.c: probe.h
 
@@ -17,8 +17,8 @@ probe.h: ../uw_acceptbb/probe.res_h  ../uw_acceptbb/probe.res_h ../uw_httpget/pr
 	( cd $(@:%/probe.res_h=%) ; make probe.res_h )
 
 libupwatch_a_SOURCES = $(sources)
-libupwatch_a_CFLAGS = @LIBXML2_CFLAGS@ @LIBGLIB2_CFLAGS@ @MYSQL_CFLAGS@ 
+libupwatch_a_CFLAGS = @LIBXML2_CFLAGS@ @LIBGLIB2_CFLAGS@ @MYSQL_CFLAGS@ @LIBPCRE_CFLAGS@
 
 libupwatcht_a_SOURCES = $(sources)
-libupwatcht_a_CFLAGS = @LIBXML2_CFLAGS@ @LIBGLIB2_CFLAGS@ @MYSQL_CFLAGS@ -DWITH_THREADS
+libupwatcht_a_CFLAGS = @LIBXML2_CFLAGS@ @LIBGLIB2_CFLAGS@ @MYSQL_CFLAGS@ @LIBPCRE_CFLAGS@ -DWITH_THREADS
 

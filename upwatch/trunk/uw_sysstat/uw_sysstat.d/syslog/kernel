@@ -1,0 +1,568 @@
+ignore [LOGDATE] kernel: ac[NUM]_codec: AC[NUM] Audio codec, vendor id[NUM]: [NUM], id[NUM]: [NUM] (Unknown)
+ignore [LOGDATE] kernel:        <Adaptec AHA-[NUM]A Ultra SCSI host adapter> 
+ignore [LOGDATE] kernel:        <Adaptec AHA-[NUM]X SCSI host adapter>
+ignore [LOGDATE] kernel:         <Adaptec aic[NUM]/[NUM] Ultra[NUM] SCSI adapter>
+ignore [LOGDATE] kernel:         <Adaptec aic[NUM] Ultra SCSI adapter>
+ignore [LOGDATE] kernel:         <Adaptec [NUM]A Ultra SCSI adapter>
+ignore [LOGDATE] kernel:         <Adaptec [NUM]N Ultra[NUM] SCSI adapter>
+ignore [LOGDATE] kernel: Adding Swap: [NUM]k swap-space (priority -[NUM])
+ignore [LOGDATE] kernel: Adding Swap: [NUM]k swap-space (priority -[NUM]) 
+ignore [LOGDATE] kernel: Additional sense indicates Scsi parity error
+ignore [LOGDATE] kernel: agpgart: AGP aperture is [NUM]M @ [NUM]xd[NUM]
+ignore [LOGDATE] kernel: agpgart: AGP aperture is [NUM]M @ [NUM]xe[NUM]
+ignore [LOGDATE] kernel: agpgart: Detected an Intel i[NUM] E Chipset.
+ignore [LOGDATE] kernel: agpgart: Detected Intel [NUM]BX chipset
+ignore [LOGDATE] kernel: agpgart: detected [NUM]MB dedicated video ram.
+ignore [LOGDATE] kernel: agpgart: Maximum main memory to use for agp memory: [NUM]M
+ignore [LOGDATE] kernel:         aic[NUM]/[NUM]: Ultra[NUM] Wide Channel A, SCSI Id=[NUM], [NUM]/[NUM] SCBs
+ignore [LOGDATE] kernel:         aic[NUM]: Ultra[NUM] Wide Channel A, SCSI Id=[NUM], [NUM]/[NUM] SCBs
+ignore [LOGDATE] kernel:         aic[NUM]: Ultra Single Channel A, SCSI Id=[NUM], [NUM]/[NUM] SCBs
+ignore [LOGDATE] kernel:         aic[NUM]: Ultra Wide Channel A, SCSI Id=[NUM], [NUM]/[NUM] SCBs
+ignore [LOGDATE] kernel: allocated [NUM] pages and [NUM] bhs reserved for the highmem bounces
+ignore [LOGDATE] kernel: All processors have done init_idle
+ignore [LOGDATE] kernel: Alpha port and SMP sponsored by[HOSTNAME] alpha port by[HOSTNAME]and[HOSTNAME]
+ignore [LOGDATE] kernel: apm: BIOS not found.
+ignore [LOGDATE] kernel: apm: BIOS version [NUM].[NUM] Flags [NUM]b (Driver version [NUM].[NUM])
+ignore [LOGDATE] kernel: apm: BIOS version [NUM].[NUM] Flags [NUM] (Driver version [NUM].[NUM])
+ignore [LOGDATE] kernel: apm: disabled - APM is not SMP safe.
+ignore [LOGDATE] kernel: Appletalk [NUM].[NUM] for Linux NET[NUM].[NUM] 
+ignore [LOGDATE] kernel: ATAPI device hda:
+ignore [LOGDATE] kernel: Attached scsi disk sda at scsi[NUM], channel [NUM], id [NUM], lun [NUM]
+ignore [LOGDATE] kernel: Attached scsi disk sdb at scsi[NUM], channel [NUM], id [NUM], lun [NUM]
+ignore [LOGDATE] kernel: Attached scsi tape st[NUM] at scsi[NUM], channel [NUM], id [NUM], lun [NUM]
+ignore [LOGDATE] kernel: autodetecting RAID arrays
+ignore [LOGDATE] kernel: autorun ...
+ignore [LOGDATE] kernel: ... autorun DONE.
+ignore [LOGDATE] kernel: Based upon Swansea University Computer Society NET[NUM].[NUM]
+ignore [LOGDATE] kernel:  BIOS-e[NUM]: [HEX] - [HEX] (ACPI data)
+ignore [LOGDATE] kernel:  BIOS-e[NUM]: [HEX] - [HEX] (ACPI NVS)
+ignore [LOGDATE] kernel:  BIOS-e[NUM]: [HEX] - [HEX] (reserved)
+ignore [LOGDATE] kernel:  BIOS-e[NUM]: [HEX] - [HEX] (usable)
+ignore [LOGDATE] kernel: BIOS-provided physical RAM map:
+ignore [LOGDATE] kernel: blk: queue [HEX], I/O limit [NUM]Mb (mask [HEX])
+ignore [LOGDATE] kernel: block: [NUM] slots per queue, batch=[NUM]
+ignore [LOGDATE] kernel:   Board assembly [NUM]-[NUM], Physical connectors present: RJ[NUM]
+ignore [LOGDATE] kernel: Booting processor [NUM]/[NUM] eip [NUM]
+ignore [LOGDATE] kernel: Buffer cache hash table entries: [NUM] (order: [NUM], [NUM] bytes)
+ignore [LOGDATE] kernel: Buffer-cache hash table entries: [NUM] (order: [NUM], [NUM] bytes)
+ignore [LOGDATE] kernel: Buffer cache hash table entries: [NUM] (order [NUM], [NUM]k)
+ignore [LOGDATE] kernel: calibrating APIC timer ...
+ignore [LOGDATE] kernel: Calibrating delay loop... [NUM].[NUM] BogoMIPS
+ignore [LOGDATE] kernel: Calibrating delay loop.. ok - [NUM].[NUM] BogoMIPS 
+ignore [LOGDATE] kernel: cat uses obsolete [PATH] interface
+ignore [LOGDATE] kernel: cdrom: open failed.
+ignore [LOGDATE] kernel: change_root: old root has d_count=[NUM]
+ignore [LOGDATE] kernel: ...changing IO-APIC physical APIC ID to [NUM] ... ok.
+ignore [LOGDATE] kernel: Checking for popad bug... OK.
+ignore [LOGDATE] kernel: Checking 'hlt' instruction... Ok. 
+ignore [LOGDATE] kernel: Checking 'hlt' instruction... OK.
+ignore [LOGDATE] kernel: Checking if this processor honours the WP bit even in supervisor mode... Ok.
+ignore [LOGDATE] kernel: Checking [NUM]/[NUM] coupling... Ok, fpu using exception [NUM] error reporting. 
+ignore [LOGDATE] kernel: Checking [NUM]/[NUM] coupling... OK, FPU using exception [NUM] error reporting.
+ignore [LOGDATE] kernel: Checking ReiserFS transaction log (device [NUM]:[NUM]) ...
+ignore [LOGDATE] kernel: checking TSC synchronization across CPUs: passed.
+ignore [LOGDATE] kernel: Code: [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] 
+ignore [LOGDATE] kernel: Console: colour VGA+ [NUM]x[NUM]
+ignore [LOGDATE] kernel: Console: colour VGA+ [NUM]x[NUM], [NUM] virtual console (max [NUM]) 
+ignore [LOGDATE] kernel: Console: [NUM] point font, [NUM] scans 
+ignore [LOGDATE] kernel:     Controller on PCI bus [NUM] function [NUM] 
+ignore [LOGDATE] kernel: CPU: Centaur VIA Samuel [NUM] stepping [NUM]
+ignore [LOGDATE] kernel: ..... CPU clock speed is [NUM].[NUM] MHz.
+ignore [LOGDATE] kernel: CPU: Cyrix MediaGXtm MMXtm Enhanced stepping [NUM]
+ignore [LOGDATE] kernel: CPU: Intel Celeron (Coppermine) stepping [HEX]
+ignore [LOGDATE] kernel: CPU: Intel Celeron (Mendocino) stepping [NUM]
+ignore [LOGDATE] kernel: CPU: Intel Pentium III (Coppermine) stepping [NUM]
+ignore [LOGDATE] kernel: CPU: Intel Pentium II (Klamath) stepping [NUM]
+ignore [LOGDATE] kernel: CPU: Intel(R) Celeron(TM) CPU                [NUM]MHz stepping [NUM]
+ignore [LOGDATE] kernel: CPU: L[NUM] cache: [NUM]K
+ignore [LOGDATE] kernel: CPU: L[NUM] Cache: [NUM]K ([NUM] bytes/line)
+ignore [LOGDATE] kernel: CPU: L[NUM] I cache: [NUM]K, L[NUM] D cache: [NUM]K
+ignore [LOGDATE] kernel: CPU: L[NUM] I Cache: [NUM]K ([NUM] bytes/line), D cache [NUM]K ([NUM] bytes/line)
+ignore [LOGDATE] kernel: CPU:    [NUM]
+ignore [LOGDATE] kernel: cpu: [NUM], clocks: [NUM], slice: [NUM]
+ignore [LOGDATE] kernel: CPU[NUM]: Intel Pentium III (Coppermine) stepping [NUM]
+ignore [LOGDATE] kernel: CPU[NUM]: Intel Pentium III (Coppermine) stepping [NUM]a
+ignore [LOGDATE] kernel: CPU[NUM]<T[NUM]:[NUM],T[NUM]:[NUM],D:[NUM],S:[NUM],C:[NUM]>
+ignore [LOGDATE] kernel: CPU serial number disabled.
+ignore [LOGDATE] kernel: CSLIP: code copyright [NUM] Regents of the University of California
+ignore [LOGDATE] kernel: CS[NUM]: chipset revision [NUM]
+ignore [LOGDATE] kernel: CS[NUM]: IDE controller at PCI slot [NUM]:[NUM].[NUM]
+ignore [LOGDATE] kernel: CS[NUM]: not [NUM]%% native mode: will probe irqs later
+ignore [LOGDATE] kernel: Current sd[NUM]:[NUM]: sense key Aborted Command
+ignore [LOGDATE] kernel: Current sd[NUM]:[NUM]: sense key Hardware Error
+ignore [LOGDATE] kernel: Dentry cache hash table entries: [NUM] (order: [NUM], [NUM] bytes)
+ignore [LOGDATE] kernel: Dentry hash table entries: [NUM] (order [NUM], [NUM]k)
+ignore [LOGDATE] kernel: Detected [NUM] kHz processor.
+ignore [LOGDATE] kernel: Detected [NUM].[NUM] MHz processor.
+ignore [LOGDATE] kernel: Detected PS/[NUM] Mouse Port.
+ignore [LOGDATE] kernel: Detected scsi disk sda at scsi[NUM], channel [NUM], id [NUM], lun [NUM]
+ignore [LOGDATE] kernel: Detected scsi disk sda at scsi[NUM], channel [NUM], id [NUM], lun [NUM] 
+ignore [LOGDATE] kernel: device eth[NUM] entered promiscuous mode
+ignore [LOGDATE] kernel: device eth[NUM] left promiscuous mode
+ignore [LOGDATE] kernel: dev_mc_discard: multicast leakage! dmi_users=[NUM]
+ignore [LOGDATE] kernel: .................................... done.
+ignore [LOGDATE] kernel: eepro[NUM].c: $Revision: 1.1 $ [NUM][PATH] Modified by Andrey V. Savochkin <[EMAIL]> and others
+ignore [LOGDATE] kernel: eepro[NUM].c: $Revision: 1.1 $ [NUM][PATH] Modified by Andrey V. Savochkin <[EMAIL]> and others
+ignore [LOGDATE] kernel: eepro[NUM].c:v[NUM].[NUM]j-t [NUM][PATH] Donald Becker http:/[PATH]
+ignore [LOGDATE] kernel: Elsa: IPAC version [NUM]
+ignore [LOGDATE] kernel: ELSA IRQ LOOP
+ignore [LOGDATE] kernel: Elsa: Microlink PCI defined at [HEX]/[HEX] IRQ [NUM]
+ignore [LOGDATE] kernel: Elsa PCI: IRQ [NUM] count [NUM]
+ignore [LOGDATE] kernel: Elsa: QS [NUM] PCI defined at [HEX]/[HEX] IRQ [NUM]
+ignore [LOGDATE] kernel: enabled ExtINT on CPU#[NUM]
+ignore [LOGDATE] kernel: Enabling APIC mode: Flat.^IUsing [NUM] I/O APICs
+ignore [LOGDATE] kernel: Enabling fast FPU save and restore... done.
+ignore [LOGDATE] kernel: ENABLING IO-APIC IRQs
+ignore [LOGDATE] kernel: Enabling unmasked SIMD FPU exception support... done.
+ignore [LOGDATE] kernel: end_request: I/O error, dev [NUM]:[NUM] (hda), sector [NUM]
+ignore [LOGDATE] kernel: e[NUM]: eth[NUM] NIC Link is Up [NUM] Mbps Full duplex
+ignore [LOGDATE] kernel:   Error: Illegal request -- (Sense key=[NUM])
+ignore [LOGDATE] kernel: eth[HEX]: MII #[HEX] registers are: [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX]. 
+ignore [LOGDATE] kernel: eth[NUM]: Digital DC[NUM] Tulip rev [NUM] at [HEX], [NUM] mode, [MACADDR] [NUM].
+ignore [LOGDATE] kernel: eth[NUM]: Intel Corp. [NUM]BA[PATH] Ethernet Controller, [MACADDR], IRQ [NUM].
+ignore [LOGDATE] kernel: eth[NUM]: Intel Corp. [NUM] (ICH[NUM]) Chipset Ethernet Controller, [MACADDR], IRQ [NUM].
+ignore [LOGDATE] kernel: eth[NUM]: media is unconnected, link down, or incompatible connection
+ignore [LOGDATE] kernel: eth[NUM]: OEM i[NUM]/i[NUM] [NUM]/[NUM] Ethernet, [MACADDR], I/O at [HEX], IRQ [NUM].
+ignore [LOGDATE] kernel: eth[NUM]: Promiscuous mode enabled.
+ignore [LOGDATE] kernel: eth[NUM]: Promiscuous mode enabled. 
+ignore [LOGDATE] kernel: eth[NUM]: RealTek RTL[NUM] Fast Ethernet at [HEX], [MACADDR], IRQ [NUM]
+ignore [LOGDATE] kernel: eth[NUM]: RealTek RTL-[NUM] found at [HEX], IRQ [NUM], [MACADDR].
+ignore [LOGDATE] kernel: eth[NUM]: Setting full-duplex based on auto-negotiated partner ability [NUM].
+ignore [LOGDATE] kernel: eth[NUM]: Setting full-duplex based on MII #[NUM] link partner ability of [NUM]e[NUM].
+ignore [LOGDATE] kernel: eth[NUM]: Setting half-duplex based on auto-negotiated partner ability [NUM].
+ignore [LOGDATE] kernel: eth[NUM]: Setting [NUM]mbps full-duplex based on auto-negotiated partner ability [NUM]e[NUM].
+ignore [LOGDATE] kernel: eth[NUM]:  Tx descriptor [NUM] is [NUM]c. 
+ignore [LOGDATE] kernel: eth[NUM]:  Tx descriptor [NUM] is [NUM]. (queue head) 
+ignore [LOGDATE] kernel: eth[NUM]: Tx queue start entry [NUM]  dirty entry [NUM]. 
+ignore [LOGDATE] kernel: EXT[NUM]-fs: ide[NUM]([NUM],[NUM]): [NUM] orphan inode deleted
+ignore [LOGDATE] kernel: EXT[NUM]-fs: ide[NUM]([NUM],[NUM]): [NUM] orphan inodes deleted
+ignore [LOGDATE] kernel: EXT[NUM]-fs: ide[NUM]([NUM],[NUM]): orphan cleanup on readonly fs
+ignore [LOGDATE] kernel: EXT[NUM]-fs: INFO: recovery required on readonly filesystem.
+ignore [LOGDATE] kernel: EXT[NUM]-fs: mounted filesystem with ordered data mode.
+ignore [LOGDATE] kernel: EXT[NUM] FS [NUM].[NUM]-[NUM].[NUM].[NUM], [NUM] [WORD] [NUM] on [WORD]([NUM],[NUM]), internal journal
+ignore [LOGDATE] kernel: EXT[NUM]-fs: recovery complete.
+ignore [LOGDATE] kernel: EXT[NUM]-fs: sd([NUM],[NUM]): [NUM] orphan inodes deleted
+ignore [LOGDATE] kernel: EXT[NUM]-fs: sd([NUM],[NUM]): orphan cleanup on readonly fs
+ignore [LOGDATE] kernel: EXT[NUM]-fs warning: checktime reached, running e[NUM]fsck is recommended
+ignore [LOGDATE] kernel: EXT[NUM]-fs: write access will be enabled during recovery.
+ignore [LOGDATE] kernel: FDC [NUM] is a National Semiconductor PC[NUM]
+ignore [LOGDATE] kernel: FDC [NUM] is a post-[NUM] [NUM]
+ignore [LOGDATE] kernel: Floppy drive(s): fd[NUM] is [NUM].[NUM]M
+ignore [LOGDATE] kernel: found SMP MP-table at [HEX]
+ignore [LOGDATE] kernel: Freeing initrd memory: [NUM]k freed
+ignore [LOGDATE] kernel: Freeing unused kernel memory: [NUM]k freed
+ignore [LOGDATE] kernel: GDT CTR[NUM]: Configuring GDT-PCI HA at [NUM]/[NUM] IRQ [NUM]
+ignore [LOGDATE] kernel: GDT: Found [NUM] PCI Storage RAID Controllers
+ignore [LOGDATE] kernel: GDT: Storage RAID Controller Driver. Version: [NUM].[NUM] 
+ignore [LOGDATE] kernel:   General self-test: passed.
+ignore [LOGDATE] kernel: hda: attached ide-disk driver.
+ignore [LOGDATE] kernel: hda: C[PATH]=[NUM][PATH] from BIOS ignored
+ignore [LOGDATE] kernel: hda: FUJITSU MHM[NUM]AT, ATA DISK drive
+ignore [LOGDATE] kernel:  hda: hda[NUM] hda[NUM]
+ignore [LOGDATE] kernel:  hda: hda[NUM] hda[NUM] < hda[NUM] hda[NUM] hda[NUM] >
+ignore [LOGDATE] kernel:  hda: hda[NUM] hda[NUM] hda[NUM] hda[NUM] < hda[NUM] >
+ignore [LOGDATE] kernel:  hda: hda[NUM] hda[NUM] hda[NUM] hda[NUM] < hda[NUM] hda[NUM] >
+ignore [LOGDATE] kernel: hda: host protected area => [NUM]
+ignore [LOGDATE] kernel: hda: IC[NUM]L[NUM]AVVA[NUM]-[NUM], ATA DISK drive
+ignore [LOGDATE] kernel: hda: [NUM] sectors ([NUM] MB) w/[NUM]KiB Cache, CHS=[NUM][PATH], UDMA([NUM])
+ignore [LOGDATE] kernel:  hda: [PTBL] [[NUM][PATH]] hda[NUM]
+ignore [LOGDATE] kernel: hda: SAMSUNG SV[NUM]H, ATA DISK drive
+ignore [LOGDATE] kernel: hda: ST[NUM]A, ATA DISK drive
+ignore [LOGDATE] kernel: hda: ST[NUM]A, [NUM]MB w/[NUM]kB Cache, CHS=[NUM][PATH]
+ignore [LOGDATE] kernel: hdc: ATAPI CD-ROM drive, [NUM]kB Cache, UDMA([NUM])
+ignore [LOGDATE] kernel: hdc: ATAPI-CD ROM-DRIVE-[NUM]MAX, ATAPI CD/DVD-ROM drive
+ignore [LOGDATE] kernel: hdc: ATAPI CDROM [NUM]X, ATAPI CD/DVD-ROM drive
+ignore [LOGDATE] kernel: hdc: ATAPI CDROM [NUM]X, ATAPI CDROM drive
+ignore [LOGDATE] kernel: hdc: ATAPI [NUM]X CD-ROM drive, [NUM]kB Cache, UDMA([NUM])
+ignore [LOGDATE] kernel: hdc: attached ide-cdrom driver.
+ignore [LOGDATE] kernel: hdc: DMA disabled
+ignore [LOGDATE] kernel: hdc: IBM-DJSA-[NUM], ATA DISK drive
+ignore [LOGDATE] kernel: hdc: [NUM] sectors ([NUM] MB) w/[NUM]KiB Cache, CHS=[NUM][PATH], UDMA([NUM])
+ignore [LOGDATE] kernel:  hdc: [PTBL] [[NUM][PATH]] hdc[NUM] hdc[NUM] hdc[NUM] hdc[NUM] < hdc[NUM] hdc[NUM] >
+ignore [LOGDATE] kernel: hdc: TOSHIBA CD-ROM XM-[NUM]B, ATAPI CD/DVD-ROM drive
+ignore [LOGDATE] kernel: hdc: TOSHIBA CD-ROM XM-[NUM]B, ATAPI CDROM drive
+ignore [LOGDATE] kernel: hdc: TOSHIBA CD-ROM XM-[NUM]B, ATAPI CDROM drive 
+ignore [LOGDATE] kernel: [HEX]
+ignore [LOGDATE] kernel:        [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] 
+ignore [LOGDATE] kernel: HFC-PCI: No PCI card found
+ignore [LOGDATE] kernel: HiSax: Approval certification failed because of
+ignore [LOGDATE] kernel: HiSax: Approval certification valid
+ignore [LOGDATE] kernel: HiSax: Approval registration numbers:
+ignore [LOGDATE] kernel: HiSax: Approved with Eicon Technology Diva [NUM].[NUM] PCI cards
+ignore [LOGDATE] kernel: HiSax: Approved with ELSA Microlink PCI cards
+ignore [LOGDATE] kernel: HiSax: Approved with ELSA Quickstep series cards
+ignore [LOGDATE] kernel: HiSax: Approved with HFC-S PCI A based cards
+ignore [LOGDATE] kernel: HiSax: Approved with Sedlbauer Speedfax + cards
+ignore [LOGDATE] kernel: HiSax: Card HFC [NUM]BDS[NUM] PCI not installed !
+ignore [LOGDATE] kernel: HiSax: Card [NUM] Protocol EDSS[NUM] Id=line[NUM] ([NUM])
+ignore [LOGDATE] kernel: HiSax: Card Teles [NUM].[NUM] not installed !
+ignore [LOGDATE] kernel: HiSax: Card Winbond [NUM] not installed !
+ignore [LOGDATE] kernel: HiSax: DSS[NUM] Rev. [IPADDR]
+ignore [LOGDATE] kernel: HiSax: DSS[NUM] Rev. [NUM].[NUM]
+ignore [LOGDATE] kernel: HiSax: Elsa driver Rev. [IPADDR]
+ignore [LOGDATE] kernel: HiSax: Elsa driver Rev. [NUM].[NUM]
+ignore [LOGDATE] kernel: HiSax: EU (D[NUM]J) CETECOM ICT Services GmbH
+ignore [LOGDATE] kernel: HiSax: German D[NUM]J CETECOM ICT Services GmbH
+ignore [LOGDATE] kernel: HiSax: HFC-PCI driver Rev. [IPADDR]
+ignore [LOGDATE] kernel: HiSax: Layer[NUM] Revision [IPADDR]
+ignore [LOGDATE] kernel: HiSax: Layer[NUM] Revision [NUM].[NUM]
+ignore [LOGDATE] kernel: HiSax: LinkLayer Revision [IPADDR]
+ignore [LOGDATE] kernel: HiSax: LinkLayer Revision [NUM].[NUM]
+ignore [LOGDATE] kernel: HiSax: Linux Driver for passive ISDN cards
+ignore [LOGDATE] kernel: HiSax: MAX_WAITING_CALLS added
+ignore [LOGDATE] kernel: HiSax module removed
+ignore [LOGDATE] kernel: HiSax: Note! module load syntax has changed.
+ignore [LOGDATE] kernel: HiSax: [NUM] channels added
+ignore [LOGDATE] kernel: HiSax: SI=[NUM], AI=[NUM] 
+ignore [LOGDATE] kernel: HiSax: TeiMgr Revision [IPADDR]
+ignore [LOGDATE] kernel: HiSax: TeiMgr Revision [NUM].[NUM]
+ignore [LOGDATE] kernel: HiSax: Teles IO driver Rev. [IPADDR]
+ignore [LOGDATE] kernel: HiSax: Teles IO driver Rev. [NUM].[NUM]
+ignore [LOGDATE] kernel: HiSax: Teles [NUM].[NUM]/[NUM].[NUM] driver Rev. [IPADDR]
+ignore [LOGDATE] kernel: HiSax: Teles [NUM].[NUM]/[NUM].[NUM] driver Rev. [NUM].[NUM]
+ignore [LOGDATE] kernel: HiSax: unauthorized source code changes
+ignore [LOGDATE] kernel: HiSax: using protocol EURO
+ignore [LOGDATE] kernel: HiSax: Version [NUM].[NUM]e (module)
+ignore [LOGDATE] kernel: HiSax: Version [NUM].[NUM] (module)
+ignore [LOGDATE] kernel: HiSax: Warning - no protocol specified
+ignore [LOGDATE] kernel: HiSax: W[NUM] driver Rev. [IPADDR]
+ignore [LOGDATE] kernel: hm, page [NUM]f[NUM] reserved twice.
+ignore [LOGDATE] kernel: ..... host bus clock speed is [NUM].[NUM] MHz.
+ignore [LOGDATE] kernel: HSM sponsored by bigstorage.com
+ignore [LOGDATE] kernel:   http:/[PATH]
+ignore [LOGDATE] kernel: hub.c: new USB device [NUM]:[NUM].[NUM]-[NUM], assigned address [NUM]
+ignore [LOGDATE] kernel: hub.c: [NUM] ports detected
+ignore [LOGDATE] kernel: hub.c: USB hub found
+ignore [LOGDATE] kernel: ICALLslv: ippp[NUM] 
+ignore [LOGDATE] kernel: ICH: chipset revision [NUM]
+ignore [LOGDATE] kernel: ICH: IDE controller at PCI slot [NUM]:[NUM]f.[NUM]
+ignore [LOGDATE] kernel: ICH: not [NUM]%% native mode: will probe irqs later
+ignore [LOGDATE] kernel: ICH[NUM]: chipset revision [NUM]
+ignore [LOGDATE] kernel: ICH[NUM]: IDE controller at PCI slot [NUM]:[NUM]f.[NUM]
+ignore [LOGDATE] kernel: ICH[NUM]: not [NUM]%% native mode: will probe irqs later
+ignore [LOGDATE] kernel: ide: Assuming [NUM]MHz system bus speed for PIO modes; override with idebus=xx
+ignore [LOGDATE] kernel: ide-floppy driver [NUM].[NUM].newide
+ignore [LOGDATE] kernel: ide: Intel [NUM] (single FIFO) DMA Bus Mastering IDE  
+ignore [LOGDATE] kernel: ide[NUM] at
+ignore [LOGDATE] kernel:     ide[NUM]: BM-DMA at
+ignore [LOGDATE] kernel: ide[NUM]: ports already in use, skipping probe
+ignore [LOGDATE] kernel: ide: timings == [NUM] 
+ignore [LOGDATE] kernel: idx=[NUM] drv=[NUM] ch=[NUM] 
+ignore [LOGDATE] kernel: Initializing CPU#[NUM]
+ignore [LOGDATE] kernel: Initializing RT netlink socket
+ignore [LOGDATE] kernel: Inode cache hash table entries: [NUM] (order: [NUM], [NUM] bytes)
+ignore [LOGDATE] kernel: Inspecting [PATH]
+ignore [LOGDATE] kernel: Intel machine check architecture supported.
+ignore [LOGDATE] kernel: Intel machine check reporting enabled on CPU#[NUM].
+ignore [LOGDATE] kernel: Intel MultiProcessor Specification v[NUM].[NUM]
+ignore [LOGDATE] kernel: Intel [NUM] + AC[NUM] Audio, version [NUM].[NUM], [NUM]:[NUM]:[NUM] Mar [NUM] [NUM]
+ignore [LOGDATE] kernel:   Internal registers self-test: passed.
+ignore [LOGDATE] kernel: i[NUM]_audio: Found [NUM] audio device(s).
+ignore [LOGDATE] kernel: i[NUM]: Intel ICH [NUM]AA found at IO [NUM]xdc[NUM] and [NUM]xd[NUM], IRQ [NUM]
+ignore [LOGDATE] kernel: I/O APIC #[NUM] Version [NUM] at [NUM]xFEC[NUM].
+ignore [LOGDATE] kernel: [IPADDR] sent an invalid ICMP error to a broadcast.
+ignore [LOGDATE] kernel: ip_conntrack 
+ignore [LOGDATE] kernel: IP
+ignore [LOGDATE] kernel: ippp_ccp: allocated reset data structure c[HEX]
+ignore [LOGDATE] kernel: ippp_ccp: freeing reset data structure c[HEX]
+ignore [LOGDATE] kernel: ippp[NUM]: all channels busy - requeuing!
+ignore [LOGDATE] kernel: ippp[NUM]: call from [NUM] -> [NUM] accepted 
+ignore [LOGDATE] kernel: ippp[NUM]: call from [NUM] -> [NUM], start callback 
+ignore [LOGDATE] kernel: ippp[NUM]: Chargesum is [NUM]
+ignore [LOGDATE] kernel: ippp[NUM]: Chargesum is [NUM] 
+ignore [LOGDATE] kernel: ippp[NUM]: dialing [NUM] [NUM]...
+ignore [LOGDATE] kernel: ippp[NUM]: dialing [NUM] [NUM]... 
+ignore [LOGDATE] kernel: ippp[NUM]: HL driver queue full
+ignore [LOGDATE] kernel: ippp[NUM]: [NUM] bogocps 
+ignore [LOGDATE] kernel: ippp[NUM]: remote abort ([NUM]) 
+ignore [LOGDATE] kernel: ippp[NUM]: remote hangup
+ignore [LOGDATE] kernel: ippp[NUM]: remote hangup ([NUM]) 
+ignore [LOGDATE] kernel: ippp, open, slot: [NUM], minor: [NUM], state: [NUM]
+ignore [LOGDATE] kernel: IP Protocols: 
+ignore [LOGDATE] kernel: IP: routing cache hash table of [NUM] buckets, [NUM]Kbytes
+ignore [LOGDATE] kernel: IPSEC EVENT: KLIPS device ipsec[NUM] shut down.
+ignore [LOGDATE] kernel: ipsec 
+ignore [LOGDATE] kernel: iptables: 
+ignore [LOGDATE] kernel: IPVS: Connection hash table configured (size=[NUM], memory=[NUM]Kbytes)
+ignore [LOGDATE] kernel: IPX Portions Copyright
+ignore [LOGDATE] kernel: isapnp: No Plug & Play device found
+ignore [LOGDATE] kernel: isapnp: Scanning for PnP cards...
+ignore [LOGDATE] kernel: isdn: Global Mode running 
+ignore [LOGDATE] kernel: isdn: line[NUM],ch[NUM] cause: E
+ignore [LOGDATE] kernel: isdn_net: call from [NUM] -> [NUM] [NUM] ignored
+ignore [LOGDATE] kernel: isdn_net: call from [NUM],[NUM],[NUM] -> [NUM] 
+ignore [LOGDATE] kernel: isdn_net: chargetime of ippp[NUM] now [NUM] 
+ignore [LOGDATE] kernel: isdn_net: Incoming call without OAD, assuming '[NUM]'
+ignore [LOGDATE] kernel: isdn_net: ippp[NUM] connected
+ignore [LOGDATE] kernel: isdn_net: local hangup ippp[NUM]
+ignore [LOGDATE] kernel: isdn_net: Service-Indicator not [NUM], ignored 
+ignore [LOGDATE] kernel: isdn: Rejecting Call 
+ignore [LOGDATE] kernel: ISDN subsystem Rev: [IPADDR]/[IPADDR]/[IPADDR]/[IPADDR]/[IPADDR]/[IPADDR] loaded
+ignore [LOGDATE] kernel: ISDN subsystem Rev: [NUM].[NUM][PATH] loaded
+ignore [LOGDATE] kernel: ISDN-subsystem unloaded
+ignore [LOGDATE] kernel: isdn_tty: call from [NUM] -> [NUM] ignored
+ignore [LOGDATE] kernel: isdn_tty: Incoming call without OAD, assuming '[NUM]'
+ignore [LOGDATE] kernel: isdn_tx_timeout dev ippp[NUM] dialstate [NUM]
+ignore [LOGDATE] kernel: isdn: Verbose-Level is [NUM] 
+ignore [LOGDATE] kernel: Journalled Block Device driver loaded
+ignore [LOGDATE] kernel: Kernel command line: 
+ignore [LOGDATE] kernel: Kernel log daemon terminating.
+ignore [LOGDATE] kernel: Kernel logging \(proc\) stopped.
+ignore [LOGDATE] kernel: kinoded started
+ignore [LOGDATE] kernel: kjournald starting.  Commit interval [NUM] seconds
+ignore [LOGDATE] kernel: klips_error:ipsec_tunnel_start_xmit: ip_send() failed, err=[NUM]
+ignore [LOGDATE] kernel: klips_info:cleanup_module: ipsec module unloaded.
+ignore [LOGDATE] kernel: klips_info:ipsec_alg_init: calling ipsec_alg_static_init()
+ignore [LOGDATE] kernel: klips_info:ipsec_alg_init: KLIPS alg v=[NUM].[NUM].[NUM]-[NUM] (EALG_MAX=[NUM], AALG_MAX=[NUM])
+ignore [LOGDATE] kernel: klips_info:ipsec_init: KLIPS startup, FreeS/WAN IPSec version: [NUM].[NUM]
+ignore [LOGDATE] kernel: klips_info:ipsec_init: KLIPS startup, FreeS/WAN IPSec version: super-freeswan-[NUM].[NUM].[NUM]
+ignore [LOGDATE] kernel: klips_info:pfkey_cleanup: shutting down PF_KEY domain sockets.
+ignore [LOGDATE] kernel: klogd [NUM].[NUM]-[NUM], log source = [PATH] started.
+ignore [LOGDATE] kernel: klogd [NUM].[NUM].[NUM], log source = [PATH] started.
+ignore [LOGDATE] kernel: kmod: failed to exec [PATH] -s -k scsi_hostadapter, errno = [NUM]
+ignore [LOGDATE] kernel: less uses obsolete [PATH] interface
+ignore [LOGDATE] kernel: Limiting direct PCI/PCI transfers.
+ignore [LOGDATE] kernel: Linux agpgart interface v[NUM].[NUM] (c) Jeff Hartmann
+ignore [LOGDATE] kernel: Linux IP multicast router [NUM].[NUM] plus PIM-SM
+ignore [LOGDATE] kernel: Linux NET[NUM].[NUM] for Linux [NUM].[NUM]
+ignore [LOGDATE] kernel: Linux Tulip driver version [NUM].[NUM].[NUM]-pre[NUM] (Mar [NUM], [NUM])
+ignore [LOGDATE] kernel: Linux version 
+ignore [LOGDATE] kernel: Loaded [NUM] symbols from [NUM] modules.
+ignore [LOGDATE] kernel: Loaded [NUM] symbols from [PATH]
+ignore [LOGDATE] kernel: loop: loaded (max [NUM] devices)
+ignore [LOGDATE] kernel: masked ExtINT on CPU#[NUM]
+ignore [LOGDATE] kernel: master=ippp[NUM] 
+ignore [LOGDATE] kernel: master offline 
+ignore [LOGDATE] kernel: master online 
+ignore [LOGDATE] kernel: md: Autodetecting RAID arrays.
+ignore [LOGDATE] kernel: md: autorun ...
+ignore [LOGDATE] kernel: md: ... autorun DONE.
+ignore [LOGDATE] kernel: md.c: sizeof(mdp_super_t) = [NUM]
+ignore [LOGDATE] kernel: md driver [NUM].[NUM].[NUM]
+ignore [LOGDATE] kernel: md: md driver [NUM].[NUM].[NUM] MAX_MD_DEVS=[NUM], MD_SB_DISKS=[NUM]
+ignore [LOGDATE] kernel: Memory: [NUM]k/[NUM]k available
+ignore [LOGDATE] kernel: Memory: sized by int[NUM] [NUM]e[NUM]h 
+ignore [LOGDATE] kernel: Microstar [NUM] with broken BIOS detected. Refusing to enable the local APIC.
+ignore [LOGDATE] kernel: mlpf: [NUM] 
+ignore [LOGDATE] kernel: Mount cache hash table entries: [NUM] (order: [NUM], [NUM] bytes)
+ignore [LOGDATE] kernel: Mount-cache hash table entries: [NUM] (order: [NUM], [NUM] bytes)
+ignore [LOGDATE] kernel: mtrr: detected mtrr type: Intel
+ignore [LOGDATE] kernel: mtrr: detected mtrr type: none
+ignore [LOGDATE] kernel: mtrr: probably your BIOS does not setup all CPUs
+ignore [LOGDATE] kernel: mtrr: v[NUM].[NUM]a ([NUM]) Richard Gooch ([EMAIL])
+ignore [LOGDATE] kernel: mtrr: v[NUM].[NUM] ([NUM]) Richard Gooch ([EMAIL])
+ignore [LOGDATE] kernel: mtrr: your CPUs had inconsistent variable MTRR settings
+ignore [LOGDATE] kernel: ne[NUM]k-pci.c:v[NUM].[NUM] [NUM][PATH] D. Becker/P. Gortmaker
+ignore [LOGDATE] kernel: NET[NUM]: AppleTalk [NUM].[NUM]a for Linux NET[NUM].[NUM]
+ignore [LOGDATE] kernel: NET[NUM]: Frame Diverter [NUM].[NUM]
+ignore [LOGDATE] kernel: NET[NUM]: Linux IPX
+ignore [LOGDATE] kernel: NET[NUM]: Linux TCP/IP
+ignore [LOGDATE] kernel: NET[NUM]: Unix domain sockets
+ignore [LOGDATE] kernel:   "[NUM]b [NUM] [NUM] [NUM] [NUM] [NUM] [NUM] [NUM] [NUM] [NUM] [NUM] [NUM] "
+ignore [LOGDATE] kernel: [NUM]MB HIGHMEM available.
+ignore [LOGDATE] kernel: [NUM]MB LOWMEM available.
+ignore [LOGDATE] kernel:        [NUM] [NUM]
+ignore [LOGDATE] kernel:   "[NUM] [NUM] [NUM] [NUM] [NUM] [NUM] [NUM] [NUM] [NUM] [NUM] [NUM] [NUM] "
+ignore [LOGDATE] kernel: [NUM]:[NUM]: rw=[NUM], want=[NUM], limit=[NUM]
+ignore [LOGDATE] kernel:    [NUM]regs     :   [NUM].[NUM] MB/sec
+ignore [LOGDATE] kernel:    [NUM]regs     :  [NUM].[NUM] MB/sec
+ignore [LOGDATE] kernel:    [NUM]regs    :   [NUM].[NUM] MB/sec
+ignore [LOGDATE] kernel: [NUM]too Fast Ethernet driver [NUM].[NUM].[NUM]
+ignore [LOGDATE] kernel: OEM ID: OEM[NUM] Product ID: PROD[NUM] APIC at: [NUM]xFEE[NUM]
+ignore [LOGDATE] kernel: On node [NUM] totalpages: [NUM]
+ignore [LOGDATE] kernel: OPEN: [IPADDR] -> [IPADDR] ICMP 
+ignore [LOGDATE] kernel: OPEN: [IPADDR] -> [IPADDR] TCP, port: [NUM] -> [NUM] 
+ignore [LOGDATE] kernel: OPEN: [IPADDR] -> [IPADDR] UDP, port: [NUM] -> [NUM] 
+ignore [LOGDATE] kernel: Packet log:
+ignore [LOGDATE] kernel: Page-cache hash table entries:
+ignore [LOGDATE] kernel: parport[NUM]: irq [NUM] detected
+ignore [LOGDATE] kernel: parport[NUM]: PC-style at [NUM] ([NUM]) [PCSPP,TRISTATE]
+ignore [LOGDATE] kernel: parport[NUM]: PC-style at [NUM] ([NUM]) [PCSPP,TRISTATE,EPP]
+ignore [LOGDATE] kernel: parport[NUM]: PC-style at [NUM] [PCSPP]
+ignore [LOGDATE] kernel: parport[NUM]: PC-style at [NUM] [PCSPP,EPP]
+ignore [LOGDATE] kernel: parport[NUM]: PC-style at [NUM] [PCSPP,TRISTATE]
+ignore [LOGDATE] kernel: parport_pc: Via [NUM]A parallel port
+ignore [LOGDATE] kernel: Partition check:
+ignore [LOGDATE] kernel: PCI->APIC IRQ transform: (B[NUM],I[NUM],P[NUM]) -> [NUM]
+ignore [LOGDATE] kernel: PCI: Assigned IRQ [NUM] for device [NUM]:[NUM].[NUM]
+ignore [LOGDATE] kernel: pcibios_init : BIOS[NUM] Service Directory entry at [HEX] 
+ignore [LOGDATE] kernel: pcibios_init : BIOS[NUM] Service Directory structure at [HEX] 
+ignore [LOGDATE] kernel: pcibios_init : PCI BIOS revision [NUM].[NUM] entry at [HEX] 
+ignore [LOGDATE] kernel: PCI: Enabling device [NUM]:[NUM].[NUM] ([NUM] -> [NUM])
+ignore [LOGDATE] kernel: PCI: Enabling Via external APIC routing
+ignore [LOGDATE] kernel: PCI: Found IRQ [NUM] for device [NUM]:[HEX]
+ignore [LOGDATE] kernel: pci_hotplug: PCI Hot Plug PCI Core version: [NUM].[NUM]
+ignore [LOGDATE] kernel: PCI_IDE: not [NUM]% native mode: will probe irqs later
+ignore [LOGDATE] kernel: PCI_IDE: unknown IDE controller on PCI bus [NUM] device f[NUM], VID=[NUM], DID=[NUM]
+ignore [LOGDATE] kernel: PCI: Increasing latency timer of device [NUM]:fd to [NUM]
+ignore [LOGDATE] kernel: PCI: [NUM]:[NUM].[NUM] PCI cache line size corrected to [NUM].
+ignore [LOGDATE] kernel: PCI: [NUM]:[NUM].[NUM] PCI cache line size set incorrectly ([NUM] bytes) by BIOS/FW.
+ignore [LOGDATE] kernel: PCI: PCI BIOS revision [NUM].[NUM] entry at
+ignore [LOGDATE] kernel: PCI: Probing PCI hardware
+ignore [LOGDATE] kernel: PCI: Sharing IRQ [NUM] with [NUM]:[HEX]
+ignore [LOGDATE] kernel: PCI: Using configuration type [NUM]
+ignore [LOGDATE] kernel: PCI: Using IRQ router
+ignore [LOGDATE] kernel: PCI: Via IRQ fixup for [NUM]:[NUM].[NUM], from [NUM] to [NUM]
+ignore [LOGDATE] kernel: PDC[NUM]: chipset revision [NUM]
+ignore [LOGDATE] kernel: PDC[NUM]: IDE controller at PCI slot [NUM]:[NUM]c.[NUM]
+ignore [LOGDATE] kernel: PDC[NUM]: not [NUM]%% native mode: will probe irqs later
+ignore [LOGDATE] kernel: PDC[NUM]: (U)DMA Burst Bit ENABLED Primary MASTER Mode Secondary MASTER Mode.
+ignore [LOGDATE] kernel: *pde = [NUM]
+ignore [LOGDATE] kernel: per-CPU timeslice cutoff: [NUM].[NUM] usecs.
+ignore [LOGDATE] kernel:    pII_mmx   :   [NUM].[NUM] MB/sec
+ignore [LOGDATE] kernel:    pII_mmx   :  [NUM].[NUM] MB/sec
+ignore [LOGDATE] kernel: PIIX[NUM]:
+ignore [LOGDATE] kernel:    p[NUM]_mmx    :   [NUM].[NUM] MB/sec
+ignore [LOGDATE] kernel:    p[NUM]_mmx    :  [NUM].[NUM] MB/sec
+ignore [LOGDATE] kernel: POSIX conformance testing by UNIFIX
+ignore [LOGDATE] kernel: possible [TCPFLAG] flooding on port [NUM]. Sending cookies.
+ignore [LOGDATE] kernel: PPP BSD Compression module registered
+ignore [LOGDATE] kernel: PPP Deflate Compression module registered
+ignore [LOGDATE] kernel: PPP line discipline registered.
+ignore [LOGDATE] kernel: PPP: ppp line discipline successfully unregistered
+ignore [LOGDATE] kernel: PPP: version [NUM].[NUM].[NUM] (demand dialling)
+ignore [LOGDATE] kernel:   Primary interface chip i[NUM] PHY #[NUM].
+ignore [LOGDATE] kernel: Primary Sponsor thresholdnetworks.com
+ignore [LOGDATE] kernel:  printing eip:
+ignore [LOGDATE] kernel: Probing PCI hardware. 
+ignore [LOGDATE] kernel: Processor #[NUM] Pentium(tm) Pro APIC version [NUM]
+ignore [LOGDATE] kernel: Processors: [NUM]
+ignore [LOGDATE] kernel: PS/[NUM] auxiliary pointing device detected -- driver installed. 
+ignore [LOGDATE] kernel: pty: [NUM] Unix[NUM] ptys configured
+ignore [LOGDATE] kernel: raid[NUM]: measuring checksumming speed
+ignore [LOGDATE] kernel: raid[NUM]: MMX detected, trying high-speed MMX checksum routines
+ignore [LOGDATE] kernel: Raid Tuning sponsored by emusic.com
+ignore [LOGDATE] kernel: RAMDISK: Compressed image found at block [NUM]
+ignore [LOGDATE] kernel: Ramdisk driver initialized : [NUM] ramdisks of [NUM]K size 
+ignore [LOGDATE] kernel: RAM disk driver initialized:  [NUM] RAM disks of [NUM]K size
+ignore [LOGDATE] kernel: RAMDISK driver initialized: [NUM] RAM disks of [NUM]K size [NUM] blocksize
+ignore [LOGDATE] kernel: Real Time Clock Driver v[NUM].[NUM]
+ignore [LOGDATE] kernel:   Receiver lock-up bug exists -- enabling work-around.
+ignore [LOGDATE] kernel:   Receiver lock-up workaround activated.
+ignore [LOGDATE] kernel: registered device ppp[NUM]
+ignore [LOGDATE] kernel: reiserfs: checking transaction log (device [NUM]:[NUM]) ...
+ignore [LOGDATE] kernel: reiserfs: using [NUM].[NUM].x disk format
+ignore [LOGDATE] kernel: ReiserFS version [NUM].[NUM].[NUM]
+ignore [LOGDATE] kernel: ReiserFS version [NUM].[NUM].[NUM] (w/quota support)
+ignore [LOGDATE] kernel:   (reserved error code) -- (asc=[NUM]a, ascq=[NUM])
+ignore [LOGDATE] kernel:   ROM checksum self-test: passed ([NUM]c[NUM]f[NUM]).
+ignore [LOGDATE] kernel:   ROM checksum self-test: passed ([NUM]f[NUM]b).
+ignore [LOGDATE] kernel: rtl[NUM].c:v[NUM].[NUM] [NUM][PATH] Donald Becker http:/[PATH] 
+ignore [LOGDATE] kernel: scsi : detected [NUM] SCSI disk total. 
+ignore [LOGDATE] kernel: scsi : detected total.
+ignore [LOGDATE] kernel: SCSI device sda: hdwr sector= [NUM] bytes. Sectors= [NUM] [[NUM] MB] [[NUM].[NUM] GB]
+ignore [LOGDATE] kernel: SCSI device sda: hdwr sector= [NUM] bytes. Sectors= [NUM] [[NUM] MB] [[NUM].[NUM] GB] 
+ignore [LOGDATE] kernel: SCSI device sda: [NUM] [NUM]-byte hdwr sectors ([NUM] MB)
+ignore [LOGDATE] kernel: SCSI device sdb: [NUM] [NUM]-byte hdwr sectors ([NUM] MB)
+ignore [LOGDATE] kernel: (scsi[NUM]) <Adaptec AHA-[NUM]A Ultra SCSI host adapter> found at PCI [NUM]/[NUM] 
+ignore [LOGDATE] kernel: scsi[NUM] : Adaptec AHA[NUM]x[PATH] (EISA[PATH] SCSI) [NUM].[NUM].[NUM]/[NUM].[NUM].[NUM]
+ignore [LOGDATE] kernel: scsi[NUM] : Adaptec AHA[NUM]x[PATH] (EISA[PATH] SCSI) [NUM].[NUM].[NUM]/[NUM].[NUM].[NUM] 
+ignore [LOGDATE] kernel: (scsi[NUM]) <Adaptec AHA-[NUM]X SCSI host adapter> found at PCI [NUM][PATH]
+ignore [LOGDATE] kernel: scsi[NUM] : Adaptec AIC[NUM]XXX EISA[PATH] SCSI HBA DRIVER, Rev [NUM].[NUM].[NUM]
+ignore [LOGDATE] kernel: (scsi[NUM]:A:[NUM]:[NUM]): Locking max tag count at [NUM]
+ignore [LOGDATE] kernel: (scsi[NUM]:A:[NUM]): [NUM].[NUM]MB/s transfers ([NUM].[NUM]MHz DT, offset [NUM], [NUM]bit)
+ignore [LOGDATE] kernel: (scsi[NUM]:A:[NUM]): [NUM].[NUM]MB/s transfers ([NUM].[NUM]MHz, offset [NUM])
+ignore [LOGDATE] kernel: (scsi[NUM]:A:[NUM]): [NUM].[NUM]MB/s transfers ([NUM].[NUM]MHz, offset [NUM], [NUM]bit)
+ignore [LOGDATE] kernel: scsi[NUM]:A:[NUM]:[NUM]: Tagged Queuing enabled.  Depth [NUM]
+ignore [LOGDATE] kernel: (scsi[NUM]) Cables present (Int-[NUM] YES, Ext-[NUM] NO) 
+ignore [LOGDATE] kernel: (scsi[NUM]) Downloading sequencer code... [NUM] instructions downloaded
+ignore [LOGDATE] kernel: (scsi[NUM]) during machine bootup. 
+ignore [LOGDATE] kernel: scsi[NUM] : GDT[NUM]RP
+ignore [LOGDATE] kernel: scsi[NUM] : GDT[NUM]RS
+ignore [LOGDATE] kernel: scsi : [NUM] host.
+ignore [LOGDATE] kernel: scsi : [NUM] hosts.
+ignore [LOGDATE] kernel: (scsi[NUM]) If not, then please properly set the device termination 
+ignore [LOGDATE] kernel: (scsi[NUM]) in the Adaptec SCSI BIOS by hitting CTRL-A when prompted 
+ignore [LOGDATE] kernel: (scsi[NUM]) Narrow Channel, SCSI ID=[NUM], [NUM]/[NUM] SCBs
+ignore [LOGDATE] kernel: (scsi[NUM]:[NUM]:[NUM]:[NUM]) Synchronous at [NUM].[NUM] Mbyte/sec, offset [NUM].
+ignore [LOGDATE] kernel: (scsi[NUM]) Please verify driver detected settings are correct. 
+ignore [LOGDATE] kernel: (scsi[NUM]) Warning - detected auto-termination 
+ignore [LOGDATE] kernel: SCSI subsystem driver Revision: [NUM].[NUM]
+ignore [LOGDATE] kernel:  sd[a-z]:
+ignore [LOGDATE] kernel: sending pkt_too_big (len[PID] pmtu[PID]) to self
+ignore [LOGDATE] kernel: Serial driver version
+ignore [LOGDATE] kernel:   Serial sub-system self-test: passed.
+ignore [LOGDATE] kernel: Setting [NUM] in the phys_id_present_map
+ignore [LOGDATE] kernel: sl[NUM]: transmit timed out, bad line quality? 
+ignore [LOGDATE] kernel: smb_request: result -[NUM], setting invalid
+ignore [LOGDATE] kernel: smb_retry: successful, new pid=[NUM], generation=[NUM]
+ignore [LOGDATE] kernel: spurious [NUM]A interrupt: IRQ[NUM].
+ignore [LOGDATE] kernel: Starting kswapd
+ignore [LOGDATE] kernel: Starting kswapd v [IPADDR]  
+ignore [LOGDATE] kernel: Starting kswapd v [NUM].[NUM] 
+ignore [LOGDATE] kernel: st: Version [NUM], bufsize [NUM], max init. bufs [NUM], s/g segs [NUM]
+ignore [LOGDATE] kernel: Swansea University Computer Society
+ignore [LOGDATE] kernel: Symbols match kernel version [NUM].[NUM].[NUM].
+ignore [LOGDATE] kernel: sysctl: ip forwarding enabled 
+ignore [LOGDATE] kernel: sysctl: ip forwarding off 
+ignore [LOGDATE] kernel: tcpdump uses obsolete (PF_INET,SOCK_P[TCPFLAG]ET)
+ignore [LOGDATE] kernel: TCP: Hash tables configured (ehash [NUM] bhash [NUM])
+ignore [LOGDATE] kernel: TCP: Hash tables configured (established [NUM] bind [NUM])
+ignore [LOGDATE] kernel: TCP: Treason uncloaked! Peer [IPADDR]:[NUM]/[NUM] shrinks window [NUM]:[NUM]. Repaired.
+ignore [LOGDATE] kernel: Teles[NUM]: membase configured DOSish, assuming [HEX]
+ignore [LOGDATE] kernel: Teles: [NUM].[NUM] Byte at d[NUM] is ff
+ignore [LOGDATE] kernel: Teles[NUM]: [NUM].[NUM] Byte at d[NUM] is ff
+ignore [LOGDATE] kernel: testing the IO APIC.......................
+ignore [LOGDATE] kernel:   The failed "Start/Stop Unit" packet command was: 
+ignore [LOGDATE] kernel:   The failed "Test Unit Ready" packet command was: 
+ignore [LOGDATE] kernel: ..TIMER: vector=[NUM] pin[NUM]=[NUM] pin[NUM]=[NUM]
+ignore [LOGDATE] kernel: Toshiba System Managment Mode driver v[NUM].[NUM] [NUM][PATH]
+ignore [LOGDATE] kernel: Total of [NUM] processors activated
+ignore [LOGDATE] kernel: Transparent bridge
+ignore [LOGDATE] kernel: Trying to unmount old root ... okay
+ignore [LOGDATE] kernel: ttyS[NUM] at [HEX] (irq = [NUM]) is a
+ignore [LOGDATE] kernel: ttyS: [NUM] input overrun(s)
+ignore [LOGDATE] kernel: ttyS[NUM]: LSR safety check engaged!
+ignore [LOGDATE] kernel: tulip[NUM]:
+ignore [LOGDATE] kernel:   Type:
+ignore [LOGDATE] kernel: Uniform CD-ROM driver Revision: [NUM].[NUM]
+ignore [LOGDATE] kernel: Uniform Multi-Platform E-IDE driver Revision:
+ignore [LOGDATE] kernel: Unknown bridge resource [NUM]: assuming transparent
+ignore [LOGDATE] kernel:   Unknown Error Type: (reserved) -- (Sense key=[HEX])
+ignore [LOGDATE] kernel: usb.c: new USB bus registered, assigned bus number [NUM]
+ignore [LOGDATE] kernel: usb.c: registered new driver hub
+ignore [LOGDATE] kernel: usb.c: registered new driver usbdevfs
+ignore [LOGDATE] kernel: usb.c: USB device [NUM] (vend/prod [HEX]/[HEX]) is not claimed by any active driver.
+ignore [LOGDATE] kernel: usb.c: USB new device connect, assigned device number [NUM]
+ignore [LOGDATE] kernel: usb-uhci.c: Detected [NUM] ports
+ignore [LOGDATE] kernel: usb-uhci.c: High bandwidth mode enabled
+ignore [LOGDATE] kernel: usb-uhci.c: Intel USB controller: setting latency timer to [NUM]
+ignore [LOGDATE] kernel: usb-uhci.c: $Revision: 1.1 $ time [NUM]:[NUM]:[NUM] [WORD] [NUM] [NUM]
+ignore [LOGDATE] kernel: usb-uhci.c: USB UHCI at I/O [HEX], IRQ [NUM]
+ignore [LOGDATE] kernel: usb-uhci.c: v[NUM].[NUM]:USB Universal Host Controller Interface driver
+ignore [LOGDATE] kernel: using fastest function: p[NUM]_mmx ([NUM].[NUM] MB/sec)
+ignore [LOGDATE] kernel: Using local APIC timer interrupts.
+ignore [LOGDATE] kernel: Using r[NUM] hash to sort names
+ignore [LOGDATE] kernel:   Vendor: 
+ignore [LOGDATE] kernel: VFS: Disk quotas vdquot_[NUM].[NUM].[NUM]
+ignore [LOGDATE] kernel: VFS: Diskquotas version dquot_[NUM].[NUM].[NUM] initialized
+ignore [LOGDATE] kernel: VFS: Diskquotas version dquot_[NUM].[NUM].[NUM] initialized^M
+ignore [LOGDATE] kernel: VFS: Mounted root (ext[NUM] filesystem).
+ignore [LOGDATE] kernel: VFS: Mounted root (reiserfs filesystem) readonly.
+ignore [LOGDATE] kernel:     Virtual Wire compatibility mode.
+ignore [LOGDATE] kernel: VP_IDE: chipset revision [NUM]
+ignore [LOGDATE] kernel: VP_IDE: IDE controller at PCI slot [NUM]:[NUM].[NUM]
+ignore [LOGDATE] kernel: VP_IDE: IDE controller on PCI bus [NUM] dev [NUM]
+ignore [LOGDATE] kernel: VP_IDE: not [NUM]%% native mode: will probe irqs later
+ignore [LOGDATE] kernel: VP_IDE: VIA vt[HEX] (rev [NUM]) IDE UDMA[NUM] controller on pci[NUM]:[NUM].[NUM]
+ignore [LOGDATE] kernel: Waiting on wait_init_idle (map = [NUM])
+ignore [LOGDATE] kernel: Warning: possible [TCPFLAG] flood from [IPADDR] on [IPADDR]:[NUM].  Sending cookies. 
+ignore [LOGDATE] kernel: W[NUM]: No PCI card found
+ignore [LOGDATE] kernel: [WORD]: IN=eth[NUM] OUT=eth[NUM] SRC=[IPADDR] DST=[IPADDR]
+ignore [LOGDATE] kernel: [WORD]: IN=eth[NUM] OUT=ippp[NUM] SRC=[IPADDR] DST=[IPADDR]
+ignore [LOGDATE] kernel: [WORD]: IN=eth[NUM] OUT=ipsec[NUM] SRC=[IPADDR] DST=[IPADDR]
+ignore [LOGDATE] kernel: [WORD]: IN=eth[NUM] OUT= MAC=[MACADDR] SRC=[IPADDR] DST=[IPADDR]
+ignore [LOGDATE] kernel: [WORD]: IN=eth[NUM] OUT= MAC= SRC=[IPADDR] DST=[IPADDR] LEN=[NUM]
+ignore [LOGDATE] kernel: [WORD]: IN=ippp[NUM] OUT= MAC= SRC=[IPADDR] DST=[IPADDR] LEN=[NUM]
+ignore [LOGDATE] kernel: [WORD]: IN=ipsec[NUM] OUT=eth[NUM] SRC=[IPADDR] DST=[IPADDR] LEN=[NUM]
+ignore [LOGDATE] kernel: [WORD]: IN=ipsec[NUM] OUT= MAC=[MACADDR] SRC=[IPADDR] DST=[IPADDR] LEN=[NUM]
+ignore [LOGDATE] kernel: [WORD]: IN= OUT=eth[NUM] SRC=[IPADDR] DST=[IPADDR] LEN=[NUM]
+ignore [LOGDATE] kernel: Working around Cyrix MediaGX virtual DMA bugs.
+ignore [LOGDATE] kernel: zone([NUM]): [NUM] pages.
+
+red [LOGDATE] kernel: hda: dma_intr: error=[NUM] \{ UncorrectableError \}, LBAsect=[NUM], sector=[NUM]
+red [LOGDATE] kernel: hda: dma_intr: status=[NUM] \{ DriveReady SeekComplete Error \}
+red [LOGDATE] kernel: hda: packet command error: status=[NUM] \{ DriveReady SeekComplete Error \}
+red [LOGDATE] kernel: SCSI disk error : host [NUM] channel [NUM] id [NUM] lun [NUM] return code = [NUM]
+red [LOGDATE] kernel:  I/O error: dev [NUM]:[NUM], sector [NUM]
+red [LOGDATE] kernel: hda: packet command error: error=[NUM]

@@ -1,0 +1,6 @@
+ignore [LOGDATE] console-logging: Show ISDN line status information on tty[NUM] (Alt-F[NUM])
+ignore [LOGDATE] console-logging: Show kernel messages on tty[NUM] (Alt-F[NUM])
+ignore [LOGDATE] console-logging: Shutting down <console-logging>: 
+ignore [LOGDATE] console-logging: Starting <console-logging>: 
+ignore [LOGDATE] rc: Starting console-logging:  succeeded
+ignore [LOGDATE] rc: Stopping console-logging:  succeeded

@@ -1,0 +1,34 @@
+AutoGen Definitions options;
+export        = "#define progOptions chklogOptions";
+prog-name     = chklog;
+prog-title    = "scan logfile according to regexes and report interesting lines";
+version       = `cat ../VERSION`;
+homerc        = "$$/upwatch.conf";
+detail        = 
+'chklog scans a given logfile and displays the lines that would get
+noticed by uw_sysstat.';
+
+argument      = "[string]";
+
+// describe commandline flags
+flag = {
+    name      = type;
+    value     = t;
+    arg_type  = string;
+    descrip   = "logfile type";
+    doc       =
+'Describes the format of the logfile. This corresponds with a directoryname
+in /etc/upwatch.d/logwatch.d';
+};
+
+// describe commandline flags
+flag = {
+    name      = reverse;
+    value     = r;
+    descrip   = "extract regular expressions from given file";
+    doc       =
+'Quick way to create a set of regular expressions for later testing. This
+option uses the rmacros.txt file. It uses case sensitive regex searching';
+};
+
+#include minimal_options.def

@@ -1,0 +1,5 @@
+ignore [LOGDATE] sendmail: 
+ignore [LOGDATE] sendmail: sendmail shutdown failed
+ignore [LOGDATE] sendmail: sendmail shutdown succeeded
+ignore [LOGDATE] sendmail: sendmail startup failed
+ignore [LOGDATE] sendmail: sendmail startup succeeded

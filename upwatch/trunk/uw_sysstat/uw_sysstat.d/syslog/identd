@@ -1,0 +1,3 @@
+ignore [LOGDATE] identd: identd shutdown succeeded
+ignore [LOGDATE] identd: identd startup succeeded
+ignore [LOGDATE] identd[PID]: request_thread: read([NUM], ..., [NUM]) failed: Connection reset by peer

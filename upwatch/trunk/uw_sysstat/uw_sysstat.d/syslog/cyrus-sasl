@@ -1,0 +1,7 @@
+ignore [LOGDATE] saslpasswd: CRAM-MD[NUM]: failed to set secret for hugo: generic failure
+ignore [LOGDATE] saslpasswd: CRAM-MD[NUM]: set secret for 
+ignore [LOGDATE] saslpasswd: DIGEST-MD[NUM]: set secret for
+ignore [LOGDATE] saslpasswd: failed to set plaintext secret for [USER]: requested change was not needed
+ignore [LOGDATE] saslpasswd: failed to set plaintext secret for [USER]: generic failure
+ignore [LOGDATE] saslpasswd: PLAIN: failed to set secret for [USER]: generic failure
+ignore [LOGDATE] saslpasswd: PLAIN: set secret for

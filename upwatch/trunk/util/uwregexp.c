@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
-#include <regex.h>
+#include <pcreposix.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 
@@ -21,7 +21,7 @@ int main(int argc, char *argv[])
       break;
     }
 
-    err = regcomp(&preg, regexp, REG_EXTENDED|REG_NOSUB);
+    err = regcomp(&preg, regexp, REG_EXTENDED|REG_NOSUB|REG_ICASE);
     if (err) {
       char buffer[256];
 

@@ -1,0 +1,11 @@
+ignore [LOGDATE] upwatch: Starting uw_null: 
+ignore [LOGDATE] upwatch: Starting uw_send: 
+ignore [LOGDATE] upwatch: Starting uw_sysstat: 
+ignore [LOGDATE] upwatch: Starting uw_null: 
+ignore [LOGDATE] upwatch: Starting uw_send: 
+ignore [LOGDATE] upwatch: Starting uw_sysstat: 
+ignore [LOGDATE] uw_null: uw_null startup succeeded
+ignore [LOGDATE] uw_send: uw_send shutdown succeeded
+ignore [LOGDATE] uw_send: uw_send startup succeeded
+ignore [LOGDATE] uw_sysstat: uw_sysstat shutdown succeeded
+ignore [LOGDATE] uw_sysstat: uw_sysstat startup succeeded

@@ -1,0 +1,67 @@
+ignore [LOGDATE] named: named shutdown failed
+ignore [LOGDATE] named: named shutdown succeeded
+ignore [LOGDATE] named: named startup succeeded
+ignore [LOGDATE] named[PID]: "[HOSTNAME] IN MX" points to a CNAME \([HOSTNAME]\)
+ignore [LOGDATE] named[PID]: bad referral
+ignore [LOGDATE] named[PID]: check_hints: A records for [HOSTNAME] class [NUM] do not match hint records
+ignore [LOGDATE] named[PID]: Cleaned cache of [NUM] RRset
+ignore [LOGDATE] named[PID]: Cleaned cache of [NUM] RRsets
+ignore [LOGDATE] named[PID]: client [IPADDR]#[NUM]: error sending response: host unreachable
+ignore [LOGDATE] named[PID]: client [IPADDR]#[NUM]: error sending response: invalid file
+ignore [LOGDATE] named[PID]: command channel listening on [IPADDR]#[NUM]
+ignore [LOGDATE] named[PID]: dns_rdata_fromtext:[HOSTNAME]hosts:[NUM]: near eol: unexpected end of input
+ignore [LOGDATE] named[PID]: drained [NUM] queries \(delay [NUM] sec\)
+ignore [LOGDATE] named[PID]: "[HOSTNAME] IN NS" points to a CNAME \([HOSTNAME]\)
+ignore [LOGDATE] named[PID]: exiting
+ignore [LOGDATE] named[PID]: hint zone "" \(IN\) loaded \(serial [NUM]\)
+ignore [LOGDATE] named[PID]:[HOSTNAME]hosts:[NUM]: no TTL specified; using SOA MINTTL instead
+ignore [LOGDATE] named[PID]: internal_send: [IPADDR]#[NUM]: Invalid argument
+ignore [LOGDATE] named[PID]: Lame server on '[HOSTNAME]' \(in '[HOSTNAME]'\?\): \[[IPADDR]\].[NUM] '[HOSTNAME]'
+ignore [LOGDATE] named[PID]: lame server resolving '[HOSTNAME]' \(in '[HOSTNAME]'?\): [IPADDR]#[NUM]
+ignore [LOGDATE] named[PID]: listening on \[[IPADDR]\].[NUM] \(eth[NUM]\)
+ignore [LOGDATE] named[PID]: listening on \[[IPADDR]\].[NUM] \(eth[NUM]:[NUM]\)
+ignore [LOGDATE] named[PID]: listening on \[[IPADDR]\].[NUM] \(ippp[NUM]\)
+ignore [LOGDATE] named[PID]: listening on \[[IPADDR]\].[NUM] \(ipsec[NUM]\)
+ignore [LOGDATE] named[PID]: listening on \[[IPADDR]\].[NUM] \(lo\)
+ignore [LOGDATE] named[PID]: listening on IPv[NUM] interface eth[NUM], [IPADDR]#[NUM]
+ignore [LOGDATE] named[PID]: listening on IPv[NUM] interface eth[NUM]:[NUM], [IPADDR]#[NUM]
+ignore [LOGDATE] named[PID]: listening on IPv[NUM] interface ippp[NUM], [IPADDR]#[NUM]
+ignore [LOGDATE] named[PID]: listening on IPv[NUM] interface lo, [IPADDR]#[NUM]
+ignore [LOGDATE] named[PID]: listening on IPv[NUM] interface ppp[NUM], [IPADDR]#[NUM]
+ignore [LOGDATE] named[PID]: loading configuration from '[PATH]'
+ignore [LOGDATE] named[PID]: Forwarding source address is \[[IPADDR]\].[NUM]
+ignore [LOGDATE] named[PID]: local.prv.hosts:[NUM]: no TTL specified; using SOA MINTTL instead
+ignore [LOGDATE] named[PID]: Malformed response from \[[IPADDR]\].[NUM] \(query section mismatch \([HOSTNAME] IN A\)\)
+ignore [LOGDATE] named[PID]: master zone "[HOSTNAME]" \(IN\) loaded \(serial [NUM]\)
+ignore [LOGDATE] named[PID]: MAXQUERIES exceeded, possible data loop in resolving \([HOSTNAME]\)
+ignore [LOGDATE] named[PID]: named shutting down
+ignore [LOGDATE] named[PID]: no IPv[NUM] interfaces found
+ignore [LOGDATE] named[PID]: no longer listening on [IPADDR]#[NUM]
+ignore [LOGDATE] named[PID]: notify question section contains no SOA
+ignore [LOGDATE] named[PID]: ns_forw: query\([HOSTNAME]\) NS points to CNAME \([HOSTNAME]\)
+ignore [LOGDATE] named[PID]: ns_forw: query\([HOSTNAME]\) Bogus LOOPB[TCPFLAG] A RR \(localhost:[IPADDR]\)
+ignore [LOGDATE] named[PID]: ns_forw: query\([HOSTNAME]\) NS points to CNAME \([HOSTNAME]\)
+ignore [LOGDATE] named[PID]: ns_forw: sendto\(\[[IPADDR]\].[NUM]\): Operation not permitted
+ignore [LOGDATE] named[PID]: NSTATS
+ignore [LOGDATE] named[PID]: Ready to answer queries.
+ignore [LOGDATE] named[PID]: received notify for zone '[HOSTNAME]': not authoritative
+ignore [LOGDATE] named[PID]: reloading nameserver
+ignore [LOGDATE] named[PID]: Response from unexpected source \(\[[IPADDR\]].[NUM]\)
+ignore [LOGDATE] named[PID]: running
+ignore [LOGDATE] named[PID]: shutting down
+ignore [LOGDATE] named[PID]: socket.c:[NUM]: unexpected error:
+ignore [LOGDATE] named[PID]: starting BIND [NUM].[NUM].[NUM] -u named
+ignore [LOGDATE] named[PID]: starting.  named [NUM].[NUM].[NUM]-P[NUM] [WORD] [LOGDATE] [NUM] ^I[EMAIL]:[PATH]
+ignore [LOGDATE] named[PID]: starting \([PATH]\).  named [NUM].[NUM].[NUM]-REL Tue [LOGDATE] [NUM] ^I[EMAIL]:[PATH]
+ignore [LOGDATE] named[PID]: stopping command channel on [IPADDR]#[NUM]
+ignore [LOGDATE] named[PID]: suppressing duplicate notify \("[HOSTNAME]" IN SOA\)
+ignore [LOGDATE] named[PID]: sysquery: no addrs found for root NS \(\)
+ignore [LOGDATE] named[PID]: sysquery: query\(localhost\) Bogus LOOPB[TCPFLAG] A RR \(localhost:[IPADDR]\)
+ignore [LOGDATE] named[PID]: unrelated additional info '[HOSTNAME]' type A from \[[IPADDR]\].[NUM]
+ignore [LOGDATE] named[PID]: USAGE
+ignore [LOGDATE] named[PID]: user = named
+ignore [LOGDATE] named[PID]: using [NUM] CPU
+ignore [LOGDATE] named[PID]: using [NUM] CPUs
+ignore [LOGDATE] named[PID]: XSTATS
+ignore [LOGDATE] named[PID]: zone [HOSTNAME]/IN: loaded serial [NUM]
+ignore [LOGDATE] named[PID]: Zone "[HOSTNAME]" \(file named.local\): No default TTL set using SOA minimum instead

@@ -1,0 +1,29 @@
+# macros for regex replacements
+# entries are matched in the order specified
+# choose your macronames carefully. regular expressions should never
+# match a macroname!!
+
+WLOGDATE (Mon|Tue|Wed|Thu|Fri|Sat|Sun) [A-Za-z]* [0-9 ][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9] [-\/0-9A-Za-z]+
+SMONTH  (Mon|Tue|Wed|Thu|Fri|Sat|Sun)
+LOGDATE [A-Za-z]* [0-9 ][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9] [-\/0-9A-Za-z]+
+IPADDR (25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])){3}
+PATH	(/[-\._[:alnum:]]+){2,}([/]?)
+message-id=<20040315101501.231FB7DE5@n010080.nbs.netland.nl>
+PFMSGID message-id=<.*>
+FROM    from=<.*>
+TO      to=<.*>
+ORIG_TO orig_to=<.*>
+EMAIL   [-\.\$_0-9a-z]+@[a-z0-9][-a-z0-9]*(\.[a-z0-9][-a-z0-9]+)*\.(arpa|com|edu|biz|org|gov|int|info|mil|net|name|museum|coop|aero|[a-z][a-z])
+HOSTNAME ([a-z0-9][-a-z0-9]*)(\.[a-z0-9][-a-z0-9]*)*(\.(arpa|com|edu|biz|org|gov|int|info|mil|net|name|museum|coop|aero|[a-z][a-z]))?
+HOSTNAM [-0-9a-z]+
+USER    [-\.\$_0-9a-z]+
+USER=   user=[-\.\$_0-9a-z]+
+USER_   user [-\.\$_0-9a-z]+
+TCPFLAG (SYN|ACK|PSH|FIN|RST)(\ (SYN|ACK|PSH|FIN|RST))*
+MACADDR ([a-f0-9][a-f0-9])(:[a-f0-9][a-f0-9]){5,}
+PFQID 	[0-9A-Z]+:
+WORD 	[0-9A-Za-z_]+
+PID 	\[[0-9]+\]
+HEX	(0x)?[0-9a-f]+
+NUM	[0-9]+
+

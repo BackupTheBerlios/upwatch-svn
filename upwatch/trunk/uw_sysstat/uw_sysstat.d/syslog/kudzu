@@ -1,0 +1,5 @@
+ignore [LOGDATE] kudzu: aliased eth[NUM] as rtl[NUM] 
+ignore [LOGDATE] kudzu: ran netconfig for eth[NUM] 
+ignore [LOGDATE] kudzu:  succeeded 
+ignore [LOGDATE] kudzu: Updating [PATH] failed 
+ignore [LOGDATE] kudzu: Updating [PATH] succeeded 

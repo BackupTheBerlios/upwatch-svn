@@ -1,0 +1,2 @@
+ignore [LOGDATE] adduser[PID]: new group: name=[USER], gid=[NUM] 
+ignore [LOGDATE] adduser[PID]: new user: name=[USER], uid=[NUM], gid=[NUM], home=[PATH], shell=[PATH] 

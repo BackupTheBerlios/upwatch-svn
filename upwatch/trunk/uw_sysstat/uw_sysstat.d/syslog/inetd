@@ -1,0 +1,10 @@
+ignore [LOGDATE] inetd[PID]: pid [NUM]: exit status [NUM]
+ignore [LOGDATE] inetd[PID]: pid [NUM]: exit status [NUM] 
+ignore [LOGDATE] inet: inetd shutdown succeeded
+ignore [LOGDATE] inet: inetd startup succeeded
+ignore [LOGDATE] xinetd[PID]: Exiting...
+ignore [LOGDATE] xinetd[PID]: Started working: [NUM] available service
+ignore [LOGDATE] xinetd[PID]: Started working: [NUM] available services
+ignore [LOGDATE] xinetd[PID]: xinetd Version [NUM].[NUM].[NUM] started with
+ignore [LOGDATE] xinetd: xinetd shutdown succeeded
+ignore [LOGDATE] xinetd: xinetd startup succeeded

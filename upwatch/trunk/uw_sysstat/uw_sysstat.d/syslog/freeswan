@@ -1,0 +1,33 @@
+ignore [LOGDATE] ipsec: ipsec_setup: ([PATH], line [NUM]) white space within non-quoted parameter "virtual_private" -- `start' aborted
+ignore [LOGDATE] ipsec: ipsec_setup: ([PATH], line [NUM]) white space within non-quoted parameter "virtual_private" -- `stop' aborted
+ignore [LOGDATE] ipsec: ipsec_setup: Starting FreeS/WAN IPsec [NUM].[NUM]...
+ignore [LOGDATE] ipsec: ipsec_setup: Stopping FreeS/WAN IPsec...
+ignore [LOGDATE] ipsec: ipsec_setup: Using [PATH]
+ignore [LOGDATE] ipsec__plutorun: [NUM] ".*" #[NUM]: max number of retransmissions ([NUM]) reached STATE_MAIN_I[NUM].  No acceptable response to our first IKE message
+ignore [LOGDATE] ipsec__plutorun: [NUM] ".*" #[NUM]: starting keying attempt [NUM] of an unlimited number, but releasing whack
+ignore [LOGDATE] ipsec__plutorun: [NUM] ".*" #[NUM]: STATE_MAIN_I[NUM]: initiate
+ignore [LOGDATE] ipsec__plutorun: [NUM] ".*" #[NUM]: STATE_MAIN_I[NUM]: ISAKMP SA established
+ignore [LOGDATE] ipsec__plutorun: [NUM] ".*" #[NUM]: STATE_MAIN_I[NUM]: retransmission; will wait [NUM]s for response
+ignore [LOGDATE] ipsec__plutorun: [NUM] ".*" #[NUM]: STATE_MAIN_I[NUM]: sent MI[NUM], expecting MR[NUM]
+ignore [LOGDATE] ipsec__plutorun: [NUM] ".*" #[NUM]: STATE_QUICK_I[NUM]: initiate
+ignore [LOGDATE] ipsec__plutorun: [NUM] ".*" #[NUM]: STATE_QUICK_I[NUM]: sent QI[NUM], IPsec SA established
+ignore [LOGDATE] ipsec__plutorun: [NUM] ".*" #[NUM]: starting keying attempt [NUM] of an unlimited number, but releasing whack
+ignore [LOGDATE] ipsec__plutorun: [NUM] ".*" #[NUM]: starting keying attempt [NUM] of an unlimited number for ISAKMP SA, but releasing whack for pending IPSEC SA
+ignore [LOGDATE] ipsec__plutorun: whack: Pluto is not running (no "[PATH]")
+ignore [LOGDATE] ipsec_setup: Attempt to shut Pluto down failed!  Trying kill:
+ignore [LOGDATE] ipsec_setup: doing cleanup anyway...
+ignore [LOGDATE] ipsec_setup: FreeS/WAN IPsec apparently already running, start aborted
+ignore [LOGDATE] ipsec_setup: ...FreeS/WAN IPsec started
+ignore [LOGDATE] ipsec_setup: ...FreeS/WAN IPsec stopped
+ignore [LOGDATE] ipsec_setup: ipsec: Device or resource busy
+ignore [LOGDATE] ipsec_setup: KLIPS debug `none'
+ignore [LOGDATE] ipsec_setup: KLIPS ipsec[NUM] on eth[NUM] [IPADDR]/[IPADDR] broadcast [IPADDR] 
+ignore [LOGDATE] ipsec_setup: KLIPS ipsec[NUM] on ippp[NUM] [IPADDR]/[IPADDR] pointopoint [IPADDR] 
+ignore [LOGDATE] ipsec_setup: [NUM] message from whack contains bad string
+ignore [LOGDATE] ipsec_setup:  ([PATH] = `[NUM]', should be [NUM])
+ignore [LOGDATE] ipsec_setup: Starting FreeS/WAN IPsec [NUM].[NUM]...
+ignore [LOGDATE] ipsec_setup: Starting FreeS/WAN IPsec super-freeswan-[NUM].[NUM].[NUM]...
+ignore [LOGDATE] ipsec_setup: Starting FreeS/WAN IPsec Usuper-freeswan-[NUM].[NUM].[NUM]/K[NUM].[NUM]...
+ignore [LOGDATE] ipsec_setup: stop ordered, but IPsec does not appear to be running!
+ignore [LOGDATE] ipsec_setup: Stopping FreeS/WAN IPsec...
+ignore [LOGDATE] ipsec_setup: Using [PATH]

@@ -1,0 +1,10 @@
+ignore [LOGDATE] deliver[PID]: connect([PATH]) failed: Connection refused
+ignore [LOGDATE] lmtpd[PID]: lmtpd: unable to init duplicate delivery database 
+ignore [LOGDATE] vhost[PID]: chroot to [PATH] and exec [PATH]
+ignore [LOGDATE] vhost[PID]: connection from [HOSTNAME]
+ignore [LOGDATE] vhost[PID]: connection from (nil)
+ignore [LOGDATE] vhost[PID]: in.ftpd attempt to [HOSTNAME] rejected
+ignore [LOGDATE] vhost[PID]: in.ftpd attempt to  rejected
+ignore [LOGDATE] vhost[PID]: in.telnetd attempt to [HOSTNAME] rejected
+ignore [LOGDATE] vhost[PID]: in.telnetd attempt to  rejected
+ignore [LOGDATE] vhost[PID]: ipop[NUM]d attempt to [HOSTNAME] rejected

@@ -1,0 +1,2 @@
+ignore [LOGDATE] fsck: [PATH]: clean, [NUM]/[NUM] files, [NUM]/[NUM] blocks 
+ignore [LOGDATE] fsck: [PATH]: [NUM]/[NUM] files ([NUM].[NUM]% non-contiguous), [NUM]/[NUM] blocks 

@@ -1,0 +1,12 @@
+ignore [LOGDATE] modprobe: can't locate module char-major-[NUM]
+ignore [LOGDATE] modprobe: can't locate module ippp[NUM]
+ignore [LOGDATE] modprobe: can't locate module net-pf-[NUM]
+ignore [LOGDATE] modprobe: modprobe: Can't locate module binfmt-[NUM]
+ignore [LOGDATE] modprobe: modprobe: Can't locate module block-major-[NUM]
+ignore [LOGDATE] modprobe: modprobe: Can't locate module char-major-[NUM]
+ignore [LOGDATE] modprobe: modprobe: Can't locate module ippp[NUM]
+ignore [LOGDATE] modprobe: modprobe: Can't locate module net-pf-[NUM]
+ignore [LOGDATE] modprobe: modprobe: Can't locate module none
+ignore [LOGDATE] modprobe: modprobe: Can't locate module ppp-compress-[NUM]
+ignore [LOGDATE] modprobe: Note: [PATH] is more recent than [PATH]
+ignore [LOGDATE] modprobe: Note: [PATH] is more recent than [PATH] 

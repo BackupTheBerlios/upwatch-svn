@@ -1,0 +1,7 @@
+ignore [LOGDATE] ibod: ibod shutdown failed
+ignore [LOGDATE] ibod: ibod startup succeeded
+ignore [LOGDATE] ibod[PID]: Parameter ENABLE reconfigured to [NUM] 
+ignore [LOGDATE] ibod[PID]: Parameter FILTER reconfigured to [NUM] 
+ignore [LOGDATE] ibod[PID]: Parameter INTERVAL reconfigured to [NUM] 
+ignore [LOGDATE] ibod[PID]: [PATH]: No such device 
+ignore [LOGDATE] ibod[PID]: select: Interrupted system call 

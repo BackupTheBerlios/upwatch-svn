@@ -1,0 +1,11 @@
+ignore [LOGDATE] syslogd [NUM].[NUM]-[NUM]: restart.
+ignore [LOGDATE] syslogd [NUM].[NUM].[NUM]: restart.
+ignore [LOGDATE] syslog: klogd shutdown succeeded
+ignore [LOGDATE] syslog: klogd shutdown succeeded 
+ignore [LOGDATE] syslog: klogd startup succeeded
+ignore [LOGDATE] syslog: syslogd shutdown failed 
+ignore [LOGDATE] syslog: syslogd shutdown succeeded 
+ignore [LOGDATE] syslog: syslogd startup failed
+ignore [LOGDATE] syslog: syslogd startup succeeded
+ignore [LOGDATE] last message repeated [NUM] times
+ 

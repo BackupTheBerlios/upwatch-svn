@@ -1,0 +1,4 @@
+ignore [LOGDATE] su\(pam_unix\)[PID]: session opened for user [USER] by [USER]\(uid=[NUM]\)
+ignore [LOGDATE] su\(pam_unix\)[PID]: session opened for user [USER] by \(uid=[NUM]\)
+ignore [LOGDATE] su\(pam_unix\)[PID]: session closed for user [USER]
+

@@ -1,0 +1,42 @@
+ignore [LOGDATE] (mysql_auth): [USER] login failed.
+ignore [LOGDATE] mysqld: cd sql-bench ; run-all-tests
+ignore [LOGDATE] mysqld: cd /usr ; [PATH] &
+ignore [LOGDATE] mysqld: Creating columns_priv table
+ignore [LOGDATE] mysqld: Creating db table
+ignore [LOGDATE] mysqld: Creating func table
+ignore [LOGDATE] mysqld: Creating host table
+ignore [LOGDATE] mysqld: Creating tables_priv table
+ignore [LOGDATE] mysqld: Creating [USER_]
+ignore [LOGDATE] mysqld: http://www.mysql.com
+ignore [LOGDATE] mysqld: Installing all prepared tables
+ignore [LOGDATE] mysqld: ln: [PATH]: No such file or directory
+ignore [LOGDATE] mysqld: mysqld shutdown failed
+ignore [LOGDATE] mysqld: mysqld shutdown succeeded
+ignore [LOGDATE] mysqld: mysqld shutdown succeeded 
+ignore [LOGDATE] mysqld: [NUM]  [NUM]:[NUM]:[NUM]  
+ignore [LOGDATE] mysqld: [NUM] [NUM]:[NUM]:[NUM]  
+ignore [LOGDATE] mysqld: [NUM] [NUM]:[NUM]:[NUM]  [PATH]: Shutdown Complete
+ignore [LOGDATE] mysqld: [PATH]: Shutdown Complete
+ignore [LOGDATE] mysqld: [PATH] -u root -h[HOSTNAME] -p password 'new-password'
+ignore [LOGDATE] mysqld: [PATH] -u root -p password 'new-password'
+ignore [LOGDATE] mysqld: PLEASE REMEMBER TO SET A PASSWORD FOR THE MySQL root USER !
+ignore [LOGDATE] mysqld: Please report any problems with the [PATH] script!
+ignore [LOGDATE] mysqld: Preparing columns_priv table
+ignore [LOGDATE] mysqld: Preparing db table
+ignore [LOGDATE] mysqld: Preparing func table
+ignore [LOGDATE] mysqld: Preparing host table
+ignore [LOGDATE] mysqld: Preparing tables_priv table
+ignore [LOGDATE] mysqld: Preparing [USER_]
+ignore [LOGDATE] mysqld: safe_mysqld shutdown failed
+ignore [LOGDATE] mysqld: safe_mysqld shutdown succeeded
+ignore [LOGDATE] mysqld: safe_mysqld shutdown succeeded 
+ignore [LOGDATE] mysqld: See the manual for more instructions.
+ignore [LOGDATE] mysqld: Starting MySQL:  succeeded
+ignore [LOGDATE] mysqld: Stopping MySQL:  failed
+ignore [LOGDATE] mysqld: Support MySQL by buying support/licenses at https://order.mysql.com
+ignore [LOGDATE] mysqld: The latest information about MySQL is available on the web at
+ignore [LOGDATE] mysqld: This is done with:
+ignore [LOGDATE] mysqld: To start mysqld at boot time you have to copy support-files/mysql.server
+ignore [LOGDATE] mysqld: to the right place for your system
+ignore [LOGDATE] mysqld: You can start the MySQL daemon with:
+ignore [LOGDATE] mysqld: You can test the MySQL daemon with the benchmarks in the 'sql-bench' directory:

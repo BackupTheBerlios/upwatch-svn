@@ -1,0 +1,11 @@
+ignore [LOGDATE] sockd[PID]: created new iochild
+ignore [LOGDATE] sockd[PID]: created new negotiatorchild
+ignore [LOGDATE] sockd[PID]: created new requestchild
+ignore [LOGDATE] sockd[PID]: dante/server v[NUM].[NUM].[NUM] running
+ignore [LOGDATE] sockd[PID]: fixsettings(): setting the libwrap uid to [NUM] is not recommended
+ignore [LOGDATE] sockd[PID]: recv_io(): recvmsg(): Bad file descriptor (errno = [NUM])
+ignore [LOGDATE] sockd[PID]: recv_io(): recvmsg(): Connection reset by peer (errno = [NUM])
+ignore [LOGDATE] sockd[PID]: sockdexit(): terminating on signal [NUM]
+ignore [LOGDATE] sockd: sockd shutdown failed
+ignore [LOGDATE] sockd: sockd shutdown succeeded
+ignore [LOGDATE] sockd: sockd startup succeeded

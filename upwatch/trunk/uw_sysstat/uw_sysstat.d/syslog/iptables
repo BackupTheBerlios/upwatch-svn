@@ -1,0 +1,7 @@
+ignore [LOGDATE] iptables: Applying iptables firewall rules succeeded 
+ignore [LOGDATE] iptables: Clearing all current rules and [USER_] chains: succeeded 
+ignore [LOGDATE] iptables: Flushing all current rules and [USER_] chains: succeeded 
+ignore [LOGDATE] nbs-iptables: 
+ignore [LOGDATE] nbs-iptables: cat: 
+ignore [LOGDATE] nbs-iptables: firewall killed
+ignore [LOGDATE] nbs-iptables: iptables v[NUM].[NUM].[NUM]: 

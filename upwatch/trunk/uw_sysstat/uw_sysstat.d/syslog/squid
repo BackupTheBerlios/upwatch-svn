@@ -1,0 +1,12 @@
+ignore [LOGDATE] squid: 
+ignore [LOGDATE] squid: .
+ignore [LOGDATE] (squid): Cannot open HTTP Port
+ignore [LOGDATE] squid: Could not determine fully qualified hostname.  Please set 'visible_hostname' 
+ignore [LOGDATE] squid: done
+ignore [LOGDATE] squid: init_cache_dir ufs... 
+ignore [LOGDATE] squid[PID]: Squid Parent: child process [NUM] exited due to signal [NUM]
+ignore [LOGDATE] squid[PID]: Squid Parent: child process [NUM] exited with status [NUM]
+ignore [LOGDATE] squid[PID]: Squid Parent: child process [NUM] started
+ignore [LOGDATE] squid: squid
+ignore [LOGDATE] squid: Starting squid: 
+ignore [LOGDATE] squid: Stopping squid: 

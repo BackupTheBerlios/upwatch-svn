@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(upwatch, 0.90, bugs@upwatch.com)
+AC_INIT(upwatch, 0.95, bugs@upwatch.com)
 AC_CONFIG_SRCDIR(upwatch/spool.c)
 VERSION=`cat VERSION`
 PACKAGE=upwatch
@@ -7,7 +7,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.56 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.57 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -281,6 +281,24 @@ fi
 AM_CONDITIONAL(HAVE_LIBNET, test $HAVE_LIBNET -eq 1)
 AC_SUBST(LIBNET_CFLAGS)
 AC_SUBST(LIBNET_LIBS)
+
+################## LIBPCRE
+# libpcre
+AC_CHECK_PROG([HAVE_LIBPCRE], [pcre-config], ["yes"], ["no"])
+if test "$HAVE_LIBPCRE" = "yes"
+then
+  LIBPCRE_CFLAGS="`pcre-config --cflags`"
+  LIBPCRE_LIBS="`pcre-config --libs-posix`"
+fi
+if test -z "$LIBPCRE_LIBS"
+then
+  HAVE_LIBPCRE="0"
+else
+  HAVE_LIBPCRE="1"
+fi
+AM_CONDITIONAL(HAVE_LIBPCRE, test $HAVE_LIBPCRE -eq 1)
+AC_SUBST(LIBPCRE_CFLAGS)
+AC_SUBST(LIBPCRE_LIBS)
 
 ################## GLIB2
 # glib2 - with thread libraries
