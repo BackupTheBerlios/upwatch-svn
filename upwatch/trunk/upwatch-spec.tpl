@@ -98,6 +98,9 @@ install -m 660 [+program+]/[+program+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+prog
 %attr(0644,root,root) %doc AUTHORS COPYING ChangeLog NEWS README upwatch.mysql doc/upwatch.html doc/upwatch.txt doc/upwatch.pdf doc/upwatch.xml
 %attr(0755,root,root) /etc/rc.d/init.d/upwatch
 %attr(0755,root,root) /usr/bin/ctime
+%attr(0755,root,root) /usr/bin/slot
+/usr/share/man/man1/ctime.1.gz
+/usr/share/man/man1/slot.1.gz
 %attr(0770,upwatch,upwatch) /usr/lib/upwatch
 /etc/logrotate.d/upwatch
 /etc/cron.daily/upwatch

@@ -46,6 +46,15 @@ typedef struct _module {
   void (*summarize)(void *def, void *res, char *from, char *into, guint slotlow, guint slothigh);
 } module;
 
+typedef struct transaction {
+  module *mod;		// point to the module processing this transaction
+  xmlDocPtr doc; 	// the Xml doc structure
+  xmlNodePtr node;	// current node in the Xml doc
+  xmlNsPtr ns;		// current namespace
+  void *res;		// probe result pointer
+  void *def;		// probe definition data
+} trx;
+
 #define STANDARD_MODULE_STUFF(a, b) PROBE_##a, b, NULL
 #endif /* __UW_PROCESS_H */
 

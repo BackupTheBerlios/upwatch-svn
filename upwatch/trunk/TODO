@@ -1,2 +1,7 @@
-- rework the install process so non-linux users can do a plain 'make install'
-
+- notify library functions
+- tool to autodetect services to check on the network
+- uw_snmp, snmp trap catcher
+- iptraf total for interfaces
+- uw_ftp/uw_https/uw_pop3/uw_imap etc
+- uw_diskfree
+- 
