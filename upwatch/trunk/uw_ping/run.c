@@ -165,7 +165,7 @@ int run(void)
                  "       pr_ping_def.red, %s.%s, pr_ping_def.ipaddress as ip, "
                  "       pr_ping_def.freq "
                  "FROM   pr_ping_def, %s "
-                 "WHERE  pr_ping_def.server = %s.%s ", 
+                 "WHERE  pr_ping_def.server = %s.%s and pr_ping_def.id > 1", 
             OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_NAME_FIELD),
             OPT_ARG(SERVER_TABLE_NAME),
             OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_ID_FIELD));

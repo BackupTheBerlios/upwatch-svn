@@ -50,7 +50,7 @@ int run_actual_probes(int count);
                   "       pr_httpget_def.uri, " 
                   "       pr_httpget_def.yellow,  pr_httpget_def.red "
                   "FROM   pr_httpget_def, server "
-                  "WHERE  pr_httpget_def.server = %s.%s ", 
+                  "WHERE  pr_httpget_def.server = %s.%s and pr_httpget_def.id > 1", 
             OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_NAME_FIELD),
             OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_ID_FIELD));
 
