@@ -3,7 +3,7 @@ SUBDIRS = doc upwatch ${PROGNAMES}
 
 EXTRA_DIST = Makefile.am.common upwatch-spec.def upwatch-spec.tpl upwatch.spec config/upwatch.conf \
   common/db.c common/generic_options.def common/init.tpl common/main.c common/man1.tpl common/spec.tpl \
-  doc/upwatch.xml doc/Makefile
+  doc/upwatch.xml doc/Makefile doc/upwatch.xsl doc/jadetex.cfg doc/style.dsl doc/style.xsl doc/style.css
 
 upwatch.spec: upwatch-spec.def upwatch-spec.tpl touch.tch
 	autogen -b upwatch upwatch-spec.def
