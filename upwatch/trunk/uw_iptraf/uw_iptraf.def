@@ -18,6 +18,17 @@ spec-files    = "%attr(4770,root,upwatch) /usr/sbin/uw_iptraf";
 
 // describe commandline flags
 flag = {
+    name      = interval;
+    arg_default  = 3;  /* option argument indication  */
+    arg_type  = number;   /* option argument indication  */
+    descrip   = "Time between writing results";
+    doc       =
+'Results are written to disk at regular intervals. This argument
+set the interval.';
+};
+
+// describe commandline flags
+flag = {
     name      = expires;
     arg_default  = 5;  /* option argument indication  */
     arg_type  = number;   /* option argument indication  */
