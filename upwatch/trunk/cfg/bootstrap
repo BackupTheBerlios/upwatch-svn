@@ -1,6 +1,11 @@
 #! /bin/sh
 
-cp patches/libstatgrab-configure.gnu libstatgrab-0.6/configure.gnu
+# patch libstatgrab
+pushd libstatgrab-0.7
+patch -p1 < ../patches/libstatgrab-cygwin.patch
+cp ../patches/libstatgrab-configure.gnu .
+popd
+
 aclocal \
 && autoheader \
 && libtoolize \

@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.34 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.35 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -492,10 +492,7 @@ AC_CONFIG_FILES([Makefile
                  compat/sometests/Makefile
                  compat/sometests/setproctitle/Makefile])
 
-if test ! x$cygwin = xtrue
-then
-  cp patches/libstatgrab-configure.gnu libstatgrab-0.6/configure.gnu
-  AC_CONFIG_SUBDIRS(libstatgrab-0.6)
-fi
+cp patches/libstatgrab-configure.gnu libstatgrab-0.7/configure.gnu
+AC_CONFIG_SUBDIRS(libstatgrab-0.7)
 
 AC_OUTPUT

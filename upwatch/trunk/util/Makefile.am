@@ -4,7 +4,7 @@ INCLUDES = -I../upwatch
 BUILT_SOURCES = 
 EXTRA_DIST = ctime.1 slot.1
 
-include $(top_srcdir)/Makefile.am.libs
+include $(top_srcdir)/Makefile.am.common
 
 ctime_SOURCES = ctime.c ctime_options.c ctime_options.h ctime_options.def 
 ctime_LDADD = $(LIBOPTS) 
@@ -12,8 +12,8 @@ BUILT_SOURCES += ctime_options.h
 EXTRA_DIST += ctime_options.def
 
 ctime_options.h: ctime_options.def ../common/minimal_options.def
-	autogen -b ctime_options -L /usr/share/autogen -L $(top_srcdir)/common ctime_options.def
-	autogen -b ctime -L /usr/share/autogen -T $(top_srcdir)/common/man1.tpl -L $(top_srcdir)/common ctime_options.def
+	autogen -b ctime_options $(GENINCL) -L $(top_srcdir)/common ctime_options.def
+	autogen -b ctime $(GENINCL) -T $(top_srcdir)/common/man1.tpl -L $(top_srcdir)/common ctime_options.def
 
 slot_SOURCES = slot.c slot_options.c slot_options.h slot_options.def
 slot_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@
@@ -22,8 +22,8 @@ BUILT_SOURCES += slot_options.h
 EXTRA_DIST += slot_options.def
 
 slot_options.h: slot_options.def ../common/minimal_options.def
-	autogen -b slot_options -L /usr/share/autogen -L $(top_srcdir)/common slot_options.def
-	autogen -b slot -L /usr/share/autogen -T $(top_srcdir)/common/man1.tpl -L $(top_srcdir)/common slot_options.def
+	autogen -b slot_options $(GENINCL) -L $(top_srcdir)/common slot_options.def
+	autogen -b slot $(GENINCL) -T $(top_srcdir)/common/man1.tpl -L $(top_srcdir)/common slot_options.def
 
 CLEANFILES = $(BUILT_SOURCES) $(bin_PROGRAMS) Makefile.in
 

@@ -1,0 +1,215 @@
+diff -uNr libstatgrab-0.7-orig/README.cygwin libstatgrab-0.7/README.cygwin
+--- libstatgrab-0.7-orig/README.cygwin	1970-01-01 01:00:00.000000000 +0100
++++ libstatgrab-0.7/README.cygwin	2003-11-04 17:32:49.881793600 +0100
+@@ -0,0 +1,7 @@
++You should run ./configure --with-ncurses
++
++In case configure cannot find ncurses.h,
++you hit a bug in the cygwin install script 
++for libncurses-devel.
++run /etc/postinstall/libncurses-devel.sh.done
++
+diff -uNr libstatgrab-0.7-orig/configure.in libstatgrab-0.7/configure.in
+--- libstatgrab-0.7-orig/configure.in	2003-10-22 16:42:17.000000000 +0200
++++ libstatgrab-0.7/configure.in	2003-11-04 17:25:18.843232000 +0100
+@@ -20,6 +20,7 @@
+ 
+ # Checks for programs
+ AC_PROG_CC
++AC_PROG_CPP
+ AC_PROG_INSTALL
+ AC_PROG_LIBTOOL
+ 
+@@ -77,6 +78,11 @@
+ 	AM_CONDITIONAL(SETGIDBINS, true)
+ 	LINKFLAGS="-lkvm"
+ 	;;
++cygwin)
++	AC_CHECK_HEADERS([ncurses/ncurses.h],,[AC_MSG_ERROR([need ncurses.h])])
++        SAIDARCPPFLAGS="-I/usr/include/ncurses"
++	AC_DEFINE(CYGWIN, , [Building on Cygwin])
++	;;
+ linux-gnu)
+ 	AC_DEFINE(LINUX, , [Building on GNU/Linux])
+ 	;;
+diff -uNr libstatgrab-0.7-orig/src/libstatgrab/cpu_stats.c libstatgrab-0.7/src/libstatgrab/cpu_stats.c
+--- libstatgrab-0.7-orig/src/libstatgrab/cpu_stats.c	2003-10-19 04:03:02.000000000 +0200
++++ libstatgrab-0.7/src/libstatgrab/cpu_stats.c	2003-11-04 18:05:19.535257600 +0100
+@@ -22,6 +22,10 @@
+ #include "config.h"
+ #endif
+ 
++#ifdef CYGWIN
++#define LINUX
++#endif
++
+ #include <time.h>
+ #include "statgrab.h"
+ #ifdef SOLARIS
+diff -uNr libstatgrab-0.7-orig/src/libstatgrab/disk_stats.c libstatgrab-0.7/src/libstatgrab/disk_stats.c
+--- libstatgrab-0.7-orig/src/libstatgrab/disk_stats.c	2003-10-19 23:22:09.000000000 +0200
++++ libstatgrab-0.7/src/libstatgrab/disk_stats.c	2003-11-05 02:11:57.670113600 +0100
+@@ -22,6 +22,10 @@
+ #include "config.h"
+ #endif
+ 
++#ifdef CYGWIN
++#define LINUX
++#endif
++
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <string.h>
+@@ -64,6 +68,10 @@
+ #define VALID_FS_TYPES {"ffs", "mfs", "msdos", "lfs", "adosfs", "ext2fs", \
+                         "ntfs"}
+ #endif
++#ifdef CYGWIN
++#undef VALID_FS_TYPES
++#define VALID_FS_TYPES {"user"}
++#endif
+ 
+ #define START_VAL 1
+ 
+@@ -268,9 +276,8 @@
+ 
+ 	/* If this fails, there is very little i can do about it, so i'll ignore it :) */
+ #if defined(LINUX) || defined(SOLARIS)
+-	fclose(f);
++	endmntent(f);
+ #endif
+-
+ 	return disk_stats;
+ 
+ }
+diff -uNr libstatgrab-0.7-orig/src/libstatgrab/load_stats.c libstatgrab-0.7/src/libstatgrab/load_stats.c
+--- libstatgrab-0.7-orig/src/libstatgrab/load_stats.c	2003-08-24 22:24:09.000000000 +0200
++++ libstatgrab-0.7/src/libstatgrab/load_stats.c	2003-11-04 18:09:47.320313600 +0100
+@@ -22,6 +22,10 @@
+ #include "config.h"
+ #endif
+ 
++#ifdef CYGWIN
++#define LINUX
++#endif
++
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include "statgrab.h"
+@@ -34,7 +38,11 @@
+ 	static load_stat_t load_stat;
+ 
+ 	double loadav[3];
++
++	loadav[0] = loadav[1] = loadav[2] = 0;
++#ifndef CYGWIN
+   	getloadavg(loadav,3);
++#endif
+ 
+ 	load_stat.min1=loadav[0];
+ 	load_stat.min5=loadav[1];
+diff -uNr libstatgrab-0.7-orig/src/libstatgrab/memory_stats.c libstatgrab-0.7/src/libstatgrab/memory_stats.c
+--- libstatgrab-0.7-orig/src/libstatgrab/memory_stats.c	2003-10-20 20:13:35.000000000 +0200
++++ libstatgrab-0.7/src/libstatgrab/memory_stats.c	2003-11-04 20:06:57.579329600 +0100
+@@ -22,6 +22,10 @@
+ #include "config.h"
+ #endif
+ 
++#ifdef CYGWIN
++#define LINUX
++#endif
++
+ #include "statgrab.h"
+ #include "tools.h"
+ #ifdef SOLARIS
+@@ -111,11 +115,18 @@
+ 	 * our structures are just long longs. This shouldn't be a
+ 	 * problem for sometime yet :) 
+ 	 */
++#ifdef CYGWIN
++	if((sscanf(line_ptr,"Mem:  %lld %lld %lld", \
++		&mem_stat.total, \
++		&mem_stat.used, \
++		&mem_stat.free))!=3){
++#else
+ 	if((sscanf(line_ptr,"Mem:  %lld %lld %lld %*d %*d %lld", \
+ 		&mem_stat.total, \
+ 		&mem_stat.used, \
+ 		&mem_stat.free, \
+ 		&mem_stat.cache))!=4){
++#endif
+ 			return NULL;
+ 	}
+ 
+diff -uNr libstatgrab-0.7-orig/src/libstatgrab/os_info.c libstatgrab-0.7/src/libstatgrab/os_info.c
+--- libstatgrab-0.7-orig/src/libstatgrab/os_info.c	2003-10-19 04:15:43.000000000 +0200
++++ libstatgrab-0.7/src/libstatgrab/os_info.c	2003-11-04 18:10:32.905862400 +0100
+@@ -22,6 +22,10 @@
+ #include "config.h"
+ #endif
+ 
++#ifdef CYGWIN
++#define LINUX
++#endif
++
+ #include <sys/utsname.h>
+ #include "statgrab.h"
+ #include <stdlib.h>
+diff -uNr libstatgrab-0.7-orig/src/libstatgrab/page_stats.c libstatgrab-0.7/src/libstatgrab/page_stats.c
+--- libstatgrab-0.7-orig/src/libstatgrab/page_stats.c	2003-10-19 04:03:02.000000000 +0200
++++ libstatgrab-0.7/src/libstatgrab/page_stats.c	2003-11-04 18:07:55.229134400 +0100
+@@ -22,6 +22,10 @@
+ #include "config.h"
+ #endif
+ 
++#ifdef CYGWIN
++#define LINUX
++#endif
++
+ #include "statgrab.h"
+ #include "tools.h"
+ #include <time.h>
+diff -uNr libstatgrab-0.7-orig/src/libstatgrab/swap_stats.c libstatgrab-0.7/src/libstatgrab/swap_stats.c
+--- libstatgrab-0.7-orig/src/libstatgrab/swap_stats.c	2003-10-19 04:03:02.000000000 +0200
++++ libstatgrab-0.7/src/libstatgrab/swap_stats.c	2003-11-04 18:09:11.789222400 +0100
+@@ -22,6 +22,10 @@
+ #include "config.h"
+ #endif
+ 
++#ifdef CYGWIN
++#define LINUX
++#endif
++
+ #include "statgrab.h"
+ #include "tools.h"
+ #ifdef SOLARIS
+diff -uNr libstatgrab-0.7-orig/src/libstatgrab/user_stats.c libstatgrab-0.7/src/libstatgrab/user_stats.c
+--- libstatgrab-0.7-orig/src/libstatgrab/user_stats.c	2003-10-19 04:03:02.000000000 +0200
++++ libstatgrab-0.7/src/libstatgrab/user_stats.c	2003-11-04 14:51:45.755462400 +0100
+@@ -38,6 +38,13 @@
+ 
+ #define START_VAL (5*(1+MAX_LOGIN_NAME_SIZE))
+ 
++#ifdef CYGWIN
++#include <sys/unistd.h>
++#define LINUX
++#undef MAX_LOGIN_NAME_SIZE
++#define MAX_LOGIN_NAME_SIZE _SC_LOGIN_NAME_MAX
++#endif
++
+ user_stat_t *get_user_stats(){
+ 	int num_users=0;
+ 
+diff -uNr libstatgrab-0.7-orig/src/saidar/saidar.c libstatgrab-0.7/src/saidar/saidar.c
+--- libstatgrab-0.7-orig/src/saidar/saidar.c	2003-10-22 16:42:17.000000000 +0200
++++ libstatgrab-0.7/src/saidar/saidar.c	2003-11-04 17:58:22.275267200 +0100
+@@ -31,6 +31,9 @@
+ #include <signal.h>
+ #include <errno.h>
+ #include <statgrab.h>
++#ifdef CYGWIN
++#include <sys/time.h>
++#endif
+ #include <sys/times.h>
+ #include <limits.h>
+ #include <time.h>
