@@ -21,7 +21,7 @@ detail        =
 // this section is for the generated specfile
 spec-requires = "glib2";
 spec-files = `echo "%attr(4770,root,upwatch)" $sbindir/uw_sysstat`;
-spec-files = `echo "%config(noreplace)" $confdir/uw_sysstat.logexp`;
+spec-files = `echo "%config" $confdir/uw_sysstat.logexp`;
 
 // describe commandline flags
 flag = {

@@ -35,7 +35,7 @@ ENABLE_SERVER = --enable-server
 endif
 
 if ENABLE_MONITORS
-MONITORPROG = uw_httpget uw_ping uw_mysql uw_pop3 uw_smtp uw_tcpconnect uw_imap \
+MONITORPROG = uw_httpget uw_dns uw_ping uw_mysql uw_pop3 uw_smtp uw_tcpconnect uw_imap \
  ${UW_POSTGRESQL} ${UW_SNMPGET} ${UW_MSSQL}
 ENABLE_MONITOR = --enable-monitors
 endif

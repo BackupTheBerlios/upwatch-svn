@@ -3,7 +3,7 @@ Summary: UpWatch - A High performance monitoring framwork
 Vendor: http://www.upwatch.com
 Name: upwatch
 Version: [+ version +]
-Release: 12
+Release: 13
 Source: http://www.upwatch.com/%{name}-%{version}.tar.gz
 Packager: Ron Arts <raarts@upwatch.com>
 Copyright: Proprietary - Redistribution Prohibited
@@ -124,6 +124,7 @@ if [ "$1" -eq "0" ]; then
 %attr(0755,root,root) /usr/share/upwatch/init/upwatch.redhat
 %attr(0755,root,root) /usr/share/upwatch/init/upwatch.suse
 %config(noreplace) /etc/upwatch.conf
+%config(noreplace) /etc/sysconfig/upwatch
 /etc/logrotate.d/upwatch
 %attr(700,root,root) /etc/cron.daily/upwatch
 %attr(2770,upwatch,upwatch) %dir /var/log/upwatch

@@ -633,9 +633,9 @@ int handle_random_icmp(struct icmp *p, int psize, struct sockaddr_in *addr)
 
 static int recvfrom_wto (int s, char *buf, int len, struct sockaddr *saddr, int timo)
 {
-  int nfound,slen,n;
+  int nfound, slen, n;
   struct timeval to;
-  fd_set readset,writeset;
+  fd_set readset, writeset;
 
   to.tv_sec  = timo/100000;
   to.tv_usec = (timo - (to.tv_sec*100000))*10;
@@ -643,16 +643,16 @@ static int recvfrom_wto (int s, char *buf, int len, struct sockaddr *saddr, int 
   FD_ZERO(&readset);
   FD_ZERO(&writeset);
   FD_SET(s,&readset);
-  nfound = select(s+1,&readset,&writeset,NULL,&to);
-  if (nfound<0) {
+  nfound = select(s+1, &readset, &writeset, NULL, &to);
+  if (nfound < 0) {
     if (errno == EINTR) return(-1); // fake timeout
     LOG(LOG_ERR, "select: %m");
     exit(1);
   }
-  if (nfound==0) return -1;  /* timeout */
-  slen=sizeof(struct sockaddr);
-  n=recvfrom(s,buf,len,0,saddr,&slen);
-  if (n<0) {
+  if (nfound == 0) return -1;  /* timeout */
+  slen = sizeof(struct sockaddr);
+  n = recvfrom(s, buf, len, 0, saddr, &slen);
+  if (n < 0) {
     LOG(LOG_ERR, "recvfrom: %m");
     exit(1);
   }

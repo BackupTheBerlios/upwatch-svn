@@ -49,17 +49,50 @@ GSList *syslog_red;
 
 int get_stats(void)
 {
-  if((st.cpu = cpu_percent_usage()) == NULL) return 0;
-  if((st.mem = get_memory_stats()) == NULL) return 0;
-  if((st.swap = get_swap_stats()) == NULL) return 0;
-  if((st.load = get_load_stats()) == NULL) return 0;
-  if((st.process = get_process_stats()) == NULL) return 0;
-  if((st.paging = get_page_stats_diff()) == NULL) return 0;
-  if((st.network = get_network_stats_diff(&(st.network_entries))) == NULL) return 0;
-  if((st.diskio = get_diskio_stats_diff(&(st.diskio_entries))) == NULL) return 0;
-  if((st.disk = get_disk_stats(&(st.disk_entries))) == NULL) return 0;
-  if((st.general = get_general_stats()) == NULL) return 0;
-  if((st.user = get_user_stats()) == NULL) return 0;
+  st.cpu = cpu_percent_usage();
+  if (!st.cpu) {
+    LOG(LOG_INFO, "could not get cpu_percent_usage");
+  }
+  st.mem = get_memory_stats();
+  if (!st.cpu) {
+    LOG(LOG_INFO, "could not get_memory_stats");
+  }
+  st.swap = get_swap_stats();
+  if (!st.cpu) {
+    LOG(LOG_INFO, "could not get_swap_stats");
+  }
+  st.load = get_load_stats();
+  if (!st.cpu) {
+    LOG(LOG_INFO, "could not get_load_stats");
+  }
+  st.process = get_process_stats();
+  if (!st.cpu) {
+    LOG(LOG_INFO, "could not get_process_stats");
+  }
+  st.paging = get_page_stats_diff();
+  if (!st.cpu) {
+    LOG(LOG_INFO, "could not get_page_stats_diff");
+  }
+  st.network = get_network_stats_diff(&(st.network_entries));
+  if (!st.cpu) {
+    LOG(LOG_INFO, "could not get_network_stats_diff");
+  }
+  st.diskio = get_diskio_stats_diff(&(st.diskio_entries));
+  if (!st.cpu) {
+    LOG(LOG_INFO, "could not get_diskio_stats_diff");
+  }
+  st.disk = get_disk_stats(&(st.disk_entries));
+  if (!st.cpu) {
+    LOG(LOG_INFO, "could not get_disk_stats");
+  }
+  st.general = get_general_stats();
+  if (!st.cpu) {
+    LOG(LOG_INFO, "could not get_general_stats");
+  }
+  st.user = get_user_stats();
+  if (!st.cpu) {
+    LOG(LOG_INFO, "could not get_user_stats");
+  }
 
   return 1;
 }
@@ -157,10 +190,6 @@ int init(void)
 
   if (OPT_VALUE_SERVERID == 0) {
     fprintf(stderr, "Please set serverid first\n");
-    return 0;
-  }
-  if (!get_stats()) {
-    fprintf(stderr, "Failed to get statistics. Please check permissions\n");
     return 0;
   }
 
@@ -287,35 +316,37 @@ extern int forever;
     }
   }
 
-  if (st.load->min1 >= atof(OPT_ARG(LOADAVG_YELLOW))) { 
-    char cmd[1024];
-    FILE *in;
+  if (st.load) {
+    if (st.load->min1 >= atof(OPT_ARG(LOADAVG_YELLOW))) { 
+      char cmd[1024];
+      FILE *in;
 
-    if (st.load->min1 >= atof(OPT_ARG(LOADAVG_YELLOW))) color = STAT_YELLOW;
-    if (st.load->min1 >= atof(OPT_ARG(LOADAVG_RED))) color = STAT_RED;
+      if (st.load->min1 >= atof(OPT_ARG(LOADAVG_YELLOW))) color = STAT_YELLOW;
+      if (st.load->min1 >= atof(OPT_ARG(LOADAVG_RED))) color = STAT_RED;
 
-    sprintf(cmd, "%s > /tmp/.uw_sysstat.tmp", OPT_ARG(TOP_COMMAND));
-    LOG(LOG_INFO, cmd);
-    uw_setproctitle("running %s", OPT_ARG(TOP_COMMAND));
-    system(cmd);
-    in = fopen("/tmp/.uw_sysstat.tmp", "r");
-    if (in) {
-      signed char *s = info;
-      size_t len;
+      sprintf(cmd, "%s > /tmp/.uw_sysstat.tmp", OPT_ARG(TOP_COMMAND));
+      LOG(LOG_INFO, cmd);
+      uw_setproctitle("running %s", OPT_ARG(TOP_COMMAND));
+      system(cmd);
+      in = fopen("/tmp/.uw_sysstat.tmp", "r");
+      if (in) {
+        signed char *s = info;
+        size_t len;
 
-      for (len=0; len < sizeof(info)-1; len++) {
-        char c;
-        if ((c = fgetc(in)) != EOF) {
-          if (c < 0) c = ' ';
-          *s++ = c;
+        for (len=0; len < sizeof(info)-1; len++) {
+          char c;
+          if ((c = fgetc(in)) != EOF) {
+            if (c < 0) c = ' ';
+            *s++ = c;
+          }
         }
+        *s = 0;
+        fclose(in);
+      } else {
+        strcpy(info, strerror(errno));
       }
-      *s = 0;
-      fclose(in);
-    } else {
-      strcpy(info, strerror(errno));
+      unlink("/tmp/.uw_sysstat.tmp");
     }
-    unlink("/tmp/.uw_sysstat.tmp");
   }
 
   if (HAVE_OPT(SYSTEMP_COMMAND)) {
@@ -349,29 +380,41 @@ extern int forever;
   sprintf(buffer, "%d", color);  		xmlSetProp(sysstat, "color", buffer);
   sprintf(buffer, "%ld", OPT_VALUE_INTERVAL);	xmlSetProp(sysstat, "interval", buffer);
 
-  sprintf(buffer, "%.1f", st.load->min1);	
-    subtree = xmlNewChild(sysstat, NULL, "loadavg", buffer);
+  if (st.load) {
+    sprintf(buffer, "%.1f", st.load->min1);	
+      subtree = xmlNewChild(sysstat, NULL, "loadavg", buffer);
+  }
 
-  sprintf(buffer, "%u", (int) (st.cpu->user + st.cpu->nice));
-    subtree = xmlNewChild(sysstat, NULL, "user", buffer);
-  sprintf(buffer, "%u", (int) (st.cpu->kernel + st.cpu->iowait + st.cpu->swap));
-    subtree = xmlNewChild(sysstat, NULL, "system", buffer);
-  sprintf(buffer, "%u", (int) (st.cpu->idle));
-    subtree = xmlNewChild(sysstat, NULL, "idle", buffer);
+  if (st.cpu) {
+    sprintf(buffer, "%u", (int) (st.cpu->user + st.cpu->nice));
+      subtree = xmlNewChild(sysstat, NULL, "user", buffer);
+    sprintf(buffer, "%u", (int) (st.cpu->kernel + st.cpu->iowait + st.cpu->swap));
+      subtree = xmlNewChild(sysstat, NULL, "system", buffer);
+    sprintf(buffer, "%u", (int) (st.cpu->idle));
+      subtree = xmlNewChild(sysstat, NULL, "idle", buffer);
+  }
 
-  sprintf(buffer, "%llu", st.paging->pages_pagein);
-    subtree = xmlNewChild(sysstat, NULL, "swapin", buffer);
-  sprintf(buffer, "%llu", st.paging->pages_pageout);
-    subtree = xmlNewChild(sysstat, NULL, "swapout", buffer);
+  if (st.paging) {
+    sprintf(buffer, "%llu", st.paging->pages_pagein);
+      subtree = xmlNewChild(sysstat, NULL, "swapin", buffer);
+    sprintf(buffer, "%llu", st.paging->pages_pageout);
+      subtree = xmlNewChild(sysstat, NULL, "swapout", buffer);
+  }
 
   sprintf(buffer, "%llu", rt/1024);	subtree = xmlNewChild(sysstat, NULL, "blockin", buffer);
   sprintf(buffer, "%llu", wt/1024);	subtree = xmlNewChild(sysstat, NULL, "blockout", buffer);
 
-  sprintf(buffer, "%llu", st.swap->used/1024);	subtree = xmlNewChild(sysstat, NULL, "swapped", buffer);
-  sprintf(buffer, "%llu", st.mem->free/1024);	subtree = xmlNewChild(sysstat, NULL, "free", buffer);
-  sprintf(buffer, "%u", 0);			subtree = xmlNewChild(sysstat, NULL, "buffered", buffer);
-  sprintf(buffer, "%llu", st.mem->cache/1024);	subtree = xmlNewChild(sysstat, NULL, "cached", buffer);
-  sprintf(buffer, "%llu", st.mem->used/1024);	subtree = xmlNewChild(sysstat, NULL, "used", buffer);
+  if (st.swap) {
+    sprintf(buffer, "%llu", st.swap->used/1024);	subtree = xmlNewChild(sysstat, NULL, "swapped", buffer);
+  }
+
+  if (st.mem) {
+    sprintf(buffer, "%llu", st.mem->free/1024);	subtree = xmlNewChild(sysstat, NULL, "free", buffer);
+    sprintf(buffer, "%u", 0);			subtree = xmlNewChild(sysstat, NULL, "buffered", buffer);
+    sprintf(buffer, "%llu", st.mem->cache/1024);	subtree = xmlNewChild(sysstat, NULL, "cached", buffer);
+    sprintf(buffer, "%llu", st.mem->used/1024);	subtree = xmlNewChild(sysstat, NULL, "used", buffer);
+  }
+
   sprintf(buffer, "%d", systemp);		subtree = xmlNewChild(sysstat, NULL, "systemp", buffer);
   subtree = xmlNewTextChild(sysstat, NULL, "info", info);
 
@@ -394,7 +437,7 @@ extern int forever;
 
   // see which filesystems are full
   color = STAT_GREEN;
-  if (st.disk != NULL) {
+  if (st.disk) {
     disk_stat_t *disk_stat_ptr = st.disk;
     int counter;
 

@@ -103,7 +103,7 @@ probe = {
   result = {
     name = "loadavg";
     type = "float";
-    unsigned;
+    unsigned = true;
     null = false;
     default = "0";
     descrip = "Load average as computed by upwatch";
@@ -112,7 +112,7 @@ probe = {
   result = {
     name = "user";
     type = "tinyint";
-    unsigned;
+    unsigned = true;
     null = false;
     default = "0";
     descrip = "CPU user time";
@@ -121,7 +121,7 @@ probe = {
   result = {
     name = "system";
     type = "tinyint";
-    unsigned;
+    unsigned = true;
     null = false;
     default = "0";
     descrip = "CPU system time";
@@ -130,7 +130,7 @@ probe = {
   result = {
     name = "idle";
     type = "tinyint";
-    unsigned;
+    unsigned = true;
     null = false;
     default = "0";
     descrip = "CPU idle time";
@@ -139,7 +139,7 @@ probe = {
   result = {
     name = "swapped";
     type = "int";
-    unsigned;
+    unsigned = true;
     null = false;
     default = "0";
     descrip = "Amount of blocks written to swap device";
@@ -148,7 +148,7 @@ probe = {
   result = {
     name = "free";
     type = "int";
-    unsigned;
+    unsigned = true;
     null = false;
     default = "0";
     descrip = "Free memory";
@@ -157,7 +157,7 @@ probe = {
   result = {
     name = "buffered";
     type = "int";
-    unsigned;
+    unsigned = true;
     null = false;
     default = "0";
     descrip = "Amount of memory used for OS buffers";
@@ -166,7 +166,7 @@ probe = {
   result = {
     name = "cached";
     type = "int";
-    unsigned;
+    unsigned = true;
     null = false;
     default = "0";
     descrip = "Amount of memory used for disk buffers";
@@ -175,7 +175,7 @@ probe = {
   result = {
     name = "used";
     type = "int";
-    unsigned;
+    unsigned = true;
     null = false;
     default = "0";
     descrip = "Amount of memory used by processes";

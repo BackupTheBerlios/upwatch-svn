@@ -14,9 +14,23 @@
 # Source function library.
 . /etc/rc.d/init.d/functions
 
+if [ -f /etc/sysconfig/upwatch ]
+then
+  . /etc/sysconfig/upwatch
+fi
+
 # See how we were called.
 case "$1" in
   start)
+	if [ -n "$[+prog-name+]_nofile" ]
+	then
+		ulimit -n $[+prog-name+]_nofile
+	else
+		if [ -n "$nofile" ]
+		then
+			ulimit -n $nofile
+		fi
+	fi
 	echo -n "Starting [+prog-name+]: "
 	daemon --user upwatch [+(getenv "sbindir")+]/[+prog-name+]
 	echo

@@ -60,6 +60,7 @@ probe = {
   def = {
     name = "port";
     type = "int";
+    unsigned = true;
     null = false;
     default = "80";
     descrip = "Port for the HTTP request";

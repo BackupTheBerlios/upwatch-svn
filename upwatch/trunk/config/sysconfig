@@ -1,0 +1,11 @@
+# system configuration file for upwatch
+#
+# Commented out lines are defaults
+
+# maximum number of open files
+#nofile=1024
+
+# maxmimum number of open files per process
+# prepend the program name. example:
+#uw_ping_nofile=1024
+
