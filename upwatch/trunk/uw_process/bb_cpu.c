@@ -18,6 +18,7 @@ extern module bb_cpu_module;
 //*******************************************************************
 // Ok, we'll give it a try, decode the info string a bit.
 // [ntserver3.netland.nl] up: 33 days, 1 users, 22 procs, load=9%, PhysicalMem: 256MB(50%)
+// nbslevel: 00229, up: 96 days, 0 users, 90 procs, load=21
 // up: 43 days, 0 users, 88 procs, load=6
 //*******************************************************************
 static int fix_result(module *probe, void *probe_res)
@@ -46,7 +47,8 @@ static int fix_result(module *probe, void *probe_res)
         }
         res->free = totalmem - res->used;
       } else {
-        res->loadavg = atof(load) / 100.0;
+        res->loadavg = atof(load);
+        res->loadavg /= 100.0;
       }
     }
   }
@@ -187,9 +189,9 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
     
   result = my_query(probe->db, 0,
                     "insert into pr_bb_cpu_raw "
-                    "set    probe = '%u', stattime = '%u', color = '%u', "
+                    "set    probe = '%u', stattime = '%u', color = '%u', loadavg = '%f', "
                     "       user = '%u',  idle = '%u', free = '%u', used = '%u', message = '%s'",
-                    def->probeid, res->stattime, res->color,
+                    def->probeid, res->stattime, res->color, res->loadavg,
                     res->user, res->idle, res->free, res->used, escmsg);
   g_free(escmsg);
   if (result) mysql_free_result(result);

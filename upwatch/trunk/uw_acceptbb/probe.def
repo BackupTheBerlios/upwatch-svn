@@ -25,14 +25,14 @@ probe = {
   descrip = "Big Brother System probe";
   addbyhand = "no";
   class = "";
-  graphtypes = "cpu memory";
+  graphtypes = "cpu loadavg memory";
   comment = "";
   yellow = "3";
   red = "5";
 
   result = {
     name = "loadavg";
-    type = "tinyint";
+    type = "float";
     unsigned;
     null = false;
     default = "0";
