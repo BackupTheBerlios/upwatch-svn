@@ -6,17 +6,14 @@
 %package [+prog-name+]
 Summary: UpWatch - [+prog-title+]
 Group: Application/Monitoring
-Requires: [+spec-requires+]
+Requires: upwatch [+spec-requires+]
 
 %description [+prog-name+]
 [+detail+]
 
 %files [+prog-name+]
-%defattr(-,root,root)
+%defattr(0664,upwatch,upwatch,0775)
 /usr/bin/[+prog-name+]
-%dir /var/log/upwatch
-%dir /var/run/upwatch
-%dir /var/spool/upwatch
 /etc/rc.d/init.d/[+prog-name+]
 %config(noreplace) /etc/upwatch.conf
 %config(noreplace) /etc/upwatch.d/[+prog-name+].conf

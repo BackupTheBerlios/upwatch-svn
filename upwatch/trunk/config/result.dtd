@@ -1,0 +1,29 @@
+<!ELEMENT result	((ping|httpget)*)>
+
+<!ELEMENT host		(hostname,ipaddress?)>
+<!ELEMENT hostname      (#PCDATA)>
+<!ELEMENT ipaddress	(#PCDATA)>
+
+<!ELEMENT color     	(#PCDATA)>
+
+<!ELEMENT info      	(#PCDATA)>
+
+<!ELEMENT min      	(#PCDATA)>
+<!ELEMENT avg      	(#PCDATA)>
+<!ELEMENT max      	(#PCDATA)>
+
+<!ELEMENT lookup      	(#PCDATA)>
+<!ELEMENT connect      	(#PCDATA)>
+<!ELEMENT firstbyte    	(#PCDATA)>
+<!ELEMENT total		(#PCDATA)>
+
+<!ELEMENT ping		(host,color,min,avg,max,info?)>
+<!ATTLIST ping		id CDATA #REQUIRED 
+			date CDATA #REQUIRED 
+			expires CDATA #REQUIRED>
+
+<!ELEMENT httpget	(host,color,lookup,connect,firstbyte,total,info?)>
+<!ATTLIST httpget	id CDATA #REQUIRED 
+			date CDATA #REQUIRED 
+			expires CDATA #REQUIRED>
+

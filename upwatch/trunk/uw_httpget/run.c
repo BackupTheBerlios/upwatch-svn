@@ -19,6 +19,9 @@ struct hostinfo {
   double                connect_time;   /* time for connect (sec) */
   double                pretransfer_time;/* time to first byte (sec) */
   char                  msg[CURL_ERROR_SIZE]; /* last error message */
+  char                  *info;           /* HTTP GET result */
+  size_t                info_curlen;     /* HTTP GET result length */
+  size_t                info_maxlen;     /* HTTP GET result length */
 } hostinfo;
 
 static struct hostinfo **hosts;
@@ -41,8 +44,9 @@ int init(void)
 
 int run(void)
 {
-  void *spool;
-  int id;
+  xmlDocPtr doc;
+  int id=0;
+  time_t now;
 
   if (debug > 0) LOG(LOG_DEBUG, "reading info from database");
   if (open_database() == 0) {
@@ -57,9 +61,7 @@ int run(void)
       "WHERE  pr_httpget_def.server = server.id ";
 
     if (mysql_query(mysql, qry)) {
-      LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql));
-      close_database();
-      return(1);
+      LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql)); // if we can't read info from the database, use cached info
     }
 
     result = mysql_store_result(mysql);
@@ -70,10 +72,14 @@ int run(void)
         newh[id] = calloc(1, sizeof(struct hostinfo));
         newh[id]->id = atol(row[0]);
         newh[id]->name = strdup(row[1]);
+        if (debug > 2) LOG(LOG_DEBUG, "read %s", newh[id]->name);
         newh[id]->host = strdup(row[2]);
         newh[id]->uri = strdup(row[3]);
         newh[id]->yellowtime  = atof(row[4]);
         newh[id]->redtime = atof(row[5]);
+        newh[id]->info = NULL;
+        newh[id]->info_curlen = 0;
+        newh[id]->info_maxlen = 0;
         id++;
       }
       mysql_free_result(result);
@@ -87,6 +93,7 @@ int run(void)
           free(hosts[id]->host);
           free(hosts[id]->uri);
           free(hosts[id]);
+          if (hosts[id]->info) free(hosts[id]->info);
         }
         free(hosts);
       }
@@ -98,7 +105,7 @@ int run(void)
       return(1);
     }
     close_database();
-    if (debug > 0) LOG(LOG_DEBUG, "done reading");
+    if (debug > 0) LOG(LOG_DEBUG, "%d probes read", num_hosts);
   } else if (hosts == NULL) {
     LOG(LOG_ERR, "no database, no cached info - bailing out");
     return(1);
@@ -108,54 +115,51 @@ int run(void)
   run_actual_probes(num_hosts); /* this runs the actual probes */
   if (debug > 0) LOG(LOG_DEBUG, "done running probes");
 
-  spool = spool_open(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT));
-  if (!spool) {
-    LOG(LOG_ERR, "can't open %s/%s", OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT));
-  } else {
-    time_t now = time(NULL);
-  /*
-   * output format:
-   *  <method><lines><probeid><password><date><expires><ipaddress><color>
-   *  <namelookup><connect><firstbyte><total><hostname>
-   * <result line 1>
-   * <result line 2>
-   * <result line 3>
-   */
-    for (id=0; hosts[id]; id++) {
-      int color;
-      int lines;
-      char buffer[BUFSIZ];
+  doc = UpwatchXmlDoc("result");
+  now = time(NULL);
 
-      if (hosts[id]->msg[0]) {
-        strcpy(buffer, "\n");
-        strcat(buffer, hosts[id]->msg);
-        lines = 2;
+  for (id=0; hosts[id]; id++) {
+    xmlNodePtr result, subtree, httpget, host;
+    int color;
+    char info[1024];
+    char buffer[1024];
+
+    info[0] = 0;
+    if (hosts[id]->msg[0]) {
+      color = STAT_RED;
+    } else {
+      if (hosts[id]->total_time < hosts[id]->yellowtime) {
+        color = STAT_GREEN;
+      } else if (hosts[id]->total_time > hosts[id]->redtime) {
         color = STAT_RED;
       } else {
-        buffer[0] = 0;
-        lines = 1;
-        if (hosts[id]->total_time < hosts[id]->yellowtime) {
-          color = STAT_GREEN;
-        } else if (hosts[id]->total_time > hosts[id]->redtime) {
-          color = STAT_RED;
-        } else {
-          color = STAT_YELLOW;
-        }
-      }
-      if (!spool_printf(spool, "%s %d %d %s %s %d %d %s %d %.3f %.3f %.3f %.3f %s%s\n", 
-          "httpget", lines,  hosts[id]->id, OPT_ARG(UWUSER), OPT_ARG(UWPASSWD), (int) now,
-          ((int)now)+(2*60), "0.0.0.0", color, 
-          hosts[id]->namelookup_time, hosts[id]->connect_time, 
-          hosts[id]->pretransfer_time, hosts[id]->total_time,
-          hosts[id]->name, buffer)) {
-        LOG(LOG_ERR, "can't write to spoolfile");
-        break;
+        color = STAT_YELLOW;
       }
     }
-    if (!spool_close(spool, TRUE)) {
-      LOG(LOG_ERR, "couldn't close spoolfile");
+    httpget = xmlNewChild(xmlDocGetRootElement(doc), NULL, "httpget", NULL);
+    sprintf(buffer, "%d", hosts[id]->id);       xmlSetProp(httpget, "id", buffer);
+    sprintf(buffer, "%d", (int) now);           xmlSetProp(httpget, "date", buffer);
+    sprintf(buffer, "%d", ((int)now)+(2*60));   xmlSetProp(httpget, "expires", buffer);
+    host = xmlNewChild(httpget, NULL, "host", NULL);
+    sprintf(buffer, "%s", hosts[id]->name);     subtree = xmlNewChild(host, NULL, "hostname", buffer);
+    //sprintf(buffer, "%s", inet_ntoa(hosts[id]->saddr.sin_addr));
+    //  subtree = xmlNewChild(host, NULL, "ipaddress", buffer);
+    sprintf(buffer, "%d", color);               subtree = xmlNewChild(httpget, NULL, "color", buffer);
+    sprintf(buffer, "%.3f", hosts[id]->namelookup_time); subtree = xmlNewChild(httpget, NULL, "lookup", buffer);
+    sprintf(buffer, "%.3f", hosts[id]->connect_time);    subtree = xmlNewChild(httpget, NULL, "connect", buffer);
+    sprintf(buffer, "%.3f", hosts[id]->pretransfer_time); subtree = xmlNewChild(httpget, NULL, "firstbyte", buffer);
+    sprintf(buffer, "%.3f", hosts[id]->total_time); subtree = xmlNewChild(httpget, NULL, "total", buffer);
+    if (hosts[id]->info) {
+      subtree = xmlNewChild(httpget, NULL, "info", hosts[id]->info);
+      free(hosts[id]->info);
+      hosts[id]->info = NULL;
+      hosts[id]->info_curlen = 0;
+      hosts[id]->info_maxlen = 0;
+    } else {
+      subtree = xmlNewChild(httpget, NULL, "info", hosts[id]->msg);
     }
   }
+  spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc);
   return(0);
 }
 
@@ -183,7 +187,16 @@ int run_actual_probes(int count)
 
 static size_t write_function(void *ptr, size_t size, size_t nmemb, void *stream)
 {
-  return(size * nmemb);
+  struct hostinfo *host = (struct hostinfo *)stream;
+  int len = size * nmemb;
+  
+  if (host->info_curlen + len > host->info_maxlen) {
+    host->info = realloc(host->info, host->info_maxlen + len + 512);
+    host->info_maxlen += (len + 512);
+  }
+  memcpy(host->info + host->info_curlen, ptr, len);
+  host->info_curlen += len;
+  return(len);
 }
 
 void probe(gpointer data, gpointer user_data)
@@ -191,6 +204,7 @@ void probe(gpointer data, gpointer user_data)
   struct hostinfo *host = (struct hostinfo *)data;
   CURL *curl;
   char buffer[BUFSIZ];
+  long headerlen = 0;
 
   sprintf(buffer, "http://%s%s", host->host, host->uri);
   curl = curl_easy_init();
@@ -224,6 +238,8 @@ void probe(gpointer data, gpointer user_data)
   // mands and negotiations that are specific to the particular protocol(s) involved.
   curl_easy_getinfo(curl, CURLINFO_PRETRANSFER_TIME, &host->pretransfer_time);
   host->pretransfer_time *= 1000.0; // convert to millesecs
+
+  host->info[512] = 0; // limit amount of data
 
   curl_easy_cleanup(curl);
 }

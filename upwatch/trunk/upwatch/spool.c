@@ -7,6 +7,10 @@
 #include <malloc.h>
 #include <sys/stat.h>
 #include <sys/time.h>
+#include <libxml/xmlmemory.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+
 
 /* write a file to a maildir format directory */
 
@@ -22,6 +26,96 @@ static char *mk_tempfile(void);
 static void alarm_handler(int sig); 
 static void set_handler(int sig, void (*h)());
  
+int spool_result(char *basedir, char *target, xmlDocPtr doc)
+{
+  struct stat filestat;
+  int count;
+  int outfd;
+  char buffer[BUFSIZ];
+  char *outfile;
+  struct spoolinfo *si = calloc(1, sizeof(struct spoolinfo));
+
+  if (si == NULL) {
+    return 0; 
+  }
+
+  /* Step 1:  Check that the supplied directories are OK. */
+  sprintf(buffer, "%s/%s/tmp", basedir, target); // I know, no bounds checking..
+  if (!stat_dir(buffer)) {
+    LOG(LOG_ERR, "Cannot touch %s", buffer);
+    free(si);
+    return 0;
+  }
+  sprintf(buffer, "%s/%s/new", basedir, target);
+  if (!stat_dir(buffer)) {
+    LOG(LOG_ERR, "Cannot touch %s", buffer);
+    free(si);
+    return 0;
+  }
+
+  /* Step 2:  Stat the temporary file.  Wait for ENOENT as a response. */
+  for(count=1;;count++) {
+    /* Get the temporary filename to use now for dumping data. */
+    outfile = mk_tempfile(); // returns malloc'ed string
+    if (outfile == NULL) {
+      free(si);
+      LOG(LOG_ERR, "can not construct temp filename");
+      return 0;
+    }
+    sprintf(buffer, "%s/%s/tmp/%s", basedir, target, outfile);
+    if(stat(buffer,&filestat) == -1 && errno == ENOENT) {
+      si->temp_filename = strdup(buffer);
+      sprintf(buffer, "%s/%s/new/%s", basedir, target, outfile);
+      si->targ_filename = strdup(buffer);
+      free(outfile);
+      break;
+    }
+
+    /* Try up to 5 times, every 2 seconds. */
+    if(count == 5) {
+      free(si);
+      LOG(LOG_ERR, "could not stat %s", buffer);
+      return 0;
+    }
+
+    /* Wait 2 seconds, and try again. */
+    free(outfile);
+    sleep(2);
+  }
+
+  /* Step 4:  Write the file tempdir/time.pid.host */
+  /* Declare a handler for SIGALRM so we can time out. */
+  set_handler(SIGALRM, alarm_handler);
+  alarm(86400);
+  if (xmlSaveFormatFile(si->temp_filename, doc, 1) == -1) {
+    LOG(LOG_ERR, "couldn't save %s", si->temp_filename);
+    free(si->temp_filename);
+    free(si->targ_filename);
+    free(si);
+    alarm(0);
+    return 0;
+  }
+  alarm(0);
+
+  /* Step 5:  Link the temp file to its final destination. */
+  if(link(si->temp_filename, si->targ_filename) == -1) {
+    LOG(LOG_ERR, "could not link %s to %s", si->temp_filename, si->targ_filename);
+    free(si->temp_filename);
+    free(si->targ_filename);
+    free(si);
+    return 0;
+  }
+  /* We've succeeded!  Now, no matter what, we return "success" */
+
+  /* Okay, delete the temporary file. If it fails, bummer. */
+  unlink(si->temp_filename);
+
+  free(si->temp_filename);
+  free(si->targ_filename);
+  free(si);
+  return 1;
+}
+
 void *spool_open(char *basedir, char *target)
 {
   struct stat filestat;

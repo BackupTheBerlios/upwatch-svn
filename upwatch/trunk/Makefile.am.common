@@ -3,7 +3,7 @@
 bin_PROGRAMS = $(program)
 man_MANS = $(program).1
 EXTRA_DIST +=  $(program).1 $(program).conf
-LIBUPWATCH = ../upwatch/libupwatch.a
+LIBUPWATCH = ../upwatch/libupwatch.a @LIBXML2_LIBS@
 MAIN_O = main.o
 DB_O = db.o
 

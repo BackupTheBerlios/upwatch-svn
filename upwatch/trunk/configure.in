@@ -104,6 +104,18 @@ AC_SUBST(LIBGNET_CFLAGS)
 AC_SUBST(LIBGNET_LIBS)
 CFLAGS="$CFLAGS $LIBGNET_CFLAGS"
 
+################## XML2
+# libxml2 - always need XML libraries
+LIBXML2_CFLAGS="`pkg-config --cflags libxml-2.0`"
+LIBXML2_LIBS="`pkg-config --libs libxml-2.0`"
+if test -z "$LIBXML2_LIBS"
+then
+  AC_MSG_ERROR([You really need libxml-2.0 to compile upwatch])
+fi
+AC_SUBST(LIBXML2_CFLAGS)
+AC_SUBST(LIBXML2_LIBS)
+CFLAGS="$CFLAGS $LIBXML2_CFLAGS"
+
 # Checks for other libraries.
 AC_CHECK_LIB([opts], [optionLoadLine], 
   [LIBOPTS_LIBS=-lopts], [AC_MSG_ERROR([Sorry, we need -lopts to continue])])

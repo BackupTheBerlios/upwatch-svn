@@ -9,6 +9,9 @@
 #include <netdb.h>
 #include <malloc.h>
 #include <errno.h>
+#include <libxml/tree.h>
+
+
 
 #include <generic.h>
 #include <uwstat.h>
@@ -145,9 +148,7 @@ int init(void)
 
 int run(void)
 {
-  void *spool = NULL;
-  void *traceroute = NULL;
-  void *notify = NULL;
+  xmlDocPtr doc;
   int id = 0;
   struct hostinfo **newh = NULL;
   struct tm *tm;
@@ -242,93 +243,65 @@ int run(void)
   run_actual_probes(num_hosts); /* this runs the actual probes */
   if (debug > 0) LOG(LOG_DEBUG, "done running probes");
 
-  spool = spool_open(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT));
-  if (!spool) {
-    LOG(LOG_ERR, "can't open %s/%s", OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT));
-  } else {
-    int stath;
-    time_t now = time(NULL);
+  now = time(NULL);
+  doc = UpwatchXmlDoc("result"); 
+  for (id=0; hosts[id]; id++) {
+    xmlNodePtr result, subtree, ping, host;
+    int color, prv_color;
+    int missed;
+    char info[1024];
+    char buffer[1024];
 
-    traceroute = spool_open(OPT_ARG(SPOOLDIR), OPT_ARG(INVESTIGATE));
-    if (!traceroute) {
-      LOG(LOG_ERR, "can't open %s/%s", OPT_ARG(SPOOLDIR), OPT_ARG(INVESTIGATE));
+    if (hosts[id]->msg) {
+      strcat(info, hosts[id]->msg);
+    } else {
+      info[0] = 0;
     }
-    stath = uw_stat_open(OPT_ARG(STATFILE));
-    /*
-     * output format:
-     * <method><lines><probeid><user><password><date><expires><ipaddress><color>
-     *        <minpingtime><avgpingtime><maxpingtime><hostname>
-     * <error message>
-     */
-    for (id=0; hosts[id]; id++) {
-      int color, prv_color;
-      int missed, lines;
-      char buffer[1024];
 
-      if (hosts[id]->msg) {
-        strcpy(buffer, "\n");
-        strcat(buffer, hosts[id]->msg);
-        lines = 2;
-      } else {
-        buffer[0] = 0;
-        lines = 1;
-      }
+    missed = hosts[id]->num_sent - hosts[id]->num_recv;
+    if (missed >= hosts[id]->redmiss) {
+      color = STAT_RED;
+    } else if (missed >= hosts[id]->yellowmiss) {
+      color = STAT_YELLOW;
+    } else {
+      color = STAT_GREEN;
+    }
+    if (missed > 0) { // append a message for packet loss
+      char tmp[256];
+      int sent = hosts[id]->num_sent;
+      int recv = hosts[id]->num_recv;
+      int loss;
 
-      missed = hosts[id]->num_sent - hosts[id]->num_recv;
-      if (missed >= hosts[id]->redmiss) {
-        color = STAT_RED;
-      } else if (missed >= hosts[id]->yellowmiss) {
-        color = STAT_YELLOW;
-      } else {
-        color = STAT_GREEN;
-      }
-      if (missed > 0) { // append a message for packet loss
-        char tmp[256];
-        int sent = hosts[id]->num_sent;
-        int recv = hosts[id]->num_recv;
-        int loss;
+      loss = missed * 100 / (sent ? sent : 1);
+      sprintf(tmp, "%d packets transmitted, %d packets received, %d%% packet loss", sent, recv, loss);
+      strcat(info, "\n");
+      strcat(info, tmp);
+    }
 
-        loss = missed * 100 / (sent ? sent : 1);
-        sprintf(tmp, "%d packets transmitted, %d packets received, %d%% packet loss", sent, recv, loss);
-        strcat(buffer, "\n");
-        strcat(buffer, tmp);
-        lines++;
-      }
-
-      prv_color = uw_stat_get(stath, hosts[id]->id);
-      if (color != prv_color) {
-        if (color > STAT_GREEN) {
-          /*
-           * status changed, and there is something wrong. Ask for investigation
-           * write traceroute record
-           * <method><lines><probeid><user><password><date><ipaddress><prot><port>
-           * <error message>
-           */
-          if (!spool_printf(traceroute, "%s %d %d %s %s %d %s %s %d%s\n", 
-              "ping", lines, hosts[id]->id, OPT_ARG(UWUSER), OPT_ARG(UWPASSWD), (int) now,
-              inet_ntoa(hosts[id]->saddr.sin_addr), "icmp", 0, buffer)) { 
-            LOG(LOG_ERR, "can't write to traceroute spoolfile");
-          }
-        }
-        /*
-         * status changed - maybe customer wants to be notified - let the notifydaemon handle it
-         * write notify record
-         * <method><lines><probeid><user><password><date><hostname>
-         * <error message>
-         */
-        if (!notify) {
-          notify = spool_open(OPT_ARG(SPOOLDIR), OPT_ARG(NOTIFY));
-          if (!notify) {
-            LOG(LOG_ERR, "can't open %s/%s", OPT_ARG(SPOOLDIR), OPT_ARG(NOTIFY));
-          }
-        }
-        if (!spool_printf(notify, "%s %d %d %s %s %d %s%s\n", 
-            "ping", lines, hosts[id]->id, OPT_ARG(UWUSER), OPT_ARG(UWPASSWD), (int) now,
-            hosts[id]->name, buffer)) { 
-          LOG(LOG_ERR, "can't write to notify spoolfile");
-        }
-        uw_stat_put(stath, hosts[id]->id, color); // save new status
-      }
+    ping = xmlNewChild(xmlDocGetRootElement(doc), NULL, "ping", NULL);
+    sprintf(buffer, "%d", hosts[id]->id);	xmlSetProp(ping, "id", buffer);
+    sprintf(buffer, "%d", (int) now); 		xmlSetProp(ping, "date", buffer);
+    sprintf(buffer, "%d", ((int)now)+(2*60)); 	xmlSetProp(ping, "expires", buffer);
+    host = xmlNewChild(ping, NULL, "host", NULL);
+    sprintf(buffer, "%s", hosts[id]->name);	subtree = xmlNewChild(host, NULL, "hostname", buffer);
+    sprintf(buffer, "%s", inet_ntoa(hosts[id]->saddr.sin_addr));	
+      subtree = xmlNewChild(host, NULL, "ipaddress", buffer);
+    sprintf(buffer, "%d", color); 		subtree = xmlNewChild(ping, NULL, "color", buffer);
+    sprintf(buffer, "%.3f", ((float) hosts[id]->min_reply) / 1000.0);	
+      subtree = xmlNewChild(ping, NULL, "min", buffer);
+    sprintf(buffer, "%.3f", ((float) (hosts[id]->total_time / (hosts[id]->num_recv==0?1:hosts[id]->num_recv))) / 1000.0);	
+      subtree = xmlNewChild(ping, NULL, "avg", buffer);
+    sprintf(buffer, "%.3f", ((float) hosts[id]->max_reply) / 1000.0);	
+      subtree = xmlNewChild(ping, NULL, "max", buffer);
+    if (info[0]) subtree = xmlNewChild(ping, NULL, "info", info);
+/*
+ *
+<ping id="1">
+<hostname>www.netland.nl</hostname>
+<min>0.0030</min>
+<avg>0.0030</avg>
+<max>0.0030</max>
+</ping>
 
       if (!spool_printf(spool, "%s %d %d %s %s %d %d %s %d %.3f %.3f %.3f %s%s\n", 
           "ping", lines, hosts[id]->id, OPT_ARG(UWUSER), OPT_ARG(UWPASSWD), (int) now,
@@ -340,19 +313,9 @@ int run(void)
         LOG(LOG_ERR, "can't write to spoolfile");
         break;
       }
-    }
-    if (spool && !spool_close(spool, TRUE)) {
-      LOG(LOG_ERR, "couldn't close spoolfile");
-    }
-    if (traceroute && !spool_close(traceroute, TRUE)) {
-      LOG(LOG_ERR, "couldn't close traceroute spoolfile");
-    }
-    if (notify && !spool_close(notify, TRUE)) {
-      LOG(LOG_ERR, "couldn't close notify spoolfile");
-    }
-    uw_stat_close(stath); // does its own logging
+*/
   }
-
+  spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc);
   return(1); // returning true means run() actually did something
 }
 

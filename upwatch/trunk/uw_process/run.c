@@ -7,12 +7,12 @@
 #include <generic.h>
 #include "cmd_options.h"
 
-extern int process_ping(char *spec, GString *remark);
-extern int process_httpget(char *spec, GString *remark);
+extern int process_ping(xmlDocPtr, xmlNodePtr, xmlNsPtr);
+extern int process_httpget(xmlDocPtr, xmlNodePtr, xmlNsPtr);
 
 struct _probe_proc {
   char *name;
-  int (*process)(char *spec, GString *remark);
+  int (*process)(xmlDocPtr, xmlNodePtr, xmlNsPtr);
 } prob_proc[] = {
   { "ping",         process_ping },
   { "httpget",      process_httpget },
@@ -55,9 +55,10 @@ int run(void)
   while ((filename = g_dir_read_name(dir)) != NULL) {
     char buffer[PATH_MAX];
 
-    if (open_database() != 0) { // open_database will do nothing if already open
+    if (open_database() != 0) { // will do nothing if already open
       break;
     }
+    if (filename[0] == '.') continue;  // skip hidden files
     sprintf(buffer, "%s/%s", path, filename);
     g_ptr_array_add(arr, strdup(buffer));
     files++;
@@ -81,64 +82,76 @@ int run(void)
 void process(gpointer data, gpointer user_data)
 {
   char *filename = (char *)data;
-  FILE *in;
-  int lines, i;
+  xmlDocPtr doc; 
+  xmlNsPtr ns;
+  xmlNodePtr cur;
+  int found=0, failures=0;
   struct _probe_proc *probe;
-  char buffer[4096];
-  char *spec, method[64];
-  GString *remark;
   int probe_count = 0;
 
   if (debug) LOG(LOG_DEBUG, "Processing %s", filename);
-  if ((in = fopen(filename, "r")) == NULL) {
+
+  doc = xmlParseFile(filename);
+  if (doc == NULL) {
+    LOG(LOG_NOTICE, "%s: %m", filename);
     return;
   }
 
-  while (fgets(buffer, sizeof(buffer), in) != NULL) {
-    int found;
-
-    buffer[strlen(buffer)-1] = 0;
-    spec = strdup(buffer);
-
-    // <method><lines><user><password>
-    //
-    remark = g_string_new("");
-    lines = 1; method[0] = 0; // proper initialisation protects against mis-formatted lines
-    sscanf(buffer, "%s %d", method, &lines);
-    for (i=lines-1; i; i--) {
-      if (fgets(buffer, 1024, in) == NULL) {
-        LOG(LOG_NOTICE, "fgets(%s): %m at ftell position %d, lines=%d, i=%d", filename, ftell(in), lines, i);
-        return;
-      }
-      remark = g_string_append(remark, buffer);
-    }
-
+  cur = xmlDocGetRootElement(doc);
+  if (cur == NULL) {
+    LOG(LOG_NOTICE, "%s: empty document", filename);
+    xmlFreeDoc(doc);
+    return;
+  }
+  ns = xmlSearchNsByHref(doc, cur, (const xmlChar *) NAMESPACE_URL);
+  if (ns == NULL) {
+    LOG(LOG_NOTICE, "%s: wrong type, result namespace not found", filename);
+    xmlFreeDoc(doc);
+    return;
+  }
+  if (xmlStrcmp(cur->name, (const xmlChar *) "result")) {
+    LOG(LOG_NOTICE, "%s: wrong type, root node is not 'result'", filename);
+    xmlFreeDoc(doc);
+    return;
+  }
+  /*
+   * Now, walk the tree.
+   */
+  /* First level we expect just result */
+  cur = cur->xmlChildrenNode;
+  while (cur && xmlIsBlankNode(cur)) {
+    cur = cur->next;
+  }
+  if (cur == 0) {
+    LOG(LOG_NOTICE, "%s: wrong type, empty file'", filename);
+    xmlFreeDoc(doc);
+    return;
+  }
+  /* Second level is a list of probes, but be laxist */
+  for (failures = 0; cur != NULL; cur = cur->next) {
     for (found = 0, probe = prob_proc; probe->name; probe++) {
-      if (!strcmp(probe->name, method)) {
+      if (!xmlStrcmp(cur->name, (const xmlChar *) probe->name)) {
+	if (cur->ns != ns) {
+          LOG(LOG_ERR, "method found, but namespace incorrect on %s", cur->name);
+	  continue;
+	}
         found = 1;
         probe_count++;
-        if ((*probe->process)(spec, remark) == 0) {
-          FILE *failures;
-
-          failures = fopen(OPT_ARG(FAILURES), "a");
-          if (!failures) {
-            LOG(LOG_ERR, "%s: %m", OPT_ARG(FAILURES));
-          } else {
-            fprintf(failures, "%s", spec);
-            fwrite(remark->str, remark->len, 1, failures);
-            fclose(failures);
-          }
+        if ((*probe->process)(doc, cur, ns) == 0) {
+          failures++;
         }
         break;
       }
     }
     if (!found) {
-      LOG(LOG_ERR, "can't find method: %s", spec);
+      LOG(LOG_ERR, "can't find method: %s", cur->name);
+      failures++;
     }
-    free(spec);
-    g_string_free (remark, TRUE);
   }
-  fclose(in);
+  if (failures) {
+    xmlSaveFormatFile(OPT_ARG(FAILURES), doc, 1);
+  }
+  xmlFreeDoc(doc);
   if (debug > 1) LOG(LOG_DEBUG, "Processed %d probes", probe_count);
   if (debug > 1) LOG(LOG_DEBUG, "unlink(%s)", filename);
   unlink(filename);

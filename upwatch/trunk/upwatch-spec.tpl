@@ -48,6 +48,8 @@ mkdir -p $RPM_BUILD_ROOT/var/lib/upwatch
 mkdir -p $RPM_BUILD_ROOT/var/log/upwatch
 mkdir -p $RPM_BUILD_ROOT/var/run/upwatch
 install -m 644 config/upwatch.conf $RPM_BUILD_ROOT/etc/
+mkdir -p $RPM_BUILD_ROOT/usr/lib/upwatch/dtd
+install -m 644 config/result.dtd $RPM_BUILD_ROOT/usr/lib/upwatch/dtd
 
 mkdir -p $RPM_BUILD_ROOT/etc/rc.d/init.d
 [+ FOR program +]
@@ -75,8 +77,18 @@ install -m 644 [+program+]/[+program+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+prog
 %clean
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
 
+%pre
+/usr/sbin/groupadd -g 78 upwatch
+/usr/sbin/useradd -M -o -r -d /usr/lib/upwatch -s /bin/bash \
+        -c "Upwatch" -u 78 -g 78 upwatch > /dev/null 2>&1 || :
+
 %files
+%defattr(0644,upwatch,upwatch,0775)
 %doc AUTHORS COPYING ChangeLog NEWS README doc/upwatch.html doc/upwatch.txt doc/upwatch.pdf doc/upwatch.xml
+/usr/lib/upwatch
+%dir /var/log/upwatch
+%dir /var/run/upwatch
+%dir /var/spool/upwatch
 
 %changelog
 * Mon Sep 2 2002 Ron Arts <raarts@upwatch.com>

@@ -15,14 +15,13 @@ static void summarize_ping(int probe, char *tbl, char *newtbl, guint slotlow, gu
  * 
  */
 
-int process_ping(char *spec, GString *remark)
+int process_ping(xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
   gchar user[4096];
   gchar passwd[4096];
   gchar dummy[4096];
-  gint lines;
   gint probe;
   gulong stattime;
   gulong expires;
@@ -42,33 +41,64 @@ int process_ping(char *spec, GString *remark)
   gulong slotlow, slothigh;
   gulong dummy_low, dummy_high;
 
-//  printf("< %s", spec);
   hostname[0] = 0;
-  fields = sscanf(spec, "%s %u %u %s %s %lu %lu %s %u %f %f %f %s", 
-                 dummy,     // method (always 'ping' for us)
-                 &lines,    // lines to follow
-                 &probe,    // probe id
-                 user,      // user
-                 passwd,    // password
-                 &stattime, // time this probe ran
-                 &expires,  // when this probe expires
-                 ip,        // ip address
-                 &color,    // color as estimated by probe
-                 &lowest,   // lowest ping value
-                 &value,    // average ping value
-                 &highest,  // highest ping value
-                 hostname); // hostname. Duh!
 
-  if (fields != 13) {
-    LOG(LOG_WARNING, "Incomplete record: %s", spec);
-    return(0);
-  }
+/*
+    <ping id="1" date="1033425402" expires="1033425522">
+      <host>
+        <hostname>netland-01.services.netland.nl</hostname>
+        <ipaddress>217.170.32.83</ipaddress>
+      </host>
+      <color>200</color>
+      <min>16.976</min>
+      <avg>20.196</avg>
+      <max>28.454</max>
+    </ping>
+*/						  
+  probe = atoi(xmlGetProp(cur, (const xmlChar *) "id"));
+  stattime = atol(xmlGetProp(cur, (const xmlChar *) "date"));
+  expires = atol(xmlGetProp(cur, (const xmlChar *) "expires"));
+  for (cur = cur->xmlChildrenNode; cur != NULL; cur = cur->next) {
+    char *p;
+    
+    if (xmlIsBlankNode(cur)) continue;
+    if ((!xmlStrcmp(cur->name, (const xmlChar *) "color")) && (cur->ns == ns)) {
+      color = atoi(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1));
+    }
+    if ((!xmlStrcmp(cur->name, (const xmlChar *) "color")) && (cur->ns == ns)) {
+      color = atoi(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1));
+    }
+    if ((!xmlStrcmp(cur->name, (const xmlChar *) "min")) && (cur->ns == ns)) {
+      lowest = atof(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1));
+    }
+    if ((!xmlStrcmp(cur->name, (const xmlChar *) "avg")) && (cur->ns == ns)) {
+      value = atof(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1));
+    }
+    if ((!xmlStrcmp(cur->name, (const xmlChar *) "max")) && (cur->ns == ns)) {
+      highest = atof(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1));
+    }
+    if ((!xmlStrcmp(cur->name, (const xmlChar *) "info")) && (cur->ns == ns)) {
+      p = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+      strcpy(message, p);
+      xmlFree(p);
+    }
+    if ((!xmlStrcmp(cur->name, (const xmlChar *) "host")) && (cur->ns == ns)) {
+      xmlNodePtr hname;
 
-  if (lines > 1) {
-    strcpy(message, remark->str);
-    g_strchomp(message);
-  } else {
-    message[0] = 0;
+      for (hname = cur->xmlChildrenNode; hname != NULL; hname = hname->next) {
+	if (xmlIsBlankNode(hname)) continue;
+        if ((!xmlStrcmp(hname->name, (const xmlChar *) "hostname")) && (hname->ns == ns)) {
+          p = xmlNodeListGetString(doc, hname->xmlChildrenNode, 1);
+	  strcpy(hostname, p);
+	  xmlFree(p);
+        } 
+        if ((!xmlStrcmp(hname->name, (const xmlChar *) "ipaddress")) && (hname->ns == ns)) {
+          p = xmlNodeListGetString(doc, hname->xmlChildrenNode, 1);
+	  strcpy(ip, p);
+	  xmlFree(p);
+        } 
+      }
+    }
   }
 
   result = my_query("select server, color, lasthist, stattime "
@@ -183,6 +213,8 @@ int process_ping(char *spec, GString *remark)
                     stattime, expires, color, hist_id, message, probe);
   mysql_free_result(result);
 
+  xmlUnlinkNode(cur); // succeeded, remove this node from the XML tree
+  xmlFreeNode(cur);
   //my_transaction("commit");
   return 1;  
 }

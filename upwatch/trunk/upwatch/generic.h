@@ -20,6 +20,15 @@ extern int init(void);
 
 #include "spool.h"
 
+#include <libxml/xmlmemory.h>
+#include <libxml/parser.h>
+#include <libxml/tree.h>
+
+xmlDocPtr UpwatchXmlDoc(const char *root);
+
+#define PATH_RESULT_DTD "/usr/lib/upwatch/dtd/result.dtd"
+#define NAMESPACE_URL	"http://www.upwatch.com/schemas/1.0/"
+
 char *uw_gmtime(time_t *now);
 long timeval_diff(struct timeval *a,struct timeval *b);
 
