@@ -288,7 +288,9 @@ typedef struct dns_info {
 } PING_INFO;
 
 #include <netinet/in_systm.h>
+#if HAVE_NETINET_IP_VAR_H
 #include <netinet/ip_var.h>
+#endif
 #include <netinet/ip_icmp.h>
 #define SIZE_ICMP_HDR ICMP_MINLEN   /* from ip_icmp.h */
 #define PING_PACKET_SIZE  (44+SIZE_ICMP_HDR)

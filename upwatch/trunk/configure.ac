@@ -7,7 +7,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.65 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.66 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -27,7 +27,6 @@ AM_WITH_DMALLOC
 # ----------------------------------------------------------------------
 AC_CANONICAL_HOST
 AC_CANONICAL_BUILD
-AC_CANONICAL_TARGET
 
 case $host in
   *-*-linux*) 
@@ -494,7 +493,7 @@ AC_CHECK_FUNCS([daemon, setsid])
 # Checks for header files.
 AC_HEADER_DIRENT
 AC_HEADER_STDC
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h malloc.h memory.h netdb.h netinet/in.h stdlib.h string.h strings.h sys/fs/s5param.h sys/ioctl.h sys/sockio.h sys/param.h sys/socket.h sys/time.h syslog.h unistd.h ncurses.h])
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h malloc.h memory.h netdb.h netinet/in.h stdlib.h string.h strings.h sys/fs/s5param.h sys/ioctl.h sys/sockio.h sys/param.h sys/socket.h sys/time.h netinet/ip_var.h syslog.h unistd.h ncurses.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
