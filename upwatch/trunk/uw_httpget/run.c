@@ -109,7 +109,7 @@ void refresh_database(MYSQL *mysql)
 
   sprintf(qry,  "SELECT pr_httpget_def.id, pr_httpget_def.domid, pr_httpget_def.tblid, pr_domain.name,"
                 "       pr_httpget_def.ipaddress, pr_httpget_def.uri, "
-                "       pr_httpget_def.hostname, "
+                "       pr_httpget_def.hostname, pr_httpget_def.port, "
                 "       pr_httpget_def.yellow,  pr_httpget_def.red "
                 "FROM   pr_httpget_def, pr_domain "
                 "WHERE  pr_httpget_def.id > 1 and pr_httpget_def.disable <> 'yes'"
@@ -144,8 +144,9 @@ void refresh_database(MYSQL *mysql)
     probe->uri = strdup(row[5]);
     if (probe->hostname) g_free(probe->hostname);
     probe->hostname = strdup(row[6]);
-    probe->yellow = atof(row[7]);
-    probe->red = atof(row[8]);
+    probe->port = atoi(row[7]);
+    probe->yellow = atof(row[8]);
+    probe->red = atof(row[9]);
     if (probe->msg) g_free(probe->msg);
     probe->msg = NULL;
     if (probe->info) g_free(probe->info);
@@ -261,7 +262,7 @@ void *probe(void *data)
 
   memset(&rmt, 0, sizeof(struct sockaddr_in));
   rmt.sin_family = AF_INET;
-  rmt.sin_port = htons(80);
+  rmt.sin_port = htons(probe->port);
   rmt.sin_addr.s_addr = inet_addr(probe->ipaddress);
   if (rmt.sin_addr.s_addr == INADDR_NONE) {
     char buf[50];

@@ -58,6 +58,13 @@ probe = {
     descrip = "Hostname for the HTTP request";
   };
   def = {
+    name = "port";
+    type = "int";
+    null = false;
+    default = "80";
+    descrip = "Port for the HTTP request";
+  };
+  def = {
     name = "uri";
     type = "varchar";
     length = 255;
