@@ -161,6 +161,7 @@ if [ "$1" -eq "0" ]; then
 %doc upwatch-base.mysql upwatch-full.mysql
 %doc doc/upwatch.txt doc/upwatch.html doc/upwatch.pdf
 %attr(0770,upwatch,upwatch) %dir /etc/upwatch.d
+/etc/upwatch.d/uw_sysstat.d/syslog/linux.kernel
 %attr(0770,upwatch,upwatch) %dir /usr/share/upwatch
 %attr(0770,upwatch,upwatch) %dir /usr/share/upwatch/init
 %attr(0770,upwatch,upwatch) %dir /usr/share/upwatch/dtd

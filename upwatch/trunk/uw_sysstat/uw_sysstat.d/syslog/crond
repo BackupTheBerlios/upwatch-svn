@@ -1,4 +1,4 @@
 green [LOGDATE] crond[PID]: \(CRON\) STARTUP \(fork ok\) 
 green [LOGDATE] crond[PID]: \([USER]\) CMD \(.*\)
 green [LOGDATE] /USR/SBIN/CRON[PID]: \(CRON\) STARTUP \(fork ok\) 
-green [LOGDATE] /USR/SBIN/CRON[PID]: \([USER]\) CMD \(.*\)
+green [LOGDATE] /USR/SBIN/CRON[PID]: \([USER]\) (CMD|RELOAD) \(.*\)

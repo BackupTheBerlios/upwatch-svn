@@ -24,8 +24,8 @@ green [LOGDATE] sshd[PID]: error: accept: Connection timed out
 green [LOGDATE] sshd[PID]: error: key_read: 
 green [LOGDATE] sshd[PID]: error: PAM: Authentication failure
 green [LOGDATE] sshd[PID]: Failed keyboard-interactive/pam for [WORD] from [IPADDR] port [NUM] ssh[NUM]
-green [LOGDATE] sshd[PID]: Failed none for (illegal )*[WORD] from [IPADDR] port [NUM] ssh[NUM]
-green [LOGDATE] sshd[PID]: Failed password for (illegal )*[WORD] from [IPADDR] port [NUM] ssh[NUM]
+green [LOGDATE] sshd[PID]: Failed none for (illegal )*[USER_] from [IPADDR] port [NUM] ssh[NUM]
+green [LOGDATE] sshd[PID]: Failed password for (illegal )*[USER_] from [IPADDR] port [NUM] ssh[NUM]
 green [LOGDATE] sshd[PID]: Failed publickey for [WORD] from [IPADDR] port [NUM] ssh[NUM]
 green [LOGDATE] sshd[PID]: fatal: Bad protocol version identification:
 green [LOGDATE] sshd[PID]: fatal: Connection closed by remote host\.
@@ -36,7 +36,7 @@ green [LOGDATE] sshd[PID]: fatal: Timeout before authentication for [IPADDR]
 green [LOGDATE] sshd[PID]: Found matching DSA key: [MACADDR]
 green [LOGDATE] sshd[PID]: Generating new [NUM] bit RSA key\.
 green [LOGDATE] sshd[PID]: Generating [NUM] bit RSA key\.
-green [LOGDATE] sshd[PID]: Illegal [WORD_] from [IPADDR]
+green [LOGDATE] sshd[PID]: Illegal [USER_] from [IPADDR]
 green [LOGDATE] sshd[PID]: input_userauth_request: illegal [WORD_]
 green [LOGDATE] sshd[PID]: lastlog_openseek: [PATH] is not a file or directory!
 green [LOGDATE] sshd[PID]: lastlog_perform_login: Couldn't stat [PATH]: No such file or directory
