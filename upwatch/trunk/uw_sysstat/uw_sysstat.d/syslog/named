@@ -62,8 +62,7 @@ green [LOGDATE] named[PID]: sysquery: no addrs found for [USER] NS \(\)
 green [LOGDATE] named[PID]: sysquery: query\(localhost\) Bogus LOOPB[TCPFLAG] A RR \(localhost:[IPADDR]\)
 green [LOGDATE] named[PID]: sysquery: sendto\(\[[IPADDR]\]\.[NUM]\): Network is unreachable
 green [LOGDATE] named[PID]: sysquery: sendto\(\[[IPADDR]\]\.[NUM]\): Operation not permitted
-green [LOGDATE] named[PID]: transfer of '[HOSTNAME]/IN' from [IPADDR]#[NUM]: end of transfer
-green [LOGDATE] named[PID]: transfer of '[HOSTNAME]/IN' from [IPADDR]#[NUM]: failed while receiving responses: REFUSED
+green [LOGDATE] named[PID]: transfer of '[HOSTNAME]/IN' from [IPADDR]#[NUM]:
 green [LOGDATE] named[PID]: unrelated additional info '[HOSTNAME]' type A from \[[IPADDR]\]\.[NUM]
 green [LOGDATE] named[PID]: USAGE
 green [LOGDATE] named[PID]: user = [USER]

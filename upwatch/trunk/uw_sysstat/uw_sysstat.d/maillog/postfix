@@ -36,7 +36,7 @@ green [LOGDATE] postfix/smtpd[PID]: warning: [HOSTNAME]\[[IPADDR]\] sent
 green [LOGDATE] postfix/smtpd[PID]: warning: Illegal address syntax from [HOSTNAME]\[[IPADDR]\] in
 green [LOGDATE] postfix/smtpd[PID]: [MSGID]: discard: [WORD] from [HOSTNAME]\[[IPADDR]\]: <.*>:
 green [LOGDATE] postfix/smtpd[PID]: NOQUEUE: reject: [WORD] from [HOSTNAME]\[[IPADDR]\]
-green [LOGDATE] postfix/smtpd[PID]: too many errors after [WORD] from [HOSTNAME]
+ignore [LOGDATE] postfix/smtpd[PID]: too many errors after [WORD] from [HOSTNAME]
 green [LOGDATE] postfix/smtp[PID]: connect to [HOSTNAME]\[[IPADDR]\]: 
 green [LOGDATE] postfix/smtp[PID]: [MSGID]: enabling PIX <CRLF>\.<CRLF> workaround for [HOSTNAME]\[[IPADDR]\]
 green [LOGDATE] postfix/smtp[PID]: warning: host [HOSTNAME]\[[IPADDR]\] greeted me with my own hostname [HOSTNAME]

@@ -30,7 +30,7 @@ green [LOGDATE] sshd[PID]: Failed publickey for [WORD] from [IPADDR] port [NUM] 
 green [LOGDATE] sshd[PID]: fatal: Bad protocol version identification:
 green [LOGDATE] sshd[PID]: fatal: Connection closed by remote host\.
 green [LOGDATE] sshd[PID]: fatal: Did not receive ident string\.
-green [LOGDATE] sshd[PID]: fatal: Read error from remote host: Connection reset by peer
+ignore [LOGDATE] sshd[PID]: fatal: Read error from remote host: Connection reset by peer
 green [LOGDATE] sshd[PID]: fatal: Read from socket failed: Connection reset by peer
 green [LOGDATE] sshd[PID]: fatal: Timeout before authentication for [IPADDR]
 green [LOGDATE] sshd[PID]: Found matching DSA key: [MACADDR]
@@ -63,6 +63,6 @@ green [LOGDATE] sshd[PID]: scanned from [IPADDR] with SSH-[NUM]\.[NUM]-SSH_Versi
 green [LOGDATE] sshd[PID]: Server listening on [IPADDR] port [NUM]\.
 green [LOGDATE] sshd[PID]: Setting tty modes failed: Invalid argument
 green [LOGDATE] sshd[PID]: subsystem request for sftp
-green [LOGDATE] sshd[PID]: syslogin_perform_logout: logout\(\) returned an error
+ignore [LOGDATE] sshd[PID]: syslogin_perform_logout: logout\(\) returned an error
 green [LOGDATE] sshd[PID]: WARNING: [PATH] does not exist, using old modulus
 green [LOGDATE] sshd[PID]: WARNING: [PATH] does not exist, using old prime
