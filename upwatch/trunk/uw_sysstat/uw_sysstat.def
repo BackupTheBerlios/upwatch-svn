@@ -16,9 +16,20 @@ detail        =
 spec-requires = "glib2";
 spec-files    = "%attr(0770,root,upwatch) /usr/sbin/uw_sysstat";
 
+// describe commandline flags
+flag = {
+    name      = interval;
+    arg_default  = 60;  /* option argument indication  */
+    arg_type  = number;   /* option argument indication  */
+    descrip   = "Time in seconds between writing results";
+    doc       =
+'Results are written to disk at regular intervals. This argument
+sets the interval in seconds.';
+};
+
 flag = {
     name      = expires;
-    arg_default  = 5;  /* option argument indication  */
+    arg_default  = 8;  /* option argument indication  */
     arg_type  = number;   /* option argument indication  */
     descrip   = "Probe results expire time in minutes";
     doc       =

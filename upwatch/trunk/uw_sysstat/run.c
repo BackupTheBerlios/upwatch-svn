@@ -129,7 +129,7 @@ int init(void)
   if (debug) LOG(LOG_DEBUG, "using ipaddress %s", ipaddress);
 
   daemonize = TRUE;
-  every = EVERY_MINUTE;
+  every = EVERY_SECOND;
   xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
   getstat(cpu_use,cpu_nic,cpu_sys,cpu_idl, pgpgin,pgpgout,pswpin,pswpout, inter,ticks,ctxt);
   sleep(2); // ensure we wait until the next minute
@@ -156,6 +156,14 @@ static int prv_color = STAT_GREEN;
   int ct  = STACKCT_OPT(OUTPUT);
   char **output = STACKLST_OPT(OUTPUT);
   int i;
+extern int forever;
+
+  for (i=0; i < OPT_VALUE_INTERVAL; i++) { // wait some minutes
+    sleep(1);
+    if (!forever)  {
+      return(NULL);
+    }
+  }
 
   // compute sysstat
   //
@@ -246,10 +254,9 @@ static int prv_color = STAT_GREEN;
       // uw_send in batched mode will pick it up later
       spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(HPQUEUE), doc, NULL);
     }
-  } else {
-    for (i=0; i < ct; i++) {
-      spool_result(OPT_ARG(SPOOLDIR), output[i], doc, NULL);
-    }
+  }
+  for (i=0; i < ct; i++) {
+    spool_result(OPT_ARG(SPOOLDIR), output[i], doc, NULL);
   }
   prv_color = color; // remember for next time
   xmlFreeDoc(doc);
