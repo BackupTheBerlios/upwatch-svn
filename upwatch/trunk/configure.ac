@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.6 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.7 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -206,6 +206,8 @@ AC_CONFIG_FILES([Makefile
                  uw_sysstat/Makefile
                  compat/Makefile
                  compat/bb/Makefile
-                 compat/bb/bbhimport/Makefile])
+                 compat/bb/bbhimport/Makefile
+                 compat/sometests/Makefile
+                 compat/sometests/setproctitle/Makefile])
 
 AC_OUTPUT

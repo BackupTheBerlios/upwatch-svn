@@ -63,10 +63,12 @@ static void every_second(void)
   while (forever) {
     struct timeval start;
 
+    uw_setproctitle("waiting");
     sleep(1);
     if (!forever) break; // kill -TERM ?
     gettimeofday(&start, NULL);
     ++runcounter;
+    uw_setproctitle("processing");
     ret = run(); 	/* this will run every second */
     if (debug > 0 && ret) {
       struct timeval end;
@@ -85,10 +87,12 @@ static void every_5secs(void)
   while (forever) {
     struct timeval start;
 
+    uw_setproctitle("waiting");
     sleep(5);
     if (!forever) break; // kill -TERM ?
     gettimeofday(&start, NULL);
     ++runcounter;
+    uw_setproctitle("processing");
     ret = run(); 	/* this will run every 5 seconds */
     if (debug > 0 && ret) {
       struct timeval end;
@@ -107,10 +111,12 @@ static void every_minute(void)
   while (forever) {
     struct timeval start;
 
+    uw_setproctitle("waiting");
     wait_to_start();
     if (!forever) break; // kill -TERM ?
     ++runcounter;
     gettimeofday(&start, NULL);
+    uw_setproctitle("processing");
     ret = run(); 	/* run every minute - returns amount of items processed */
     if (debug > 0 && ret) {
       struct timeval end;
@@ -131,18 +137,28 @@ int main( int argc, char** argv, char **envp )
   int ret=0;
   int arg_ct;
   struct sigaction new_action;
+  char** newArgv = malloc( (argc+1) * sizeof( char* ));
+  int ix = 0;
 
-  if ((progname = strrchr(argv[0], '/')) != NULL) {
+  do { 
+    newArgv[ ix ] = strdup( argv[ ix ] ); 
+  } while (++ix < argc);
+  newArgv[ ix ] = NULL;
+
+  uw_initsetproctitle(argc, argv, envp);
+  
+  if ((progname = strrchr(newArgv[0], '/')) != NULL) {
     progname++;
   } else {
-    progname = argv[0];
+    progname = newArgv[0];
   }
   //fprintf(stderr, "%s\n", progname);
 
+
   umask(002); // all created files must be group-writable
-  arg_ct = optionProcess( &progOptions, argc, argv );
+  arg_ct = optionProcess( &progOptions, argc, newArgv );
   argc -= arg_ct;
-  argv += arg_ct;
+  newArgv += arg_ct;
 
   debug = OPT_VALUE_DEBUG;
 

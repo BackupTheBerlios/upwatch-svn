@@ -23,8 +23,6 @@ static void free_res(void *res)
 
   if (r->hostname) g_free(r->hostname);
   if (r->ipaddress) g_free(r->ipaddress);
-  if (r->message) g_free(r->message);
-  g_free(r);
 }
 
 //*******************************************************************

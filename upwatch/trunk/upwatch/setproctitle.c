@@ -130,6 +130,7 @@ typedef unsigned int	*pt_entry_t;
 
 char		**Argv = NULL;		/* pointer to argument vector */
 char		*LastArgv = NULL;	/* end of argv */
+static char     *progname;
 
 void
 uw_initsetproctitle(int argc, char **argv, char **envp)
@@ -138,6 +139,14 @@ uw_initsetproctitle(int argc, char **argv, char **envp)
 #if !defined(HAVE_NSGETENVIRON) || !defined(HAVE_CRT_EXTERNS_H)
 	extern char **environ;
 #endif
+
+        /* determine program name */
+        if ((progname = strrchr(argv[0], '/')) != NULL) {
+          progname++;
+        } else {
+          progname = argv[0];
+        }
+        progname = strdup(progname);
 
 	/*
 	**  Move the environment so setproctitle can use the space at
@@ -202,7 +211,9 @@ setproctitle(const char *fmt, ...)
 	p = buf;
 
 	/* print uw: heading for grep */
-	(void) strcpy(p, "uw: ");
+	(void) strcpy(p, progname);
+	p += strlen(p);
+        (void) strcat(p, ": ");
 	p += strlen(p);
 
 	/* print the argument string */
@@ -278,7 +289,7 @@ setproctitle(const char *fmt, ...)
 void
 uw_setproctitle(const char *fmt, ...)
 {
-	char buf[SPT_BUFSIZE];
+static	char buf[SPT_BUFSIZE];
 
 	va_list ap;
 	/* print the argument string */

@@ -19,8 +19,6 @@ static void free_res(void *res)
   struct bb_generic_result *r = (struct bb_generic_result *)res;
 
   if (r->hostname) g_free(r->hostname);
-  if (r->message) g_free(r->message);
-  g_free(r);
 }
 
 //*******************************************************************

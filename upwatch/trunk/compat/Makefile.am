@@ -1,1 +1,1 @@
-SUBDIRS = bb
+SUBDIRS = bb sometests

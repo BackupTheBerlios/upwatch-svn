@@ -123,6 +123,7 @@ static int handle_file(gpointer data, gpointer user_data)
   xmlDocPtr doc; 
   xmlNsPtr ns;
   xmlNodePtr cur;
+  char *p, *fromhost=NULL;
   int found=0, failures=0;
   int probe_count = 0;
   struct stat st;
@@ -177,6 +178,12 @@ static int handle_file(gpointer data, gpointer user_data)
     unlink(filename);
     return 0;
   }
+  p = xmlGetProp(cur, (const xmlChar *) "fromhost");
+  if (p) {
+    fromhost = strdup(p);
+    xmlFree(p);
+  }
+
   /*
    * Now, walk the tree.
    */
@@ -187,6 +194,7 @@ static int handle_file(gpointer data, gpointer user_data)
   }
   if (cur == 0) {
     LOG(LOG_NOTICE, "%s: wrong type, empty file", filename);
+    if (fromhost) g_free(fromhost);
     xmlFreeDoc(doc);
     unlink(filename);
     return 0;
@@ -208,6 +216,7 @@ static int handle_file(gpointer data, gpointer user_data)
         found = 1;
         probe_count++;
         //xmlDocFormatDump(stderr, doc, 1);
+        uw_setproctitle("%s: %s", fromhost, modules[i]->name);
         ret = process(modules[i], doc, cur, ns);
         if (ret == 0) {
           failures++;
@@ -240,6 +249,7 @@ static int handle_file(gpointer data, gpointer user_data)
     if (debug > 1) LOG(LOG_DEBUG, "unlink(%s)", filename);
     unlink(filename);
   }
+  if (fromhost) g_free(fromhost);
   return fatal;
 }
 
@@ -591,6 +601,7 @@ static int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
 
   res = probe->extract_from_xml(probe, doc, cur, ns); // EXTRACT INFO FROM XML NODE
   if (!res) return 1;
+
   if (probe->get_def) {
     def = probe->get_def(probe, res); // RETRIEVE PROBE DEFINITION RECORD FROM DATABASE
   } else {
@@ -690,11 +701,13 @@ static int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
     def->color = res->color;
   }
   g_free(prv);
+
+  // free the result block
   if (probe->free_res) {
-    if (res) probe->free_res(res);
-  } else {
-    if (res) free_res(res);
+    if (res) probe->free_res(res); // the probe specific part...
   }
+  if (res) free_res(res); // .. and the generic part
+
   // note we don't free the *def here, because that structure is owned by the hashtable
   return 1;
 }
