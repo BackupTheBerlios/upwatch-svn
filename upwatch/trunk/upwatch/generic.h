@@ -14,6 +14,9 @@
 
 #include <options.h>
 
+#define max(x,y) ((x) > (y) ? (x) : (y))
+#define min(x,y) ((x) < (y) ? (x) : (y))
+
 #include <syslog.h>
 #ifdef WITH_THREADS
 #define LOG pthread_mutex_lock(&_logmutex),_logsrce=__FILE__,_logline=__LINE__,_LOG

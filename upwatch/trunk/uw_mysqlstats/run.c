@@ -1,8 +1,9 @@
 #include "config.h"
 #include <generic.h>
+#include <db.h>
 #include <sys/time.h>
 
-#include "uw_mysql.h"
+#include "uw_mysqlstats.h"
 
 struct probedef {
   int           id;             /* unique probe id */
@@ -14,6 +15,10 @@ struct probedef {
 #include "../common/common.h"
 #include "probe.res_h"
   char		*msg;           /* last error message */
+  long long      abs_selectq;
+  long long      abs_insertq;
+  long long      abs_updateq;
+  long long      abs_deleteq;
 };
 GHashTable *cache;
 
@@ -25,7 +30,6 @@ void free_probe(void *probe)
   if (r->dbname) g_free(r->dbname);
   if (r->dbuser) g_free(r->dbuser);
   if (r->dbpasswd) g_free(r->dbpasswd);
-  if (r->query) g_free(r->query);
   g_free(r);
 }
 
@@ -70,8 +74,8 @@ int run(void)
     cache = g_hash_table_new_full(g_int_hash, g_int_equal, g_free, free_probe);
   }
   
-  LOG(LOG_INFO, "reading info from database"); 
-  uw_setproctitle("reading info from database");
+  LOG(LOG_INFO, "reading info from database (group %u)", (unsigned)OPT_VALUE_GROUPID); 
+  uw_setproctitle("reading info from database (group %u)", (unsigned)OPT_VALUE_GROUPID);
   mysql = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
 			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
   if (mysql) {
@@ -80,8 +84,8 @@ int run(void)
   }
 
   if (g_hash_table_size(cache) > 0) {
-    LOG(LOG_INFO, "running %d probes", g_hash_table_size(cache));
-    uw_setproctitle("running %d probes", g_hash_table_size(cache));
+    LOG(LOG_INFO, "running %d probes from group %u", g_hash_table_size(cache), (unsigned)OPT_VALUE_GROUPID);
+    uw_setproctitle("running %d probes from group %u", g_hash_table_size(cache), (unsigned)OPT_VALUE_GROUPID);
     run_actual_probes(); /* this runs the actual probes */
 
     LOG(LOG_INFO, "writing results"); 
@@ -98,14 +102,13 @@ void refresh_database(MYSQL *mysql)
   MYSQL_ROW row;
   char qry[1024];
 
-  sprintf(qry,  "SELECT pr_mysql_def.id, pr_mysql_def.domid, pr_mysql_def.tblid, pr_realm.name, "
-                "       pr_mysql_def.ipaddress, pr_mysql_def.dbname, "
-                "       pr_mysql_def.dbuser, pr_mysql_def.dbpasswd,"
-                "       pr_mysql_def.query, "
-                "       pr_mysql_def.yellow,  pr_mysql_def.red "
-                "FROM   pr_mysql_def, pr_realm "
-                "WHERE  pr_mysql_def.id > 1 and pr_mysql_def.disable <> 'yes'"
-                "       and pr_mysql_def.pgroup = '%d' and pr_realm.id = pr_mysql_def.domid",
+  sprintf(qry,  "SELECT pr_mysqlstats_def.id, pr_mysqlstats_def.domid, pr_mysqlstats_def.tblid, pr_realm.name, "
+                "       pr_mysqlstats_def.ipaddress, pr_mysqlstats_def.dbname, "
+                "       pr_mysqlstats_def.dbuser, pr_mysqlstats_def.dbpasswd,"
+                "       pr_mysqlstats_def.yellow,  pr_mysqlstats_def.red "
+                "FROM   pr_mysqlstats_def, pr_realm "
+                "WHERE  pr_mysqlstats_def.id > 1 and pr_mysqlstats_def.disable <> 'yes'"
+                "       and pr_mysqlstats_def.pgroup = '%d' and pr_realm.id = pr_mysqlstats_def.domid",
                 (unsigned)OPT_VALUE_GROUPID);
 
   result = my_query(mysql, 1, qry);
@@ -138,10 +141,8 @@ void refresh_database(MYSQL *mysql)
     probe->dbuser = strdup(row[6]);
     if (probe->dbpasswd) g_free(probe->dbpasswd);
     probe->dbpasswd = strdup(row[7]);
-    if (probe->query) g_free(probe->query);
-    probe->query = strdup(row[8]);
-    probe->yellow = atof(row[9]);
-    probe->red = atof(row[10]);
+    probe->yellow = atof(row[8]);
+    probe->red = atof(row[9]);
     if (probe->msg) g_free(probe->msg);
     probe->msg = NULL;
     probe->seen = 1;
@@ -193,13 +194,7 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   if (probe->msg) {
     color = STAT_RED;
   } else {
-    if (probe->total < probe->yellow) {
-      color = STAT_GREEN;
-    } else if (probe->total > probe->red) {
-      color = STAT_RED;
-    } else {
-      color = STAT_YELLOW;
-    }
+    color = STAT_GREEN;
   }
 
   mysql = xmlNewChild(xmlDocGetRootElement(doc), NULL, "mysql", NULL);
@@ -212,8 +207,10 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60)); 
     xmlSetProp(mysql, "expires", buffer);
   sprintf(buffer, "%d", color);               xmlSetProp(mysql, "color", buffer);
-  sprintf(buffer, "%f", probe->connect);      subtree = xmlNewChild(mysql, NULL, "connect", buffer);
-  sprintf(buffer, "%f", probe->total);        subtree = xmlNewChild(mysql, NULL, "total", buffer);
+  sprintf(buffer, "%llu", probe->selectq);      subtree = xmlNewChild(mysql, NULL, "select", buffer);
+  sprintf(buffer, "%llu", probe->insertq);      subtree = xmlNewChild(mysql, NULL, "insert", buffer);
+  sprintf(buffer, "%llu", probe->updateq);      subtree = xmlNewChild(mysql, NULL, "update", buffer);
+  sprintf(buffer, "%llu", probe->deleteq);      subtree = xmlNewChild(mysql, NULL, "delete", buffer);
   if (probe->msg) {
     subtree = xmlNewTextChild(mysql, NULL, "info", probe->msg);
     free(probe->msg);
@@ -238,13 +235,24 @@ void write_results(void)
   xmlFreeDoc(doc);
 }
 
+long long qdiff(long long *previous, long long new)
+{
+  long long retval = 0;
+
+  if (*previous > 0) { // not the first time?
+    retval = new - *previous; // we assume that long long values do not wrap - ever.
+  }
+  *previous = new;
+  return retval;
+}
+
 void probe(gpointer data, gpointer user_data) 
 { 
   char *dbhost, *dbuser, *dbpasswd, *dbname;
   struct probedef *probe = (struct probedef *)data;
   MYSQL *mysql = mysql_init(NULL);
   MYSQL_RES *result;
-  struct timeval start, now;
+  unsigned int timeout = 50;
 
   dbhost = probe->ipaddress;
   dbname = probe->dbname;
@@ -252,30 +260,41 @@ void probe(gpointer data, gpointer user_data)
   dbpasswd = probe->dbpasswd;
 
   mysql_options(mysql, MYSQL_OPT_COMPRESS, 0);
-  mysql_options(mysql, MYSQL_OPT_CONNECT_TIMEOUT, 50);
-  gettimeofday(&start, NULL);
+  mysql_options(mysql, MYSQL_OPT_CONNECT_TIMEOUT, &timeout);
+
+  LOG(LOG_DEBUG, "%s %s %s %s", dbhost, dbuser, dbpasswd, dbname);
   if (!mysql_real_connect(mysql, dbhost, dbuser, dbpasswd, dbname, 0, NULL, 0)) {
     probe->msg = strdup(mysql_error(mysql));
     return;
   }
-  gettimeofday(&now, NULL);
-  probe->connect = ((float) timeval_diff(&now, &start)) * 0.000001;
-  if (mysql_query(mysql, probe->query)) {
-    gettimeofday(&now, NULL);
-    probe->total = ((float) timeval_diff(&now, &start)) * 0.000001;
+  if (mysql_query(mysql, "show status")) {
     probe->msg = strdup(mysql_error(mysql));
     return;
   }
-  result = mysql_store_result(mysql);
   if (mysql_errno(mysql)) {
     probe->msg = strdup(mysql_error(mysql));
+    goto err_close;
   }
+  result = mysql_store_result(mysql);
   if (mysql_num_rows(result) == 0) {
     probe->msg = strdup("Empty set");
+  } else {
+    MYSQL_ROW row;
+
+    while ((row = mysql_fetch_row(result))) {
+      if (strcmp(row[0], "Com_select") == 0) {
+        probe->selectq = qdiff(&probe->abs_selectq, atoll(row[1]));
+      } else if (strcmp(row[0], "Com_update") == 0) {
+        probe->updateq = qdiff(&probe->abs_updateq, atoll(row[1]));
+      } else if (strcmp(row[0], "Com_insert") == 0) {
+        probe->insertq = qdiff(&probe->abs_insertq, atoll(row[1]));
+      } else if (strcmp(row[0], "Com_delete") == 0) {
+        probe->deleteq = qdiff(&probe->abs_deleteq, atoll(row[1]));
+      }
+    }
   }
   mysql_free_result(result);
+err_close:
   mysql_close(mysql);
-  gettimeofday(&now, NULL);
-  probe->total = ((float) timeval_diff(&now, &start)) * 0.000001;
   return;
 }

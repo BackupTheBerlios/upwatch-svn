@@ -319,11 +319,24 @@ struct hwstat_result {
 struct hwstat_def {
   STANDARD_PROBE_DEF;
 #include "../common/common.h"
+#include "../uw_sysstat/probe.def_h"
 };
 
 void hwstat_get_from_xml(trx *t);
 void *hwstat_get_def(trx *t, int create);
 void hwstat_adjust_result(trx *t);
+
+/****************************** probe mysqlstats ************************/
+struct mysqlstats_result {
+  STANDARD_PROBE_RESULT;
+#include "../uw_mysqlstats/probe.res_h"
+};
+struct mysqlstats_def {
+  STANDARD_PROBE_DEF;
+#include "../common/common.h"
+};
+
+void mysqlstats_get_from_xml(trx *t);
 
 #endif /* __UW_PROBE_H */
 

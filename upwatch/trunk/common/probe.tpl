@@ -50,6 +50,8 @@ ELSE +] NOT[+
 ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
 == char +]
   [+name+] [+type+][+
+IF length +]([+length+])[+
+ENDIF +][+
 IF null +][+
 ELSE +] NOT[+
 ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
@@ -144,6 +146,8 @@ ELSE +] NOT[+
 ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
 == char +]
   [+name+] [+type+][+
+IF length +]([+length+])[+
+ENDIF +][+
 IF null +][+
 ELSE +] NOT[+
 ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
@@ -238,7 +242,11 @@ ENDFOR result +]
 == tinyint +][+
 IF unsigned +]unsigned [+
 ENDIF+]
-  char *[+name+];	/* [+descrip+] */[+
+  int [+name+];	/* [+descrip+] */[+
+== bigint +][+
+IF unsigned +]unsigned [+
+ENDIF+]
+  long long [+name+];	/* [+descrip+] */[+
 == int +][+
 IF unsigned +]unsigned [+
 ENDIF+]
@@ -262,6 +270,10 @@ ENDIF+]
 == tinyint +]
   [+ IF unsigned +]unsigned [+
 ENDIF+]int [+name+];    /* [+descrip+] */[+
+== bigint +][+
+IF unsigned +]unsigned [+
+ENDIF+]
+  long long [+name+];	/* [+descrip+] */[+
 == int +]
   [+ IF unsigned +]unsigned [+
 ENDIF+]int [+name+];    /* [+descrip+] */[+ ESAC type +][+ ENDFOR result+][+ ENDFOR probe +]

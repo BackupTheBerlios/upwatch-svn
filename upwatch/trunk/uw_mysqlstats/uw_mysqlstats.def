@@ -1,0 +1,94 @@
+AutoGen Definitions options;
+export        = "#define progOptions uw_mysqlstatsOptions";
+prog-name     = uw_mysqlstats;
+prog-title    = "Upwatch mysqlstats daemon";
+version       = `cat ../VERSION`;
+homerc        = `echo $sysconfdir/upwatch.conf`;
+homerc        = `echo $confdir/uw_mysqlstats.conf`;
+homerc        = "$HOME/.upwatchrc";
+homerc        = "$HOME";
+homerc        = "$$/upwatch.conf";
+homerc        = "$$/uw_mysqlstats.conf";
+detail        = 
+'uw_mysqlstats retrieves and stores important statistics on a MySQL
+server like number of select queries etc.';
+
+// this section is for the generated specfile
+spec-requires = "/usr/bin/mysqlstats glib2";
+spec-files = `echo "%attr(0770,root,upwatch)" $sbindir/uw_mysqlstats`;
+
+// describe commandline flags
+flag = {
+    name      = compress;
+    value     = C;
+    arg_type  = number;
+    arg-default = 9;
+    arg-range = '0->9';
+    descrip   = "XML compression factor";
+    doc       =
+'The generated resultfile, will normally be compressed to save datatraffic costs.
+The compression can be set between 0 no (compression) and 9 (highest compression).
+Decompression is automatic';
+};
+
+flag = {
+    name      = begin;
+    value     = b;
+    arg_type  = numeric;
+    arg-default = 18;
+    arg-range = '0->59';
+    descrip   = "second to begin probing";
+    doc       =
+'The probing process is started every minute. To prevent the thundering-herd syndrome
+you can configure on which second the probing starts. So set one probe to 0, another to
+10, etcetera.';
+};
+
+flag = {
+    name      = expires;
+    arg_default  = 15;  /* option argument indication  */
+    arg_type  = number;   /* option argument indication  */
+    descrip   = "Probe results expire time in minutes";
+    doc       =
+'When no results have been received from a probe after this many
+minutes, its color will turn to blue.';
+};
+
+flag = {
+    name      = spooldir;
+    value     = S;
+    arg_type  = string;
+    descrip   = "maildir-type spooldirectory for result files";
+    doc       =
+'This probe generates files with data. These are put in maildir style
+spooldirectories. This parameter denotes the basedirectory.
+For some more info about maildir see http://www.qmail.org/man/man5/maildir.html.';
+};
+
+flag = {
+    name      = groupid;
+    value     = g;
+    arg_type  = numeric;
+    arg_default = 2;
+    descrip   = "Id of the group this station belongs to";
+    doc       =
+'Various probe stations can exists in multiple physical places.
+Firewalls may exist between them. So probes may be assigned to
+certain groups. This setting tells this probe its group id, so
+it knows which probe to retrieve from the definition table';
+};
+
+flag = {
+    name      = output;
+    value     = O;
+    stack_arg;
+    arg_type  = string;
+    descrip   = "name of queue to drop results";
+    doc       =
+'The argument is taken to be a maildir under the directory `spooldir`.
+All results are placed in this queue.
+This flag may be given multiple times.';
+};
+
+#include dbase_options.def
+#include generic_options.def

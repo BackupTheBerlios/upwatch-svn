@@ -29,7 +29,7 @@ endif
 CLIENTLIST = uw_send uw_sysstat uw_null
 # order is important here: uw_process should be last
 SERVERLIST = uw_acceptbb uw_accept uw_purple uw_route uw_syncprobes uw_setip uw_process
-MONITORLIST = uw_httpget uw_dns uw_ping uw_mysql uw_pop3 uw_smtp uw_tcpconnect uw_imap \
+MONITORLIST = uw_httpget uw_dns uw_ping uw_mysql uw_mysqlstats uw_pop3 uw_smtp uw_tcpconnect uw_imap \
  ${UW_POSTGRESQL} ${UW_SNMPGET} ${UW_MSSQL}
 IPTRAFLIST = uw_iptraf
 EXTRALIST = ${IPTRAFLIST}

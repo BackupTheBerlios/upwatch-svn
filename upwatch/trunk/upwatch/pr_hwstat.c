@@ -77,7 +77,7 @@ void hwstat_get_from_xml(trx *t)
 //*******************************************************************
 void *hwstat_get_def(trx *t, int create)
 { 
-  struct probe_def *def;
+  struct hwstat_def *def;
   struct hwstat_result *res = (struct hwstat_result *)t->res;
   MYSQL_RES *result;
   MYSQL_ROW row;
@@ -111,8 +111,11 @@ void *hwstat_get_def(trx *t, int create)
     strcpy(def->hide, "no");
     def->server = res->server;
     
+
     result = my_query(t->probe->db, 0,
-                      "select id, yellow, red, contact, hide, email, delay "
+                      "select id, contact, hide, email, delay, "
+                      "       temp1_yellow, temp1_red, temp2_yellow, temp2_red, "
+                      "       temp3_yellow, temp3_red, rot1_red, rot2_red, rot3_red "
                       "from   pr_%s_def "
                       "where  server = '%u'", res->name, res->server);
     if (!result) return(NULL);
@@ -135,7 +138,9 @@ void *hwstat_get_def(trx *t, int create)
                          res->name, def->probeid, mysql_error(t->probe->db));
       }
       result = my_query(t->probe->db, 0,
-                        "select id, yellow, red, contact, hide, email, delay "
+                        "select id, contact, hide, email, delay, "
+                        "       temp1_yellow, temp1_red, temp2_yellow, temp2_red, "
+                        "       temp3_yellow, temp3_red, rot1_red, rot2_red, rot3_red "
                         "from   pr_%s_def "
                         "where  server = '%u'", res->name, res->server);
       if (!result) return(NULL);
@@ -147,12 +152,19 @@ void *hwstat_get_def(trx *t, int create)
       return(NULL);
     }
     if (row[0]) def->probeid  = atoi(row[0]);
-    if (row[1]) def->yellow   = atoi(row[1]);
-    if (row[2]) def->red      = atoi(row[2]);
-    if (row[3]) def->contact  = atoi(row[3]);
-    strcpy(def->hide, row[4] ? row[4] : "no");
-    strcpy(def->email, row[5] ? row[5] : "");
-    if (row[6]) def->delay = atoi(row[6]);
+    if (row[1]) def->contact  = atoi(row[1]);
+    strcpy(def->hide, row[2] ? row[2] : "no");
+    strcpy(def->email, row[3] ? row[3] : "");
+    if (row[4]) def->delay = atoi(row[4]);
+    if (row[5]) def->temp1_yellow = atoi(row[5]);
+    if (row[6]) def->temp1_red = atoi(row[6]);
+    if (row[7]) def->temp2_yellow = atoi(row[7]);
+    if (row[8]) def->temp2_red = atoi(row[8]);
+    if (row[9]) def->temp3_yellow = atoi(row[9]);
+    if (row[10]) def->temp3_red = atoi(row[10]);
+    if (row[11]) def->rot1_red = atoi(row[11]);
+    if (row[12]) def->rot2_red = atoi(row[12]);
+    if (row[13]) def->rot3_red = atoi(row[13]);
 
     mysql_free_result(result);
 
@@ -195,14 +207,61 @@ void *hwstat_get_def(trx *t, int create)
 void hwstat_adjust_result(trx *t)
 { 
   struct hwstat_result *res = (struct hwstat_result *)t->res;
+  struct hwstat_def *def = (struct hwstat_def *)t->def;
 
   if (res->color != STAT_PURPLE) {
-    char buffer[10];
+    char buffer[100];
+    GString *errmsg = g_string_new(res->message);
 
     res->color = STAT_GREEN;
-    if (res->temp1 > t->def->yellow) res->color = STAT_YELLOW;
-    if (res->temp1 > t->def->red) res->color = STAT_RED;
+    if (res->temp1 >= def->temp1_red)    {
+      res->color = max(res->color, STAT_RED);
+      sprintf(buffer, "temp1 (%.1f°C) has reached the RED limit: %u°C\n", res->temp1, def->temp1_red);
+      errmsg = g_string_append(errmsg, buffer);
+    } else if (res->temp1 >= def->temp1_yellow) { 
+      res->color = max(res->color, STAT_YELLOW);
+      sprintf(buffer, "temp1 (%.1f°C) has reached the YELLOW limit: %u°C\n", res->temp1, def->temp1_yellow);
+      errmsg = g_string_append(errmsg, buffer);
+    }
+    if (res->temp2 >= def->temp2_red)    {
+      res->color = max(res->color, STAT_RED);
+      sprintf(buffer, "temp2 (%.1f°C) has reached the RED limit: %u°C\n", res->temp2, def->temp2_red);
+      errmsg = g_string_append(errmsg, buffer);
+    } else if (res->temp2 >= def->temp2_yellow) { 
+      res->color = max(res->color, STAT_YELLOW);
+      sprintf(buffer, "temp2 (%.1f°C) has reached the YELLOW limit: %u°C\n", res->temp2, def->temp2_yellow);
+      errmsg = g_string_append(errmsg, buffer);
+    }
+    if (res->temp3 >= def->temp3_red)    {
+      res->color = max(res->color, STAT_RED);
+      sprintf(buffer, "temp3 (%.1f°C) has reached the RED limit: %u°C\n", res->temp3, def->temp3_red);
+      errmsg = g_string_append(errmsg, buffer);
+    } else if (res->temp3 >= def->temp3_yellow) { 
+      res->color = max(res->color, STAT_YELLOW);
+      sprintf(buffer, "temp3 (%.1f°C) has reached the YELLOW limit: %u°C\n", res->temp3, def->temp3_yellow);
+      errmsg = g_string_append(errmsg, buffer);
+    }
+    if (res->rot1 <  def->rot1_red) {
+      res->color = max(res->color, STAT_RED);
+      sprintf(buffer, "Fan 1 is running too slow (%u, which is below %u)\n", res->rot1, def->rot1_red);
+      errmsg = g_string_append(errmsg, buffer);
+    }
+    if (res->rot2 <  def->rot2_red) {
+      res->color = max(res->color, STAT_RED);
+      sprintf(buffer, "Fan 2 is running too slow (%u, which is below %u)\n", res->rot1, def->rot1_red);
+      errmsg = g_string_append(errmsg, buffer);
+    }
+    if (res->rot3 <  def->rot3_red) {
+      res->color = max(res->color, STAT_RED);
+      sprintf(buffer, "Fan 3 is running too slow (%u, which is below %u)\n", res->rot1, def->rot1_red);
+      errmsg = g_string_append(errmsg, buffer);
+    }
     sprintf(buffer, "%u", res->color);
     set_result_value(t, "color", buffer);
+
+    if (res->message) { free(res->message); res->message = NULL; }
+    if (errmsg->len) res->message = strdup(errmsg->str);
+    //set_result_value(t, "info", errmsg->str);
+    g_string_free(errmsg, TRUE);
   }
 }

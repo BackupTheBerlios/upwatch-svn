@@ -181,8 +181,8 @@ probe = {
   graphtypes = "temp rotation voltage";
   comment = "";
   max_rows = 1000000;
-  yellow = "40";
-  red = "50";
+// yellow = "40";
+// red = "50";
   message = "Hardware status";
 
   attribute = {
@@ -226,7 +226,77 @@ probe = {
     descrip = "date/time this result was received by the upwatch server";
   };
 
-  /* no extra definition fields */
+  def = {
+    name = "temp1_yellow";
+    type = "int";
+    null = false;
+    default = "60";
+    descrip = "Temperature at which temp1 turns yellow";
+  };
+
+  def = {
+    name = "temp1_red";
+    type = "int";
+    null = false;
+    default = "70";
+    descrip = "Temperature at which temp1 turns red";
+  };
+
+  def = {
+    name = "temp2_yellow";
+    type = "int";
+    null = false;
+    default = "60";
+    descrip = "Temperature at which temp2 turns yellow";
+  };
+
+  def = {
+    name = "temp2_red";
+    type = "int";
+    null = false;
+    default = "70";
+    descrip = "Temperature at which temp2 turns red";
+  };
+
+  def = {
+    name = "temp3_yellow";
+    type = "int";
+    null = false;
+    default = "60";
+    descrip = "Temperature at which temp3 turns yellow";
+  };
+
+  def = {
+    name = "temp3_red";
+    type = "int";
+    null = false;
+    default = "70";
+    descrip = "Temperature at which temp3 turns red";
+  };
+
+  def = {
+    name = "rot1_red";
+    type = "int";
+    null = false;
+    default = "0";
+    descrip = "Turn red when fan 1 gets slower then this";
+  };
+
+  def = {
+    name = "rot2_red";
+    type = "int";
+    null = false;
+    default = "0";
+    descrip = "Turn red when fan 1 gets slower then this";
+  };
+
+  def = {
+    name = "rot3_red";
+    type = "int";
+    null = false;
+    default = "0";
+    descrip = "Turn red when fan 1 gets slower then this";
+  };
 
   result = {
     name = "temp1";
