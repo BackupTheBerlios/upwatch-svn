@@ -68,10 +68,10 @@ void writeXMLresult(struct ipnetw *ipnets, int count_ipnets)
         xmlSetProp(iptraf, "expires", buffer);
       sprintf(buffer, "%u", (int) OPT_VALUE_INTERVAL); 
         xmlSetProp(iptraf, "interval", buffer);
-      if (net->count[j].in || net->count[j].out) {
+//      if (net->count[j].in || net->count[j].out) {
         sprintf(buffer, "%u", net->count[j].in);    xmlNewChild(iptraf, NULL, "incoming", buffer);
         sprintf(buffer, "%u", net->count[j].out);   xmlNewChild(iptraf, NULL, "outgoing", buffer);
-      }
+//      }
     }
     free(net->count);
   }
@@ -101,7 +101,7 @@ extern int forever;
     }
 
     newnet = malloc(ct * sizeof(struct ipnetw));
-    for (net = newnet, i = ct; i; i--, net++) {
+    for (net = newnet, i = ct; i; i--, net++, pn++) {
       char network[256];
       int width;
       struct in_addr addr;
@@ -120,11 +120,10 @@ extern int forever;
         continue;
       }
       inet_aton(network, &addr);
-      net->network = ntohl(addr.s_addr);
-      net->mask = 0xFFFFFFFF << (32 - width);
-      net->size = 0x1 << (32 - width);
+      net->network = ntohl(addr.s_addr);           // network base address
+      net->mask = 0xFFFFFFFF << (32 - width);      // mask
+      net->size = 0x1 << (32 - width);             // size
       net->count = calloc(net->size, sizeof(struct iocount));
-      pn++;
     } 
     g_static_mutex_lock (&m_ipnets);
     oldnet = ipnets;
@@ -245,13 +244,14 @@ int run(void)
 
 static void incoming_packet(u_char *user, const struct pcap_pkthdr *hdr, const u_char *packet)
 {
-  register struct ethhdr *et = (struct ethhdr *) packet;
+  struct ethhdr *et = (struct ethhdr *) packet;
   register struct ip *ip = (struct ip *) (packet + sizeof(struct ethhdr));
-  register uint32_t ipaddr = ntohl(ip->ip_src.s_addr);
+  uint32_t srcaddr;
+  uint32_t dstaddr;
   register struct ipnetw *srcnet;
   register struct ipnetw *dstnet;
-  register struct ipnetw *srcign;
-  register struct ipnetw *dstign;
+  struct ipnetw *srcign;
+  struct ipnetw *dstign;
   register unsigned int i;
 
 #if 0
@@ -266,21 +266,21 @@ static int reporter = 0;
 #if 0
   strcpy(src, inet_ntoa(ip->ip_src));
   strcpy(dst, inet_ntoa(ip->ip_dst));
-  //printf("id = %d, ttl = %d, protocol = %d, saddr = %s, daddr = %s, len = %d ", 
+  //printf("id = %d, ttl = %d, protocol = %d, saddr = %s, daddr = %s, len = %d ",
   //   ip->ip_id, ip->ip_ttl, ip->ip_p, src, dst, ntohs(ip->ip_len));
   //printf("\n");
 #endif
 
   g_static_mutex_lock (&m_ipnets);
-  ipaddr = ntohl(ip->ip_src.s_addr);
+  srcaddr = ntohl(ip->ip_src.s_addr);
   // check if the source address is an internal network
   for (srcnet = ipnets, i = count_ipnets; i && srcnet; i--, srcnet++) {
-    if ((ipaddr & srcnet->mask) != srcnet->network) { 
-      //printf("%x & %x != %x\n", ipaddr, srcnet->mask,  srcnet->network);
+    if ((srcaddr & srcnet->mask) != srcnet->network) { 
+      //printf("%x & %x != %x\n", srcaddr, srcnet->mask,  srcnet->network);
       continue; // current ip address in this network?
     }
-    if ((ipaddr & ~srcnet->mask) > srcnet->size) {
-      //printf("%lx & ~%lx > %x\n", ipaddr, srcnet->mask,  srcnet->size);
+    if ((srcaddr & ~srcnet->mask) > srcnet->size) {
+      //printf("%lx & ~%lx > %x\n", srcaddr, srcnet->mask,  srcnet->size);
       continue;    // superfluous check?
     }
     break;
@@ -291,12 +291,12 @@ static int reporter = 0;
 
   // now check if the source address is in the ignore list
   for (srcign = extignore, i = count_extignore; i && srcign; i--, srcign++) {
-    if ((ipaddr & srcign->mask) != srcign->network) { 
-      //printf("%x & %x != %x\n", ipaddr, net->mask,  net->network);
+    if ((srcaddr & srcign->mask) != srcign->network) { 
+      //printf("%x & %x != %x\n", srcaddr, net->mask,  net->network);
       continue; // current ip address in this network?
     }
-    if ((ipaddr & ~srcign->mask) > srcign->size) {
-      //printf("%lx & ~%lx > %x\n", ipaddr, srcign->mask,  srcign->size);
+    if ((srcaddr & ~srcign->mask) > srcign->size) {
+      //printf("%lx & ~%lx > %x\n", srcaddr, srcign->mask,  srcign->size);
       continue;    // superfluous check?
     }
     break;
@@ -306,14 +306,14 @@ static int reporter = 0;
   }
 
   // check if the destination address is an internal network
-  ipaddr = ntohl(ip->ip_dst.s_addr);
+  dstaddr = ntohl(ip->ip_dst.s_addr);
   for (dstnet = ipnets, i = count_ipnets; i && dstnet; i--, dstnet++) {
-    if ((ipaddr & dstnet->mask) != dstnet->network) { 
-      //printf("%x & %x != %x\n", ipaddr, dstnet->mask,  dstnet->network);
+    if ((dstaddr & dstnet->mask) != dstnet->network) { 
+      //printf("%x & %x != %x\n", dstaddr, dstnet->mask,  dstnet->network);
       continue; // current ip address in this network?
     }
-    if ((ipaddr & ~dstnet->mask) > dstnet->size) {
-      //printf("%lx & ~%lx > %x\n", ipaddr, dstnet->mask,  dstnet->size);
+    if ((dstaddr & ~dstnet->mask) > dstnet->size) {
+      //printf("%lx & ~%lx > %x\n", dstaddr, dstnet->mask,  dstnet->size);
       continue;    // superfluous check?
     }
     break;
@@ -323,12 +323,12 @@ static int reporter = 0;
   }
   // now check if the destination address is in the ignore list
   for (dstign = extignore, i = count_extignore; i && dstign; i--, dstign++) {
-    if ((ipaddr & dstign->mask) != dstign->network) { 
-      //printf("%x & %x != %x\n", ipaddr, net->mask,  net->network);
+    if ((dstaddr & dstign->mask) != dstign->network) { 
+      //printf("%x & %x != %x\n", dstaddr, net->mask,  net->network);
       continue; // current ip address in this network?
     }
-    if ((ipaddr & ~dstign->mask) > dstign->size) {
-      //printf("%lx & ~%lx > %x\n", ipaddr, dstign->mask,  dstign->size);
+    if ((dstaddr & ~dstign->mask) > dstign->size) {
+      //printf("%lx & ~%lx > %x\n", dstaddr, dstign->mask,  dstign->size);
       continue;    // superfluous check?
     }
     break;
@@ -339,12 +339,12 @@ static int reporter = 0;
 
   if (srcnet && !dstign && !dstnet) { // if source is internal and destination isn't (and isn't ignored)
     srcnet->count[0].out += ntohs(ip->ip_len);  // the network address itself holds total counters
-    srcnet->count[ipaddr & ~srcnet->mask].out += ntohs(ip->ip_len);
+    srcnet->count[srcaddr & ~srcnet->mask].out += ntohs(ip->ip_len);
   }
 
   if (dstnet && !srcign && !srcnet) { // if destination is internal and source isn't and isn't ignored
     dstnet->count[0].in += ntohs(ip->ip_len); // the network address itself holds total counters
-    dstnet->count[ipaddr & ~dstnet->mask].in += ntohs(ip->ip_len);
+    dstnet->count[dstaddr & ~dstnet->mask].in += ntohs(ip->ip_len);
   }
 
 #if 0
