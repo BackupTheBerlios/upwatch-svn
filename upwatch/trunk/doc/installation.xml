@@ -19,9 +19,12 @@
                 machine running all probes, and the database (I'll also list the version we use ourselves):</para>
             <itemizedlist>
                 <listitem><para>glib2 >= 2.0.4</para></listitem>
-                <listitem><para>gnet 1.1.2</para></listitem>
+                <listitem><para>freetds >= 0.6.0 compiled with --enable-threadsafe</para></listitem>
                 <listitem><para>mysql 3.23.49</para></listitem>
+                <listitem><para>ucd-snmp 4.2.4</para></listitem>
                 <listitem><para>cURL 7.9.5</para></listitem>
+                <listitem><para>GDBM</para></listitem>
+                <listitem><para>-lcrypto</para></listitem>
                 <listitem><para>libnet 1.0.2a (www.packetfactory.net/libnet/)</para></listitem>
                 <listitem><para>libpcap 0.6.2</para></listitem>
             </itemizedlist>

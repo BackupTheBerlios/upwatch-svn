@@ -9,13 +9,13 @@
 #include "dmalloc.h"
 #endif
 
-struct mysql_result {
+struct mssql_result {
   STANDARD_PROBE_RESULT;
-#include "../uw_mysql/probe.res_h"
+#include "../uw_mssql/probe.res_h"
 };
 
-module mysql_module  = {
-  STANDARD_MODULE_STUFF(mysql),
+module mssql_module  = {
+  STANDARD_MODULE_STUFF(mssql),
   NULL,
   NULL,
   NULL,

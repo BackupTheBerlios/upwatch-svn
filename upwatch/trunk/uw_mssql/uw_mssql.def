@@ -1,0 +1,82 @@
+AutoGen Definitions options;
+export        = "#define progOptions uw_mssqlOptions";
+prog-name     = uw_mssql;
+prog-title    = "Upwatch mssql daemon";
+version       = `cat ../VERSION`;
+homerc        = "/etc/upwatch.conf";
+homerc        = "/etc/upwatch.d/uw_mssql.conf";
+homerc        = "$HOME/.upwatchrc";
+homerc        = "$HOME";
+homerc        = "$$/upwatch.conf";
+homerc        = "$$/uw_mssql.conf";
+detail        = 
+'uw_mssql reads a list of hosts from the database, and 
+performs queries on each host. This happens in parallel, 
+so uw_mssql can process thousands of hosts in a very short period.';
+
+// this section is for the generated specfile
+spec-requires = "mysql glib2 freetds";
+spec-files = "%attr(0770,root,upwatch) /usr/sbin/uw_mssql";
+
+// describe commandline flags
+flag = {
+    name      = begin;
+    value     = b;
+    arg_type  = numeric;
+    arg-default = 0;
+    arg-range = '0->59';
+    descrip   = "second to begin probing";
+    doc       =
+'The probing process is started every minute. To prevent the thundering-herd syndrome
+you can configure on which second the probing starts. So set one probe to 0, another to
+10, etcetera.';
+};
+
+flag = {
+    name      = spooldir;
+    value     = S;
+    arg_type  = string;
+    descrip   = "maildir-type spooldirectory for result files";
+    doc       =
+'This probe generates files with data. These are put in maildir style
+spooldirectories. This parameter denotes the basedirectory. Inside
+this directory a directory `tmp` and `new` should exist. All files
+will finally reside in `new`. You should set up some cron job that
+removes any files in `tmp` that are older then 36 hours. For some more info
+about maildir see http://www.qmail.org/man/man5/maildir.html.';
+};
+
+flag = {
+    name      = notify;
+    value     = N;
+    arg_type  = string;
+    arg-default = "uw_notify";
+    descrip   = "name of queue to drop notifications";
+    doc       =
+'The argument is taken to be a maildir under the directory `spooldir`.
+When a probe fails a request to notify the owner is put into this queue.';
+};
+
+flag = {
+    name      = investigate;
+    value     = V;
+    arg_type  = string;
+    arg-default = "uw_investigate";
+    descrip   = "Queue to drop commands for the investigate process";
+    doc       =
+'The argument is taken to be a maildir under the directory `spooldir`.
+If a probe fails, a request to investigate is put into this queue.';
+};
+
+flag = {
+    name      = output;
+    value     = O;
+    arg_type  = string;
+    descrip   = "name of queue to drop results";
+    doc       =
+'The argument is taken to be a maildir under the directory `spooldir`.
+All results are placed in this queue.';
+};
+
+#include dbase_options.def
+#include generic_options.def

@@ -80,6 +80,13 @@ extern int forever;
     int     ct  = STACKCT_OPT( NETWORK );
     char**  pn = STACKLST_OPT( NETWORK );
 
+    for (i=0; i < 60; i++) { // wait 1 minute
+      sleep(1);
+      if (!forever)  {
+        return(NULL);
+      }
+    }
+
     newnet = malloc(ct * sizeof(struct ipnetw));
     for (net = newnet, i = ct; i; i--, net++) {
       char network[256];
@@ -115,12 +122,6 @@ extern int forever;
    
     if (oldnet) {
       writeXMLresult(oldnet, oldcount_ipnets);
-    }
-    for (i=0; i < 60; i++) { // wait 1 minute
-      sleep(1);
-      if (!forever)  {
-        return(NULL);
-      }
     }
   }  
   return(NULL);

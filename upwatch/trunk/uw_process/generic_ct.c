@@ -9,30 +9,26 @@
 #include "dmalloc.h"
 #endif
 
-struct ping_result {
+struct ct_result {
   STANDARD_PROBE_RESULT;
-#include "../uw_ping/probe.res_h"
+  float connect;	/* time for connection to complete */
+  float total;		/* total time needed */
 };
-extern module ping_module;
 
 //*******************************************************************
 // GET THE INFO FROM THE XML FILE
 // Caller must free the pointer it returns
 //*******************************************************************
-static void get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
+void ct_get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
 {
-  struct ping_result *res = (struct ping_result *)probe_res;
+  struct ct_result *res = (struct ct_result *)probe_res;
 
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "min")) && (cur->ns == ns)) {
-    res->lowest = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "connect")) && (cur->ns == ns)) {
+    res->connect = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "avg")) && (cur->ns == ns)) {
-    res->value = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
-    return;
-  }
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "max")) && (cur->ns == ns)) {
-    res->highest = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "total")) && (cur->ns == ns)) {
+    res->total = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
     return;
   }
 }
@@ -40,10 +36,10 @@ static void get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr 
 //*******************************************************************
 // STORE RAW RESULTS
 //*******************************************************************
-static gint store_raw_result(struct _module *probe, void *probe_def, void *probe_res)
+gint ct_store_raw_result(struct _module *probe, void *probe_def, void *probe_res)
 {
   MYSQL_RES *result;
-  struct ping_result *res = (struct ping_result *)probe_res;
+  struct ct_result *res = (struct ct_result *)probe_res;
   struct probe_def *def = (struct probe_def *)probe_def;
   int already_there = TRUE;
   char *escmsg;
@@ -54,13 +50,15 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
   } else {
     escmsg = strdup("");
   }
-
+    
   result = my_query(probe->db, 0,
-                    "insert into pr_ping_raw "
+                    "insert into pr_%s_raw "
                     "set    probe = '%u', yellow = '%f', red = '%f', stattime = '%u', color = '%u', "
-                    "       value = '%f', lowest = '%f', highest = '%f', message = '%s'",
-                    def->probeid, def->yellow, def->red, res->stattime, res->color, 
-                    res->value, res->lowest, res->highest, escmsg);
+                    "       connect = '%f', total = '%f', "
+                    "       message = '%s' ",
+                    res->name, def->probeid, def->yellow, def->red, res->stattime, res->color, 
+                    res->connect, res->total, escmsg);
+
   mysql_free_result(result);
   if (mysql_affected_rows(probe->db) > 0) { // something was actually inserted
     already_there = FALSE;
@@ -72,25 +70,26 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
 //*******************************************************************
 // SUMMARIZE A TABLE INTO AN OLDER PERIOD
 //*******************************************************************
-static void summarize(module *probe, void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint ignore_dupes)
+void ct_summarize(module *probe, void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint ignore_dupes)
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
+  struct ct_result *res = (struct ct_result *)probe_res;
   struct probe_def *def = (struct probe_def *)probe_def;
   float avg_yellow, avg_red;
-  float avg_value, min_lowest, max_highest; 
+  float avg_connect, avg_total;
   guint stattime;
   guint max_color;
 
   stattime = slotlow + ((slothigh-slotlow)/2);
 
   result = my_query(probe->db, 0,
-                    "select avg(lowest), avg(value), avg(highest), "
-                    "       max(color), avg(yellow), avg(red) " 
-                    "from   pr_ping_%s use index(probstat) "
+                    "select avg(connect), avg(total), "
+                    "       max(color), avg(yellow), avg(red) "
+                    "from   pr_%s_%s use index(probstat) "
                     "where  probe = '%d' and stattime >= %d and stattime < %d",
-                    from, def->probeid, slotlow, slothigh);
-  
+                    res->name, from, def->probeid, slotlow, slothigh);
+
   if (!result) return;
   if (mysql_num_rows(result) == 0) { // no records found
     LOG(LOG_WARNING, "nothing to summarize from %s for probe %u %u %u",
@@ -110,36 +109,22 @@ static void summarize(module *probe, void *probe_def, void *probe_res, char *fro
     return;
   }
 
-  min_lowest  = atof(row[0]);
-  avg_value   = atof(row[1]);
-  max_highest = atof(row[2]);
-  max_color   = atoi(row[3]);
-  avg_yellow  = atof(row[4]);
-  avg_red     = atof(row[5]);
+  avg_connect = atof(row[0]);
+  avg_total = atof(row[1]);
+  max_color   = atoi(row[2]);
+  avg_yellow  = atof(row[3]);
+  avg_red     = atof(row[4]);
   mysql_free_result(result);
 
   result = my_query(probe->db, ignore_dupes,
-                    "insert into pr_ping_%s " 
-                    "set    value = %f, lowest = %f, highest = %f, probe = %d, color = '%u', " 
-                    "       stattime = %d, yellow = '%f', red = '%f', slot = '%u'",
-                    into, avg_value, min_lowest, max_highest, def->probeid, 
+                    "insert into pr_%s_%s "
+                    "set    connect = '%f', total = '%f', "
+                    "       probe = %d, color = '%u', stattime = %d, "
+                    "       yellow = '%f', red = '%f', slot = '%u'",
+                    res->name, into, avg_connect, avg_total, def->probeid, 
                     max_color, stattime, avg_yellow, avg_red, slot);
+
   mysql_free_result(result);
 }
 
-module ping_module  = {
-  STANDARD_MODULE_STUFF(ping),
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  get_from_xml,
-  NULL,
-  NULL,
-  store_raw_result,
-  summarize,
-  NULL
-};
 

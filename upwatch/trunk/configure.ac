@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.13 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.14 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -171,6 +171,10 @@ AC_CHECK_LIB([snmp], [snmp_open],
   [LIBSNMP_LIBS=-lsnmp], [AC_MSG_ERROR([Sorry, we need -lsnmp to continue])], [-lcrypto])
 AC_SUBST(LIBSNMP_LIBS)
 
+AC_CHECK_LIB([tds], [tds_alloc_login],
+  [LIBTDS_LIBS=-ltds], [AC_MSG_ERROR([Sorry, we need -ltds to continue])])
+AC_SUBST(LIBTDS_LIBS)
+
 #LIBOPTS_LDADD=-lopts
 #AC_SUBST(LIBOPTS_LDADD)
 
@@ -215,6 +219,7 @@ AC_CONFIG_FILES([Makefile
                  uw_mysql/Makefile
                  uw_pop3/Makefile
                  uw_snmpget/Makefile
+                 uw_mssql/Makefile
                  compat/Makefile
                  compat/bb/Makefile
                  compat/bb/bbhimport/Makefile

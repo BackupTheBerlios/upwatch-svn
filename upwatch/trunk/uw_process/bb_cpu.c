@@ -15,11 +15,6 @@ struct bb_cpu_result {
 };
 extern module bb_cpu_module;
 
-static int accept_probe(const char *name)
-{
-  return(strcmp(name, "bb_cpu") == 0);
-}
-
 //*******************************************************************
 // Ok, we'll give it a try, decode the info string a bit.
 // [ntserver3.netland.nl] up: 33 days, 1 users, 22 procs, load=9%, PhysicalMem: 256MB(50%)
@@ -278,7 +273,7 @@ module bb_cpu_module  = {
   NULL,    
   NULL,    
   NULL,    
-  accept_probe,
+  NULL,
   NULL,    
   NULL,
   fix_result,    

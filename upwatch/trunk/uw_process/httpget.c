@@ -15,11 +15,6 @@ struct httpget_result {
 };
 extern module httpget_module;
 
-static int accept_probe(const char *name)
-{
-  return(strcmp(name, "httpget") == 0);
-}
-
 //*******************************************************************
 // GET THE INFO FROM THE XML FILE
 // Caller must free the pointer it returns
@@ -147,7 +142,7 @@ module httpget_module  = {
   NULL,
   NULL,
   NULL,
-  accept_probe,
+  NULL,
   NULL,
   get_from_xml,
   NULL,

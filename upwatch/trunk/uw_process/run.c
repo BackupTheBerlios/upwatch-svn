@@ -108,9 +108,15 @@ int init(void)
 
     for (ct--; ct; ct--) {
       for (i=0; modules[i]; i++) {
-        if (modules[i]->accept_probe(pn[ct])) {
-          found = 1; break;
-        } 
+        if (modules[i]->accept_probe) {
+          if (modules[i]->accept_probe(modules[i], pn[ct])) {
+            found = 1; break;
+          } 
+        } else {
+          if (!strcmp(pn[ct], modules[i]->module_name)) {
+            found = 1; break;
+          }
+        }
       } 
       if (strcmp(pn[ct], "all") == 0 ||
           strcmp(pn[ct], "none") == 0) { 
@@ -313,35 +319,39 @@ static int handle_file(gpointer data, gpointer user_data)
       continue;
     }
     for (found = 0, i = 0; modules[i]; i++) {
-      if (modules[i]->accept_probe(cur->name)) {
-        int ret;
-        char buf[20];
+      int ret;
+      char buf[20];
 
-	if (cur->ns != ns) {
-          LOG(LOG_ERR, "method found, but namespace incorrect on %s", cur->name);
-	  continue;
-	}
-        found = 1;
-        probe_count++;
-        //xmlDocFormatDump(stderr, doc, 1);
-        strftime(buf, sizeof(buf), "%F %T", gmtime(&fromdate));
-        uw_setproctitle("%s %s@%s", buf, cur->name, fromhost);
-        ret = process(modules[i], doc, cur, ns);
-        if (ret == 0) {
-          failures++;
-          cur = cur->next;
-        } else if (ret == -1) {
-          fatal = TRUE;
-          break;
-        } else {
-          xmlNodePtr del = cur;
-          cur = cur->next;
-          xmlUnlinkNode(del); // succeeded, remove this node from the XML tree
-          xmlFreeNode(del);
-          modules[i]->count++;
-        }
-        break;
+      if (modules[i]->accept_probe) {
+        if (!modules[i]->accept_probe(modules[i], cur->name)) continue;
+      } else if (strcmp(cur->name, modules[i]->module_name)) {
+        continue;
+      } 
+
+      if (cur->ns != ns) {
+        LOG(LOG_ERR, "method found, but namespace incorrect on %s", cur->name);
+        continue;
       }
+      found = 1;
+      probe_count++;
+      //xmlDocFormatDump(stderr, doc, 1);
+      strftime(buf, sizeof(buf), "%F %T", gmtime(&fromdate));
+      uw_setproctitle("%s %s@%s", buf, cur->name, fromhost);
+      ret = process(modules[i], doc, cur, ns);
+      if (ret == 0) {
+        failures++;
+        cur = cur->next;
+      } else if (ret == -1) {
+        fatal = TRUE;
+        break;
+      } else {
+        xmlNodePtr del = cur;
+        cur = cur->next;
+        xmlUnlinkNode(del); // succeeded, remove this node from the XML tree
+        xmlFreeNode(del);
+        modules[i]->count++;
+      }
+      break;
     }
     if (!found) {
       LOG(LOG_ERR, "can't find method: %s", cur->name);
@@ -381,9 +391,14 @@ extern int forever;
   memset(&def, 0, sizeof(def));
   memset(&res, 0, sizeof(res));
   for (found = 0, idx = 0; modules[idx]; idx++) {
-    if (modules[idx]->accept_probe(probename)) {
-      found = 1;
-      break;
+    if (modules[idx]->accept_probe) {
+      if (modules[idx]->accept_probe(modules[idx], probename)) {
+        found = 1; break;
+      }
+    } else {
+      if (!strcmp(probename, modules[idx]->module_name)) {
+        found = 1; break;
+      }
     }
   }
   if (!found) {

@@ -16,7 +16,7 @@ struct sysstat_result {
 
 extern module sysstat_module;
 
-static int accept_probe(const char *name)
+static int accept_probe(module *probe, const char *name)
 {
   return(strcmp(name, "sysstat") == 0);
 }

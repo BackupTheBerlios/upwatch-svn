@@ -3,6 +3,7 @@
 
 extern int trust(char *name);
 
+
 /* list of probes */
 typedef enum
 {
@@ -50,7 +51,7 @@ typedef struct _module {
   void (*free_res)(void *res);
   int (*init)(void);
   void (*start_run)(void);
-  int (*accept_probe)(const char *name);
+  int (*accept_probe)(struct _module *probe, const char *name);
   void (*xml_result_node)(struct _module *probe, xmlDocPtr, xmlNodePtr, xmlNsPtr, void *res);
   void (*get_from_xml)(struct _module *probe, xmlDocPtr, xmlNodePtr, xmlNsPtr, void *res);
   int  (*fix_result)(struct _module *probe, void *res);
@@ -76,6 +77,12 @@ typedef struct transaction {
   void *res;		// probe result pointer
   void *def;		// probe definition data
 } trx;
+
+/* generic functions */
+extern void ct_get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res);
+extern gint ct_store_raw_result(struct _module *probe, void *probe_def, void *probe_res);
+extern void ct_summarize(module *probe, void *probe_def, void *probe_res, char *from, char *into, 
+                         guint slot, guint slotlow, guint slothigh, gint ignore_dupes);
 
 #endif /* __UW_PROCESS_H */
 

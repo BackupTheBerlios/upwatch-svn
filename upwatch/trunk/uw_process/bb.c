@@ -13,7 +13,7 @@ struct bb_generic_result {
   STANDARD_PROBE_RESULT;
 };
 
-static int accept_probe(const char *name)
+static int accept_probe(module *probe, const char *name)
 {
   return(strncmp(name, "bb_", 3) == 0);
 }

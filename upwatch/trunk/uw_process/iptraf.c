@@ -31,11 +31,6 @@ struct iptraf_def {
 
 extern module iptraf_module;
 
-static int accept_probe(const char *name)
-{
-  return(strcmp(name, "iptraf") == 0);
-}
-
 //*******************************************************************
 // GET THE INFO FROM THE XML FILE
 // Caller must free the pointer it returns
@@ -304,7 +299,7 @@ module iptraf_module  = {
   NULL,
   NULL,
   NULL,
-  accept_probe,
+  NULL,
   xml_result_node,
   get_from_xml,
   NULL,

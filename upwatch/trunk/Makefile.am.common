@@ -49,7 +49,7 @@ $(program).spec-install: cmd_options.def $(CMDDEF) $(SPECTPL)
 $(program).spec-generic: cmd_options.def $(CMDDEF) $(SPECTPL)
 	autogen -b $(program) $(GENINCL) -T $(SPECTPL) cmd_options.def
 
-CLEANFILES = cmd_options.c cmd_options.h *.1 $(program).spec-generic \
-  $(program).spec-install $(program).init $(program).spec Makefile.in \
+CLEANFILES = cmd_options.c cmd_options.h *.1 probe.spec-generic \
+  probe.spec-install $(program).init Makefile.in \
   probe.def_h probe.res_h probe.enum probe.mysql
 

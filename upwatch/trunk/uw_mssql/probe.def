@@ -1,0 +1,62 @@
+AutoGen Definitions mssql;
+#include probe_generic.def
+
+probe = {
+  name = "mssql";
+  id = 9;
+  descrip = "Do a Microsoft SQL Server query";
+  addbyhand = "yes";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+  yellow = "3";
+  red = "5";
+  message = "Optional error message";
+
+  def = {
+    name = "dbname";
+    type = "char";
+    length = 24;
+    null = false;
+    default = "";
+    descrip = "Name of the database for the query";
+  };
+  def = {
+    name = "dbuser";
+    type = "char";
+    length = 16;
+    null = false;
+    default = "";
+    descrip = "Database user";
+  };
+  def = {
+    name = "dbpasswd";
+    type = "char";
+    length = 16;
+    null = false;
+    default = "";
+    descrip = "Database password";
+  };
+  def = {
+    name = "query";
+    type = "text";
+    null = false;
+    default = "";
+    descrip = "Query to perform. This should return at least 1 row";
+  };
+
+  result = {
+    name = "connect";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "time for connection to complete";
+  };
+  result = {
+    name = "total";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "total time needed";
+  };
+};
