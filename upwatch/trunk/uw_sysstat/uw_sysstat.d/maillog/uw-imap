@@ -1,3 +1,4 @@
+green [LOGDATE] (ipop3d|imapd)[PID]: badlogin: [HOSTNAME]\[[IPADDR]\] plaintext .* invalid user
 green [LOGDATE] (ipop3d|imapd)[PID]: Logout user=.* host=.*
 green [LOGDATE] (ipop3d|imapd)[PID]: Login failure user=.* host=.*
 green [LOGDATE] (ipop3d|imapd)[PID]: port [NUM] service init from .*

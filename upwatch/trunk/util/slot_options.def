@@ -11,3 +11,5 @@ slotnumbers, given a ctime argument';
 argument      = "[string]";
 
 #include minimal_options.def
+#include license_gpl.def
+

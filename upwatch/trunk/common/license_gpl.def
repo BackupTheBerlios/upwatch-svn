@@ -1,0 +1,8 @@
+copyright = {
+  date = "2002";
+  author=  "Ron Arts";
+  owner = "Upwatch BV";
+  eaddr = "info@upwatch.com";
+  type = "NOTE";
+  text = 'Released under the General Public License version 2';
+};

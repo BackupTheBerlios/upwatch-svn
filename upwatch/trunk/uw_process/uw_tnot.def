@@ -246,3 +246,5 @@ then start the debugger and run the program with `-d3 --slave q_iptraf`';
 
 #include dbase_options.def
 #include generic_options.def
+#include license_proprietary.def
+

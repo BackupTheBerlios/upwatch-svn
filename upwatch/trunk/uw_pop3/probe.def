@@ -1,5 +1,6 @@
 AutoGen Definitions pop3;
 #include probe_generic.def
+#include license_proprietary.def
 
 probe = {
   name = "pop3";

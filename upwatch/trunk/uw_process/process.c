@@ -262,13 +262,13 @@ static void update_server_color(trx *t, struct probe_result *prv)
     }
   }
   mysql_free_result(result);
-  if (t->res->color <= maxcolor) return;
+  //if (t->res->color <= maxcolor) return;
 
   result = my_query(t->probe->db, 0,
                     // update server set color = '200' where id = '345'
                     "update %s set %s = '%u' where %s = '%u'",
                      OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_COLOR_FIELD), 
-                     t->res->color, OPT_ARG(SERVER_TABLE_ID_FIELD), t->def->server);
+                     maxcolor, OPT_ARG(SERVER_TABLE_ID_FIELD), t->def->server);
   mysql_free_result(result);
 }
 

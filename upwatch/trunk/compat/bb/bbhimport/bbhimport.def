@@ -23,3 +23,5 @@ flag = {
 
 #include dbase_options.def
 #include generic_options.def
+#include license_proprietary.def
+

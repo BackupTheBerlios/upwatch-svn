@@ -1,13 +1,15 @@
+green [LOGDATE] sshd[PID]: refused connect from [IPADDR]
+
 green [LOGDATE] sshd:\s*$
 green [LOGDATE] sshd: Generating SSH[NUM] DSA host key: 
 green [LOGDATE] sshd: Generating SSH[NUM] RSA host key: 
 green [LOGDATE] sshd: \^\[\[[NUM]G
 green [LOGDATE] sshd: \^\[\[[NUM]G\[  
-green [LOGDATE] sshd[PID]: Accepted challenge-response for [USER] from [IPADDR] port [NUM]
-green [LOGDATE] sshd[PID]: Accepted keyboard-interactive/pam for [USER] from [IPADDR] port [NUM]
-green [LOGDATE] sshd[PID]: Accepted password for [USER] from [IPADDR] port [NUM]
-green [LOGDATE] sshd[PID]: Accepted publickey for [USER] from [IPADDR] port [NUM]
-green [LOGDATE] sshd[PID]: Accepted rsa for [USER] from [IPADDR] port [NUM]
+green [LOGDATE] sshd[PID]: Accepted challenge-response for [WORD] from [IPADDR] port [NUM]
+green [LOGDATE] sshd[PID]: Accepted keyboard-interactive/pam for [WORD] from [IPADDR] port [NUM]
+green [LOGDATE] sshd[PID]: Accepted password for [WORD] from [IPADDR] port [NUM]
+green [LOGDATE] sshd[PID]: Accepted publickey for [WORD] from [IPADDR] port [NUM]
+green [LOGDATE] sshd[PID]: Accepted rsa for [WORD] from [IPADDR] port [NUM]
 green [LOGDATE] sshd[PID]: Address [IPADDR] maps to [HOSTNAME], but this does not map back to the address - POSSIBLE BREAKIN ATTEMPT!
 green [LOGDATE] sshd[PID]: Bad protocol version identification
 green [LOGDATE] sshd[PID]: channel [NUM]: rcvd big packet [NUM], maxpack [NUM]
@@ -16,15 +18,15 @@ green [LOGDATE] sshd[PID]: Connection closed by [IPADDR]
 green [LOGDATE] sshd[PID]: Connection to [IPADDR] from [IPADDR] port [NUM]
 green [LOGDATE] sshd[PID]: Could not reverse map address [IPADDR]\.
 green [LOGDATE] sshd[PID]: Did not receive identification string from [IPADDR]
-green [LOGDATE] sshd[PID]: Disconnecting: Too many authentication failures for [USER]
+green [LOGDATE] sshd[PID]: Disconnecting: Too many authentication failures for [WORD]
 green [LOGDATE] sshd[PID]: error: accept: Connection reset by peer
 green [LOGDATE] sshd[PID]: error: accept: Connection timed out
 green [LOGDATE] sshd[PID]: error: key_read: 
 green [LOGDATE] sshd[PID]: error: PAM: Authentication failure
-green [LOGDATE] sshd[PID]: Failed keyboard-interactive/pam for [USER] from [IPADDR] port [NUM] ssh[NUM]
-green [LOGDATE] sshd[PID]: Failed none for [USER] from [IPADDR] port [NUM] ssh[NUM]
-green [LOGDATE] sshd[PID]: Failed password for (illegal )*[USER] from [IPADDR] port [NUM] ssh[NUM]
-green [LOGDATE] sshd[PID]: Failed publickey for [USER] from [IPADDR] port [NUM] ssh[NUM]
+green [LOGDATE] sshd[PID]: Failed keyboard-interactive/pam for [WORD] from [IPADDR] port [NUM] ssh[NUM]
+green [LOGDATE] sshd[PID]: Failed none for (illegal )*[WORD] from [IPADDR] port [NUM] ssh[NUM]
+green [LOGDATE] sshd[PID]: Failed password for (illegal )*[WORD] from [IPADDR] port [NUM] ssh[NUM]
+green [LOGDATE] sshd[PID]: Failed publickey for [WORD] from [IPADDR] port [NUM] ssh[NUM]
 green [LOGDATE] sshd[PID]: fatal: Bad protocol version identification:
 green [LOGDATE] sshd[PID]: fatal: Connection closed by remote host\.
 green [LOGDATE] sshd[PID]: fatal: Did not receive ident string\.
@@ -34,8 +36,8 @@ green [LOGDATE] sshd[PID]: fatal: Timeout before authentication for [IPADDR]
 green [LOGDATE] sshd[PID]: Found matching DSA key: [MACADDR]
 green [LOGDATE] sshd[PID]: Generating new [NUM] bit RSA key\.
 green [LOGDATE] sshd[PID]: Generating [NUM] bit RSA key\.
-green [LOGDATE] sshd[PID]: Illegal [USER_] from [IPADDR]
-green [LOGDATE] sshd[PID]: input_userauth_request: illegal [USER_]
+green [LOGDATE] sshd[PID]: Illegal [WORD_] from [IPADDR]
+green [LOGDATE] sshd[PID]: input_userauth_request: illegal [WORD_]
 green [LOGDATE] sshd[PID]: lastlog_openseek: [PATH] is not a file or directory!
 green [LOGDATE] sshd[PID]: lastlog_perform_login: Couldn't stat [PATH]: No such file or directory
 green [LOGDATE] sshd[PID]: log: Closing connection to [IPADDR]
@@ -43,16 +45,16 @@ green [LOGDATE] sshd[PID]: log: Connection to [HOSTNAME] from [IPADDR] port [NUM
 green [LOGDATE] sshd[PID]: log: Could not reverse map address [IPADDR]\.
 green [LOGDATE] sshd[PID]: log: Generating new [NUM] bit RSA key\.
 green [LOGDATE] sshd[PID]: log: Generating [NUM] bit RSA key\.
-green [LOGDATE] sshd[PID]: log: Password authentication for [USER] accepted\.
+green [LOGDATE] sshd[PID]: log: Password authentication for [WORD] accepted\.
 green [LOGDATE] sshd[PID]: log: reverse mapping checking gethostbyname for reverse\.[IPADDR]\.nbs failed - POSSIBLE BREAKIN ATTEMPT!
 green [LOGDATE] sshd[PID]: log: RhostsRsa authentication not available for connections from unprivileged port\.
-green [LOGDATE] sshd[PID]: log: ROOT LOGIN as '[USER]' from [HOSTNAME]
-green [LOGDATE] sshd[PID]: log: ROOT LOGIN as '[USER]' from [IPADDR]
+green [LOGDATE] sshd[PID]: log: ROOT LOGIN as '[WORD]' from [HOSTNAME]
+green [LOGDATE] sshd[PID]: log: ROOT LOGIN as '[WORD]' from [IPADDR]
 green [LOGDATE] sshd[PID]: log: RSA key generation complete\.
 green [LOGDATE] sshd[PID]: log: Server listening on port [NUM]\.
-green [LOGDATE] sshd[PID]: Postponed keyboard-interactive for [USER] from [IPADDR] port [NUM] ssh[NUM]
-green [LOGDATE] sshd[PID]: Postponed keyboard-interactive/pam for [USER] from [IPADDR] port [NUM] ssh[NUM]
-green [LOGDATE] sshd[PID]: Postponed publickey for [USER] from [IPADDR] port [NUM] ssh[NUM]
+green [LOGDATE] sshd[PID]: Postponed keyboard-interactive for [WORD] from [IPADDR] port [NUM] ssh[NUM]
+green [LOGDATE] sshd[PID]: Postponed keyboard-interactive/pam for [WORD] from [IPADDR] port [NUM] ssh[NUM]
+green [LOGDATE] sshd[PID]: Postponed publickey for [WORD] from [IPADDR] port [NUM] ssh[NUM]
 green [LOGDATE] sshd[PID]: Received disconnect from [IPADDR]: [NUM]: All open channels closed
 green [LOGDATE] sshd[PID]: Received disconnect from [IPADDR]: [NUM]: Bye Bye
 green [LOGDATE] sshd[PID]: Received signal [NUM]; terminating\.

@@ -76,9 +76,32 @@ done
         -c "Upwatch" -u 78 -g 78 upwatch > /dev/null 2>&1 || :
 
 %post
-# install initscripts
+# install initscripts and
+# patch sudoers file to allow members of the upwatch group to
+# restart the services
+patch_sudoers() {
+  if [ -f /etc/sudoers.tmp ]
+  then
+    return
+  fi
+  fgrep upwatch /etc/sudoers >/dev/null 2>&1
+  if [ $? -eq 0 ]
+  then
+    return
+  fi
+  cp /etc/sudoers /etc/sudoers.tmp
+
+  echo "" >> /etc/sudoers.tmp
+  echo "# Added by Upwatch RPM installation" >> /etc/sudoers.tmp
+  echo "%upwatch ALL=$1upwatch *" >> /etc/sudoers.tmp
+  echo "%upwatch ALL=$1uw_* *" >> /etc/sudoers.tmp
+  mv -f /etc/sudoers.tmp /etc/sudoers
+  chmod 440 /etc/sudoers
+}
+
 if [ -f /etc/redhat-release ]
 then
+  patch_sudoers "/sbin/service ";
   DISTR=redhat
   ln -sf /usr/share/upwatch/init/upwatch.$DISTR /etc/init.d/upwatch
 [+ FOR clientprog +]  ln -sf /usr/share/upwatch/init/[+clientprog+].$DISTR /etc/init.d/[+clientprog+]
@@ -86,6 +109,7 @@ then
 
 if [ -f /etc/SuSE-release ]
 then
+  patch_sudoers "/sbin/rc";
   DISTR=suse
   ln -sf /usr/share/upwatch/init/upwatch.$DISTR /etc/init.d/upwatch
 [+ FOR clientprog +]  ln -sf /usr/share/upwatch/init/[+clientprog+].$DISTR /etc/init.d/[+clientprog+]
@@ -100,6 +124,7 @@ done
 if [ -x /sbin/chkconfig ]; then
 [+ FOR clientprog +]  /sbin/chkconfig --add [+clientprog+] 2>/dev/null || true
 [+ ENDFOR +]fi
+
 
 %preun
 if [ "$1" = 0 ] ; then

@@ -238,3 +238,5 @@ Mainly used in dialup situations.';
 
 
 #include generic_options.def
+#include license_gpl.def
+

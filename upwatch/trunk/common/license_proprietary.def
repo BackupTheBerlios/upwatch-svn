@@ -1,0 +1,9 @@
+copyright = {
+  date = "2002-2004";
+  author=  "Ron Arts";
+  owner = "Upwatch BV";
+  eaddr = "info@upwatch.com";
+  type = "NOTE";
+  text = 
+'Redistribution Prohibited. Violation will be prosecuted to the maximum extent possible by applicable law.';
+};

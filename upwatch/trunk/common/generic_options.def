@@ -7,16 +7,6 @@ explain;
 long-opts;
 gnu-usage;
 
-copyright = {
-  date = "2002";
-  author=  "Ron Arts";
-  owner = "Upwatch BV";
-  eaddr = "info@upwatch.com";
-  type = "NOTE";
-  text = 
-'Redistribution Prohibited. Violation will be prosecuted to the maximum extent possible by applicable law.';
-};
-
 flag = {
     name      = syslog;
     value     = s;

@@ -1,4 +1,4 @@
-green [LOGDATE] Keepalived_vrrp: Remote SMTP server [[IPADDR]:[NUM]] connected.
+green [LOGDATE] Keepalived_vrrp: Remote SMTP server \[[IPADDR]:[NUM]\] connected.
 green [LOGDATE] Keepalived_vrrp: SMTP alert successfully sent.
 green [LOGDATE] Keepalived_vrrp: VRRP_Group(SARA_S) Syncing instances to (MASTER|BACKUP) state
 green [LOGDATE] Keepalived_vrrp: VRRP_Instance(VI_eth[NUM]) Entering BACKUP STATE

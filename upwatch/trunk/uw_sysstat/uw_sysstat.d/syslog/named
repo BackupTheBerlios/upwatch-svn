@@ -16,6 +16,7 @@ green [LOGDATE] named[PID]: dispatch [HEX]: shutting down due to TCP receive err
 green [LOGDATE] named[PID]: dns_master_load: [PATH]:[NUM]: ignoring out-of-zone data \(.*\)
 green [LOGDATE] named[PID]: drained [NUM] queries \(delay [NUM] sec\)
 green [LOGDATE] named[PID]: exiting
+
 green [LOGDATE] named[PID]: Forwarding source address is \[[IPADDR]\]\.[NUM]
 green [LOGDATE] named[PID]: group = [NUM]
 green [LOGDATE] named[PID]: hint zone "" \(IN\) loaded \(serial [NUM]\)
@@ -23,6 +24,7 @@ green [LOGDATE] named[PID]: "[HOSTNAME] IN MX" points to a CNAME \([HOSTNAME]\)
 green [LOGDATE] named[PID]: "[HOSTNAME] IN NS" points to a CNAME \([HOSTNAME]\)
 green [LOGDATE] named[PID]: [HOSTNAME]:[NUM]: no TTL specified; using SOA MINTTL instead
 green [LOGDATE] named[PID]: [HOSTNAME]v\.[NUM]\.[NUM]\.[NUM]:[NUM]: makename failed
+green [LOGDATE] named[PID]: internal_send: 
 green [LOGDATE] named[PID]: Lame server on '.*' \(in '.*'\?\): \[[IPADDR]\]\.[NUM] '[HOSTNAME]'
 green [LOGDATE] named[PID]: lame server resolving '.*' \(in '.*'\?\): [IPADDR]#[NUM]
 green [LOGDATE] named[PID]: listening on \[[IPADDR]\]\.[NUM]
