@@ -227,6 +227,7 @@ static int handle_file(gpointer data, gpointer user_data)
     if (!found) {
       LOG(LOG_ERR, "can't find method: %s", cur->name);
       failures++;
+      cur = cur->next;
     }
     if (fatal) break;
   }

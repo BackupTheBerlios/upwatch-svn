@@ -25,6 +25,8 @@ struct iptraf_def {
   guint slotday_in_total;   // in-memory counters for the current slot in the 
   guint slotday_out_total;  // pr_iptraf_day table. To speed things up a bit.
   guint slotday_max_color;  // same with color
+  gint  slotday_avg_yellow; // 
+  gint  slotday_avg_red;    // 
 };
 
 extern module iptraf_module;
@@ -126,22 +128,26 @@ static void *get_def(module *probe, void *probe_res)
     }
 
     uw_slot(SLOT_DAY, res->stattime, &slotlow, &slothigh);
-    result = my_query("select sum(in_total), sum(out_total), max(color), max(stattime) "
+    result = my_query("select sum(in_total), sum(out_total), max(color), avg(yellow), avg(red), max(stattime) "
                       "from   pr_iptraf_raw use index(probtime) "
                       "where  probe = '%u' and stattime >= '%u' and stattime < '%u'",
                       def->probeid, slotlow, slothigh);
     if (result) {
       row = mysql_fetch_row(result);
       if (row) {
-        if (row[0]) def->slotday_in_total = atoi(row[0]);
-        if (row[1]) def->slotday_out_total = atoi(row[1]);
-        if (row[2]) def->slotday_max_color = atoi(row[2]);
-        if (row[3]) def->stattime = atoi(row[3]);
+        if (row[0]) def->slotday_in_total   = atoi(row[0]);
+        if (row[1]) def->slotday_out_total  = atoi(row[1]);
+        if (row[2]) def->slotday_max_color  = atoi(row[2]);
+        if (row[3]) def->slotday_avg_yellow = atoi(row[3]);
+        if (row[4]) def->slotday_avg_red    = atoi(row[4]);
+        if (row[5]) def->stattime           = atoi(row[5]);
       }
       mysql_free_result(result);
     } else {
       LOG(LOG_NOTICE, "raw record for %s id %u not found between %u and %u", 
                       probe->name, def->probeid, slotlow, slothigh);
+      def->slotday_avg_yellow = def->yellow;
+      def->slotday_avg_red    = def->red;   
     }
 
     g_hash_table_insert(probe->cache, guintdup(*(unsigned *)&res->ipaddr), def);
@@ -197,7 +203,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   struct iptraf_def *def = (struct iptraf_def *)probe_def;
   struct iptraf_result *res = (struct iptraf_result *)probe_res;
   gint avg_yellow, avg_red;
-  guint in_total, out_total;
+  float in_total, out_total;
   guint stattime;
   guint max_color;
 
@@ -207,9 +213,13 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
     in_total = def->slotday_in_total;
     out_total = def->slotday_out_total;
     max_color = def->slotday_max_color;
+    avg_yellow = def->slotday_avg_yellow;
+    avg_red = def->slotday_avg_red;
     def->slotday_in_total = 0;
     def->slotday_out_total = 0;
     def->slotday_max_color = 0;
+    def->slotday_avg_yellow = def->yellow;
+    def->slotday_avg_red = def->red;
   } else {
     result = my_query("select sum(in_total), sum(out_total), max(color), avg(yellow), avg(red) "
                       "from   pr_iptraf_%s use index(probtime) "
@@ -236,7 +246,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   }
 
   result = my_query("insert into pr_iptraf_%s "
-                    "set    in_total = '%u', out_total = '%u', "
+                    "set    in_total = '%f', out_total = '%f', "
                     "       probe = '%u', color = '%u', stattime = '%u', yellow = '%d', red = '%d'",
                     into, in_total, out_total, def->probeid, max_color, stattime, avg_yellow, avg_red);
   mysql_free_result(result);

@@ -24,6 +24,7 @@ struct sysstat_result {
   guint buffered;
   guint cached;
   guint used;
+  gint  systemp;
 };
 
 extern module sysstat_module;
@@ -89,6 +90,9 @@ static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "used")) && (cur->ns == ns)) {
       res->used = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+    }
+    if ((!xmlStrcmp(cur->name, (const xmlChar *) "systemp")) && (cur->ns == ns)) {
+      res->systemp = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "info")) && (cur->ns == ns)) {
       p = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
@@ -186,12 +190,12 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
                     "       loadavg = '%f', user = '%u', system = '%u', idle = '%u', "
                     "       swapin = '%u', swapout = '%u', blockin = '%u', blockout = '%u', "
                     "       swapped = '%u', free = '%u', buffered = '%u', cached = '%u', "
-                    "       used = '%u', message = '%s'",
+                    "       used = '%u', systemp = '%d', message = '%s'",
                     def->probeid, def->yellow, def->red, res->stattime, res->color, 
                     res->loadavg,   res->user, res->system, res->idle,
                     res->swapin, res->swapout, res->blockin, res->blockout,
                     res->swapped, res->free, res->buffered, res->cached,
-                    res->used, res->message ? res->message : "");
+                    res->used, res->systemp, res->message ? res->message : "");
   mysql_free_result(result);
   if (mysql_affected_rows(mysql) > 0) { // something was actually inserted
     already_there = FALSE;
@@ -211,6 +215,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   gfloat avg_loadavg;
   guint avg_user, avg_system, avg_idle, avg_swapin, avg_swapout, avg_blockin;
   guint avg_blockout, avg_swapped, avg_free, avg_buffered, avg_cached, avg_used;
+  gint avg_systemp;
   guint stattime;
   guint max_color;
 
@@ -219,7 +224,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   result = my_query("select avg(loadavg), avg(user), avg(system), avg(idle), "
                     "       avg(swapin), avg(swapout), avg(blockin), avg(blockout), "
                     "       avg(swapped), avg(free), avg(buffered), avg(cached), "
-                    "       avg(used), max(color), avg(yellow), avg(red) " 
+                    "       avg(used), avg(systemp), max(color), avg(yellow), avg(red) " 
                     "from   pr_sysstat_%s use index(probtime) "
                     "where  probe = '%d' and stattime >= %d and stattime < %d",
                     from, def->probeid, slotlow, slothigh);
@@ -248,22 +253,23 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   avg_buffered= atoi(row[10]);
   avg_cached  = atoi(row[11]);
   avg_used    = atoi(row[12]);
-  max_color   = atoi(row[13]);
-  avg_yellow  = atoi(row[14]);
-  avg_red     = atoi(row[15]);
+  avg_systemp = atoi(row[13]);
+  max_color   = atoi(row[14]);
+  avg_yellow  = atoi(row[15]);
+  avg_red     = atoi(row[16]);
   mysql_free_result(result);
 
   result = my_query("insert into pr_sysstat_%s " 
                     "set    loadavg = '%f', user = '%u', system = '%u', idle = '%u', "
                     "       swapin = '%u', swapout = '%u', blockin = '%u', blockout = '%u', "
                     "       swapped = '%u', free = '%u', buffered = '%u', cached = '%u', "
-                    "       used = '%u', probe = %d, color = '%u', stattime = %d, "
+                    "       used = '%u', systemp = '%d', probe = %d, color = '%u', stattime = %d, "
                     "       yellow = '%d', red = '%d'",
                     into, 
                     avg_loadavg, avg_user, avg_system, avg_idle, 
                     avg_swapin, avg_swapout, avg_blockin, avg_blockout, 
                     avg_swapped, avg_free, avg_buffered, avg_cached, 
-                    avg_used, def->probeid, max_color, stattime,
+                    avg_used, avg_systemp, def->probeid, max_color, stattime,
                     avg_yellow, avg_red);
   mysql_free_result(result);
 }
