@@ -136,17 +136,17 @@ void refresh_database(MYSQL *mysql)
     }
 
     if (probe->ipaddress) g_free(probe->ipaddress);
-    probe->ipaddress = strdup(row[5]);
+    probe->ipaddress = strdup(row[4]);
     if (probe->dbname) g_free(probe->dbname);
-    probe->dbname = strdup(row[6]);
+    probe->dbname = strdup(row[5]);
     if (probe->dbuser) g_free(probe->dbuser);
-    probe->dbuser = strdup(row[7]);
+    probe->dbuser = strdup(row[6]);
     if (probe->dbpasswd) g_free(probe->dbpasswd);
-    probe->dbpasswd = strdup(row[8]);
+    probe->dbpasswd = strdup(row[7]);
     if (probe->query) g_free(probe->query);
-    probe->query = strdup(row[9]);
-    probe->yellow = atof(row[10]);
-    probe->red = atof(row[11]);
+    probe->query = strdup(row[8]);
+    probe->yellow = atof(row[9]);
+    probe->red = atof(row[10]);
     if (probe->msg) g_free(probe->msg);
     probe->msg = NULL;
     probe->seen = 1;
@@ -274,7 +274,7 @@ void probe(gpointer data, gpointer user_data)
   tds_set_library(login, "TDS-Library");
   tds_set_server(login, probe->ipaddress);
   tds_set_port(login, 1433);
-  tds_set_client_charset(login, "iso_1");
+  tds_set_client_charset(login, "ISO-8859-1");
   tds_set_language(login, "us_english");
   tds_set_passwd(login, probe->dbpasswd);
 
