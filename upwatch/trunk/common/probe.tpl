@@ -63,6 +63,7 @@ IF null +][+
 ELSE +]NOT [+
 ENDIF null +]NULL default '[+default+]',	-- [+descrip+][+ 
 ENDFOR result +]
+  message text NOT NULL default '',
   PRIMARY KEY (id),
   UNIQUE KEY probtime (stattime,probe),
   KEY probe (probe)

@@ -47,6 +47,7 @@ static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr
     if (xmlIsBlankNode(cur)) continue;
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "color")) && (cur->ns == ns)) {
       res->color = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+      continue;
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "info")) && (cur->ns == ns)) {
       p = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
@@ -54,6 +55,7 @@ static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr
         res->message = strdup(p);
         xmlFree(p);
       }
+      continue;
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "host")) && (cur->ns == ns)) {
       xmlNodePtr hname;
@@ -66,6 +68,7 @@ static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr
             res->hostname = strdup(p);
             xmlFree(p);
           }
+          continue;
         }
       }
     }
@@ -275,8 +278,8 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   avg_cached  = atoi(row[11]);
   avg_used    = atoi(row[12]);
   max_color   = atoi(row[13]);
-  avg_yellow  = atoi(row[14]);
-  avg_red     = atoi(row[15]);
+  avg_yellow  = atof(row[14]);
+  avg_red     = atof(row[15]);
   mysql_free_result(result);
 
   result = my_query("insert into pr_bb_cpu_%s " 
@@ -284,7 +287,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
                     "       swapin = '%u', swapout = '%u', blockin = '%u', blockout = '%u', "
                     "       swapped = '%u', free = '%u', buffered = '%u', cached = '%u', "
                     "       used = '%u', probe = %d, color = '%u', stattime = %d, "
-                    "       yellow = '%d', red = '%d'",
+                    "       yellow = '%f', red = '%f'",
                     into, 
                     avg_loadavg, avg_user, avg_system, avg_idle, 
                     avg_swapin, avg_swapout, avg_blockin, avg_blockout, 

@@ -11,6 +11,7 @@ probe = {
   comment = "";
   yellow = "3";
   red = "5";
+  message = "optional error message";
 
   def = {
     name = "count";
@@ -42,13 +43,6 @@ probe = {
     null = false;
     default = "0";
     descrip = "highest turn-around time";
-  };
-  result = {
-    name = "message";
-    type = "text";
-    null = false;
-    default = "";
-    descrip = "optional error message";
   };
 };
 

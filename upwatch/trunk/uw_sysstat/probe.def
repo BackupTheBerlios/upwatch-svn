@@ -11,6 +11,7 @@ probe = {
   comment = "";
   yellow = "3";
   red = "5";
+  message = "list of processes";
 
   /* no extra definition fields */
 
@@ -123,12 +124,5 @@ probe = {
     null = false;
     default = "0";
     descrip = "Amount of memory used by processes";
-  };
-  result = {
-    name = "message";
-    type = "text";
-    null = false;
-    default = "";
-    descrip = "list of processes";
   };
 };

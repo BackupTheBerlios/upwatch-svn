@@ -25,8 +25,8 @@ struct iptraf_def {
   float slotday_in_total;   // in-memory counters for the current slot in the 
   float slotday_out_total;  // pr_iptraf_day table. To speed things up a bit.
   guint slotday_max_color;  // same with color
-  gint  slotday_avg_yellow; // 
-  gint  slotday_avg_red;    // 
+  float slotday_avg_yellow; // 
+  float slotday_avg_red;    // 
 };
 
 extern module iptraf_module;
@@ -58,9 +58,11 @@ static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr
     if (xmlIsBlankNode(cur)) continue;
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "in")) && (cur->ns == ns)) {
       res->in_total = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+      continue;
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "out")) && (cur->ns == ns)) {
       res->out_total = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+      continue;
     }
   }
 
@@ -95,8 +97,8 @@ static void *get_def(module *probe, void *probe_res)
       return(NULL);
     }
     def->probeid  = atoi(row[0]);
-    def->yellow   = atoi(row[1]);
-    def->red      = atoi(row[2]);
+    def->yellow   = atof(row[1]);
+    def->red      = atof(row[2]);
     mysql_free_result(result);
 
     result = my_query("select server, color, stattime "
@@ -138,8 +140,8 @@ static void *get_def(module *probe, void *probe_res)
         if (row[0]) def->slotday_in_total   = atoi(row[0]);
         if (row[1]) def->slotday_out_total  = atoi(row[1]);
         if (row[2]) def->slotday_max_color  = atoi(row[2]);
-        if (row[3]) def->slotday_avg_yellow = atoi(row[3]);
-        if (row[4]) def->slotday_avg_red    = atoi(row[4]);
+        if (row[3]) def->slotday_avg_yellow = atof(row[3]);
+        if (row[4]) def->slotday_avg_red    = atof(row[4]);
         if (row[5]) def->newest             = atoi(row[5]);
       }
       mysql_free_result(result);
@@ -182,7 +184,7 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
   }
 
   result = my_query("insert into pr_iptraf_raw "
-                    "set    probe = '%u', yellow = '%d', red = '%d', stattime = '%u', color = '%u', "
+                    "set    probe = '%u', yellow = '%f', red = '%f', stattime = '%u', color = '%u', "
                     "       in_total = '%f', out_total = '%f'",
                     def->probeid, def->yellow, def->red, res->stattime, res->color, 
                     res->in_total, res->out_total);
@@ -240,14 +242,14 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
     in_total    = atof(row[0]);
     out_total   = atof(row[1]);
     max_color   = atoi(row[2]);
-    avg_yellow  = atoi(row[3]);
-    avg_red     = atoi(row[4]);
+    avg_yellow  = atof(row[3]);
+    avg_red     = atof(row[4]);
     mysql_free_result(result);
   }
 
   result = my_query("insert into pr_iptraf_%s "
                     "set    in_total = '%f', out_total = '%f', "
-                    "       probe = '%u', color = '%u', stattime = '%u', yellow = '%d', red = '%d'",
+                    "       probe = '%u', color = '%u', stattime = '%u', yellow = '%f', red = '%f'",
                     into, in_total, out_total, def->probeid, max_color, stattime, avg_yellow, avg_red);
   mysql_free_result(result);
 }

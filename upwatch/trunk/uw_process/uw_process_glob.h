@@ -14,11 +14,11 @@ PROBE_EMPTY = 1,
   guint stattime; \
   guint probeid; \
   guint server; \
-  guint expires; 
+  guint expires; \
+  char *message; 
 
 struct probe_result {
   STANDARD_PROBE_RESULT;
-  char *message;
 #include "../common/common.h"
 };
 

@@ -21,6 +21,14 @@
 static int handle_file(gpointer data, gpointer user_data);
 static int process(module *module, xmlDocPtr, xmlNodePtr, xmlNsPtr);
 
+static void free_res(void *res)
+{
+  struct probe_result *r = (struct probe_result *)res;
+
+  if (r->message) g_free(r->message);
+  g_free(r);
+}
+
 static void cleanup(void)
 {
   int i;
@@ -30,14 +38,6 @@ static void cleanup(void)
       g_hash_table_destroy(modules[i]->cache);
     }
   }
-}
-
-static void free_res(void *res)
-{
-  struct probe_result *r = (struct probe_result *)res;
-
-  if (r->message) g_free(r->message);
-  g_free(r);
 }
 
 int init(void)

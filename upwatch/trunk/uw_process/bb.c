@@ -12,7 +12,6 @@
 struct bb_generic_result {
   STANDARD_PROBE_RESULT;
   gchar *hostname;
-  gchar *message;
 };
 
 static void free_res(void *res)
@@ -46,6 +45,7 @@ static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr
     if (xmlIsBlankNode(cur)) continue;
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "color")) && (cur->ns == ns)) {
       res->color = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+      continue;
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "info")) && (cur->ns == ns)) {
       p = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
@@ -53,6 +53,7 @@ static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr
         res->message = strdup(p);
         xmlFree(p);
       }
+      continue;
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "host")) && (cur->ns == ns)) {
       xmlNodePtr hname;
@@ -65,6 +66,7 @@ static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr
             res->hostname = strdup(p);
             xmlFree(p);
           }
+          continue;
         }
       }
     }

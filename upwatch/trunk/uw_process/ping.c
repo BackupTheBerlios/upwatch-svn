@@ -49,15 +49,19 @@ static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr
     if (xmlIsBlankNode(cur)) continue;
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "color")) && (cur->ns == ns)) {
       res->color = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+      continue;
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "min")) && (cur->ns == ns)) {
       res->lowest = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+      continue;
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "avg")) && (cur->ns == ns)) {
       res->value = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+      continue;
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "max")) && (cur->ns == ns)) {
       res->highest = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+      continue;
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "info")) && (cur->ns == ns)) {
       p = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
@@ -65,6 +69,7 @@ static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr
         res->message = strdup(p);
         xmlFree(p);
       }
+      continue;
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "host")) && (cur->ns == ns)) {
       xmlNodePtr hname;
@@ -77,6 +82,7 @@ static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr
             res->hostname = strdup(p);
             xmlFree(p);
           }
+          continue;
         }
         if ((!xmlStrcmp(hname->name, (const xmlChar *) "ipaddress")) && (hname->ns == ns)) {
           p = xmlNodeListGetString(doc, hname->xmlChildrenNode, 1);
@@ -84,6 +90,7 @@ static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr
             res->ipaddress = strdup(p);
             xmlFree(p);
           }
+          continue;
         }
       }
     }
@@ -102,7 +109,7 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
   int already_there = TRUE;
     
   result = my_query("insert into pr_ping_raw "
-                    "set    probe = '%u', yellow = '%u', red = '%u', stattime = '%u', color = '%u', "
+                    "set    probe = '%u', yellow = '%f', red = '%f', stattime = '%u', color = '%u', "
                     "       value = '%f', lowest = '%f', highest = '%f', message = '%s'",
                     def->probeid, def->yellow, def->red, res->stattime, res->color, 
                     res->value, res->lowest, res->highest, res->message ? res->message : "");
@@ -149,13 +156,13 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   avg_value   = atof(row[1]);
   max_highest = atof(row[2]);
   max_color   = atoi(row[3]);
-  avg_yellow  = atoi(row[4]);
-  avg_red     = atoi(row[5]);
+  avg_yellow  = atof(row[4]);
+  avg_red     = atof(row[5]);
   mysql_free_result(result);
 
   result = my_query("insert into pr_ping_%s " 
                     "set    value = %f, lowest = %f, highest = %f, probe = %d, color = '%u', " 
-                    "       stattime = %d, yellow = '%u', red = '%u'",
+                    "       stattime = %d, yellow = '%f', red = '%f'",
                     into, avg_value, min_lowest, max_highest, def->probeid, 
                     max_color, stattime, avg_yellow, avg_red);
   mysql_free_result(result);

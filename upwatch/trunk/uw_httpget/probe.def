@@ -11,6 +11,7 @@ probe = {
   comment = "";
   yellow = "3";
   red = "5";
+  message = "Optional error message";
 
   def = {
     name = "hostname";
@@ -56,12 +57,5 @@ probe = {
     null = false;
     default = "0";
     descrip = "total time needed";
-  };
-  result = {
-    name = "message";
-    type = "text";
-    null = false;
-    default = "";
-    descrip = "Optional error message";
   };
 };

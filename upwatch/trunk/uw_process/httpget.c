@@ -61,6 +61,7 @@ static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr
         res->message = strdup(p);
         xmlFree(p);
       }
+      continue;
     }
   }
   return(res);
@@ -77,7 +78,7 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
   int already_there = TRUE;
     
   result = my_query("insert into pr_httpget_raw "
-                    "set    probe = '%u', yellow = '%u', red = '%u', stattime = '%u', color = '%u', "
+                    "set    probe = '%u', yellow = '%f', red = '%f', stattime = '%u', color = '%u', "
                     "       lookup = '%f', connect = '%f', pretransfer = '%f', total = '%f', "
                     "       message = '%s' ",
                     def->probeid, def->yellow, def->red, res->stattime, res->color, 
@@ -128,13 +129,13 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   avg_pretransfer = atof(row[2]);
   avg_total = atof(row[3]);
   max_color   = atoi(row[4]);
-  avg_yellow  = atoi(row[5]);
-  avg_red     = atoi(row[6]);
+  avg_yellow  = atof(row[5]);
+  avg_red     = atof(row[6]);
   mysql_free_result(result);
 
   result = my_query("insert into pr_httpget_%s "
                     "set    lookup = '%f', connect = '%f', pretransfer = '%f', total = '%f', "
-                    "       probe = %d, color = '%u', stattime = %d, yellow = '%d', red = '%d'",
+                    "       probe = %d, color = '%u', stattime = %d, yellow = '%f', red = '%f'",
                     into, avg_lookup, avg_connect, avg_pretransfer, avg_total, def->probeid, 
                     max_color, stattime, avg_yellow, avg_red);
 

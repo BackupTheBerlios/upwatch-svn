@@ -37,49 +37,64 @@ static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr
 
     if (xmlIsBlankNode(cur)) continue;
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "color")) && (cur->ns == ns)) {
-      res->color = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+      res->color = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1); 
+      continue;
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "loadavg")) && (cur->ns == ns)) {
       res->loadavg = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+      continue;
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "user")) && (cur->ns == ns)) {
       res->user = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+      continue;
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "system")) && (cur->ns == ns)) {
       res->system = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+      continue;
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "idle")) && (cur->ns == ns)) {
       res->idle = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+      continue;
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "swapin")) && (cur->ns == ns)) {
       res->swapin = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+      continue;
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "swapout")) && (cur->ns == ns)) {
       res->swapout = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+      continue;
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "blockin")) && (cur->ns == ns)) {
       res->blockin = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+      continue;
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "blockout")) && (cur->ns == ns)) {
       res->blockout = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+      continue;
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "swapped")) && (cur->ns == ns)) {
       res->swapped = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+      continue;
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "free")) && (cur->ns == ns)) {
       res->free = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+      continue;
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "buffered")) && (cur->ns == ns)) {
       res->buffered = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+      continue;
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "cached")) && (cur->ns == ns)) {
       res->cached = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+      continue;
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "used")) && (cur->ns == ns)) {
       res->used = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+      continue;
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "systemp")) && (cur->ns == ns)) {
       res->systemp = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+      continue;
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "info")) && (cur->ns == ns)) {
       p = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
@@ -184,7 +199,7 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
   int already_there = TRUE;
     
   result = my_query("insert into pr_sysstat_raw "
-                    "set    probe = '%u', yellow = '%u', red = '%u', stattime = '%u', color = '%u', "
+                    "set    probe = '%u', yellow = '%f', red = '%f', stattime = '%u', color = '%u', "
                     "       loadavg = '%f', user = '%u', system = '%u', idle = '%u', "
                     "       swapin = '%u', swapout = '%u', blockin = '%u', blockout = '%u', "
                     "       swapped = '%u', free = '%u', buffered = '%u', cached = '%u', "
@@ -209,7 +224,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   MYSQL_RES *result;
   MYSQL_ROW row;
   struct sysstat_result *def = (struct sysstat_result *)probe_def;
-  gint avg_yellow, avg_red;
+  gfloat avg_yellow, avg_red;
   gfloat avg_loadavg;
   guint avg_user, avg_system, avg_idle, avg_swapin, avg_swapout, avg_blockin;
   guint avg_blockout, avg_swapped, avg_free, avg_buffered, avg_cached, avg_used;
@@ -253,8 +268,8 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   avg_used    = atoi(row[12]);
   avg_systemp = atoi(row[13]);
   max_color   = atoi(row[14]);
-  avg_yellow  = atoi(row[15]);
-  avg_red     = atoi(row[16]);
+  avg_yellow  = atof(row[15]);
+  avg_red     = atof(row[16]);
   mysql_free_result(result);
 
   result = my_query("insert into pr_sysstat_%s " 
@@ -262,7 +277,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
                     "       swapin = '%u', swapout = '%u', blockin = '%u', blockout = '%u', "
                     "       swapped = '%u', free = '%u', buffered = '%u', cached = '%u', "
                     "       used = '%u', systemp = '%d', probe = %d, color = '%u', stattime = %d, "
-                    "       yellow = '%u', red = '%u'",
+                    "       yellow = '%f', red = '%f'",
                     into, 
                     avg_loadavg, avg_user, avg_system, avg_idle, 
                     avg_swapin, avg_swapout, avg_blockin, avg_blockout, 

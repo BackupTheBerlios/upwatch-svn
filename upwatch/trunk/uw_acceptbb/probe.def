@@ -294,13 +294,6 @@ probe = {
     default = "0";
     descrip = "Amount of memory used by processes";
   };
-  result = {
-    name = "message";
-    type = "text";
-    null = false;
-    default = "";
-    descrip = "list of processes";
-  };
 };
 
 probe = {

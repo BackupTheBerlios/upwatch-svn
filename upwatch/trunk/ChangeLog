@@ -1,3 +1,12 @@
+2002-12-27 12:15  Ron Arts <raarts@upwatch.com>
+
+	Prior to re-installing our runtime system, bumped the spec release.
+
+2002-12-27 11:12  Ron Arts <raarts@upwatch.com>
+
+	Added cvs2pl script so we can auto-generate the ChangeLog file from
+	CVS.
+
 2002-12-27 10:56  Ron Arts <raarts@upwatch.com>
 
 	Don't put .xml sources in the /usr/share/doc/upwatch.xx directory

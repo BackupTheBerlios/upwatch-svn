@@ -33,7 +33,7 @@ CREATE TABLE pr_hist (
   KEY stattime (stattime)
 ) TYPE=MyISAM;
 
-INSERT INTO notify set id = '1', message = 'do NOT delete!';
+INSERT INTO pr_hist set id = '1', message = 'do NOT delete!';
 
 --
 -- Table structure for table 'pr_status'
