@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE book PUBLIC "-//OASIS//DTD Docbook XML V4.1.2//EN" 
-                      "/usr/share/sgml/docbook/xml-dtd-4.1.2-1.0-14/docbookx.dtd" [
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN" 
+                      "/usr/share/sgml/docbook/xml-dtd-4.2-1.0-17/docbookx.dtd" [
 <!ENTITY about SYSTEM "about.xml">
 <!ENTITY howitallworks SYSTEM "howitallworks.xml">
 <!ENTITY interfaces SYSTEM "interfaces.xml">
