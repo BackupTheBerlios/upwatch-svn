@@ -446,6 +446,9 @@ logged_in:
       spool_close(sp_info, FALSE);
       goto end;
     }
+    if (debug > 3) {
+      fprintf(stderr, "%s[%u] > %.*s", remotehost, st_netfd_fileno(rmt_nfd), len, buffer);
+    }
     if (spool_write(sp_info, buffer, len) == -1) {
       LOG(LOG_ERR, "%s: %s write error writing %u bytes, %u bytes to go", 
                       targ+spooldir_strlen, remotehost, len, filesize);
@@ -453,6 +456,9 @@ logged_in:
       goto end;
     }
     filesize -= len;
+    if (debug > 3) {
+      fprintf(stderr, "%s[%u] still %u bytes to receive", remotehost, st_netfd_fileno(rmt_nfd), filesize);
+    }
   }
   free(targ);
 

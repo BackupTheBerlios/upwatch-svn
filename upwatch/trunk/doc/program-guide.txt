@@ -1563,6 +1563,12 @@ B.3.1. httpget result record layout
 
    id of this probe in the database
 
+   realm
+
+   NO
+
+   database realm for these values
+
    ipaddress
 
    NO
@@ -1912,6 +1918,12 @@ B.4.1. imap result record layout
 
    id of this probe in the database
 
+   realm
+
+   NO
+
+   database realm for these values
+
    ipaddress
 
    NO
@@ -2225,6 +2237,12 @@ B.5.1. iptraf result record layout
 
    Description
 
+   realm
+
+   NO
+
+   database realm for these values
+
    ipaddress
 
    NO
@@ -2532,6 +2550,12 @@ B.6.1. mssql result record layout
    NO
 
    id of this probe in the database
+
+   realm
+
+   NO
+
+   database realm for these values
 
    ipaddress
 
@@ -2867,6 +2891,12 @@ B.7.1. mysql result record layout
 
    id of this probe in the database
 
+   realm
+
+   NO
+
+   database realm for these values
+
    ipaddress
 
    NO
@@ -3174,7 +3204,7 @@ B.8.1. ping result record layout
 
    Description
 
-   value
+   average
 
    NMTOKEN
 
@@ -3211,6 +3241,12 @@ B.8.1. ping result record layout
    NO
 
    id of this probe in the database
+
+   realm
+
+   NO
+
+   database realm for these values
 
    ipaddress
 
@@ -3458,7 +3494,7 @@ B.8.2. ping database layout
 
    color value
 
-   value
+   average
 
    float
 
@@ -3533,6 +3569,12 @@ B.9.1. pop3 result record layout
    NO
 
    id of this probe in the database
+
+   realm
+
+   NO
+
+   database realm for these values
 
    ipaddress
 
@@ -3857,6 +3899,12 @@ B.10.1. postgresql result record layout
    NO
 
    target ip address
+
+   realm
+
+   NO
+
+   database realm for these values
 
    date
 
@@ -4187,6 +4235,12 @@ B.11.1. smtp result record layout
 
    id of this probe in the database
 
+   realm
+
+   NO
+
+   database realm for these values
+
    ipaddress
 
    NO
@@ -4480,6 +4534,12 @@ B.12.1. snmpget result record layout
    NO
 
    id of this probe in the database
+
+   realm
+
+   NO
+
+   database realm for these values
 
    ipaddress
 
@@ -4922,6 +4982,12 @@ B.13.1. sysstat result record layout
    NO
 
    id of this server in the database
+
+   realm
+
+   NO
+
+   database realm for these values
 
    ipaddress
 
@@ -5440,6 +5506,12 @@ B.14.1. hwstat result record layout
 
    id of this server in the database
 
+   realm
+
+   NO
+
+   database realm for these values
+
    ipaddress
 
    NO
@@ -5910,14 +5982,6 @@ B.15.1. errlog result record layout
 
    Description
 
-   host
-
-   NMTOKEN
-
-   NO
-
-   host where this element originated
-
    Table errlog elements. errlog elements
 
    Name
@@ -5926,11 +5990,23 @@ B.15.1. errlog result record layout
 
    Description
 
+   server
+
+   NO
+
+   id of this server in the database
+
    ipaddress
 
    NO
 
    target ip address
+
+   realm
+
+   NO
+
+   database realm for these values
 
    date
 
@@ -5949,6 +6025,12 @@ B.15.1. errlog result record layout
    NO
 
    color as this probe thinks it should be
+
+   interval
+
+   NO
+
+   time between measurements
 
    received
 
@@ -6170,14 +6252,6 @@ B.16.1. diskfree result record layout
 
    Description
 
-   host
-
-   NMTOKEN
-
-   NO
-
-   host where this element originated
-
    Table diskfree elements. diskfree elements
 
    Name
@@ -6186,11 +6260,23 @@ B.16.1. diskfree result record layout
 
    Description
 
+   server
+
+   NO
+
+   id of this server in the database
+
    ipaddress
 
    NO
 
    target ip address
+
+   realm
+
+   NO
+
+   database realm for these values
 
    date
 
@@ -6209,6 +6295,12 @@ B.16.1. diskfree result record layout
    NO
 
    color as this probe thinks it should be
+
+   interval
+
+   NO
+
+   time between measurements
 
    received
 
@@ -6460,6 +6552,12 @@ B.17.1. tcpconnect result record layout
    NO
 
    id of this probe in the database
+
+   realm
+
+   NO
+
+   database realm for these values
 
    ipaddress
 

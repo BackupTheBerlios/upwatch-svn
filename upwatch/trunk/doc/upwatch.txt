@@ -30,6 +30,7 @@ Ron Arts
         3.2. Trouble shooting
 
               3.2.1. uw_send crashes immediately when it is started
+              3.2.2. Hardware Monitoring problems
 
         3.3. Monitoring specific logfiles
         3.4. Maintenance and Upgrades
@@ -187,6 +188,7 @@ Chapter 3. Configuration
    3.2. Trouble shooting
 
         3.2.1. uw_send crashes immediately when it is started
+        3.2.2. Hardware Monitoring problems
 
    3.3. Monitoring specific logfiles
    3.4. Maintenance and Upgrades
@@ -280,6 +282,83 @@ Chapter 3. Configuration
           # ldd /usr/lib/libxml2.so
 
    The output should not contain any threading libraries.
+
+3.2.2. Hardware Monitoring problems
+
+   Hardware monitoring does not work for all hardware. There is a list of
+   supported hardware in the ReadMe file in the xmbmon subdirectory. Here
+   are solutions for some common problems.
+
+3.2.2.1. ASUS Pentium4 motherboards
+
+   Some of the ASUS Pen4 motherboard with ICH2(82801BA) and ICH4(82801DB)
+   chipsets switch off the SMBus PCI device. Therefore, one has to enable
+   it explicitly in order to make hardware-monitoring possible.
+
+   If  "mbmon/xmbmon"  does not search the SMBuses, it's not the fault of
+   "mbmon/xmbmon",  but the results of ASUS's BIOS setting. For users who
+   experienced this, try the following:
+     * Check   the  chipset.  ICH2/ICH4  chipset  is  identified  by  the
+       following PCI configuration data:
+       pci-device ID  ---  ICH2:     vendorID = 0x8086, chipID = 0x2440
+                           ICH4:     vendorID = 0x8086, chipID = 0x24C0
+       pci-device ID  ---  ICH2(PM): vendorID = 0x8086, chipID = 0x2443
+                           ICH4(PM): vendorID = 0x8086, chipID = 0x24C3
+
+       (PM  means  Power  Management  Controller,  which  provides  SMBus
+       access.)
+       By using the command:
+       # pciconf -l (FreeBSD)
+       # pcitweak -l (Linux)
+
+       list  up the pci-devices recognized by OS, and try to find whether
+       your  chipset  is  ICH2  or  ICH4. If you find ICH2 or ICH4 in the
+       list,  while do not find ICH2(PM) or ICH4(PM), then you are one of
+       sufferers  of  this  problem. If not, your problem is of different
+       kind, sorry.
+     * Enable  the  SMBus  access.  You  have  to  enable the ICH2(PM) or
+       ICH4(PM)  by turning off the bits number 8 and 3 (counting from 0)
+       in  the  word  data  of  the LPC register of ICH2 or ICH4 at 0xF2.
+       First, find the value of the actual data:
+       # pciconf -r -h [selector of ICH2 or ICH4] 0xf2 (FreeBSD)
+       # setpci -d 8086:2440/24c0 f2.w (Linux).
+                   (bit)  15 14 13 12 11 10  9  8  7  6  5  4  3  2  1  0
+       word data at 0xF2   x  x  x  x  x  x  x  *  x  x  x  x  *  x  x  x
+
+       Next,  after  calculating the byte by VAL = VAL & 0xFEF7, set this
+       VAL to ICH2 or ICH4 by the following command:
+       # pciconf -w -h [selector of ICH2 or ICH4] 0xf2 VAL (FreeBSD)
+       # setpci -d 8086:2440/24c0 f2.w=VAL (Linux).
+
+     * Check  ICH2(PM) or ICH4(PM) appears. List up the pci-device again,
+       and  confirm  that  now  ICH2(PM) or ICH4(PM) are there. Then, try
+       "mbmon/xmbmon" again.
+       Reference:  ./prog/hotplug/README.p4b  of  the  lm_sensors package
+       downloadable from http://www.lm-sensors.nu/
+
+3.2.2.2. OpenBSD problems
+
+   >From: "andreas guetl"
+   >To:
+   >Subject: fix for mbmon on openbsd
+   >Date: Fri, 5 Sep 2003 10:35:37 +0200
+   hello!
+   i tried various progs for monitoring cpu-temp on openbsd boxes
+   but none of them worked. then i found the solution on
+   http://archives.neohapsis.com/archives/openbsd/2001-02/2550.html
+   and id simply did the trick, not only for healthd (which gave me
+   wrong values) but also for mbmon which works very fine.
+   1.) enable the option APERTURE in the kernel
+   enabled by default but disabled in any selfmade kernel, who needs
+   x on openbsd ;)
+   2.) uncomment machdep.allowaperture in /etc/sysctl.conf and change
+   the value from 2 to 1
+   after rebooting with the new kernel the monitoring works really
+   fine.
+   thanks for your fine program!!
+   (but what has the agp-aperture to do with monitoring hw?)
+   so long,
+   andy
 
 3.3. Monitoring specific logfiles
 

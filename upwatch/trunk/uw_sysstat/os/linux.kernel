@@ -402,6 +402,7 @@ green [LOGDATE] kernel: NET[NUM]: Linux IPX
 green [LOGDATE] kernel: NET[NUM]: Linux TCP/IP
 green [LOGDATE] kernel: NET[NUM]: Unix domain sockets
 green [LOGDATE] kernel: NET: Registered protocol family [NUM]
+green [LOGDATE] kernel: NET: [NUM] messages suppressed.
 green [LOGDATE] kernel: nfsd: last server has exited
 green [LOGDATE] kernel: nfs: server [IPADDR] OK
 green [LOGDATE] kernel: nfsd: unexporting all filesystems
