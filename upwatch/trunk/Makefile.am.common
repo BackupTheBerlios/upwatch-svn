@@ -3,6 +3,7 @@
 bin_PROGRAMS = $(program)
 man_MANS = $(program).1
 EXTRA_DIST +=  $(program).1 $(program).conf
+LDADD = db.o main.o ../upwatch/libupwatch.a
 
 main.o: ../common/main.c
 	$(COMPILE) -c ../common/main.c

@@ -8,7 +8,7 @@
 <!ENTITY interfaces SYSTEM "interfaces.xml">
 <!ENTITY probesspecs SYSTEM "probesspecs.xml">
 <!ENTITY addingaprobe SYSTEM "addingaprobe.xml">
-<!ENTITY iptraf-any-specs SYSTEM "iptraf-any-specs.xml">
+<!ENTITY iptraf-specs SYSTEM "iptraf-specs.xml">
 <!ENTITY ping-specs SYSTEM "ping-specs.xml">
 ]>
 

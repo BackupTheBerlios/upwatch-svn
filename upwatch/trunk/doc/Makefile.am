@@ -2,7 +2,7 @@ docdir = $(prefix)/doc
 doc_DATA = upwatch.html upwatch.txt upwatch.pdf
 
 XMLSOURCE = upwatch.xml addingaprobe.xml administration.xml configuration.xml \
-  howitallworks.xml installation.xml interfaces.xml iptraf-any-specs.xml ping-specs.xml \
+  howitallworks.xml installation.xml interfaces.xml iptraf-specs.xml ping-specs.xml \
   probesspecs.xml upwatch.xml
 
 EXTRA_DIST = ${XMLSOURCE}

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<sect1 id="Iptraf-any">
-   <title>Iptraf-any</title>
-   <para> The iptraf-any probe measures ip traffic to or from a specified ip address
+<sect1 id="Iptraf">
+   <title>Iptraf</title>
+   <para> The iptraf probe measures ip traffic to or from a specified ip address
       passing a certain point. Currently it supports iptables/netfilter setup. It is used to measure
       data traffic at some network gateway.
    </para>
-   <sect2 id="Iptraf-any_result_record">
-      <title>Iptraf-any result record</title>
-         <table label="iptraf-any record layout" pgwide="1">
-         <title>iptraf-any record layout</title>
+   <sect2 id="Iptraf_result_record">
+      <title>Iptraf result record</title>
+         <table label="iptraf record layout" pgwide="1">
+         <title>iptraf record layout</title>
          <tgroup cols = "2">
             <colspec colname = "1" colnum = "1" colwidth = "1.0in"/>
             <colspec colname = "2" colnum = "2" colwidth = "4.0in"/>
@@ -56,12 +56,12 @@
       <para> Any lines following the header record contain error messages.
       </para>
    </sect2>
-   <sect2 id="Iptraf-any_database_layout">
-      <title>iptraf-any database layout</title>
+   <sect2 id="Iptraf_database_layout">
+      <title>iptraf database layout</title>
       <para></para>
    </sect2>
-   <sect2 id="uw_iptraf-any_daemon">
-      <title>uw_iptraf-any daemon</title>
+   <sect2 id="uw_iptraf_daemon">
+      <title>uw_iptraf daemon</title>
       <para>There is no such thing. There <emphasis>is</emphasis> a shell script though, it reads
          the iptables, and produces a queue file.</para>
    </sect2>

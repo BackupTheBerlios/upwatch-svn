@@ -89,7 +89,7 @@
        </para>
     </sect1>
     <sect1 id="Security_considerations">
-       <title>Securiy considerations</title>
+       <title>Security considerations</title>
        <para> All of upwatch can be run as a non-root user, except the probes which need root-access,
           most notable, uw_ping. You can assign each probe its own user and grant that user access rights
           to its own database tables. The probes only read from the <varname>pr_xxx_def</varname> and
