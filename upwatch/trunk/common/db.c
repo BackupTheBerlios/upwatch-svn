@@ -67,7 +67,7 @@ MYSQL_RES *my_rawquery(MYSQL *mysql, int log_dupes, char *qry)
 
 MYSQL_RES *my_query(MYSQL *mysql, int log_dupes, char *fmt, ...)
 {
-  char qry[65535];
+static char qry[65536]; // max query size for us
   va_list arg;
 
   if (!mysql) return(NULL);

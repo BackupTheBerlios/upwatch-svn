@@ -168,6 +168,8 @@ void add_probe(gpointer key, gpointer value, gpointer user_data)
 
 void run_actual_probes(void)
 {
+  thread_count = 0;
+  st_usleep(1); //force context switch so timers will work
   g_hash_table_foreach(cache, add_probe, NULL);
   while (thread_count) {
     st_sleep(1);

@@ -40,7 +40,7 @@ static void _ll_lograw(int level, const char *msg);
 void _LOGRAW(int level, char *buffer)
 {
   char *p, *file;
-  char msg[2*16384];
+  char msg[2500];
   unsigned now = (unsigned) time(NULL);
 static char prvmsg[512];
 static int rpt;
@@ -52,7 +52,7 @@ static unsigned prv;
     file = _logsrce;
   }
   sprintf(msg, "%s[%lu] %s(%d): ", progname, (unsigned long)getpid(), file, _logline);
-  strcat(msg, buffer);
+  strncat(msg, buffer, sizeof(msg) - 80); // it's assumed that progname+getpid+file+line < 80
 
   //fprintf(stderr, "compare: rpt=%u, msg=%s, prv=%s\n", rpt, msg, prvmsg);
   // test if the same error happens again and again
@@ -117,8 +117,8 @@ static void _ll_lograw(int level, const char *msg)
 
 void _LOG(int level, char *fmt, ...)
 {
-  char buffer[16384];
-  char newfmt[16585];
+ char buffer[2048]; // this is as long as we need errors to be
+ char newfmt[256];
   char *p, *q;
   va_list arg;
 
@@ -141,7 +141,7 @@ static int snprintf_does_errno;  // set to true if snprintf does %m conversions
 
   // expand %m if needed
   if (!snprintf_does_errno) {
-    for (p = fmt, q = &newfmt[0]; *p;) {
+    for (p = fmt, q = &newfmt[0]; *p && q < (newfmt + sizeof(newfmt) -1);) {
       switch(*p) {
       case '\\': 
         *q++ = *p++; 

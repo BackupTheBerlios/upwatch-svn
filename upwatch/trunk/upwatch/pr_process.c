@@ -406,7 +406,7 @@ int handle_result_file(gpointer data, gpointer user_data)
   /* Second level is a list of probes, but be laxist */
   for (t->failed_count = 0; t->cur != NULL;) {
     int found = 0;
-    int retval;
+    int retval = 0;
     char buf[20];
     int count = 0;
 

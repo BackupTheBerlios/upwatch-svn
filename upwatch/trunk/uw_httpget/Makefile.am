@@ -1,7 +1,7 @@
 include $(top_srcdir)/Makefile.am.path
 
 program = uw_httpget
-sbin_PROGRAMS = $(program)
+sbin_PROGRAMS = $(program) httptest
 man_MANS = uw_httpget.1
 conf_DATA = $(program:%=%.conf)
 init_DATA = $(INITFILES)
@@ -9,6 +9,10 @@ init_DATA = $(INITFILES)
 uw_httpget_SOURCES = run.c uw_httpget.h uw_httpget.c $(PROBFILES) $(SPECFILES) $(INITFILES)
 uw_httpget_CFLAGS = @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ $(AM_CFLAGS)
 uw_httpget_LDADD = uw_httpget_$(DB_O) uw_httpget_$(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) $(LIBST) @MYSQL_LIBS@ @LIBGLIB2_LIBS@
+
+httptest_SOURCES = httptest.c  httptest.h runtest.c
+httptest_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@
+httptest_LDADD = httptest_$(MAIN_O) httptest_$(DB_O) $(LIBUPWATCH) $(LIBOPTS) $(LIBST) @MYSQL_LIBS@ @LIBGLIB2_LIBS@ @LIBXML2_LIBS@
 
 BUILT_SOURCES = $(program:%=%.1) $(program:%=%.h) $(program:%=%.c) $(PROBFILES) $(SPECFILES) $(INITFILES)
 INCLUDES = -I../upwatch -I $(INCL_ST)

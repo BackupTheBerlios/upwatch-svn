@@ -105,7 +105,7 @@ char *color2string(int color);
 \
     sprintf(buf, "%s: %s", probe->ipaddress, strerror(errno)); \
     probe->msg = strdup(buf); \
-    LOG(LOG_DEBUG, probe->msg); \
+    LOG(LOG_DEBUG, probe->msg);  \
     if (debug > 3) fprintf(stderr, "%s: %s\n", probe->ipaddress, probe->msg); \
     goto done; \
   } \
