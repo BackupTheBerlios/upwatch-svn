@@ -1,5 +1,8 @@
 #include "config.h"
 #include <generic.h>
+#include <xml.h>
+#include <db.h>
+#include <spool.h>
 #include <st.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -89,13 +92,13 @@ int run(void)
   }
 
   if (g_hash_table_size(cache) > 0) {
-    LOG(LOG_INFO, "running %d probes", g_hash_table_size(cache));
-    uw_setproctitle("running %d probes", g_hash_table_size(cache));
+    LOG(LOG_INFO, "running %d probes in group %u", g_hash_table_size(cache), (unsigned) OPT_VALUE_GROUPID);
+    uw_setproctitle("running %d probes in group %u", g_hash_table_size(cache), (unsigned) OPT_VALUE_GROUPID);
     run_actual_probes(); /* this runs the actual probes */
 
     LOG(LOG_INFO, "writing results");
     uw_setproctitle("writing results");
-    write_results();
+    //write_results();
   }
 
   return(g_hash_table_size(cache));
@@ -269,62 +272,91 @@ void *probe(void *data)
 
     sprintf(buf, "Illegal IP address '%s'", probe->ipaddress);
     probe->msg = strdup(buf);
+    LOG(LOG_DEBUG, probe->msg);
     goto done;
   }
 
   /* Connect to remote host */
   if ((sock = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
-    probe->msg = strdup(strerror(errno));
+    char buf[256];
+
+    sprintf(buf, "%s: %s", probe->ipaddress, strerror(errno));
+    probe->msg = strdup(buf);
+    LOG(LOG_DEBUG, probe->msg);
+    if (debug > 3) fprintf(stderr, "%s: %s\n", probe->ipaddress, probe->msg);
     goto done;
   }
+
   if ((rmt_nfd = st_netfd_open_socket(sock)) == NULL) {
-    probe->msg = strdup(strerror(errno));
+    char buf[256];
+
+    sprintf(buf, "%s: %s", probe->ipaddress, strerror(errno));
+    probe->msg = strdup(buf);
+    LOG(LOG_DEBUG, probe->msg);
+    if (debug > 3) fprintf(stderr, "%s: %s\n", probe->ipaddress, probe->msg);
     close(sock);
     goto done;
   }
   start = st_utime();
-  if (st_connect(rmt_nfd, (struct sockaddr *)&rmt, sizeof(rmt), -1) < 0) {
-    probe->msg = strdup(strerror(errno));
-    st_netfd_close(rmt_nfd);
-    goto done;
+
+  if (st_connect(rmt_nfd, (struct sockaddr *)&rmt, sizeof(rmt), TIMEOUT) < 0) {
+    char buf[256];
+
+    sprintf(buf, "%s(%d): %s", probe->ipaddress, __LINE__, strerror(errno));
+    probe->msg = strdup(buf);
+    LOG(LOG_DEBUG, probe->msg);
+    if (debug > 3) fprintf(stderr, "%s: %s\n", probe->ipaddress, probe->msg);
+    goto err_close;
   }
+goto err_close;
+
   now = st_utime();
   probe->connect = ((float) (now - start)) * 0.000001;
 
-  sprintf(buffer, "GET %s HTTP/1.0\nHost: %s\n\n", probe->uri, probe->hostname);
+  sprintf(buffer, "GET %s HTTP/1.0\r\nHost: %s\r\n\r\n", probe->uri, probe->hostname);
   if (debug > 3) fprintf(stderr, "> %s", buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
-  if (len == ETIME) {
+  if (len == -1) {
     char buf[256];
 
-    sprintf(buf, "Timeout in writing to host after %u seconds", 
-                  (unsigned) (TIMEOUT / 1000000L));
+    if (errno == ETIME) {
+      sprintf(buf, "%s(%d): write timeout after %u seconds", 
+                   probe->ipaddress, __LINE__, 
+                    (unsigned) (TIMEOUT / 1000000L));
+    } else {
+      sprintf(buf, "%s(%d): %s", probe->ipaddress, __LINE__, strerror(errno));
+    }
     probe->msg = strdup(buf);
+    LOG(LOG_DEBUG, probe->msg);
+    //if (debug > 3) fprintf(stderr, "%s: %s\n", probe->ipaddress, probe->msg);
     probe->connect = 0.0;
     goto err_close;
   }
-  if (len == -1) {
-    probe->msg = strdup(strerror(errno));
-    probe->connect = 0.0;
-    goto err_close;
-  }
+
   now = st_utime();
   probe->pretransfer = ((float) (now - start)) * 0.000001;
 
   // Now read the response
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, 512, TIMEOUT); 
-  if (len == ETIME) {
+  if (len == -1) {
     char buf[256];
 
-    sprintf(buf, "Timeout in reading result after %u seconds", 
-                  (unsigned) (TIMEOUT / 1000000L));
+    if (errno == ETIME) {
+      sprintf(buf, "%s(%d): read timeout after %u seconds", 
+                   probe->ipaddress, __LINE__, 
+                    (unsigned) (TIMEOUT / 1000000L));
+    } else {
+      sprintf(buf, "%s(%d): %s", probe->ipaddress, __LINE__, strerror(errno));
+    }
     probe->msg = strdup(buf);
+    LOG(LOG_DEBUG, probe->msg);
+    if (debug > 3) fprintf(stderr, "%s: %s\n", probe->ipaddress, probe->msg);
     probe->connect = 0.0;
     probe->pretransfer = 0.0;
     goto err_close;
   }
-  if (debug > 3) fprintf(stderr, "< %s", buffer);
+  //if (debug > 3) fprintf(stderr, "< %s", buffer);
   probe->info = strdup(buffer);
   now = st_utime();
   probe->total = ((float) (now - start)) * 0.000001;
