@@ -111,23 +111,26 @@ int pushto(int sock, char *filename)
   fgets(buffer, sizeof(buffer), out);
   //fprintf(stderr, "%s", buffer);
   fprintf(out, "USER %s\n", OPT_ARG(UWUSER));
+  buffer[0] = 0;
   if (fgets(buffer, sizeof(buffer), out) == NULL || buffer[0] != '+') {
-    LOG(LOG_WARNING, buffer);
+    LOG(LOG_WARNING, "%m: %s", buffer);
     fclose(in);
     fclose(out);
     return(0);
   }
   //fprintf(stderr, "%s", buffer);
   fprintf(out, "PASS %s\n", OPT_ARG(UWPASSWD));
+  buffer[0] = 0;
   if (fgets(buffer, sizeof(buffer), out) == NULL || buffer[0] != '+') {
-    LOG(LOG_WARNING, buffer);
+    LOG(LOG_WARNING, "%m: %s", buffer);
     fclose(in);
     fclose(out);
     return(0);
   }
   fprintf(out, "DATA %d\n", filesize);
+  buffer[0] = 0;
   if (fgets(buffer, sizeof(buffer), out) == NULL || buffer[0] != '+') {
-    LOG(LOG_WARNING, buffer);
+    LOG(LOG_WARNING, "%m: %s", buffer);
     fclose(in);
     fclose(out);
     return(0);
@@ -154,16 +157,18 @@ int pushto(int sock, char *filename)
     return(0);
   }
   fclose(in);
+  buffer[0] = 0;
   if (fgets(buffer, sizeof(buffer), out) == NULL || buffer[0] != '+') {
-    LOG(LOG_WARNING, buffer);
+    LOG(LOG_WARNING, "%m: %s", buffer);
     fclose(in);
     fclose(out);
     return(0);
   }
   //fprintf(stderr, "%s", buffer);
   fprintf(out, "QUIT\n");
+  buffer[0] = 0;
   if (fgets(buffer, sizeof(buffer), out) == NULL || buffer[0] != '+') {
-    LOG(LOG_WARNING, buffer);
+    LOG(LOG_WARNING, "%m: %s", buffer);
     fclose(in);
     fclose(out);
     return(0);
