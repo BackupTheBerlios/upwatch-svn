@@ -18,8 +18,6 @@ syslog-ignore postfix:
 
 # cyrus
 syslog-ignore unable to change limit of file descriptors available
-syslog-ignore (S|s)tarted
-syslog-ignore (S|s)tarting
 syslog-ignore ready for work
 syslog-ignore pidof:
 syslog-ignore started
@@ -70,6 +68,8 @@ syslog-ignore shutting down
 syslog-ignore stopping command channel
 syslog-ignore no longer listening on
 syslog-ignore exiting
+syslog-ignore denied
+syslog-ignore refresh: failure trying master
 syslog-ignore points to a CNAME
 syslog-ignore points to CNAME
 syslog-ignore No default TTL set using SOA minimum instead
@@ -135,11 +135,16 @@ syslog-ignore sshd\[[0-9]*\]: Could not reverse map address
 syslog-ignore sshd\[[0-9]*\]: fatal: Did not receive ident string
 syslog-ignore sshd\[[0-9]*\]: fatal: Read error from remote host
 
+# dhcpd
+syslog-ignore dhcpcd\[[0-9]*\]: terminating on signal
+syslog-ignore dhcpd: DHCPREQUEST for 
+syslog-ignore dhcpd: DHCPACK on 
+syslog-ignore dhcpd: DHCPRELEASE
+
 # initscripts
 syslog-ignore succeeded
 syslog-ignore executing: './network
 syslog-ignore executing: 'modprobe
-syslog-ignore dhcpcd\[[0-9]*\]: terminating on signal
 syslog-ignore Trying to free nonexistent resource
 syslog-ignore unloading Kernel Card Services
 syslog-ignore Linux Kernel Card Services [0-9.]*
@@ -267,6 +272,7 @@ syslog-ignore ftpd\[[0-9]*\]: TYPE ASCII
 syslog-ignore ftpd\[[0-9]*\]: User [-0-9a-zA-Z.]* timed out after [0-9]* seconds
 syslog-ignore ftpd\[[0-9]*\]: FTP session closed
 syslog-ignore ftpd\[[0-9]*\]: lost connection to
+syslog-ignore Wget error on IDE update
 
 # various
 syslog-ignore backup done
@@ -312,6 +318,9 @@ syslog-ignore xntpd\[[0-9]*\]: kernel pll status change
 syslog-ignore pppd\[[0-9]*\]: Using interface ppp
 syslog-ignore pppd\[[0-9]*\]: Connect: ppp[0-9] <--> /dev/ttyS[0-9]
 syslog-ignore init: Re-reading inittab
+syslog-ignore (S|s)tarted
+syslog-ignore (F|f)inished
+syslog-ignore (S|s)tarting
 
 # squid
 syslog-ignore squid:
@@ -462,4 +471,5 @@ syslog-red hd[a-z]: packet command error: status=
 syslog-red end_request: I/O error, dev
 syslog-red lmtpd\[[0-9]*\]: DBERROR:
 syslog-red Too many open files
+syslog-red ERROR
 
