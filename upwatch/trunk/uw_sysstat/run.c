@@ -237,11 +237,15 @@ int init(void)
     }
   }
 
-  if ((i = InitMBInfo(' ')) != 0) {
-    LOG(LOG_ERR, "InitMBInfo: %m");
-    if (i < 0) {
-      LOG(LOG_ERR,"This program needs setuid root");
+  if (OPT_VALUE_HWSTATS) {
+    if ((i = InitMBInfo(' ')) != 0) {
+      LOG(LOG_ERR, "InitMBInfo: %m");
+      if (i < 0) {
+        LOG(LOG_ERR,"This program needs setuid root");
+      }
     }
+  } else {
+    LOG(LOG_INFO,"Hardware stats will not be generated");
   }
 
   // determine ip address for default gateway interface
@@ -550,12 +554,14 @@ extern int forever;
   color = xmlGetPropInt(node, "color");
   if (color > highest_color) highest_color = color;
 
-  // do the hwstat
-  get_hwstats();
-  node = newnode(doc, "hwstat");
-  add_hwstat(node);
-  color = xmlGetPropInt(node, "color");
-  if (color > highest_color) highest_color = color;
+  if (OPT_VALUE_HWSTATS) {
+    // do the hwstat
+    get_hwstats();
+    node = newnode(doc, "hwstat");
+    add_hwstat(node);
+    color = xmlGetPropInt(node, "color");
+    if (color > highest_color) highest_color = color;
+  }
 
   // do the errlog
   node = newnode(doc, "errlog");

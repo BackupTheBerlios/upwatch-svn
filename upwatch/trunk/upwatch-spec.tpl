@@ -130,7 +130,7 @@ if [ "$1" -eq "0" ]; then
 %attr(2770,upwatch,upwatch) %dir /var/log/upwatch
 %attr(2770,upwatch,upwatch) %dir /var/spool/upwatch
 %attr(2770,upwatch,upwatch) %dir /var/run/upwatch
-%attr(0755,root,root) /usr/local/bin/mbmon
+%attr(4755,root,root) /usr/local/bin/mbmon
 %attr(0755,root,root) /usr/bin/uwsaidar
 %attr(0755,root,root) /usr/bin/ctime
 %attr(0755,root,root) /usr/bin/chklog

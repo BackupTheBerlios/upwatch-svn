@@ -1,5 +1,5 @@
 --- xmbmon203-orig/Makefile.in	2003-07-04 05:13:45.000000000 +0200
-+++ xmbmon203/Makefile.in	2004-05-24 23:40:23.777768120 +0200
++++ xmbmon203/Makefile.in	2004-05-25 16:40:11.660167592 +0200
 @@ -37,14 +37,16 @@
  RM=rm -f
  INSTALL=install
@@ -37,13 +37,18 @@
  mbmon: mbmon.c mbmon.h methods.h pci_pm.h smbuses.h sensors.h $(OBJS)
  	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ mbmon.c $(OBJS) $(SPLIBS)
  
-@@ -130,8 +143,8 @@
+@@ -130,8 +143,12 @@
  	$(RM) Makefile config.cache config.log config.h config.status
  
  install: $(PROGRAM)
-+	mkdir -p $(INST_DIR)
- 	$(INSTALL) -o root -g wheel -m 4555 -c -p mbmon $(INST_DIR)
+-	$(INSTALL) -o root -g wheel -m 4555 -c -p mbmon $(INST_DIR)
 -	$(INSTALL) -o root -g wheel -m 4555 -c -p xmbmon $(INST_XDIR)
++	mkdir -p $(INST_DIR)
++	if test `${ID} -u` -eq 0; then \
++	  $(INSTALL) -o root -g wheel -m 4555 -c -p mbmon $(INST_DIR); \
++	else \
++	  cp mbmon $(INST_DIR); \
++	fi
  
  lint:
  	$(LINT) $(INCLUDES) $(DEFS) $(FONTDEFINES) $(SRCS) -lm

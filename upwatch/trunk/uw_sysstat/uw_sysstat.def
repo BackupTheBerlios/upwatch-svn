@@ -89,6 +89,18 @@ flag = {
 };
 
 flag = {
+    name      = hwstats;
+    value     = h;
+    arg_type  = bool;
+    descrip   = "Generate hardware statistics";
+    doc       =
+'This program includes part of the xmbmon toolkit, to collect information
+on CPU temp, fan speed etc. But talking to hardware has a remote possibility
+of crashing your machine. This option defaults to off, first try the supplied
+`mbmon` program to see if your hardware is supported';
+};
+
+flag = {
     name      = diskfree-red;
     arg_default  = 95;
     arg_type  = number;
