@@ -6,6 +6,16 @@
 
 #include "uw_purple.h"
 
+struct dbspec {
+  int domid;
+  char *domain;
+  char *host;
+  int port;
+  char *db;
+  char *user;
+  char *password;
+};
+
 int init(void)
 {
   daemonize = TRUE;
@@ -14,11 +24,7 @@ int init(void)
   return(1);
 }
 
-//************************************************************************
-// read pr_status file for expired probes. Construct fake results
-// for those.
-//***********************************************************************
-int run(void)
+int find_expired_probes(struct dbspec *dbspec)
 {
   xmlDocPtr doc;
   xmlNodePtr probe;
@@ -27,12 +33,11 @@ int run(void)
   MYSQL *db;
   int count = 0;
 
-  doc = UpwatchXmlDoc("result");
-  xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
+  db = open_database(dbspec->host, dbspec->port, dbspec->db,
+                     dbspec->user, dbspec->password);
+  if (!db) return 0;
 
-  db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
-                     OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
-  if (!db) goto errexit;
+  doc = UpwatchXmlDoc("result", NULL);
 
   // find all expired probes, but skip those for which processing
   // has been stopped for some reason
@@ -49,23 +54,71 @@ int run(void)
     time_t now = time(NULL);
 
     probe = xmlNewChild(xmlDocGetRootElement(doc), NULL, row[0], NULL);
+    xmlSetProp(probe, "domain", dbspec->domain);
     xmlSetProp(probe, "id", row[1]);
     xmlSetProp(probe, "server", row[2]);
     sprintf(buffer, "%u", (int) now);	xmlSetProp(probe, "date", buffer);
-    sprintf(buffer, "%u", INT_MAX); 	xmlSetProp(probe, "expires", buffer); // never (well.. in 2038)
+    sprintf(buffer, "%u", INT_MAX);  // never (well.. in 2038, which is way past my retirement, so who cares)
+    xmlSetProp(probe, "expires", buffer);
 
     xmlNewChild(probe, NULL, "color", "400");  // PURPLE
     xmlNewChild(probe, NULL, "prevcolor", row[3]);
 
     count++;
   }
-  if (count) spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc, NULL);
+  if (count) {
+    xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
+    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc, NULL);
+  }
 
 errexit:
   if (result) mysql_free_result(result);
   if (db) close_database(db);
   if (doc) xmlFreeDoc(doc);
   return count;
+}
 
+//************************************************************************
+// read pr_status file for expired probes. Construct fake results
+// for those.
+//***********************************************************************
+int run(void)
+{
+  MYSQL_RES *result;
+  MYSQL_ROW row;
+  MYSQL *upwatch;
+  int count = 0;
+
+  upwatch = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
+                        OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
+  if (!upwatch) return 0;
+
+  LOG(LOG_INFO, "syncing..");
+  uw_setproctitle("reading info from database");
+  result = my_query(upwatch, 0, "select pr_domain.id, pr_domain.name, pr_domain.host, "
+                                "       pr_domain.port, pr_domain.db, pr_domain.user, "
+                                "       pr_domain.password, probe.name as tbl "
+                                "from   probe, pr_domain "
+                                "where  probe.id > 1 and pr_domain.id > 1");
+  if (result) {
+    while ((row = mysql_fetch_row(result)) != NULL) {
+      struct dbspec db;
+
+      db.domid = atoi(row[0]);
+      db.domain = row[1];
+      db.host = row[2];
+      db.port = atoi(row[3]);
+      db.db = row[4];
+      db.user = row[5];
+      db.password = row[6];
+      uw_setproctitle("purpling %s", row[1]);
+      LOG(LOG_DEBUG, "purpling %s", row[1]);
+      count += find_expired_probes(&db);
+    }
+    mysql_free_result(result);
+  }
+  close_database(upwatch);
+  LOG(LOG_INFO, "sleeping");
+  return count;
 }
 

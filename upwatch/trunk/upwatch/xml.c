@@ -20,7 +20,7 @@ void UpwatchXmlGenericErrorFunc(void *ctx, const char *fmt, ...)
   LOG(LOG_WARNING, buffer);
 }
 
-xmlDocPtr UpwatchXmlDoc(const char *root)
+xmlDocPtr UpwatchXmlDoc(const char *root, char *fromhost)
 {
   xmlDocPtr doc;
   xmlNodePtr tree;
@@ -33,10 +33,14 @@ xmlDocPtr UpwatchXmlDoc(const char *root)
   xmlCreateIntSubset(doc, root, NULL, PATH_RESULT_DTD);
 
   tree = xmlNewChild((xmlNodePtr)doc, NULL, root, NULL);
-  if (gethostname(buf, sizeof(buf))) {
-    strcpy(buf, "localhost"); // we have to have something
+  if (fromhost && fromhost[0]) {
+    xmlSetProp(tree, "fromhost", fromhost);
+  } else {
+    if (gethostname(buf, sizeof(buf))) {
+      strcpy(buf, "localhost"); // we have to have something
+    }
+    xmlSetProp(tree, "fromhost", buf);
   }
-  xmlSetProp(tree, "fromhost", buf);
   sprintf(buf, "%u", (unsigned) now);
   xmlSetProp(tree, "date", buf);
   uwns = xmlNewNs(tree, (xmlChar*) NAMESPACE_URL, (xmlChar*) NULL);

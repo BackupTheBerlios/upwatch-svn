@@ -154,38 +154,6 @@ flag = {
 This is useful is you want to run uw_process under cron or for debugging.';
 };
 
-flag = {
-    name      = query-server-by-name;
-    arg_type  = string;
-    arg_default = "select id from server where name like '%%%s%%' or names like '%%%s%%'";
-    descrip   = "SQL query to find the id of a server given the servername";
-    doc       =
-'Sometimes a probe only gives a servername, and no id (Big Brother clients do this).
-This query will be issued to find the numeric server id in the database. You can specify 
-up to five `%s` sequences in the query, they will be replaced with the servername.';
-};
-
-flag = {
-    name      = query-server-by-id;
-    arg_type  = string;
-    arg_default = "select name from server where id = '%u'";
-    descrip   = "SQL query to find the name of a server given the id";
-    doc       =
-'Specifically used for notifications, this query should find the name of a server
-given its numeric ID.';
-};
-
-flag = {
-    name      = query-server-by-ip;
-    arg_type  = string;
-    arg_default = "select server.id from server, ipaddress where ipaddress.id = server.ipaddress and ipaddress.name = '%s'";
-    descrip   = "SQL query to find the id of a server given the ip address";
-    doc       =
-'Sometimes a probe only gives an ipaddress, and no id (iptraf does this).
-This query will be issued to find the numeric server id in the database. You can specify
-up to five `%s` sequences in the query, they will be replaced with the ip address.';
-};
-
 flag = { 
     name      = summarize; 
     arg_type  = string;

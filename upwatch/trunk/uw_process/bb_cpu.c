@@ -8,6 +8,25 @@
 #include "dmalloc.h"
 #endif
 
+// determine - given the servername - the db domain it belongs to.
+int bb_cpu_find_domain(trx *t)
+{
+  int i, server;
+
+  query_server_by_name = NULL;
+  for (i=0; i < dblist_cnt; i++) {
+    t->probe->db = open_domain(dblist[i].domain);
+    server = domain_server_by_name(dblist[i].domain, t->res->hostname);
+    if (server > 1) {
+      t->res->server = server;
+      t->res->domain = strdup(dblist[i].domain);
+      query_server_by_name = dblist[i].srvrbyname;
+      break;
+    }
+  }
+  return 1;
+}
+
 //*******************************************************************
 // STORE RAW RESULTS
 //*******************************************************************
@@ -138,6 +157,7 @@ module bb_cpu_module  = {
   NO_END_RESULT,
   NO_END_RUN,
   NO_EXIT,
+  bb_cpu_find_domain,
   bb_cpu_store_raw_result,
   bb_cpu_summarize
 };

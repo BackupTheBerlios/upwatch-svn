@@ -24,15 +24,7 @@ static int master = 1;
 static pid_t childpid[256];
 static int childpidcnt;
 
-struct dbspec {
-  char domain[25];
-  char host[65];
-  int port;
-  char db[64];
-  char user[25];
-  char password[25];
-  MYSQL *mysql;
-} *dblist;
+struct dbspec *dblist;
 int dblist_cnt;
 
 void update_last_seen(module *probe)
@@ -71,6 +63,94 @@ MYSQL *open_domain(char *domain)
   return(NULL);
 }
 
+int domain_server_by_name(char *domain, char *name)
+{
+  int i, id = -1;
+  MYSQL_RES *result;
+  MYSQL_ROW row;
+
+  if (!dblist) {
+    LOG(LOG_ERR, "domain_server_by_name but no dblist found");
+    return id;
+  }
+  if (domain == NULL || domain[0] == 0) {
+    i = 0;
+  } else {
+    for (i=0; i < dblist_cnt; i++) {
+      if (strcmp(dblist[i].domain, domain) == 0) {
+        break;
+      }
+    }
+  }
+  if (i == dblist_cnt) return id;
+  if (!dblist[i].db) return id;
+  result = my_query(dblist[i].mysql, 0, dblist[i].srvrbyname, name, name, name, name, name);
+  if (!result) return id;
+  row = mysql_fetch_row(result);
+  if (row) id = atoi(row[0]);
+  mysql_free_result(result);
+  return(id);
+}
+
+int domain_server_by_ip(char *domain, char *ip)
+{
+  int i, id = -1;
+  MYSQL_RES *result;
+  MYSQL_ROW row;
+
+  if (!dblist) {
+    LOG(LOG_ERR, "domain_server_by_name but no dblist found");
+    return id;
+  }
+  if (domain == NULL || domain[0] == 0) {
+    i = 0;
+  } else {
+    for (i=0; i < dblist_cnt; i++) {
+      if (strcmp(dblist[i].domain, domain) == 0) {
+        break;
+      }
+    }
+  }
+  if (i == dblist_cnt) return id;
+  if (!dblist[i].db) return id;
+  result = my_query(dblist[i].mysql, 0, dblist[i].srvrbyip, ip, ip, ip, ip, ip);
+  if (!result) return id;
+  row = mysql_fetch_row(result);
+  if (row) id = atoi(row[0]);
+  mysql_free_result(result);
+  return(id);
+}
+
+char *domain_server_by_id(char *domain, int id)
+{
+  int i;
+  char *name = NULL;
+  MYSQL_RES *result;
+  MYSQL_ROW row;
+
+  if (!dblist) {
+    LOG(LOG_ERR, "domain_server_by_name but no dblist found");
+    return name;
+  }
+  if (domain == NULL || domain[0] == 0) {
+    i = 0;
+  } else {
+    for (i=0; i < dblist_cnt; i++) {
+      if (strcmp(dblist[i].domain, domain) == 0) {
+        break;
+      }
+    }
+  }
+  if (i == dblist_cnt) return name;
+  if (!dblist[i].db) return name;
+  result = my_query(dblist[i].mysql, 0, dblist[i].srvrbyid, id, id, id, id, id);
+  if (!result) return name;
+  row = mysql_fetch_row(result);
+  if (row) name = strdup(row[0]);
+  mysql_free_result(result);
+  return(name);
+}
+
 static void modules_end_run(void)
 {
   int i;
@@ -81,6 +161,15 @@ static void modules_end_run(void)
   buf[0] = 0;
 
   for (i=0; i < dblist_cnt; i++) {
+    if (dblist[i].domain) free(dblist[i].domain);
+    if (dblist[i].host) free(dblist[i].host);
+    if (dblist[i].db) free(dblist[i].db);
+    if (dblist[i].user) free(dblist[i].user);
+    if (dblist[i].password) free(dblist[i].password);
+    if (dblist[i].srvrbyname) free(dblist[i].srvrbyname);
+    if (dblist[i].srvrbyid) free(dblist[i].srvrbyid);
+    if (dblist[i].srvrbyip) free(dblist[i].srvrbyip);
+
     if (dblist[i].mysql) {
       close_database(dblist[i].mysql);
     }
@@ -141,18 +230,22 @@ static void modules_start_run(void)
     
     result = my_query(db, 0, "select pr_domain.name, pr_domain.host, "
                              "       pr_domain.port, pr_domain.db, pr_domain.user, "
-                             "       pr_domain.password "
+                             "       pr_domain.password, pr_domain.srvrbyname, "
+                             "       pr_domain.srvrbyid, pr_domain.srvrbyip "
                              "from   pr_domain "
                              "where  pr_domain.id > 1");
     if (result) {
       MYSQL_ROW row;
       while ((row = mysql_fetch_row(result)) != NULL) {
-        strcpy(dblist[dblist_cnt].domain, row[0]);
-        strcpy(dblist[dblist_cnt].host, row[1]);
+        dblist[dblist_cnt].domain = strdup(row[0]);
+        dblist[dblist_cnt].host = strdup(row[1]);
         dblist[dblist_cnt].port = atoi(row[2]);
-        strcpy(dblist[dblist_cnt].db, row[3]);
-        strcpy(dblist[dblist_cnt].user, row[4]);
-        strcpy(dblist[dblist_cnt].password, row[5]);
+        dblist[dblist_cnt].db = strdup(row[3]);
+        dblist[dblist_cnt].user = strdup(row[4]);
+        dblist[dblist_cnt].password = strdup(row[5]);
+        dblist[dblist_cnt].srvrbyname = strdup(row[6]);
+        dblist[dblist_cnt].srvrbyid = strdup(row[7]);
+        dblist[dblist_cnt].srvrbyip = strdup(row[8]);
         dblist_cnt++;
       }
       mysql_free_result(result);
@@ -255,8 +348,6 @@ int init(void)
   } else {
     every = EVERY_5SECS;
   }
-  query_server_by_name = OPT_ARG(QUERY_SERVER_BY_NAME);
-  query_server_by_ip = OPT_ARG(QUERY_SERVER_BY_IP);
 
   if (HAVE_OPT(SUMMARIZE)) {
     every = ONE_SHOT;
@@ -396,8 +487,6 @@ extern int forever;
 
     memset(&t, 0, sizeof(t));
     t.process = process; // callback for each result
-    t.failed = UpwatchXmlDoc("result");
-    xmlSetDocCompressMode(t.failed, OPT_VALUE_COMPRESS);
 
     if (debug > 3) { fprintf(stderr, "%u: %s: ", i, (char *)g_ptr_array_index(arr,i)); }
     uw_setproctitle("reading %s", (char *)g_ptr_array_index(arr,i));
@@ -417,12 +506,14 @@ extern int forever;
     case 3: /* try again later */
       break;
     case 4: /* successfully processed */
+      xmlSetDocCompressMode(t.doc, OPT_VALUE_COMPRESS);
       if (HAVE_OPT(COPY) && strcmp(OPT_ARG(COPY), "none")) {
         char *name = filebase;
         spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(COPY), t.doc, &name);
       }
       if (t.failed_count) {
         char *name = filebase;
+        xmlSetDocCompressMode(t.failed, OPT_VALUE_COMPRESS);
         spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(FAILURES), t.failed, &name);
       }
       for (j=0; j < output_ct; j++) {
@@ -466,26 +557,28 @@ static int resummarize(void);
     char**  pn = STACKLST_OPT( INPUT );
 
     childpidcnt = ct;
+    if (debug > 2) fprintf(stderr, "pondering..\n");
     while (ct--) {
-      if (childpid[ct] == 0) { 
-        pid_t pid;
+      pid_t pid;
 
-        sprintf(path, "%s/%s", OPT_ARG(SPOOLDIR), pn[ct]);
-        chdir(path);
-        sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), pn[ct]);
-        pid = fork();
-        if (pid == -1) {
-          LOG(LOG_ERR, "fork: %m");
-          return 1;
-        }
-        if (pid == 0) {
-          master = FALSE; 
-          break;
-        }
-        LOG(LOG_NOTICE, "started [%u] on %s", pid, path);
-        childpid[ct] = pid;
-        sleep(1);
+      if (childpid[ct] > 0) continue;
+
+      sprintf(path, "%s/%s", OPT_ARG(SPOOLDIR), pn[ct]);
+      chdir(path); // for coredumps
+      sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), pn[ct]);
+      pid = fork();
+      if (pid == -1) {
+        LOG(LOG_ERR, "fork: %m");
+        return 1;
       }
+      if (pid == 0) {
+        master = FALSE; 
+        break;
+      }
+      if (debug > 2) fprintf(stderr, "started [%u] on %s\n", pid, path);
+      LOG(LOG_NOTICE, "started [%u] on %s", pid, path);
+      childpid[ct] = pid;
+      sleep(1);
     } 
   }
   if (master) {

@@ -259,11 +259,9 @@ int run(void)
 
   now = time(NULL);
   uw_setproctitle("writing results");
-  doc = UpwatchXmlDoc("result"); 
-  xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
+  doc = UpwatchXmlDoc("result", NULL); 
 
-  red = UpwatchXmlDoc("result"); 
-  xmlSetDocCompressMode(red, OPT_VALUE_COMPRESS);
+  red = UpwatchXmlDoc("result", NULL); 
   for (id=0; hosts[id]; id++) {
     xmlDocPtr cur = doc;
     xmlNodePtr subtree, ping;
@@ -330,10 +328,12 @@ int run(void)
     hosts[id]->min_reply = 0;
     hosts[id]->total_time = 0;
   }
+  xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
   for (i=0; i < ct; i++) {
     spool_result(OPT_ARG(SPOOLDIR), output[i], doc, NULL);
   }
   if (redcount) {
+    xmlSetDocCompressMode(red, OPT_VALUE_COMPRESS);
     spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(INVESTIGATE), red, NULL);
   }
   xmlFreeDoc(doc);

@@ -126,6 +126,7 @@ module snmpget_module  = {
   NO_END_RESULT,
   NO_END_RUN,
   NO_EXIT,
+  NO_FIND_DOMAIN,
   snmpget_store_raw_result,
   snmpget_summarize
 };

@@ -432,7 +432,15 @@ int process(trx *t)
   struct probe_result *prv=NULL;
   int err = 1; /* default ok */
 
-  t->probe->db = open_domain(t->res->domain);
+  if (t->res->domain && t->res->domain[0]) {
+    t->probe->db = open_domain(t->res->domain);
+  } else {
+    if (t->probe->find_domain) {
+      t->probe->find_domain(t);
+    } else {
+      t->probe->db = open_domain(NULL);
+    }
+  }
   if (!t->probe->db) return -2;
 
   if (t->probe->resultcount % 400 == 0) {

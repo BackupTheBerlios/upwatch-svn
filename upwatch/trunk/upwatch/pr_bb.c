@@ -59,28 +59,30 @@ void *bb_get_def(trx *t, int create)
       return(NULL);
     }
   } else {
-    // first we find the serverid, this will be used to find the probe definition in the database
-    if (!query_server_by_name) {
-      LOG(LOG_WARNING, "don't know how to find a server by name");
-      g_free(def);
-      return(NULL);
-    }
-    result = my_query(t->probe->db, 0, query_server_by_name, res->hostname, res->hostname, 
-                      res->hostname, res->hostname, res->hostname);
-    if (!result) {
-      g_free(def);
-      return(NULL);
-    }
-    row = mysql_fetch_row(result);
-    if (row && row[0]) {
-      res->server   = atoi(row[0]);
-    } else {
-      LOG(LOG_WARNING, "server %s not found", res->hostname);
+    if (res->server == 0) {
+      // first we find the serverid, this will be used to find the probe definition in the database
+      if (!query_server_by_name) {
+        LOG(LOG_WARNING, "don't know how to find %s by name", res->hostname);
+        g_free(def);
+        return(NULL);
+      }
+      result = my_query(t->probe->db, 0, query_server_by_name, res->hostname, res->hostname, 
+                        res->hostname, res->hostname, res->hostname);
+      if (!result) {
+        g_free(def);
+        return(NULL);
+      }
+      row = mysql_fetch_row(result);
+      if (row && row[0]) {
+        res->server   = atoi(row[0]);
+      } else {
+        LOG(LOG_WARNING, "server %s not found", res->hostname);
+        mysql_free_result(result);
+        g_free(def);
+        return(NULL);
+      }
       mysql_free_result(result);
-      g_free(def);
-      return(NULL);
     }
-    mysql_free_result(result);
 
     // first find the definition based on the serverid
     result = my_query(t->probe->db, 0,

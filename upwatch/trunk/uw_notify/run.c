@@ -257,7 +257,6 @@ extern int forever;
     memset(&t, 0, sizeof(t));
     t.process = process; // callback for each result
     t.failed = UpwatchXmlDoc("result");
-    xmlSetDocCompressMode(t.failed, OPT_VALUE_COMPRESS);
     char *filebase;
 
     filebase = strrchr((char *)g_ptr_array_index(arr,i), '/');
@@ -282,12 +281,14 @@ extern int forever;
     case 3: /* try again later */
       break;
     case 4: /* successfully processed */
+      xmlSetDocCompressMode(t.doc, OPT_VALUE_COMPRESS);
       if (HAVE_OPT(COPY) && strcmp(OPT_ARG(COPY), "none")) {
         char *name = filebase;
         spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(COPY), t.doc, &name);
       }
       if (t.failed_count) {
         char *name = filebase;
+        xmlSetDocCompressMode(t.failed, OPT_VALUE_COMPRESS);
         spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(FAILURES), t.failed, &name);
       }
       for (j=0; j < output_ct; j++) {

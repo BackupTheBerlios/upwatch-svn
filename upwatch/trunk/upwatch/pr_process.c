@@ -138,8 +138,9 @@ int extract_info_from_xml(trx *t)
 //*******************************************************************
 int accept_result(trx *t)
 {
-  LOG(LOG_DEBUG, "%s: %d stattime %u expires %u",
-               t->res->name, t->res->color, t->res->stattime, t->res->expires);
+  LOG(LOG_DEBUG, "%s %s %d: %d stattime %u expires %u",
+               t->res->domain, t->res->name, t->res->probeid, 
+               t->res->color, t->res->stattime, t->res->expires);
   return 1; // ok
 }
 
@@ -177,7 +178,7 @@ void *get_def(trx *t, int create)
       if (row) {
         if (row[0]) def->color   = atoi(row[0]);
       } else {
-        LOG(LOG_NOTICE, "pr_status record for %s id %u not found", res->name, res->probeid);
+        LOG(LOG_NOTICE, "pr_status record for %s id %u ip %s not found", res->name, res->probeid, res->ipaddress);
       }
       mysql_free_result(result);
     }
@@ -452,6 +453,9 @@ int handle_result_file(gpointer data, gpointer user_data)
         LOG(LOG_WARNING, "can't find method: %s, saved as failure", t->cur->name);
       }
       t->failed_count++;
+      if (!t->failed) {
+        t->failed = UpwatchXmlDoc("result", t->fromhost);
+      }
       node = t->cur;
       t->cur = t->cur->next;
       xmlUnlinkNode(node); // unlink, copy and paste

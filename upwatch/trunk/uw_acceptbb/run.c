@@ -181,6 +181,7 @@ extern int forever;
       int ct  = STACKCT_OPT(OUTPUT);
       char **output = STACKLST_OPT(OUTPUT);
 
+      xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
       for (i=0; i < ct; i++) {
         spool_result(OPT_ARG(SPOOLDIR), output[i], doc, NULL);
       }
@@ -204,8 +205,7 @@ void add_to_xml_document(char *hostname, char *probename, char *colorstr, struct
   struct hostent *hp;
 
   if (doc == NULL) {
-    doc = UpwatchXmlDoc("result");
-    xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
+    doc = UpwatchXmlDoc("result", NULL);
   }
   if (!strcmp(colorstr, "red")) {
     color = STAT_RED;

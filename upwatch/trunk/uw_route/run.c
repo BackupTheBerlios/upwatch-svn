@@ -145,6 +145,7 @@ static int handle_file(gpointer data, gpointer user_data)
   time_t filetime;
   int i;
   char *filebase;
+  char *p, *fromhost = NULL;
 
   filebase = strrchr(filename, '/');
   if (filebase) filebase++;
@@ -179,6 +180,7 @@ static int handle_file(gpointer data, gpointer user_data)
     return 0;
   }
   //xmlDocFormatDump(stderr, doc, TRUE);
+  xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
   if (HAVE_OPT(COPY) && strcmp(OPT_ARG(COPY), "none")) {
     char *name = filebase;
     spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(COPY), doc, &name);
@@ -207,6 +209,11 @@ static int handle_file(gpointer data, gpointer user_data)
     xmlFreeDoc(doc);
     return 0;
   }
+  p = xmlGetProp(cur, (const xmlChar *) "fromhost");
+  if (p) {
+    fromhost = strdup(p);
+    xmlFree(p);
+  }
 
   /*
    * Now, walk the tree.
@@ -220,6 +227,7 @@ static int handle_file(gpointer data, gpointer user_data)
     LOG(LOG_WARNING, "%s: empty file", filename);
     unlink(filename);
     free(filename);
+    if (fromhost) free(fromhost);
     xmlFreeDoc(doc);
     return 0;
   }
@@ -245,7 +253,7 @@ static int handle_file(gpointer data, gpointer user_data)
       }
       found = 1;
       if (route[i].doc == NULL) {
-        route[i].doc = UpwatchXmlDoc("result");
+        route[i].doc = UpwatchXmlDoc("result", fromhost);
         xmlSetDocCompressMode(route[i].doc, OPT_VALUE_COMPRESS);
       }
       node = cur;
@@ -286,6 +294,7 @@ static int handle_file(gpointer data, gpointer user_data)
   }
   unlink(filename);
   free(filename);
+  if (fromhost) free(fromhost);
   return 0;
 }
 

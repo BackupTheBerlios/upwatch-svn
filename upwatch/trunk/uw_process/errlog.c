@@ -23,6 +23,7 @@ module errlog_module  = {
   NO_END_RESULT,
   NO_END_RUN,
   NO_EXIT,
+  NO_FIND_DOMAIN,
   NO_STORE_RESULTS,
   NO_SUMMARIZE
 };

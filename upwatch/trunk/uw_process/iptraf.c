@@ -146,6 +146,7 @@ module iptraf_module  = {
   NO_END_RESULT,
   iptraf_end_run, 
   NO_EXIT,
+  NO_FIND_DOMAIN,
   iptraf_store_raw_result,
   iptraf_summarize
 };

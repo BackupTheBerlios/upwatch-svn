@@ -78,7 +78,7 @@ void *bb_cpu_get_def(trx *t, int create)
     if (row && row[0]) {
       res->server   = atoi(row[0]);
     } else {
-      LOG(LOG_NOTICE, "server %s not found", res->hostname);
+      LOG(LOG_NOTICE, "%s: server %s not found", res->domain, res->hostname);
       mysql_free_result(result);
       return(NULL);
     }

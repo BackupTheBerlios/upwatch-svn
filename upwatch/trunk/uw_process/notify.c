@@ -111,7 +111,7 @@ static int do_notification(trx *t)
   if (t->def->email[0] == 0) {
     return(notified);
   }
-  servername = query_server_by_id(t->probe, t->def->server);
+  servername = domain_server_by_id(t->res->domain, t->def->server);
 
   session = smtp_create_session ();
   sprintf(buf, "%s:%lu", OPT_ARG(SMTPSERVER), OPT_VALUE_SMTPSERVERPORT);
@@ -170,32 +170,10 @@ static int do_notification(trx *t)
   }
   smtp_destroy_session (session);
   fclose(fp);
+  free(servername);
 #else /* HAVE_LIBESMTP */
   LOG(LOG_WARNING, "STMP support not compiled in");
 #endif /* HAVE_LIBESMTP */
   return(notified);
 }
-
-char *query_server_by_id(module *probe, int id)
-{
-  MYSQL_RES *result;
-  MYSQL_ROW row;
-static char name[256];
-
-  if (probe->db == NULL) return("unknown");
-  result = my_query(probe->db, 0,
-                    OPT_ARG(QUERY_SERVER_BY_ID), id, id, id, id, id);
-  if (!result) return("");
-  row = mysql_fetch_row(result);
-  if (row && row[0]) {
-    strcpy(name, row[0]);
-  } else {
-    LOG(LOG_NOTICE, "name for server %u not found", id);
-    mysql_free_result(result);
-    return("");
-  }
-  mysql_free_result(result);
-  return(name);
-}
-
 

@@ -173,10 +173,16 @@ void *iptraf_get_def(trx *t, int create)
       row = mysql_fetch_row(result);
       if (row) {
         def->color   = atoi(row[0]);
+      } else {
+        LOG(LOG_NOTICE, "pr_status record for %s id %u (%s) not found", res->name, def->probeid, res->ipaddress);
+        mysql_free_result(result);
+        result = my_query(t->probe->db, 0,
+                          "insert into status set class = '%d', probe = '%d', server = '%d'",
+                          t->probe->class, def->probeid, def->server);
       }
       mysql_free_result(result);
     } else {
-      LOG(LOG_NOTICE, "pr_status record for %s id %u not found", res->name, def->probeid);
+      LOG(LOG_NOTICE, "pr_status record for %s id %u (%s) not found", res->name, def->probeid, res->ipaddress);
     }
 
     result = my_query(t->probe->db, 0,

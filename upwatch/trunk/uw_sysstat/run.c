@@ -333,7 +333,7 @@ extern int forever;
     unlink("tmp/.uw_sysstat.tmp");
   }
 
-  doc = UpwatchXmlDoc("result");
+  doc = UpwatchXmlDoc("result", NULL);
   xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
   now = time(NULL);
 

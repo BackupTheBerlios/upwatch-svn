@@ -13,6 +13,17 @@
 #include <generic.h>
 #include <st.h>
 
+struct dbspec {
+  char domain[25];
+  char host[65];
+  int port;
+  char db[64];
+  char user[25];
+  char password[25];
+  MYSQL *mysql;
+} *dblist;
+int dblist_cnt;
+
 int thread_count;
 int spooldir_strlen; // strlen of spooldir
 
@@ -25,13 +36,39 @@ static char *chop(char *s, int i)
   return(s);
 }
 
+MYSQL *open_domain(char *domain)
+{
+  int i;
+  MYSQL *mysql;
+
+  if (!dblist) {
+    LOG(LOG_ERR, "open_domain but no dblist found");
+    return NULL;
+  }
+  if (domain == NULL || domain[0] == 0) {
+    mysql = open_database(dblist[0].host, dblist[0].port,
+            dblist[0].db, dblist[0].user, dblist[0].password);
+    return(mysql);
+  }
+
+  for (i=0; i < dblist_cnt; i++) {
+    if (strcmp(dblist[i].domain, domain) == 0) {
+      mysql = open_database(dblist[i].host, dblist[i].port,
+              dblist[i].db, dblist[i].user, dblist[i].password);
+      return(mysql);
+    }
+  }
+  return(NULL);
+}
+
 static int uw_password_ok(char *user, char *passwd) 
 {
   MYSQL *mysql;
   MYSQL_RES *result;
+  char *domain = strrchr(user, '@');
 
-  mysql = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
-			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
+  if (domain) domain++;
+  mysql = open_domain(domain);
   if (mysql) {
     gchar buffer[256];
     MYSQL_ROW row;
@@ -65,6 +102,35 @@ static int uw_password_ok(char *user, char *passwd)
 
 int init(void)
 {
+  MYSQL *db;
+
+  db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
+                     OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
+  if (db) {
+    MYSQL_RES *result;
+    dblist = calloc(100, sizeof(struct dbspec));
+
+    result = my_query(db, 0, "select pr_domain.name, pr_domain.host, "
+                             "       pr_domain.port, pr_domain.db, pr_domain.user, "
+                             "       pr_domain.password "
+                             "from   pr_domain "
+                             "where  pr_domain.id > 1");
+    if (result) {
+      MYSQL_ROW row;
+      while ((row = mysql_fetch_row(result)) != NULL) {
+        strcpy(dblist[dblist_cnt].domain, row[0]);
+        strcpy(dblist[dblist_cnt].host, row[1]);
+        dblist[dblist_cnt].port = atoi(row[2]);
+        strcpy(dblist[dblist_cnt].db, row[3]);
+        strcpy(dblist[dblist_cnt].user, row[4]);
+        strcpy(dblist[dblist_cnt].password, row[5]);
+        dblist_cnt++;
+      }
+      mysql_free_result(result);
+    }
+    close_database(db);
+  }
+
   spooldir_strlen = strlen(OPT_ARG(SPOOLDIR))+1;
   daemonize = TRUE;
   every = ONE_SHOT;
@@ -204,7 +270,7 @@ login:
     return;
   }
 
-  // expect here: USER xxxxxxx
+  // expect here: USER xxxxxxx or USER xxxxx@domain
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
   if (len == -1) {

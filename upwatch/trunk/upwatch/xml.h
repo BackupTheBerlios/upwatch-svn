@@ -7,7 +7,7 @@ guint xmlGetPropUnsigned(xmlNodePtr node, const xmlChar *name);
 glong xmlGetPropLong(xmlNodePtr node, const xmlChar *name);
 gfloat xmlGetPropFloat(xmlNodePtr node, const xmlChar *name);
 
-xmlDocPtr UpwatchXmlDoc(const char *root);
+xmlDocPtr UpwatchXmlDoc(const char *root, char *fromhost);
 
 void UpwatchXmlGenericErrorFunc(void *ctx, const char *fmt, ...);
 

@@ -341,10 +341,10 @@ void write_results(void)
   int i;
   xmlDocPtr doc;
 
-  doc = UpwatchXmlDoc("result");
-  xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
+  doc = UpwatchXmlDoc("result", NULL);
 
   g_hash_table_foreach(cache, write_probe, doc);
+  xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
   for (i=0; i < ct; i++) {
      spool_result(OPT_ARG(SPOOLDIR), output[i], doc, NULL);
   }

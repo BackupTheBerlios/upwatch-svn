@@ -15,6 +15,8 @@ PROBE_EMPTY = 1,
 
 struct _module {
   STANDARD_MODULE_STRUCT
+#define NO_FIND_DOMAIN NULL
+  gint (*find_domain)(trx *t);
 #define NO_STORE_RESULTS NULL
   gint (*store_results)(trx *t);
 #define NO_SUMMARIZE NULL
@@ -42,6 +44,26 @@ void mod_ic_flush(module *probe, const char *table);
 extern gint ct_store_raw_result(trx *t);
 extern void ct_summarize(trx *t, char *from, char *into, 
                          guint slot, guint slotlow, guint slothigh, gint resummarize);
+
+struct dbspec {
+  char *domain;
+  char *host;
+  int port;
+  char *db;
+  char *user;
+  char *password;
+  char *srvrbyname; // query to retrieve the server id given the server name
+  char *srvrbyid;   // query to retrieve the server name given the server id
+  char *srvrbyip;   // query to retrieve the server id given the ipaddress
+  MYSQL *mysql;
+};
+extern struct dbspec *dblist;
+extern int dblist_cnt;
+
+MYSQL *open_domain(char *domain);
+int domain_server_by_name(char *domain, char *name);
+char *domain_server_by_id(char *domain, int id);
+int domain_server_by_ip(char *domain, char *ip);
 
 #endif /* __UW_PROCESS_GLOB_H */
 

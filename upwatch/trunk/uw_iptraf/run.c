@@ -44,8 +44,7 @@ void writeXMLresult(struct ipnetw *ipnets, int count_ipnets)
   char **output = STACKLST_OPT(OUTPUT);
   int i;
 
-  doc = UpwatchXmlDoc("result");
-  xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
+  doc = UpwatchXmlDoc("result", NULL);
 
   now = time(NULL);
 
@@ -77,6 +76,7 @@ void writeXMLresult(struct ipnetw *ipnets, int count_ipnets)
     free(net->count);
   }
   free(ipnets);
+  xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
   for (i=0; i < ct; i++) {
     spool_result(OPT_ARG(SPOOLDIR), output[i], doc, NULL);
   }

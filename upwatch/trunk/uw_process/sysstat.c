@@ -153,6 +153,7 @@ module sysstat_module  = {
   NO_END_RESULT,
   NO_END_RUN,
   NO_EXIT,
+  NO_FIND_DOMAIN,
   sysstat_store_raw_result,
   sysstat_summarize
 };
