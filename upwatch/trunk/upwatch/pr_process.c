@@ -164,11 +164,12 @@ void delete_pr_status(trx *t, int id)
 //*******************************************************************
 void *get_def(trx *t, int create)
 {
-  struct probe_def *def;
   struct probe_result *res = (struct probe_result *)t->res;
+  struct probe_def *def;
   MYSQL_RES *result;
   MYSQL_ROW row;
   time_t now = time(NULL);
+  char *def_fields = "server, yellow, red, contact, hide, email, delay";
 
   def = g_hash_table_lookup(t->probe->cache, &res->probeid);
   if (def && def->stamp < now - (120 + uw_rand(240))) { // older then 2 - 6 minutes?
@@ -198,10 +199,9 @@ void *get_def(trx *t, int create)
 
     // Get the server, contact and yellow/red info from the def record. Note the yellow/red may 
     // have been changed by the user so need to be transported into the data files
-    result = my_query(t->probe->db, 0,
-                      "select server, yellow, red, contact, hide, email, delay "
-                      "from   pr_%s_def "
-                      "where  id = '%u'", res->name, res->probeid);
+    result = my_query(t->probe->db, 0, "select %s from pr_%s_def where  id = '%u'", 
+                      t->probe->get_def_fields ? t->probe->get_def_fields : def_fields,
+                      res->name, res->probeid);
     if (!result) return(NULL);
 
     if (mysql_num_rows(result) == 0) { // DEF RECORD NOT FOUND
@@ -234,21 +234,24 @@ void *get_def(trx *t, int create)
                          res->realm, res->stattime, t->fromhost,
                          res->name, res->probeid, mysql_error(t->probe->db));
       }
-      result = my_query(t->probe->db, 0,
-                        "select server, yellow, red, contact, hide, email, delay "
-                        "from   pr_%s_def "
-                        "where  id = '%u'", res->name, res->probeid);
+      result = my_query(t->probe->db, 0, "select %s from pr_%s_def where  id = '%u'", 
+                        t->probe->get_def_fields ? t->probe->get_def_fields : def_fields,
+                        res->name, res->probeid);
       if (!result) return(NULL);
     }
-    row = mysql_fetch_row(result);
-    if (row) {
-      if (row[0]) def->server   = atoi(row[0]);
-      if (row[1]) def->yellow   = atof(row[1]);
-      if (row[2]) def->red      = atof(row[2]);
-      if (row[3]) def->contact  = atof(row[3]);
-      strcpy(def->hide, row[4] ? row[4] : "no");
-      strcpy(def->email, row[5] ? row[5] : "");
-      if (row[6]) def->delay = atoi(row[6]);
+    if (t->probe->set_def_fields) {
+      t->probe->set_def_fields(t, def, result);
+    } else {
+      row = mysql_fetch_row(result);
+      if (row) {
+        if (row[0]) def->server   = atoi(row[0]);
+        if (row[1]) def->yellow   = atof(row[1]);
+        if (row[2]) def->red      = atof(row[2]);
+        if (row[3]) def->contact  = atof(row[3]);
+        strcpy(def->hide, row[4] ? row[4] : "no");
+        strcpy(def->email, row[5] ? row[5] : "");
+        if (row[6]) def->delay = atoi(row[6]);
+      }
     }
     mysql_free_result(result);
 

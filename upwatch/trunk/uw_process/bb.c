@@ -37,6 +37,8 @@ module bb_module  = {
   bb_xml_result_node,
   NO_GET_FROM_XML,
   accept_result,
+  NO_GET_DEF_FIELDS,
+  NO_SET_DEF_FIELDS,
   bb_get_def,
   NO_ADJUST_RESULT,
   NO_END_RESULT,
@@ -44,7 +46,8 @@ module bb_module  = {
   NO_EXIT,
   bb_find_realm,
   NO_STORE_RESULTS,
-  NO_NOTIFY_MAIL_SUBJECT,
+  NO_NOTIFY_MAIL_SUBJECT_EXTRA,
+  NO_NOTIFY_MAIL_BODY_PROBE_DEF,
   NO_SUMMARIZE
 };
 

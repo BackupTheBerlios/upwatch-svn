@@ -124,6 +124,8 @@ module httpget_module  = {
   NO_XML_RESULT_NODE,
   httpget_get_from_xml,
   NO_ACCEPT_RESULT,
+  NO_GET_DEF_FIELDS,
+  NO_SET_DEF_FIELDS,
   NO_GET_DEF,
   NO_ADJUST_RESULT,
   NO_END_RESULT,
@@ -131,7 +133,8 @@ module httpget_module  = {
   NO_EXIT,
   NO_FIND_DOMAIN,
   httpget_store_raw_result,
-  NO_NOTIFY_MAIL_SUBJECT,
+  NO_NOTIFY_MAIL_SUBJECT_EXTRA,
+  NO_NOTIFY_MAIL_BODY_PROBE_DEF,
   httpget_summarize
 };
 

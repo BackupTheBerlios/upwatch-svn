@@ -9,6 +9,45 @@
 #endif
 
 //*******************************************************************
+// Get the results of the MySQL query into our probe_def structure
+//*******************************************************************
+static void snmpget_free_def(void *probedef)
+{
+    struct snmpget_def *def = (struct snmpget_def *) probedef;
+
+    if (def->community) g_free(def->community);
+    if (def->OID)       g_free(def->OID);
+    if (def->dispname)  g_free(def->dispname);
+    if (def->dispunit)  g_free(def->dispunit);
+    g_free(def);
+}
+
+//*******************************************************************
+// Get the results of the MySQL query into our probe_def structure
+//*******************************************************************
+static void snmpget_set_def_fields(trx *t, struct probe_def *probedef, MYSQL_RES *result)
+{
+  struct snmpget_def *def = (struct snmpget_def *) probedef;
+  MYSQL_ROW row = mysql_fetch_row(result);
+
+  if (row) {
+    if (row[0]) def->server   = atoi(row[0]);
+    if (row[1]) def->yellow   = atof(row[1]);
+    if (row[2]) def->red      = atof(row[2]);
+    if (row[3]) def->contact  = atof(row[3]);
+    strcpy(def->hide, row[4] ? row[4] : "no");
+    strcpy(def->email, row[5] ? row[5] : "");
+    if (row[6]) def->delay = atoi(row[6]);
+    if (row[7]) def->community = strdup(row[7]);  /* community string for SNMPv1/v2c transactions */
+    if (row[8]) def->OID = strdup(row[8]);        /* Object ID */
+    if (row[9]) def->dispname = strdup(row[9]);   /* Display Name */
+    if (row[10]) def->dispunit = strdup(row[10]); /* Display Unit */
+    if (row[11]) def->multiplier = atof(row[11]); /* Multiplier for result values */
+    if (row[12]) strcpy(def->mode, row[12]);      /* plot absolute or relative values */
+  }
+}
+
+//*******************************************************************
 // STORE RAW RESULTS
 //*******************************************************************
 static gint snmpget_store_raw_result(trx *t)
@@ -47,12 +86,35 @@ static gint snmpget_store_raw_result(trx *t)
 //*******************************************************************
 // Create a meaningful subject line for the notification
 //*******************************************************************
-static int snmpget_notify_mail_subject(trx *t, FILE *fp, char *servername)
+static int snmpget_notify_mail_subject_extra(trx *t, char *buf, size_t buflen)
 {
-  fprintf(fp, "Subject: %s: %s %s (was %s)\n", servername,
-                 t->probe->module_name, /* t->def->dispname, */
-                 color2string(t->res->color),
-                 color2string(t->res->prevhistcolor));
+  struct snmpget_def *def = (struct snmpget_def *)t->def;
+
+  sprintf(buf, "%s", def->dispname);
+}
+
+//*******************************************************************
+// Create a meaningful subject line for the notification
+//*******************************************************************
+static int snmpget_notify_mail_body_probe_def(trx *t, char *buf, size_t buflen)
+{
+  struct snmpget_def *def = (struct snmpget_def *)t->def;
+  struct snmpget_result *res = (struct snmpget_result *)t->res;
+
+  sprintf(buf, "%-20s: %s\n"
+               "%-20s: %s\n"
+               "%-20s: %s\n"
+               "%-20s: %s\n"
+               "%-20s: %.2f\n"
+               "%-20s: %s\n"
+               "%-20s: %.2f%s\n",
+  "Community", "********", 
+  "Object ID", def->OID, 
+  "Display Name", def->dispname,
+  "Display Unit", def->dispunit,
+  "Multiplier", def->multiplier,
+  "Mode", def->mode,
+  "Current Value", def->multiplier * res->value, def->dispunit);
 }
 //*******************************************************************
 // SUMMARIZE A TABLE INTO AN OLDER PERIOD
@@ -123,7 +185,7 @@ static void snmpget_summarize(trx *t, char *from, char *into, guint slot, guint 
 
 module snmpget_module  = {
   STANDARD_MODULE_STUFF(snmpget),
-  NO_FREE_DEF,
+  snmpget_free_def,
   NO_FREE_RES,
   NO_INIT,
   NO_START_RUN,
@@ -131,6 +193,9 @@ module snmpget_module  = {
   NO_XML_RESULT_NODE,
   snmpget_get_from_xml,
   NO_ACCEPT_RESULT,
+  "server, yellow, red, contact, hide, email, delay, "
+  "community, OID, dispname, dispunit, multiplier, mode ",
+  snmpget_set_def_fields,
   NO_GET_DEF,
   NO_ADJUST_RESULT,
   NO_END_RESULT,
@@ -138,7 +203,8 @@ module snmpget_module  = {
   NO_EXIT,
   NO_FIND_DOMAIN,
   snmpget_store_raw_result,
-  NO_NOTIFY_MAIL_SUBJECT,
+  snmpget_notify_mail_subject_extra,
+  snmpget_notify_mail_body_probe_def,
   snmpget_summarize
 };
 

@@ -83,6 +83,8 @@ typedef struct transaction {
   void (*xml_result_node)(trx *t);		/* process properties of the "result" node  */ \
   void (*get_from_xml)(trx *t);			/* process one child of the "result" node */ \
   int (*accept_result)(trx *t);			/* accept (and maybe convert) result */ \
+  char *get_def_fields;				/* list of fields to be inserted into SQL get_def query */ \
+  void (*set_def_fields)(trx *t, struct probe_def *def, MYSQL_RES *result);/* convert MySQL ROW into probe_def */ \
   void *(*get_def)(trx *t, int create);		/* retrieve probe definition */ \
   void (*adjust_result)(trx *t);		/* adjust result: usually compute our own colors */ \
   int (*end_result)(trx *t);                    /* maybe do some cleanup for this result */  \
@@ -97,6 +99,8 @@ typedef struct transaction {
 #define NO_XML_RESULT_NODE NULL
 #define NO_GET_FROM_XML NULL
 #define NO_ACCEPT_RESULT NULL
+#define NO_GET_DEF_FIELDS NULL
+#define NO_SET_DEF_FIELDS NULL
 #define NO_GET_DEF NULL
 #define NO_ADJUST_RESULT NULL
 #define NO_END_RESULT NULL
@@ -294,6 +298,7 @@ struct snmpget_result {
 struct snmpget_def {
   STANDARD_PROBE_DEF;
 #include "../common/common.h"
+#include "../uw_snmpget/probe.def_h"
 };
 
 void snmpget_get_from_xml(trx *t);

@@ -159,7 +159,9 @@ static int do_notification(trx *t)
   int notified = FALSE;
   char *servername;
   char subject[256];
+  char subject_extra[256];
   char body[8192];
+  char body_probe_def[8192];
   char msg[8192];
 
   if (t->def->email[0] == 0) {
@@ -167,10 +169,20 @@ static int do_notification(trx *t)
   }
   servername = realm_server_by_id(t->res->realm, t->def->server);
 
-  sprintf(subject, "%s: %s %s (was %s)\n", servername,
+  if (t->probe->notify_mail_subject_extra) {
+    t->probe->notify_mail_subject_extra(t, subject_extra, sizeof(subject_extra));
+  } else {
+    subject_extra[0] = 0;
+  }
+  sprintf(subject, "%s: %s %s (was %s) %s", servername,
                    t->probe->module_name, color2string(t->res->color),
-                   color2string(t->res->prevhistcolor));
+                   color2string(t->res->prevhistcolor), subject_extra);
 
+  if (t->probe->notify_mail_body_probe_def) {
+    t->probe->notify_mail_body_probe_def(t, body_probe_def, sizeof(body_probe_def));
+  } else {
+    body_probe_def[0] = 0;
+  }
   if (t->res->message) {
     sprintf(msg, "\nDe volgende melding werd hierbij gegeven:\n%s\n", t->res->message);
   } else {
@@ -181,6 +193,7 @@ static int do_notification(trx *t)
                 "is de status van de probe %s\n"
                 "op server %s\n"
                 "overgegaan van %s in %s\n"
+                "%s:\n%s\n"
                 "%s"
                 "\n"
                 "vriendelijke groet\n"
@@ -189,6 +202,7 @@ static int do_notification(trx *t)
                    t->probe->module_name,
                    servername, 
                    color2string(t->res->prevhistcolor), color2string(t->res->color),
+                   body_probe_def[0] ? "\nGegevens van deze probe" : "", body_probe_def,
                    msg,
                    OPT_ARG(FROM_NAME)
   );

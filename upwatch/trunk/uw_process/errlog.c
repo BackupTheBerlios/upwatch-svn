@@ -18,6 +18,8 @@ module errlog_module  = {
   NO_XML_RESULT_NODE,
   ct_get_from_xml,
   accept_result,
+  NO_GET_DEF_FIELDS,
+  NO_SET_DEF_FIELDS,
   get_def_by_servid,
   NO_ADJUST_RESULT,
   NO_END_RESULT,
@@ -25,7 +27,8 @@ module errlog_module  = {
   NO_EXIT,
   NO_FIND_DOMAIN,
   NO_STORE_RESULTS,
-  NO_NOTIFY_MAIL_SUBJECT,
+  NO_NOTIFY_MAIL_SUBJECT_EXTRA,
+  NO_NOTIFY_MAIL_BODY_PROBE_DEF,
   NO_SUMMARIZE
 };
 

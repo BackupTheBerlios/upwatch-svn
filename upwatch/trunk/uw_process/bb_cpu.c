@@ -152,6 +152,8 @@ module bb_cpu_module  = {
   NO_XML_RESULT_NODE,
   NO_GET_FROM_XML,
   bb_cpu_accept_result,    
+  NO_GET_DEF_FIELDS,
+  NO_SET_DEF_FIELDS,
   bb_cpu_get_def,
   NO_ADJUST_RESULT,
   NO_END_RESULT,
@@ -159,7 +161,8 @@ module bb_cpu_module  = {
   NO_EXIT,
   bb_cpu_find_realm,
   bb_cpu_store_raw_result,
-  NO_NOTIFY_MAIL_SUBJECT,
+  NO_NOTIFY_MAIL_SUBJECT_EXTRA,
+  NO_NOTIFY_MAIL_BODY_PROBE_DEF,
   bb_cpu_summarize
 };
 

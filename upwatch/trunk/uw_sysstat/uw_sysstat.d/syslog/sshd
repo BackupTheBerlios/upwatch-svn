@@ -9,7 +9,7 @@ green [LOGDATE] sshd[PID]: Accepted password for [USER] from [IPADDR] port [NUM]
 green [LOGDATE] sshd[PID]: Accepted publickey for [USER] from [IPADDR] port [NUM]
 green [LOGDATE] sshd[PID]: Accepted rsa for [USER] from [IPADDR] port [NUM]
 green [LOGDATE] sshd[PID]: Address [IPADDR] maps to [HOSTNAME], but this does not map back to the address - POSSIBLE BREAKIN ATTEMPT!
-green [LOGDATE] sshd[PID]: Bad protocol version identification '\?' from [IPADDR]
+green [LOGDATE] sshd[PID]: Bad protocol version identification
 green [LOGDATE] sshd[PID]: channel [NUM]: rcvd big packet [NUM], maxpack [NUM]
 green [LOGDATE] sshd[PID]: Closing connection to [IPADDR]
 green [LOGDATE] sshd[PID]: Connection closed by [IPADDR]
