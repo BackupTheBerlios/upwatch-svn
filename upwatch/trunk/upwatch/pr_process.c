@@ -195,8 +195,8 @@ void *get_def(trx *t, int create)
     if (mysql_num_rows(result) == 0) { // DEF RECORD NOT FOUND
       mysql_free_result(result);
       if (!create) {
-        LOG(LOG_NOTICE, "pr_%s_def id %u not found - skipped",
-                         res->name, res->probeid);
+        LOG(LOG_NOTICE, "%s: pr_%s_def id %u not found - skipped",
+                         res->domain, res->name, res->probeid);
         return(NULL);
       }
       if (res->server == 0) {

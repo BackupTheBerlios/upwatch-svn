@@ -123,16 +123,15 @@ void *iptraf_get_def(trx *t, int create)
       if (row && row[0]) {
         res->server   = atoi(row[0]);
       } else {
-        LOG(LOG_NOTICE, "server %s not found", res->hostname);
-        mysql_free_result(result);
-        return(NULL);
+        LOG(LOG_NOTICE, "iptraf for ip %s added without server id", res->ipaddress);
+        res->server = 1;
       }
       mysql_free_result(result);
 
       result = my_query(t->probe->db, 0,
                         "insert into pr_%s_def set ipaddress = '%s', server = '%u', "
                         "        description = 'auto-added by system'",
-                        res->name, res->server, res->ipaddress);
+                        res->name, res->ipaddress, res->server);
       mysql_free_result(result);
       if (mysql_affected_rows(t->probe->db) == 0) { // nothing was actually inserted
         LOG(LOG_NOTICE, "insert missing pr_%s_def id %s: %s", 
