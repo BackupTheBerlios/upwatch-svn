@@ -6,7 +6,8 @@ if [ ! -f libstatgrab-configure.gnu ]
 then
   cp ../patches/libstatgrab-configure.gnu .
   aclocal
-  automake
+  libtoolize
+  automake --gnu --add-missing
   autoconf
 fi
 cd ..

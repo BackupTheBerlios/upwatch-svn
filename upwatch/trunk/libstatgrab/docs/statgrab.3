@@ -1,0 +1,72 @@
+.TH statgrab 3 $Date: 2003/12/04 18:59:17 $ i\-scream 
+.SH NAME
+statgrab \- get system statistics
+.SH SYNOPSIS
+.nf
+#include <statgrab.h>
+.fi
+.sp 1
+.PP
+int \fIstatgrab_init\fR(void);
+.PP
+cpu_percent_t *\fIcpu_percent_usage\fR(void);
+.PP
+cpu_states_t *\fIget_cpu_totals\fR(void);
+.PP
+cpu_states_t *\fIget_cpu_diff\fR(void);
+.PP
+diskio_stat_t *\fIget_diskio_stats\fR(int *\fIentries\fR);
+.PP
+diskio_stat_t *\fIget_diskio_stats_diff\fR(int *\fIentries\fR);
+.PP
+general_stat_t *\fIget_general_stats\fR(void);
+.PP
+load_stat_t *\fIget_load_stats\fR(void);
+.PP
+mem_stat_t *\fIget_memory_stats\fR(void);
+.PP
+swap_stat_t *\fIget_swap_stats\fR(void);
+.PP
+network_stat_t *\fIget_network_stats\fR(int *\fIentries\fR);
+.PP
+network_stat_t *\fIget_network_stats_diff\fR(int *\fIentries\fR);
+.PP
+page_stat_t *\fIget_page_stats\fR(void);
+.PP
+page_stat_t *\fIget_page_stats_diff\fR(void);
+.PP
+process_stat_t *\fIget_process_stats\fR(void);
+.PP
+user_stat_t *\fIget_user_stats\fR(void);
+.SH DESCRIPTION
+The statgrab library provides a cross platform interface to getting
+system statistics. Each of the function calls returns a structure
+containing statistics. See the manual page for each individual
+function for more details on usage.
+.PP
+statgrab_init(void) should be the first
+function you call before you start to use libstatgrab. This
+function on *bsd systems opens up the kernel structures and
+leaves them open for future use. Because of this, any special
+privileges the program has (e.g. setgid kmem) can be dropped
+after this call, and all the libstatgrab calls should continue to
+work.
+.PP
+statgrab_init returns 0 on success, and
+non\-zero on failure.
+.PP
+The library was originally written to support the i\-scream central
+monitoring system, but has since become a standalone package. It
+has been ported to work on Linux, FreeBSD, and Solaris.
+.SH SEE\ ALSO
+\fBcpu_percent_usage\fR(3)
+\fBget_diskio_stats\fR(3)
+\fBget_general_stats\fR(3)
+\fBget_load_stats\fR(3)
+\fBget_memory_stats\fR(3)
+\fBget_network_stats\fR(3)
+\fBget_page_stats\fR(3)
+\fBget_process_stats\fR(3)
+\fBget_user_stats\fR(3)
+.SH WEBSITE
+http://www.i\-scream.org

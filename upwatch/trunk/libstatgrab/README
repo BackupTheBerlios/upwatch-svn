@@ -1,0 +1,48 @@
+libstatgrab README
+http://www.i-scream.org
+
+$Id: README,v 1.1 2003/12/04 18:59:16 raarts Exp $
+
+Description
+-----------
+
+libstatgrab is a library for accessing information from the system
+for statistical purposes. It could be used for software that monitors
+the system for alerting or graphing purposes.
+
+Building and Installation
+-------------------------
+
+After downloading and extracting libstatgrab, configure and build as
+follows;
+
+./configure
+make
+
+Then install as root;
+
+make install
+
+There are, of course, the usual GNU-style configure options;
+
+  --prefix=PREFIX
+
+For more documentation on the installation process, please read the
+INSTALL document.
+
+Cygwin Notes
+------------
+
+If you have installed libncurses-devel but the configure script can't
+find ncurses.h, you've most likely hit a bug in the cygwin package. To
+fix this run: /etc/postinstall/libncurses-devel.sh.done
+
+Problems?
+---------
+
+Please let us know if you have any problems - support@i-scream.org.
+
+If you find a bug, help us to fix it by sending details to
+bugs@i-scream.org. If you have a patch, please send it too.
+
+Thank-you for using i-scream software.

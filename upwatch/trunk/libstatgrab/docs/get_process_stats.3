@@ -1,0 +1,50 @@
+.TH get_process_stats 3 $Date: 2003/12/04 18:59:17 $ i\-scream 
+.SH NAME
+get_process_stats \- get process statistics
+.SH SYNOPSIS
+.nf
+#include <statgrab.h>
+.fi
+.sp 1
+.PP
+process_stat_t *\fIget_process_stats\fR(void);
+.SH DESCRIPTION
+get_process_stats returns a pointer to a
+static buffer of type process_stat_t.
+.PP
+It provides information on the number of processes and the
+system and the different states they're in.
+.SH RETURN\ VALUES
+The structure returned is of type
+process_stat_t.
+.PP
+.nf
+
+typedef struct{
+        int total;
+        int running;
+        int sleeping;
+        int stopped;
+        int zombie;
+}process_stat_t;
+    
+.fi
+.TP 
+total
+The total number of processes.
+.TP 
+running
+The number of running processes.
+.TP 
+sleeping
+The number of sleeping processes.
+.TP 
+stopped
+The number of stopped processes.
+.TP 
+zombie
+The number of zombie processes.
+.SH SEE\ ALSO
+\fBstatgrab\fR(3)
+.SH WEBSITE
+http://www.i\-scream.org
