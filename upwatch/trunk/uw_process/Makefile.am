@@ -18,12 +18,13 @@ endif
 sbin_PROGRAMS = $(program)
 man_MANS = $(program).1
 uw_process_SOURCES = run.c process.c generic_ct.c cmd_options.c cmd_options.h \
- uw_process.h modules.inc $(program).spec-generic $(program).init $(program).init-suse \
+ uw_process.h modules.inc $(program).spec-files $(program).init $(program).init-suse \
  ping.c httpget.c iptraf.c sysstat.c mysql.c bb_cpu.c bb.c pop3.c $(USE_LIBPQ) \
  $(USE_LIBSNMP) $(USE_LIBTDS) imap.c
 uw_process_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ \
   $(DEF_LIBPQ) $(DEF_LIBSNMP) $(DEF_LIBTDS) # -DUSE_THREADS
-BUILT_SOURCES = cmd_options.h $(program).spec-generic $(program).init $(program).init-suse $(program).spec-install
+BUILT_SOURCES = cmd_options.h $(program).spec-files $(program).spec-requires \
+ $(program).init $(program).init-suse $(program).spec-install
 INCLUDES = -I../upwatch 
 EXTRA_DIST = cmd_options.def $(program).conf
 LDADD = $(DB_O) $(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @MYSQL_LIBS@ @LIBGLIB2_LIBS@ @LIBXML2_LIBS@
