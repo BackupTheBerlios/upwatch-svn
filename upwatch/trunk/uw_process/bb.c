@@ -77,10 +77,11 @@ static void *get_def(module *probe, void *probe_res)
 
   def = g_malloc0(sizeof(struct probe_result));
   def->stamp    = time(NULL);
+  strcpy(def->hide, "no");
 
   // first find the definition based on the serverid
   result = my_query(probe->db, 0,
-                    "select id, contact from pr_bb_def "
+                    "select id, contact, hide from pr_bb_def "
                     "where  bbname = '%s' and server = '%u'", res->bbname, res->server);
   if (!result) {
     g_free(def);
@@ -91,6 +92,7 @@ static void *get_def(module *probe, void *probe_res)
     // definition found, get the pr_status
     res->probeid = atoi(row[0]);
     def->contact = atoi(row[1]);
+    strcpy(def->hide, row[2] ? row[2] : "no");
     mysql_free_result(result);
     result = my_query(probe->db, 0,
                       "select color "

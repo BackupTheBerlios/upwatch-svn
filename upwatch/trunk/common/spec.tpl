@@ -6,7 +6,7 @@
 %package [+prog-name+]
 Summary: UpWatch - [+prog-title+]
 Group: Application/Monitoring
-Requires: upwatch [+spec-requires+]
+Requires: upwatch libxml2 >= 2.4.19 [+spec-requires+]
 
 %description [+prog-name+]
 [+detail+]

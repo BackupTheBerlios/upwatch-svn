@@ -36,6 +36,7 @@ INSERT INTO pr_group set id = '2', name = 'Default';
 CREATE TABLE pr_hist (
   id int unsigned NOT NULL auto_increment,
   server int unsigned NOT NULL default '1',
+  hide enum('yes', 'no') not null default 'no',
   contact int unsigned NOT NULL default '1',  -- user field: pointer to contact database
   class smallint unsigned NOT NULL default '1',
   probe int unsigned NOT NULL default '1',
@@ -59,6 +60,7 @@ CREATE TABLE pr_status (
   class int unsigned NOT NULL default '1',
   probe int unsigned NOT NULL default '1',
   server int unsigned NOT NULL default '1',
+  hide enum('yes', 'no') not null default 'no',
   contact int unsigned NOT NULL default '1',  -- user field: pointer to contact database
   yellow float NOT NULL default '0',
   red float NOT NULL default '0',

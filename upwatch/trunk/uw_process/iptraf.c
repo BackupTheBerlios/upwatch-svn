@@ -82,9 +82,10 @@ static void *get_def(module *probe, void *probe_res)
 
     def = g_malloc0(sizeof(struct iptraf_def));
     def->stamp = now;
+    strcpy(def->hide, "no");
 
     result = my_query(probe->db, 0,
-                      "select id, server, yellow, red, contact "
+                      "select id, server, yellow, red, contact, hide "
                       "from   pr_%s_def "
                       "where  ipaddress = '%s'", res->name, res->ipaddress);
     if (!result) return(NULL);
@@ -109,7 +110,7 @@ static void *get_def(module *probe, void *probe_res)
                          res->name, res->ipaddress);
       }
       result = my_query(probe->db, 0,
-                        "select id, server, yellow, red, contact "
+                        "select id, server, yellow, red, contact, hide "
                         "from   pr_%s_def "
                         "where  ipaddress = '%s'", res->name, res->ipaddress);
       if (!result) return(NULL);
@@ -125,6 +126,7 @@ static void *get_def(module *probe, void *probe_res)
     def->yellow   = atof(row[2]);
     def->red      = atof(row[3]);
     def->contact  = atof(row[4]);
+    strcpy(def->hide, row[5] ? row[5] : "no");
     mysql_free_result(result);
 
     result = my_query(probe->db, 0,

@@ -29,6 +29,7 @@ struct probe_result {
 #define STANDARD_PROBE_DEF   \
   guint stamp; \
   guint server; \
+  char hide[4]; \
   guint contact; \
   guint probeid; \
   guint color; \

@@ -102,7 +102,8 @@ void refresh_database(MYSQL *mysql)
                 "       pr_imap_def.password, "
                 "       pr_imap_def.yellow,  pr_imap_def.red "
                 "FROM   pr_imap_def "
-                "WHERE  pr_imap_def.id > 1 and pr_imap_def.pgroup = '%d'",
+                "WHERE  pr_imap_def.id > 1 and pr_imap_def.disabled <> 'yes'"
+                "       and pr_imap_def.pgroup = '%d'",
                 OPT_VALUE_GROUPID);
 
   result = my_query(mysql, 1, qry);

@@ -108,10 +108,11 @@ static void *get_def(module *probe, void *probe_res)
   if (def == NULL) {
     def = g_malloc0(sizeof(struct probe_result));
     def->stamp = time(NULL);
+    strcpy(def->hide, "no");
     def->server = res->server;
     
     result = my_query(probe->db, 0,
-                      "select id, yellow, red, contact "
+                      "select id, yellow, red, contact, hide "
                       "from   pr_%s_def "
                       "where  server = '%u'", res->name, res->server);
     if (!result) return(NULL);
@@ -133,7 +134,7 @@ static void *get_def(module *probe, void *probe_res)
                          res->name, def->probeid, mysql_error(probe->db));
       }
       result = my_query(probe->db, 0,
-                        "select id, yellow, red, contact "
+                        "select id, yellow, red, contact, hide "
                         "from   pr_%s_def "
                         "where  server = '%u'", res->name, res->server);
       if (!result) return(NULL);
@@ -148,6 +149,7 @@ static void *get_def(module *probe, void *probe_res)
     if (row[1]) def->yellow   = atoi(row[1]);
     if (row[2]) def->red      = atoi(row[2]);
     if (row[3]) def->server   = atoi(row[3]);
+    strcpy(def->hide, row[4] ? row[4] : "no");
     mysql_free_result(result);
 
     result = my_query(probe->db, 0,

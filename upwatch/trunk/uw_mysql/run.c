@@ -96,7 +96,8 @@ void refresh_database(MYSQL *mysql)
                 "       pr_mysql_def.query, "
                 "       pr_mysql_def.yellow,  pr_mysql_def.red "
                 "FROM   pr_mysql_def "
-                "WHERE  pr_mysql_def.id > 1 and pr_mysql_def.pgroup = '%d'",
+                "WHERE  pr_mysql_def.id > 1 and pr_mysql_def.disabled <> 'yes'"
+                "       and pr_mysql_def.pgroup = '%d'",
                 OPT_VALUE_GROUPID);
 
   result = my_query(mysql, 1, qry);

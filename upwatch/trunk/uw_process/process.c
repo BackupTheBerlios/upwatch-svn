@@ -130,6 +130,7 @@ static void *get_def(module *probe, struct probe_result *res)
   if (def == NULL) {
     def = g_malloc0(sizeof(struct probe_result));
     def->stamp    = time(NULL);
+    strcpy(def->hide, "no");
 
     result = my_query(probe->db, 0,
                       "select color "
@@ -148,7 +149,7 @@ static void *get_def(module *probe, struct probe_result *res)
     // Get the server, contact and yellow/red info from the def record. Note the yellow/red may 
     // have been changed by the user so need to be transported into the data files
     result = my_query(probe->db, 0,
-                      "select server, yellow, red, contact "
+                      "select server, yellow, red, contact, hide "
                       "from   pr_%s_def "
                       "where  id = '%u'", res->name, res->probeid);
     if (!result) return(NULL);
@@ -180,7 +181,7 @@ static void *get_def(module *probe, struct probe_result *res)
                          res->name, res->probeid, mysql_error(probe->db));
       }
       result = my_query(probe->db, 0,
-                        "select server, yellow, red, contact "
+                        "select server, yellow, red, contact, hide "
                         "from   pr_%s_def "
                         "where  id = '%u'", res->name, res->probeid);
       if (!result) return(NULL);
@@ -191,6 +192,7 @@ static void *get_def(module *probe, struct probe_result *res)
       if (row[1]) def->yellow   = atof(row[1]);
       if (row[2]) def->red      = atof(row[2]);
       if (row[3]) def->contact  = atof(row[3]);
+      strcpy(def->hide, row[4] ? row[4] : "no");
     }
     mysql_free_result(result);
 
@@ -295,10 +297,10 @@ static void update_pr_status(module *probe, struct probe_def *def, struct probe_
 
   result = my_query(probe->db, 0,
                     "update pr_status "
-                    "set    stattime = '%u', expires = '%u', color = '%d', " 
+                    "set    stattime = '%u', expires = '%u', color = '%d', hide = '%s', " 
                     "       message = '%s', yellow = '%f', red = '%f', contact = '%u', server = '%u' "
                     "where  probe = '%u' and class = '%u'",
-                    res->stattime, res->expires, res->color, 
+                    res->stattime, res->expires, res->color, def->hide, 
                     escmsg, def->yellow, def->red, def->contact, def->server, def->probeid, probe->class);
   mysql_free_result(result);
   if (mysql_affected_rows(probe->db) == 0) { // nothing was actually updated, probably already there
@@ -308,9 +310,9 @@ static void update_pr_status(module *probe, struct probe_def *def, struct probe_
                       "insert into pr_status "
                       "set    class =  '%u', probe = '%u', stattime = '%u', expires = '%u', "
                       "       server = '%u', color = '%u', message = '%s', yellow = '%f', red = '%f', "
-                      "       contact = '%u'",
+                      "       contact = '%u', hide = '%s'",
                       probe->class, def->probeid, res->stattime, res->expires, def->server, res->color, 
-                      escmsg, def->yellow, def->red, def->contact);
+                      escmsg, def->yellow, def->red, def->contact, def->hide);
     mysql_free_result(result);
   }
   g_free(escmsg);
@@ -333,9 +335,9 @@ static void insert_pr_status(module *probe, struct probe_def *def, struct probe_
                     "insert into pr_status "
                     "set    class =  '%u', probe = '%u', stattime = '%u', expires = '%u', "
                     "       color = '%u', server = '%u', message = '%s', yellow = '%f', red = '%f'"
-                    "       contact = '%u'",
+                    "       contact = '%u', hide = '%s'",
                     probe->class, def->probeid, res->stattime, res->expires, def->color, def->server, 
-                    escmsg, def->yellow, def->red, def->contact);
+                    escmsg, def->yellow, def->red, def->contact, def->hide);
   mysql_free_result(result);
   if (mysql_affected_rows(probe->db) == 0 || (mysql_errno(probe->db) == ER_DUP_ENTRY)) { 
     // nothing was actually inserted, it was probably already there
@@ -343,10 +345,10 @@ static void insert_pr_status(module *probe, struct probe_def *def, struct probe_
                     probe->class, def->probeid);
     result = my_query(probe->db, 0,
                       "update pr_status "
-                      "set    stattime = '%u', expires = '%u', color = '%d', "
+                      "set    stattime = '%u', expires = '%u', color = '%d', hide = '%s', "
                       "       message = '%s', yellow = '%f', red = '%f', contact = '%u', server = '%u' "
                       "where  probe = '%u' and class = '%u'",
-                      res->stattime, res->expires, res->color, escmsg, 
+                      res->stattime, res->expires, res->color, def->hide, escmsg, 
                       def->yellow, def->red, def->contact, def->server, def->probeid, probe->class);
     mysql_free_result(result);
   }
@@ -369,9 +371,10 @@ static void create_pr_hist(module *probe, struct probe_def *def, struct probe_re
   result = my_query(probe->db, 0,
                     "insert into pr_hist "
                     "set    server = '%u', class = '%u', probe = '%u', stattime = '%u', "
-                    "       prv_color = '%d', color = '%d', message = '%s', contact = '%u'",
+                    "       prv_color = '%d', color = '%d', message = '%s', contact = '%u', "
+                    "       hide = '%s'",
                     def->server, probe->class, def->probeid, res->stattime,
-                    prv->color, res->color, escmsg, def->contact);
+                    prv->color, res->color, escmsg, def->contact, def->hide);
   mysql_free_result(result);
   g_free(escmsg);
 }
