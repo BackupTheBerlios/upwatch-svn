@@ -118,6 +118,7 @@ fprintf(stderr, "  0x%02X:0x%02X\n", r, reg);
 			" SMBus slave 0x%02X(0x%02X) found...\n", j, j/2);
 		}
 skip:
+		;
 	}
 	method->Close();
 	smb_slave = save;

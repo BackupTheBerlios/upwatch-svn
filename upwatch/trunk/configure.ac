@@ -330,11 +330,12 @@ then
   LIBPCRE_CFLAGS="`pcre-config --cflags`"
   LIBPCRE_LIBS="`pcre-config --libs-posix`"
 fi
-if test -z "$LIBPCRE_LIBS"
+if test -z "$LIBPCRE_CFLAGS"
 then
   HAVE_LIBPCRE="0"
 else
   HAVE_LIBPCRE="1"
+  AC_DEFINE(HAVE_LIBPCRE,1,[Do we have the perl REGEX library])
 fi
 AM_CONDITIONAL(HAVE_LIBPCRE, test $HAVE_LIBPCRE -eq 1)
 AC_SUBST(LIBPCRE_CFLAGS)

@@ -185,6 +185,7 @@ int pci_pm_smb_prob(int *hwm_base, int *smb_base)
 			inq_smbba = getSMBBA71;
 			break;
 		default:
+			break;
 		}
 #if !defined(LINUX) && defined(HAVE_SMBUS) && defined(SMBUS_IOCTL)
 		if (ret)

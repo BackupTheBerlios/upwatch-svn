@@ -14,7 +14,9 @@
 #include <ctype.h>
 #include <fcntl.h>
 #include <findsaddr.h>
+#if HAVE_LIBPCRE
 #include <logregex.h>
+#endif
 #if USE_XMBMON
 #include "mbmon.h"
 #endif
@@ -110,6 +112,7 @@ void get_hwstats(void)
 }
 #endif
 
+#if HAVE_LIBPCRE
 #define STATFILE "/var/run/upwatch/uw_sysstat.stat"
 int check_log(GString *string, int idx)
 {
@@ -200,6 +203,7 @@ GString *check_logs(int *color)
   }
   return(string);
 }
+#endif
 
 int init(void)
 {
@@ -248,6 +252,7 @@ int init(void)
       *end = 0;
       errlogspec[idx++].path = start;
     }
+#if HAVE_LIBPCRE
     in = fopen(STATFILE, "r");
     if (in) {
       while (!feof(in)) {
@@ -264,6 +269,7 @@ int init(void)
       }
       fclose(in);
     }
+#endif
   }
 
 #if USE_XMBMON
@@ -601,6 +607,7 @@ extern int forever;
   }
 #endif
 
+#if HAVE_LIBPCRE
   // do the errlog
   node = newnode(doc, "errlog");
   log = check_logs(&color);
@@ -613,6 +620,7 @@ extern int forever;
     }
     g_string_free(log, TRUE);
   }
+#endif
 
   // do the diskfree
   uw_setproctitle("checking diskspace");

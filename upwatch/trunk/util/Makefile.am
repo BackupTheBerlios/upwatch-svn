@@ -2,8 +2,11 @@ include $(top_srcdir)/Makefile.am.path
 
 if HAVE_CURSES
 UWSAIDAR = uwsaidar
+if HAVE_LIBPCRE
 if HAVE_LIBREADLINE
 UWREGEXP = uwregexp
+endif
+CHKLOG = chklog
 endif
 endif
 
@@ -19,7 +22,7 @@ if CYGWIN
 MYCFLAGS = -DCYGWIN
 endif
 
-bin_PROGRAMS = ctime slot $(UWSAIDAR) $(UWREGEXP) uwq chklog
+bin_PROGRAMS = ctime slot $(UWSAIDAR) $(UWREGEXP) uwq $(CHKLOG) 
 man_MANS = ctime.1 slot.1 uwq.1 chklog.1
 INCLUDES = -I../upwatch 
 BUILT_SOURCES = 

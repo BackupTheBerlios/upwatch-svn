@@ -2,13 +2,17 @@ include $(top_srcdir)/Makefile.am.path
 
 noinst_LIBRARIES = libupwatch.a libupwatcht.a
 
+if HAVE_LIBPCRE
+LOGREGEX = logregex.c
+endif
+
 if ENABLE_SERVER
 SERVER_SOURCE = pr_process.c pr_bb.c pr_bb_cpu.c pr_httpget.c pr_mysqlstats.c \
  pr_ping.c pr_snmpget.c pr_sysstat.c pr_iptraf.c pr_generic.c pr_hwstat.c 
 endif
 
 sources = $(SERVER_SOURCE) slot.c spool.c uwstat.c xml.c util.c setproctitle.c ifaddrlist.c \
- findsaddr-linux.c setsin.c compat.c log.c logregex.c  \
+ findsaddr-linux.c setsin.c compat.c log.c $(LOGREGEX)  \
  compat.h db.h generic.h slot.h spool.h uwstat.h xml.h setproctitle.h ifaddrlist.h \
  findsaddr.h gnuc.h logregex.h probe.h
 
