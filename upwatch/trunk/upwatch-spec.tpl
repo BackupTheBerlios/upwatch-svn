@@ -47,17 +47,17 @@ mkdir -p $RPM_BUILD_ROOT/etc/upwatch.d
 mkdir -p $RPM_BUILD_ROOT/var/lib/upwatch
 mkdir -p $RPM_BUILD_ROOT/var/log/upwatch
 mkdir -p $RPM_BUILD_ROOT/var/run/upwatch
-install -m 644 config/upwatch.conf $RPM_BUILD_ROOT/etc/
+install -m 660 config/upwatch.conf $RPM_BUILD_ROOT/etc/
 mkdir -p $RPM_BUILD_ROOT/usr/lib/upwatch/dtd
-install -m 644 config/result.dtd $RPM_BUILD_ROOT/usr/lib/upwatch/dtd
+install -m 660 config/result.dtd $RPM_BUILD_ROOT/usr/lib/upwatch/dtd
 mkdir -p $RPM_BUILD_ROOT/etc/logrotate.d
-install -m 644 config/logrotate $RPM_BUILD_ROOT/etc/logrotate.d/upwatch
+install -m 660 config/logrotate $RPM_BUILD_ROOT/etc/logrotate.d/upwatch
 
 mkdir -p $RPM_BUILD_ROOT/etc/rc.d/init.d
 [+ FOR program +]
 # package specific files for [+program+]
-install -m 755 [+program+]/[+program+].init $RPM_BUILD_ROOT/etc/rc.d/init.d/[+program+]
-install -m 644 [+program+]/[+program+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+program+].conf
+install -m 770 [+program+]/[+program+].init $RPM_BUILD_ROOT/etc/rc.d/init.d/[+program+]
+install -m 660 [+program+]/[+program+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+program+].conf
 [+ ENDFOR +]
 
 [+ FOR program +] 
@@ -68,6 +68,7 @@ install -m 644 [+program+]/[+program+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+prog
 %if %{strip_binaries}
 { cd $RPM_BUILD_ROOT
   strip .%{__prefix}/bin/* || /bin/true
+  strip .%{__prefix}/sbin/* || /bin/true
 }
 %endif
 %if %{gzip_man}
@@ -85,8 +86,8 @@ install -m 644 [+program+]/[+program+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+prog
         -c "Upwatch" -u 78 -g 78 upwatch > /dev/null 2>&1 || :
 
 %files
-%defattr(0644,upwatch,upwatch,0775)
-%doc AUTHORS COPYING ChangeLog NEWS README doc/upwatch.html doc/upwatch.txt doc/upwatch.pdf doc/upwatch.xml
+%defattr(0660,root,upwatch,0770)
+%attr(0644,root,root) %doc AUTHORS COPYING ChangeLog NEWS README doc/upwatch.html doc/upwatch.txt doc/upwatch.pdf doc/upwatch.xml
 /usr/lib/upwatch
 /etc/logrotate.d/upwatch
 %dir /var/log/upwatch

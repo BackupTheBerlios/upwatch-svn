@@ -1,6 +1,6 @@
 # included from Makefile.am in every program subdirectory
 
-bin_PROGRAMS = $(program)
+sbin_PROGRAMS = $(program)
 man_MANS = $(program).1
 EXTRA_DIST +=  $(program).1 $(program).conf
 LIBUPWATCH = ../upwatch/libupwatch.a @LIBXML2_LIBS@

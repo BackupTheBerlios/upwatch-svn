@@ -12,6 +12,7 @@ and copies incoming files to a queue';
 
 // this section is for the generated specfile 
 spec-requires = "mysql glib2 gnet >= 1.1.2";
+spec-files = "%attr(0770,root,upwatch) /usr/sbin/uw_accept";
 
 // describe commandline flags
 flag = {

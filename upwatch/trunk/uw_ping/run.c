@@ -11,8 +11,6 @@
 #include <errno.h>
 #include <libxml/tree.h>
 
-
-
 #include <generic.h>
 #include <uwstat.h>
 #include "cmd_options.h"
@@ -254,6 +252,8 @@ int run(void)
 
     if (hosts[id]->msg) {
       strcat(info, hosts[id]->msg);
+      free(hosts[id]->msg);
+      hosts[id]->msg = NULL;
     } else {
       info[0] = 0;
     }
@@ -316,6 +316,7 @@ int run(void)
 */
   }
   spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc);
+  xmlFreeDoc(doc);
   return(1); // returning true means run() actually did something
 }
 

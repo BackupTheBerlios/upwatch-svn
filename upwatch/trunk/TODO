@@ -1,0 +1,2 @@
+- rework the install process so non-linux users can do a plain 'make install'
+

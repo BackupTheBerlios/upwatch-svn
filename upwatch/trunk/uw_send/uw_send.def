@@ -14,8 +14,9 @@ something like POP3.';
 spec-requires = "glib2";
 spec-install  = "mkdir -p $RPM_BUILD_ROOT/var/spool/upwatch/uw_send/tmp";
 spec-install  = "mkdir -p $RPM_BUILD_ROOT/var/spool/upwatch/uw_send/new";
-spec-files    = "%dir /var/spool/upwatch/uw_send/new";
-spec-files    = "%dir /var/spool/upwatch/uw_send/tmp";
+spec-files    = "%attr(0770,root,upwatch) %dir /var/spool/upwatch/uw_send/new";
+spec-files    = "%attr(0770,root,upwatch) %dir /var/spool/upwatch/uw_send/tmp";
+spec-files    = "%attr(0770,root,upwatch) /usr/sbin/uw_send";
 
 // describe commandline flags
 flag = {

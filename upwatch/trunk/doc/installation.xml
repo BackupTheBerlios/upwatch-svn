@@ -90,18 +90,21 @@
     </sect1>
     <sect1 id="Security_considerations">
        <title>Security considerations</title>
-       <para> All of upwatch can be run as a non-root user, except the probes which need root-access,
-          most notable, uw_ping. You can assign each probe its own user and grant that user access rights
-          to its own database tables. The probes only read from the <varname>pr_xxx_def</varname> and
-          the <varname>server</varname> tables.</para>
-          <para> The PHP web user should have SELECT, UPDATE, DELETE access to all tables.
-          </para>
-          <para> <command>uw_access</command> is the program most vulnerable to crackers, as it waits
+       <para> Every upwatch directory and file is owner root, group upwatch and non-readable to others.
+         Some probes need root-access, most notable uw_ping, and they will be installed suid root.
+         These probes drop root privileges as soon as possible. Further you can assign each probe
+         its own database user and grant that user access rights  to its own database tables.
+         The probes itself don't write to the database, they only read from the
+         <varname>pr_xxx_def</varname> and the <varname>server</varname> tables.
+       </para>
+       <para> The PHP web user should have SELECT, UPDATE, DELETE access to all tables.
+       </para>
+       <para> <command>uw_access</command> is the program most vulnerable to crackers, as it waits
              for incoming connections on a TCP port (1985). If possible, use <command>chroot</command> and
              firewall rules to limit connections to
              real probes only. Something similar holds for <command>mysql</command>.Most probes will want
              access, and passwords can be sniffed. For real security use ssh-tunnels.
-          </para>
+       </para>
     </sect1>
     <sect1 id="Database">
         <title>Database</title>
