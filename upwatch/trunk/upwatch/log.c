@@ -117,8 +117,8 @@ static void _ll_lograw(int level, const char *msg)
 
 void _LOG(int level, char *fmt, ...)
 {
- char buffer[2048]; // this is as long as we need errors to be
- char newfmt[256];
+  char buffer[2048]; // this is as long as we need errors to be
+  char newfmt[256];
   char *p, *q;
   va_list arg;
 

@@ -63,5 +63,3 @@ CLEANFILES = upwatch.pdf upwatch.txt upwatch.html \
  program-guide.html program-guide.txt program-guide.pdf
 
 
-
-

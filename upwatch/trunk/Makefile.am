@@ -77,7 +77,7 @@ endif
 
 EXTRA_DIST = Makefile.am.common Makefile.am.libs Makefile.am.path VERSION libtool ChangeLog \
   upwatch-spec.def upwatch-spec.tpl upwatch.spec templates \
-  patches/libpcap-linux-timeout.patch patches/libstatgrab-configure.gnu \
+  patches/libpcap-linux-timeout.patch \
   ${SERVER_DIST} doc/Makefile.in \
   install-sh config.sub mkinstalldirs depcomp cfg/cvs2cl.pl
 
@@ -126,17 +126,21 @@ dist-hook:
 	rm -rf `find $(distdir) -name CVS`
 if !ENABLE_SERVER
 	for i in ${SERVERLIST} ; do \
-	  rm -rf $(distdir)/$i ; \
+	  rm -rf "$(distdir)/$$i" ; \
 	done
+	rm -f $(distdir)/doc/program-guide.*
+	rm -f $(distdir)/doc/admin-guide.*
 endif
 if !ENABLE_MONITORS
 	for i in ${MONITORLIST} ; do \
-	  rm -rf $(distdir)/$i ; \
+	  rm -rf "$(distdir)/$$i" ; \
 	done
+	rm -f $(distdir)/doc/program-guide.*
+	rm -f $(distdir)/doc/admin-guide.*
 endif
 if !ENABLE_IPTRAF
 	for i in ${EXTRALIST} ; do \
-	  rm -rf $(distdir)/$i ; \
+	  rm -rf "$(distdir)/$$i" ; \
 	done
 endif
 
