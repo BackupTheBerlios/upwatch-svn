@@ -5,4 +5,6 @@ green [LOGDATE] exportfs[PID]: No 'sync' or 'async' option specified for export 
 green [LOGDATE] rpc.mountd: authenticated (un)?mount request from [IPADDR]:[NUM] for [PATH] \([PATH]\)
 green [LOGDATE] rpc.mountd: authenticated (un)?mount request from [HOSTNAME]:[NUM] for [PATH] \([PATH]\)
 green [LOGDATE] rpc.mountd: refused mount request from [HOSTNAME] for [PATH] \([PATH]\)
+green [LOGDATE] rpc.statd[PID]: Caught signal [NUM], un-registering and exiting\.
+
 

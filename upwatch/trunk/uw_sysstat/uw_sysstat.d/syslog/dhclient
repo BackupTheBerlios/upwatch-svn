@@ -1,0 +1,5 @@
+green [LOGDATE] dhclient: bound to [IPADDR] -- renewal in [NUM] seconds\.
+green [LOGDATE] dhclient: DHCPDISCOVER on eth[NUM] to [IPADDR] port [NUM] interval [NUM] 
+green [LOGDATE] dhclient: DHCPREQUEST on eth[NUM] to [IPADDR] port [NUM]
+green [LOGDATE] dhclient: DHCPREQUEST on eth[NUM] to [IPADDR] port [NUM] 
+green [LOGDATE] dhclient: DHCP[TCPFLAG] from [IPADDR]

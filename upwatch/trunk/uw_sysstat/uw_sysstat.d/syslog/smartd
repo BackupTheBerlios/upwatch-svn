@@ -1,0 +1,11 @@
+green [LOGDATE] smartd[PID]: Configuration file [PATH] parsed\. 
+green [LOGDATE] smartd[PID]: Device: [PATH], is SMART capable\. Adding to "monitor" list\. 
+green [LOGDATE] smartd[PID]: Device: [PATH], not found in smartd database\. 
+green [LOGDATE] smartd[PID]: Device: [PATH], opened 
+green [LOGDATE] smartd[PID]: Home page is http://[HOSTNAME]/  
+green [LOGDATE] smartd[PID]: Opened configuration file [PATH]
+green [LOGDATE] smartd[PID]: smartd has fork\(\)ed into background mode\. New PID=[NUM]\. 
+green [LOGDATE] smartd[PID]: smartd is exiting \(exit status [NUM]\) 
+green [LOGDATE] smartd[PID]: smartd received signal [NUM]: Terminated 
+green [LOGDATE] smartd[PID]: smartd version [NUM]\.[NUM] Copyright \(C\) [NUM][NUM] Bruce Allen 
+green [LOGDATE] smartd[PID]: Monitoring [NUM] ATA and [NUM] SCSI devices 
