@@ -1,5 +1,6 @@
 #include "config.h"
 #include <generic.h>
+#include <limits.h>
 #include <sys/time.h>
 
 #include "cmd_options.h"
@@ -179,16 +180,15 @@ int asynch_response(int operation, struct snmp_session *sp, int reqid,
       }
       if (rel) {
         if (val < probe->prev_val) { // wrapped around
-          value = (2^32)-1 - probe->prev_val + val; 
+          value = UINT_MAX - probe->prev_val + val; 
         } else {
           value = val - probe->prev_val; 
         }
       } else {
         value = val; 
       }
-      LOG(LOG_NOTICE, "received=%f, prev=%f, new=%f", val, probe->prev_val, value);
       probe->prev_val = val;
-      probe->value = value;
+      probe->value = value * probe->multiplier;
     } else {
       int ix;
       char buf[128], err[256];
@@ -314,7 +314,6 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   sprintf(buffer, "%d", (int) now);           xmlSetProp(snmpget, "date", buffer);
   sprintf(buffer, "%d", ((int)now)+((int)OPT_VALUE_EXPIRES*60));   xmlSetProp(snmpget, "expires", buffer);
   sprintf(buffer, "%d", color);               subtree = xmlNewChild(snmpget, NULL, "color", buffer);
-  probe->value *= probe->multiplier;
   sprintf(buffer, "%f", probe->value);        subtree = xmlNewChild(snmpget, NULL, "value", buffer);
   if (probe->msg) {
     subtree = xmlNewTextChild(snmpget, NULL, "info", probe->msg);
