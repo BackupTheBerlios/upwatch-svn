@@ -1,0 +1,8 @@
+green [LOGDATE] ntpd: ntpd startup succeeded
+green [LOGDATE] ntpd[PID]: ntp engine ready
+green [LOGDATE] ntpd[PID]: peer [IPADDR] now invalid
+green [LOGDATE] ntpd[PID]: peer [IPADDR] now valid
+green [LOGDATE] services[NUM] ntpd[PID]: listening on [IPADDR]
+green [LOGDATE] services[NUM] ntpd[PID]: ntp engine ready
+green [LOGDATE] services[NUM] ntpd[PID]: peer [IPADDR] now valid
+
