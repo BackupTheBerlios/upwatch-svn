@@ -1,4 +1,4 @@
-PROBES = uw_httpget uw_ping uw_iptraf uw_sysstat uw_acceptbb uw_mysql
+PROBES = uw_httpget uw_ping uw_iptraf uw_sysstat uw_acceptbb uw_mysql uw_snmpget
 
 # NOTE: order is important, first the probes, then uw_process, then the rest
 PROGNAMES = ${PROBES} uw_process uw_send uw_accept uw_notify uw_investigate

@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.8 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.9 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -164,6 +164,14 @@ AC_CHECK_LIB([gdbm], [gdbm_close],
   [LIBGDBM_LIBS=-lgdbm], [AC_MSG_ERROR([Sorry, we need -lgdbm to continue])])
 AC_SUBST(LIBGDBM_LIBS)
 
+AC_CHECK_LIB([crypto], [SSLeay_version],
+  [LIBCRYPTO_LIBS=-lcrypto], [AC_MSG_ERROR([Sorry, we need -lcrypto to continue])])
+AC_SUBST(LIBCRYPTO_LIBS)
+
+AC_CHECK_LIB([snmp], [snmp_open],
+  [LIBSNMP_LIBS=-lsnmp], [AC_MSG_ERROR([Sorry, we need -lsnmp to continue])], [-lcrypto])
+AC_SUBST(LIBSNMP_LIBS)
+
 #LIBOPTS_LDADD=-lopts
 #AC_SUBST(LIBOPTS_LDADD)
 
@@ -205,6 +213,7 @@ AC_CONFIG_FILES([Makefile
                  uw_send/Makefile
                  uw_sysstat/Makefile
                  uw_mysql/Makefile
+                 uw_snmpget/Makefile
                  compat/Makefile
                  compat/bb/Makefile
                  compat/bb/bbhimport/Makefile

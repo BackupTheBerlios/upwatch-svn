@@ -1,0 +1,64 @@
+AutoGen Definitions mysql;
+#include probe_generic.def
+
+probe = {
+  name = "snmpget";
+  id = 7;
+  descrip = "Query an SNMP variable using an SNMP GET";
+  addbyhand = "yes";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+  yellow = "3";
+  red = "5";
+  message = "Optional error message";
+
+  def = {
+    name = "community";
+    type = "char";
+    length = 24;
+    null = false;
+    default = "public";
+    descrip = "community string for SNMPv1/v2c transactions";
+  };
+  def = {
+    name = "passwd";
+    type = "char";
+    length = 16;
+    null = false;
+    default = "";
+    descrip = "Community Password";
+  };
+  def = {
+    name = "OID";
+    type = "varchar";
+    length = 255;
+    null = false;
+    default = "";
+    descrip = "Object ID";
+  };
+  def = {
+    name = "dispname";
+    type = "char";
+    length = 24;
+    null = false;
+    default = "";
+    descrip = "Display Name";
+  };
+  def = {
+    name = "dispunit";
+    type = "char";
+    length = 24;
+    null = false;
+    default = "";
+    descrip = "Display Unit";
+  };
+
+  result = {
+    name = "value";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "Value of OID queried";
+  };
+};
