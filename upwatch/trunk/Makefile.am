@@ -65,7 +65,7 @@ endif
 EXTRA_DIST = Makefile.am.common Makefile.am.libs Makefile.am.path VERSION libtool ChangeLog \
   upwatch-spec.def upwatch-spec.tpl upwatch.spec templates upwatch.mysql \
   patches/libpcap-linux-timeout.patch patches/libstatgrab-configure.gnu \
-  ${SERVER_DIST} \
+  ${SERVER_DIST} doc/Makefile.in \
   install-sh config.sub mkinstalldirs depcomp cfg/cvs2cl.pl
 
 upwatch.spec: upwatch-spec.def upwatch-spec.tpl common/spec.tpl \
