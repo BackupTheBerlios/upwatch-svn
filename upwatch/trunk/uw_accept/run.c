@@ -1,5 +1,6 @@
 #include "config.h"
 #include "uw_accept.h"
+#include "db.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -106,7 +107,7 @@ static int uw_password_ok(char *user, char *passwd)
   MYSQL_RES *result;
   char *realm = strrchr(user, '@');
 
-  if (realm) realm++;
+  if (realm) { *realm = 0; realm++; }
   mysql = open_realm(realm);
   if (mysql) {
     gchar buffer[256];
