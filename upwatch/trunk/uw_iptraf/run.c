@@ -139,35 +139,37 @@ extern int forever;
 
 int init(void)
 {
-  int     ct  = STACKCT_OPT(EXTIGNORE);
-  char**  pn = STACKLST_OPT(EXTIGNORE);
-  int i;
+  if (HAVE_OPT(EXTIGNORE)) {
+    int     ct  = STACKCT_OPT(EXTIGNORE);
+    char**  pn = STACKLST_OPT(EXTIGNORE);
+    int i;
 
-  if (ct >= 255) { LOG(LOG_ERR, "Too many extignore statements, only 255 are supported"); }
-  for (i = ct; i; i--) {
-    char network[256];
-    int width;
-    struct in_addr addr;
-    char *p;
+    if (ct >= 255) { LOG(LOG_ERR, "Too many extignore statements, only 255 are supported"); }
+    for (i = ct; i; i--) {
+      char network[256];
+      int width;
+      struct in_addr addr;
+      char *p;
 
-    p = strchr(*pn, '/');
-    if (!p) {
-      LOG(LOG_NOTICE, "extignore %s: no slash - skipped", *pn);
-      continue;
+      p = strchr(*pn, '/');
+      if (!p) {
+        LOG(LOG_NOTICE, "extignore %s: no slash - skipped", *pn);
+        continue;
+      }
+      memset(network, 0, sizeof(network));
+      strncpy(network, *pn, p - *pn);
+      width = atoi(++p);
+      if (width < 8 || width > 32) {
+        LOG(LOG_NOTICE, "illegal value for width in %s", *pn);
+        continue;
+      }
+      inet_aton(network, &addr);
+      extignore[i].network = ntohl(addr.s_addr);
+      extignore[i].mask = 0xFFFFFFFF << (32 - width);
+      extignore[i].size = 0x1 << (32 - width);
+      pn++;
+      count_extignore++;
     }
-    memset(network, 0, sizeof(network));
-    strncpy(network, *pn, p - *pn);
-    width = atoi(++p);
-    if (width < 8 || width > 32) {
-      LOG(LOG_NOTICE, "illegal value for width in %s", *pn);
-      continue;
-    }
-    inet_aton(network, &addr);
-    extignore[i].network = ntohl(addr.s_addr);
-    extignore[i].mask = 0xFFFFFFFF << (32 - width);
-    extignore[i].size = 0x1 << (32 - width);
-    pn++;
-    count_extignore++;
   }
   daemonize = TRUE;
   every = ONE_SHOT;
