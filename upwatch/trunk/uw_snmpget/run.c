@@ -302,7 +302,7 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   char buffer[1024];
   time_t now = time(NULL);
 
-  if (probe->firsttime) {
+  if (probe->firsttime && !probe->msg) {
     probe->firsttime = 0;
     if (!strcmp(probe->mode, "relative")) {
       return; // don't write a result the first time through when doing relative

@@ -112,8 +112,7 @@ syslog-ignore sshd\[[0-9]*\]: Generating
 syslog-ignore sshd\[[0-9]*\]: RSA key generation complete
 syslog-ignore sshd\[[0-9]*\]: Disconnecting: Too many authentication failures for
 syslog-ignore sshd(pam_unix)\[[0-9]*\]: check pass; user unknown
-syslog-ignore authentication failure;
-syslog-ignore error: PAM: Authentication failure
+syslog-ignore authentication failure
 syslog-ignore Accepted password for
 syslog-ignore Connection closed by
 syslog-ignore sshd\[[0-9]*\]: log: Connection to [-0-9a-zA-Z.]* from 
@@ -136,6 +135,7 @@ syslog-ignore sshd\[[0-9]*\]: WARNING: /etc/ssh/primes does not exist, using old
 syslog-ignore sshd\[[0-9]*\]: Accepted publickey for
 syslog-ignore sshd\[[0-9]*\]: log: Could not reverse map address
 syslog-ignore sshd\[[0-9]*\]: Could not reverse map address
+syslog-ignore sshd\[[0-9]*\]: reverse mapping checking getaddrinfo for
 syslog-ignore sshd\[[0-9]*\]: fatal: Did not receive ident string
 syslog-ignore sshd\[[0-9]*\]: fatal: Read error from remote host
 
@@ -256,6 +256,9 @@ syslog-ignore ipsec_setup: Using
 syslog-ignore pure-ftpd: \([-_a-zA-Z0-9@.]*\) \[NOTICE\] Deleted
 syslog-ignore [WARNING] Too many connections
 
+# snmpd
+syslog-ignore snmpd\[[0-9]*\]: NET-SNMP version 
+
 # nbs
 syslog-ignore firewall_start: Creating firewall lock
 syslog-ignore firewall_start: removing lock file
@@ -280,6 +283,7 @@ syslog-ignore ftpd\[[0-9]*\]: TYPE ASCII
 syslog-ignore ftpd\[[0-9]*\]: User [-0-9a-zA-Z.]* timed out after [0-9]* seconds
 syslog-ignore ftpd\[[0-9]*\]: FTP session closed
 syslog-ignore ftpd\[[0-9]*\]: lost connection to
+syslog-ignore failed login from
 syslog-ignore Wget error on IDE update
 syslog-ignore virus IDEs added
 
