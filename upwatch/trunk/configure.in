@@ -1,6 +1,9 @@
 # Process this file with autoconf to produce a configure script.
 AC_INIT(upwatch, 0.3, bugs@upwatch.com)
 AC_CONFIG_SRCDIR([upwatch/spool.c])
+AC_CONFIG_AUX_DIR(conf)
+
+LIBOPTS_CHECK
 
 AM_INIT_AUTOMAKE(upwatch, 0.3)
 AC_PROG_CC
@@ -12,9 +15,9 @@ AC_PROG_LN_S
 AC_ARG_ENABLE(debug,
     [  --enable-debug          Turn on compiler debugging information (default=no)],
     [if eval "test x$enable_debug = xyes"; then
-        CFLAGS="-g -Wall"   # note: discard previous CLAGS value
+        CFLAGS="-g -Wall ${LIBOPTS_CFLAGS}"   # note: discard previous CLAGS value
     else
-        CFLAGS="${CFLAGS} -Wall -O2"
+        CFLAGS="${CFLAGS} -Wall -O2 ${LIBOPTS_CFLAGS}"
     fi]
 )
 
@@ -121,11 +124,10 @@ AC_SUBST(LIBXML2_LIBS)
 CFLAGS="$CFLAGS $LIBXML2_CFLAGS"
 
 # Checks for other libraries.
-AC_CHECK_LIB([opts], [optionLoadLine], 
-  [LIBOPTS_LIBS=-lopts], [AC_MSG_ERROR([Sorry, we need -lopts to continue])])
-AC_SUBST(LIBOPTS_LIBS)
-# everybody needs libopts
-LIBS="$LIBS -lopts"
+#AC_CHECK_LIB([opts], [optionLoadLine], 
+#
+#  [LIBOPTS_LIBS=-lopts], [AC_MSG_ERROR([Sorry, we need -lopts to continue])])
+#AC_SUBST(LIBOPTS_LIBS)
 
 AC_CHECK_LIB([pthread], [pthread_create], 
   [LIBPTHREAD_LIBS=-lpthread],[AC_MSG_ERROR([Sorry, we need -lpthread to continue])] )
@@ -151,12 +153,16 @@ AC_ARG_ENABLE(dmalloc,
     fi]
 )
 
-AC_ARG_ENABLE(efence,
-    [  --enable-efence         Turn on memoty debugging using the ElectricFence library(default=no)],
-    [if eval "test x$enable_efence = xyes"; then
-        LIBS="${LIBS} -lefence"
-    fi]
-)
+#does not really work, eats memory pages like hell
+#AC_ARG_ENABLE(efence,
+#    [  --enable-efence         Turn on memory debugging using the ElectricFence library(default=no)],
+#    [if eval "test x$enable_efence = xyes"; then
+#        LIBS="${LIBS} -lefence"
+#    fi]
+#)
+
+# everybody needs libopts
+#LIBS="$LIBS ${LIBOPTS_LDADD}"
 
 # Checks for header files.
 AC_HEADER_STDC

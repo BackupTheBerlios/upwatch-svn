@@ -4,6 +4,6 @@ uw_send_SOURCES = run.c cmd_options.c cmd_options.h cmd_options.def $(program).s
 BUILT_SOURCES = cmd_options.h  $(program).spec-generic $(program).init $(program).spec-install
 INCLUDES = -I../upwatch 
 EXTRA_DIST = cmd_options.def
-LDADD = $(MAIN_O) $(LIBUPWATCH) @LIBOPTS_LIBS@ @LIBGLIB2_LIBS@
+LDADD = $(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @LIBGLIB2_LIBS@
 include $(top_srcdir)/Makefile.am.common
 
