@@ -8,6 +8,7 @@ cd libstatgrab
 #  cp ../patches/libstatgrab-openbsd.patch .
 #  patch -p1 < libstatgrab-openbsd.patch
   aclocal
+  autoheader
   libtoolize
   autoconf
   automake --gnu --add-missing
