@@ -63,7 +63,6 @@ flag = {
     name      = threads;
     value     = t;
     stack_arg;
-    must_set;
     arg_type  = string;
     descrip   = "number of threads per queue";
     doc       =
@@ -71,7 +70,6 @@ flag = {
 };
 
 flag = {
-    must-set;
     name      = host;
     value     = h;        /* flag style option character */
     stack_arg;
@@ -85,16 +83,14 @@ Setting hostname to none results in deleting an earlier defined input queue defi
 };
 
 flag = {
-    must-set;
     name      = port;
-    value     = h;        /* flag style option character */
+    value     = p;        /* flag style option character */
     stack_arg;
-    arg_type  = number;   /* option argument indication  */
+    arg_type  = string;   /* option argument indication  */
     descrip   = "port to connect to";
 };
 
 flag = {
-    must-set;
     name      = uwuser;
     value     = U;        /* flag style option character */
     stack_arg;
@@ -103,7 +99,6 @@ flag = {
 };
 
 flag = {
-    must-set;
     name      = uwpasswd;
     value     = P;        /* flag style option character */
     stack_arg;
