@@ -1,9 +1,10 @@
 #include "config.h"
+#include "uw_setip.h"
+#include "db.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-
 #include <signal.h>
 #include <string.h>
 #include <malloc.h>
@@ -11,26 +12,110 @@
 
 #include <generic.h>
 #include <st.h>
-#include "uw_setip.h"
+
+struct dbspec {
+  char realm[25];
+  char host[65];
+  int port;
+  char db[64];
+  char user[25];
+  char password[25];
+  MYSQL *mysql;
+} *dblist;
+int dblist_cnt;
 
 int thread_count;
 
 static char *chop(char *s, int i)
 {
-  i--;
-  while (i > 0 && isspace(s[i])) {
+  s[i--] = 0;
+  while (i > 0 && isspace(s[(char)i])) {
     s[i--] = 0;
   }
   return(s);
+}
+
+void init_dblist(void)
+{
+  MYSQL *db;
+
+  db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
+                     OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
+  if (db) {
+    MYSQL_RES *result;
+
+    if (dblist) free(dblist);
+    dblist = calloc(100, sizeof(struct dbspec));
+
+    result = my_query(db, 0, "select pr_realm.name, pr_realm.host, "
+                             "       pr_realm.port, pr_realm.db, pr_realm.user, "
+                             "       pr_realm.password "
+                             "from   pr_realm "
+                             "where  pr_realm.id > 1");
+    if (result) {
+      MYSQL_ROW row;
+      dblist_cnt = 0;
+      while ((row = mysql_fetch_row(result)) != NULL) {
+        strcpy(dblist[dblist_cnt].realm, row[0]);
+        strcpy(dblist[dblist_cnt].host, row[1]);
+        dblist[dblist_cnt].port = atoi(row[2]);
+        strcpy(dblist[dblist_cnt].db, row[3]);
+        strcpy(dblist[dblist_cnt].user, row[4]);
+        strcpy(dblist[dblist_cnt].password, row[5]);
+        dblist_cnt++;
+      }
+      mysql_free_result(result);
+    }
+    close_database(db);
+    LOG(LOG_INFO, "read %u realms", dblist_cnt);
+  } else {
+    LOG(LOG_NOTICE, "could not open database %s@%s as user %s", OPT_ARG(DBNAME), OPT_ARG(DBHOST), OPT_ARG(DBUSER));
+  } 
+}
+
+MYSQL *open_realm(char *realm)
+{
+  int i;
+  MYSQL *mysql;
+static int call_cnt = 0;
+
+  if (!dblist || ++call_cnt == 100) {
+    call_cnt = 0;
+    init_dblist();
+    if (!dblist) {
+      LOG(LOG_ERR, "open_realm but no dblist found");
+      return NULL;
+    }
+  }
+  if (realm == NULL || realm[0] == 0) {
+    mysql = open_database(dblist[0].host, dblist[0].port,
+            dblist[0].db, dblist[0].user, dblist[0].password);
+    return(mysql);
+  }
+
+  for (i=0; i < dblist_cnt; i++) {
+    if (strcmp(dblist[i].realm, realm) == 0) {
+      mysql = open_database(dblist[i].host, dblist[i].port,
+              dblist[i].db, dblist[i].user, dblist[i].password);
+      return(mysql);
+    }
+  }
+  return(NULL);
 }
 
 static int uw_password_ok(char *user, char *passwd) 
 {
   MYSQL *mysql;
   MYSQL_RES *result;
+  char user_realm[256];
+  char *realm;
 
-  mysql = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
-			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
+  strncpy(user_realm, user, sizeof(user_realm));
+  realm = strrchr(user, '@');
+  if (realm) { 
+    *realm++ = 0; 
+  }
+  mysql = open_realm(realm);
   if (mysql) {
     gchar buffer[256];
     MYSQL_ROW row;
@@ -43,7 +128,7 @@ static int uw_password_ok(char *user, char *passwd)
     }
     result = mysql_store_result(mysql);
     if (!result || mysql_num_rows(result) < 1) {
-      LOG(LOG_NOTICE, "user %s, pwd %s not found", user, passwd);
+      // LOG(LOG_NOTICE, "user %s, pwd %s not found", user, passwd);
       close_database(mysql);
       return(FALSE);
     }
@@ -51,7 +136,7 @@ static int uw_password_ok(char *user, char *passwd)
       int id;
 
       id = atoi(row[0]);
-      LOG(LOG_DEBUG, "user %s, pwd %s resulted in id %d", user, passwd, id);
+      LOG(LOG_DEBUG, "user %s, pwd %s resulted in id %d", user_realm, passwd, id);
     }
     mysql_free_result(result);
     close_database(mysql);
@@ -119,7 +204,15 @@ int run(void)
   memset(&serv_addr, 0, sizeof(serv_addr));
   serv_addr.sin_family = AF_INET;
   serv_addr.sin_port = htons(OPT_VALUE_LISTEN);
-  serv_addr.sin_addr.s_addr = INADDR_ANY;
+  if (HAVE_OPT(BIND)) {
+    if (strcmp(OPT_ARG(BIND), "*") == 0) {
+      serv_addr.sin_addr.s_addr = INADDR_ANY;
+    } else {
+      inet_aton(OPT_ARG(BIND), &serv_addr.sin_addr);
+    }
+  } else {
+    serv_addr.sin_addr.s_addr = INADDR_ANY;
+  }
   if (serv_addr.sin_addr.s_addr == INADDR_NONE) {
     struct hostent *hp;
     /* not dotted-decimal */
@@ -171,6 +264,7 @@ void *handle_connections(void *arg)
 extern int forever;
   st_netfd_t srv_nfd, cli_nfd;
   struct sockaddr_in from;
+  struct hostent *host;
   int fromlen = sizeof(from);
 
   srv_nfd = *(st_netfd_t *) arg;
@@ -179,15 +273,15 @@ extern int forever;
     char *remote;
     cli_nfd = st_accept(srv_nfd, (struct sockaddr *)&from, &fromlen, -1);
     if (cli_nfd == NULL) {
-      LOG(LOG_WARNING, "st_accept: %m");
+      LOG(LOG_NOTICE, "st_accept: %m");
       continue;
     }
     remote = strdup(inet_ntoa(from.sin_addr));
-    LOG(LOG_INFO, "New connection from: %s", remote);
+    host = gethostbyaddr((char*)&from.sin_addr.s_addr, sizeof(from.sin_addr.s_addr), AF_INET);
+    LOG(LOG_INFO, "%s: new connection from %s", remote, host? host->h_name: remote);
     handle_session(cli_nfd, remote);
     free(remote);
     st_netfd_close(cli_nfd);
-    uw_setproctitle("accepting connections");
   }
   return NULL;
 }
@@ -216,12 +310,12 @@ void handle_session(st_netfd_t rmt_nfd, char *remotehost)
   // expect here: USER PASSWORD NEW-IP
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
-  if (len == ETIME) {
-    LOG(LOG_WARNING, "timeout on response");
-    return;
-  }
   if (len == -1) {
-    LOG(LOG_WARNING, "st_read: %m");
+    if (errno == ETIME) {
+      LOG(LOG_WARNING, "%s: timeout reading USER string", remotehost);
+    } else {
+      LOG(LOG_WARNING, "%s: %m", remotehost);
+    }
     return;
   }
   if (debug > 3) fprintf(stderr, "< %s", buffer);

@@ -21,3 +21,5 @@ then
 	/usr/bin/uw_maint.pl -l 5000
 fi
 
+# retrieve regex updates
+uw_fetch_regexes

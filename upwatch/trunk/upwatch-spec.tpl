@@ -181,6 +181,7 @@ if [ "$1" -eq "0" ]; then
 %attr(0755,root,root) /usr/bin/slot
 %attr(0755,root,root) /usr/bin/uwregexp
 %attr(0755,root,root) /usr/bin/uwq
+%attr(0755,root,root) /usr/bin/uw_fetch_regexes
 /usr/share/man/man1/ctime.1.gz
 /usr/share/man/man1/chklog.1.gz
 /usr/share/man/man1/slot.1.gz
