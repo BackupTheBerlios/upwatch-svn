@@ -10,7 +10,7 @@ AC_SUBST(VERSION)
 
 AC_DEFINE_UNQUOTED([RELEASE], ["${RELEASE}"], [Package release string])
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.74 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.75 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -463,10 +463,16 @@ AM_CONDITIONAL(HAVE_LIBSNMP, test $HAVE_LIBSNMP -eq 1)
 AC_SUBST(LIBSNMP_LIBS)
 
 # readline
-AC_CHECK_LIB([readline], [readline], [HAVE_LIBREADLINE=1], [HAVE_LIBREADLINE=0], -lncurses -lcurses)
+AC_CHECK_LIB([readline], [readline], [HAVE_LIBREADLINE=1], [HAVE_LIBREADLINE=0], -lncurses)
 if test $HAVE_LIBREADLINE -eq 1
 then
 	LIBREADLINE_LIBS=-lreadline
+else 
+	AC_CHECK_LIB([readline], [readline], [HAVE_LIBREADLINE=1], [HAVE_LIBREADLINE=0], -lcurses)
+	if test $HAVE_LIBREADLINE -eq 1
+	then
+		LIBREADLINE_LIBS=-lreadline
+	fi
 fi
 AM_CONDITIONAL(HAVE_LIBREADLINE, test $HAVE_LIBREADLINE -eq 1)
 AC_SUBST(LIBREADLINE_LIBS)

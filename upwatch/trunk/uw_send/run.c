@@ -201,6 +201,8 @@ int run(void)
   return 0;
 }
 
+#define TIMEOUT 10000000L
+
 void *push(void *data)
 {
   int sock;
@@ -251,7 +253,7 @@ void *push(void *data)
     goto quit;
   } 
 
-  if (st_connect(rmt_nfd, (struct sockaddr *)&server, sizeof(server), -1) < 0) {
+  if (st_connect(rmt_nfd, (struct sockaddr *)&server, sizeof(server), TIMEOUT) < 0) {
     LOG(LOG_ERR, "%s:%d: %m", q->host, q->port, strerror(errno));
     st_netfd_close(rmt_nfd);
     q->fatal = 1;
@@ -271,8 +273,6 @@ quit:
   thread_count--;
   return NULL;
 }
-
-#define TIMEOUT 10000000L
 
 int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
 {
