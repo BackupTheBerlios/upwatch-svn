@@ -1,4 +1,4 @@
-This is version 0.1 of UpWatch, a device monitoring and statistics
+This is version 0.3 of UpWatch, a device monitoring and statistics
 framework. UpWatch boasts extendability, extreme speed and scalability,
 useful statistics and graphs, and a web interface.
 
@@ -13,7 +13,5 @@ cvs checkout upwatch
 ./configure
 make
 
-Use `make dist` to create a tar.gz file, then run 
-`rpm -ta upwatch-xx.tar.gz`. This will create rpm files.
-
+Use `make rpm` to create rpm files.
 
