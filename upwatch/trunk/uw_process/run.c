@@ -142,10 +142,10 @@ int trust(char *name)
   char**  pn = STACKLST_OPT( TRUST );
 
   for (trust=0; trust < ct; trust++) {
-    if (strcmp(pn[ct], "all") == 0) {
+    if (strcmp(pn[trust], "all") == 0) {
       return 1;
     }
-    if (strcmp(pn[ct], "none") == 0) {
+    if (strcmp(pn[trust], "none") == 0) {
       return 0;
     }
     if (strcmp(pn[trust], name) == 0) {

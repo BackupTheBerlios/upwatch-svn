@@ -512,7 +512,7 @@ int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
     def = get_def(probe, res);
   }
   if (!def) {  // Oops, def record not found. Skip this probe
-    err = 0; /* database error - try again later */
+    err = -1; /* malformed input FIXME should make distinction between db errors and def not found */
     goto exit_with_res;
   }
 
