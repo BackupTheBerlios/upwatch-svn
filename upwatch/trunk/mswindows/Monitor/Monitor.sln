@@ -1,0 +1,29 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MonitorClient", "..\MonitorClient\MonitorClient.vcproj", "{A5267F5A-022D-40D4-9D87-3A7F18C80622}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MonitorService", "..\MonitorService\MonitorService.vcproj", "{DDF220C1-EAEC-484E-8355-9BBCF41E2A22}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{A5267F5A-022D-40D4-9D87-3A7F18C80622}.Debug.ActiveCfg = Release|Win32
+		{A5267F5A-022D-40D4-9D87-3A7F18C80622}.Debug.Build.0 = Release|Win32
+		{A5267F5A-022D-40D4-9D87-3A7F18C80622}.Release.ActiveCfg = Release|Win32
+		{A5267F5A-022D-40D4-9D87-3A7F18C80622}.Release.Build.0 = Release|Win32
+		{DDF220C1-EAEC-484E-8355-9BBCF41E2A22}.Debug.ActiveCfg = Release|Win32
+		{DDF220C1-EAEC-484E-8355-9BBCF41E2A22}.Debug.Build.0 = Release|Win32
+		{DDF220C1-EAEC-484E-8355-9BBCF41E2A22}.Release.ActiveCfg = Release|Win32
+		{DDF220C1-EAEC-484E-8355-9BBCF41E2A22}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal
