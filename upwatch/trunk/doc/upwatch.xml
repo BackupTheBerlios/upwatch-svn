@@ -6,16 +6,159 @@
 <bookinfo>
   <title>Upwatch documentation</title>
   <author><firstname>Ron</firstname><surname>Arts</surname></author>
-  <copyright><year>2002</year><holder>Ron Arts</holder></copyright>
+  <copyright><year>2002</year><holder>UpWatch BV, The Netherlands</holder></copyright>
 </bookinfo>
 <preface><title>Preface</title>
 <para>
-This is the preface</para>
+People, especially managers, like to have facts and figures when
+taking decisions, either because a lot of money may be involved,
+or their job (or both). If you want to prove your website (or switch,
+or basically any other device) was available, showed the proper performance,
+or just want to know current and past CPU load, you've come to the right place.
+</para>
+<para>
+UpWatch is scalable, fast, extensible, built on proven opensource tools,
+and is built not to loose data.
+</para>
 </preface>
-<chapter><title>My Chapter</title>
-<para> ... </para>
-<sect1><title>First Section</title>
-<para> ... </para>
+
+<chapter><title>Installation</title>
+
+<sect1 id="Getting upwatch">
+<title>Getting upwatch</title>
+<para>
+Currently, upwatch is not released, and is not allowed to be distributed.
+The only way to get it, is through written permission of UpWatch BV.
+</para>
+
+<para>
+If you aquired that, you will either receive access to CVS, or will
+receive a tar.gz file, or .RPM's.
+</para>
+</sect1>
+
+<sect1 id="Requirements"><title>Requirements</title>
+
+<sect2 id="Run-time requirements">
+<title>Run-time requirements</title>
+
+<para>
+Run time requirements differ per probe. Look in the corresponding
+.def file (or in the spec file for the probe, here's a list of
+everything we expect on a machine running all probes, and the database
+(I'll also list the version we use ourselves):
+</para>
+
+<itemizedlist>
+<listitem>glib2 2.0.1</listitem>
+<listitem>gnet 1.1.2</listitem>
+<listitem>mysql 3.23.49</listitem>
+<listitem>cURL 7.9.5</listitem>
+<listitem>libnet 1.0.2a</listitem>
+<listitem>libpcap 0.6.2</listitem>
+</itemizedlist>
+</sect2>
+
+<sect2 id="Build requirements">
+<title>Build requirements</title>
+<para>
+Of course you can build the software yourself.
+Apart from the normal GNU compilation tools, and the aforementioned packages,
+you'll need the following on your system to build upwatch:
+</para>
+<itemizedlist>
+<listitem>autogen 5.3.6</listitem>
+<listitem>libxslt 1.0.15</listitem>
+<listitem>kdelibs 3.0.0(for docbook)</listitem>
+<listitem>lynx 2.8.4</listitem>
+<listitem>RPM tools, if you want to build RPM's</listitem>
+</itemizedlist>
+<para>If you run redhat, debian or SuSe, don't forget to install the
+devel packages if there are any.</para>
+</sect2>
+</sect1>
+
+<sect1 id="Compiling upwatch">
+<title>Compiling upwatch</title>
+<para>
+Just in case you really want to (or need to) compile upwatch yourself, it's
+pretty easy:</para>
+<literallayout>
+tar xzvf upwatch-x.x.tar.gz
+cd upwatch-x.x
+./configure
+make
+</literallayout>
+<para>Nothing to it... In case of problems, you're probably missing some library
+or header files, or they are in unexpected places. Look in config.log.</para>
+</sect1>
+
+<sect1 id="Actual Installation">
+<title>Actual Installation</title>
+<para>
+Before you install the software decide on the architecture. If you know in advance
+yuo'll have to monitor thousands of hosts, or the probes will exhaust your
+machine otherwise, you may have to split your installation across several
+machines. There may be more reasons to do that. Consult <link linkend="Scaling up">Scaling up</link>
+and <link linkend="How it all works">How it all works</link>
+</para>
+
+</sect1>
+<sect1 id="Database"><title>Database</title>
+<para>
+Suppose your machine becomes too small
+</para>
 </sect1>
 </chapter>
+
+<chapter id="Configuration">
+<title>Configuration</title>
+
+</chapter>
+
+<chapter id="Administration">
+<title>Administration</title>
+<sect1 id="Logfiles"><title>Logfiles</title>
+<para>
+Suppose your machine becomes too small
+</para>
+</sect1>
+</chapter>
+
+<chapter id="How it all works">
+<title>How it all works</title>
+
+<sect1 id="General Overview"><title>General Overview</title>
+<para>
+General Overview
+</para>
+</sect1>
+
+<sect1 id="What a probe does"><title>What a probe does</title>
+<para>
+What a probe does
+</para>
+</sect1>
+
+<sect1 id="What happens to the probe results"><title>What happens to the probe results?</title>
+<para>
+What happens to the probe results
+</para>
+</sect1>
+
+<sect1 id="uw_process: storing results in the database">
+<title>uw_process: storing results in the database</title>
+<para>
+uw_process: storing results in the database
+</para>
+</sect1>
+
+<sect1 id="Scaling up"><title>Scaling up</title>
+<para>
+Scaling up
+</para>
+</sect1>
+</chapter>
+
 </book>
+
