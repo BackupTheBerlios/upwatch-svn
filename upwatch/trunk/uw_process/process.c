@@ -150,7 +150,7 @@ static void update_pr_status(trx *t, struct probe_result *prv)
 
     if (t->res->color != prv->color) {
       sprintf(&qry[strlen(qry)], ", message = '%s'", escmsg);
-    } else {
+    } else if (t->probe->fuse) {
       sprintf(&qry[strlen(qry)], ", message = concat(message,'%s')", escmsg);
     }
     free(escmsg);

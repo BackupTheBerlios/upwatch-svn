@@ -179,6 +179,7 @@ static void create_q_threads(gpointer key, gpointer value, gpointer user_data)
 
 int run(void)
 {
+  st_usleep(1); //force context switch so timers will work
   g_hash_table_foreach(hash, create_q_threads, NULL);
   if (debug > 3) { LOG(LOG_DEBUG, "waiting for all threads to finish"); }
   while (thread_count) {
@@ -299,7 +300,7 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
     return 1;
   }
 
-  // expect: +OK UpWatch Acceptor v0.3. Please login
+  // expect: +OK UpWatch Acceptor vx.xx. Please login
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
   if (len == -1) {
