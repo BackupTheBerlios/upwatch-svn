@@ -27,7 +27,7 @@ LIBS=-L$(LIBDIR) -lXaw $(XLIB) -lXt $(EXTENSIONLIB) -lX11 -lm
 
 #CC=/compat/linux/usr/bin/gcc
 CC=@CC@
-CFLAGS=-O3 $(INCLUDES) $(DEFS)
+CFLAGS=-g -O3 $(INCLUDES) $(DEFS)
 CFLAGSX=-O3 $(XINCLUDES) $(DEFS)
 LDFLAGS=-s
 

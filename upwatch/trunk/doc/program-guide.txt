@@ -347,9 +347,11 @@ Chapter 2. How it all works
    database   by   uw_process.   For   compatibility   with  Big  Brother
    (www.bb4.com)  clients,  there is an uw_acceptbb daemon, which listens
    on the Big Brother port (1984), and converts Big Brother messages into
-   upwatch  XML  files.  Lastly,  , uw_setip listens to messages from the
-   uw_tellip script, which should be started by clients whenever their IP
-   address changes.
+   upwatch  XML files (Note: all bb clients are assumed to be in the same
+   timezone.  Converting  charactermode  datestamps back to epoch time is
+   unsupported,  because timezone names are not unique). Lastly, uw_setip
+   listens to messages from the uw_tellip script, which should be started
+   by clients whenever their IP address changes.
 
 2.1.3. The Upwatch monitors
 

@@ -3,5 +3,5 @@ green \sstarted
 green \sstarting
 
 red No space left on device
-red TESTERROR
+red ERROR
 red Too many open files in system

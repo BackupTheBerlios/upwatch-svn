@@ -123,7 +123,6 @@ static void update_pr_status(trx *t, struct probe_result *prv)
 {
   MYSQL_RES *result;
   char *qry;
-  int addmsg = TRUE;
 
   qry = g_malloc(512 + (t->res->message ? strlen(t->res->message)*2 : 0));
 
@@ -135,22 +134,25 @@ static void update_pr_status(trx *t, struct probe_result *prv)
 
   if (t->probe->fuse) {
     if (t->res->color > prv->color || prv->color == STAT_PURPLE) {
-    // if this probe acts like a fuse, only update if new color is higher then old color
+    // if this probe acts like a fuse, only update color if new color is higher then old color
     // because colors must be set to green (= fuse replaced) by a human
       sprintf(&qry[strlen(qry)], ", color = '%u'", t->res->color);
-    } else {
-      addmsg = FALSE; // update everything except the error message that came with the fuse-breaking
-    }
+    } 
   } else {
     sprintf(&qry[strlen(qry)], ", color = '%u'", t->res->color);
   }
 
-  if (addmsg && t->res->message) {
+  if (t->res->message) {
     char *escmsg;
 
     escmsg = g_malloc(strlen(t->res->message) * 2 + 1);
     mysql_real_escape_string(t->probe->db, escmsg, t->res->message, strlen(t->res->message));
-    sprintf(&qry[strlen(qry)], ", message = '%s'", escmsg);
+
+    if (t->res->color != prv->color) {
+      sprintf(&qry[strlen(qry)], ", message = '%s'", escmsg);
+    } else {
+      sprintf(&qry[strlen(qry)], ", message = concat(message,'%s')", escmsg);
+    }
     free(escmsg);
   }
 

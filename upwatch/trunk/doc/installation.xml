@@ -154,7 +154,7 @@
         <literallayout>
           # Upwatch configuration file
           # contains defaults for all modules
-          # these can be overridden in /etc/upwatch.d/<module>.conf
+          # these can be overridden in /etc/upwatch.d/&lt;module&gt;.conf
           #
 
           # group we belong to

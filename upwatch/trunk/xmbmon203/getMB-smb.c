@@ -52,8 +52,8 @@ static int ReadByte(int addr)
 static void WriteByte(int addr, int value)
 {
 	if(smbus->WriteB(smb_base, smb_slave, addr, value) == -1) {
-		perror("SMBus WriteB");
-		exit(-1);
+/*		perror("SMBus WriteB");
+		exit(-1); */
 	}
 }
 
