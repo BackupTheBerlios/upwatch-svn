@@ -1,0 +1,97 @@
+AutoGen Definitions mysql;
+#include probe_generic.def
+
+probe = {
+  name = "dns";
+  id = 16;
+  descrip = "Execute a DNS request against a DNS server";
+  addbyhand = "yes";
+  class = "";
+  graphgroup = "ct";
+  graphtypes = "default";
+  comment = "";
+  yellow = "1";
+  red = "3";
+  message = "Optional error message";
+
+  attribute = {
+    name = "id";
+    required = true;
+    descrip = "id of this probe in the database";
+  };
+
+  attribute = {
+    name = "ipaddress";
+    default = "127.0.0.1";
+    descrip = "target ip address";
+  };
+
+  attribute = {
+    name = "date";
+    required = true;
+    descrip = "date/time for this result";
+  };
+
+  attribute = {
+    name = "expires";
+    required = true;
+    descrip = "when this result expires";
+  };
+
+  attribute = {
+    name = "color";
+    required = true;
+    descrip = "color as this probe thinks it should be";
+  };
+
+  attribute = {
+    name = "received";
+    descrip = "date/time this result was received by the upwatch server";
+  };
+
+  def = {
+    name = "port";
+    type = "int";
+    unsigned = true;
+    null = false;
+    default = "53";
+    descrip = "Port for the DNS request";
+  };
+  def = {
+    name = "name";
+    type = "varchar";
+    length = 80;
+    null = false;
+    default = "";
+    descrip = "Mame for the DNS request";
+  };
+
+  result = {
+    name = "lookup";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "time needed for DNS lookup";
+  };
+  result = {
+    name = "connect";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "time for connection to complete";
+  };
+  result = {
+    name = "pretransfer";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "time for any pre-transfer actions";
+  };
+  result = {
+    name = "total";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "total time needed";
+  };
+};
