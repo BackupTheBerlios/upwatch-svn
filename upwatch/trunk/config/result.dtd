@@ -25,7 +25,7 @@
 			expires NMTOKEN #REQUIRED
 			notify NMTOKEN "1" >
 
-<!ELEMENT httpget	(host,color,lookup,connect,firstbyte,total,info?)>
+<!ELEMENT httpget	(host,color,lookup,connect,pretransfer,total,info?)>
 <!ATTLIST httpget	id NMTOKEN #REQUIRED 
 			date NMTOKEN #REQUIRED 
 			expires NMTOKEN #REQUIRED
