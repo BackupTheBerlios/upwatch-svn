@@ -5,7 +5,7 @@ UWSAIDAR = uwsaidar
 endif
 
 if SOLARIS
-SOLARISLIBS = -lkstat
+SOLARISLIBS = -lkstat -ldevinfo
 endif
 
 if CYGWIN

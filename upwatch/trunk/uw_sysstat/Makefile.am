@@ -1,7 +1,7 @@
 include $(top_srcdir)/Makefile.am.path
 
 if SOLARIS
-SOLARISLIBS = -lkstat
+SOLARISLIBS = -lkstat -ldevinfo
 endif
 
 probe = sysstat
