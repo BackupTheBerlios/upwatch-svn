@@ -246,12 +246,10 @@ if [ "$1" -eq "0" ]; then
 
 %files server
 %defattr(0660,root,upwatch,0770)
-[+ IF serverprog +]
 %attr(0755,root,root) /usr/bin/bbhimport
 %attr(0755,root,root) /usr/bin/uw_maint.pl
 /usr/share/man/man1/bbhimport.1.gz
 %attr(0755,root,root) /usr/bin/fill_probe_description.pl
-[+ ENDIF +]
 [+ FOR serverprog +][+ include (string-append (get "serverprog") "/" (get "serverprog") ".spec-files") ;+]
 [+ ENDFOR +]
 [+ ENDIF serverprog +]

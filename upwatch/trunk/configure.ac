@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.38 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.39 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -147,6 +147,17 @@ AC_ARG_ENABLE(profile,
     fi]
 )
 
+if test x$enable_all = xyes
+then
+  enable_server=yes
+  enable_monitors=yes
+  enable_iptraf=yes
+fi
+
+AM_CONDITIONAL(ENABLE_SERVER, test x$enable_all = xyes)
+AM_CONDITIONAL(ENABLE_MONITORS, test x$enable_all = xyes)
+AM_CONDITIONAL(ENABLE_IPTRAF, test x$enable_all = xyes)
+
 AC_ARG_ENABLE(server,
     [  --enable-server         Install server software (default=no)],
     [  ENABLE_SERVER=$enable_server ]
@@ -166,17 +177,6 @@ AM_CONDITIONAL(ENABLE_MONITORS, test x$enable_monitors = xyes)
 AC_ARG_ENABLE(all,
     [  --enable-all            Install everything (default=no)],
 )
-
-if test x$enable_all = xyes
-then
-  enable_server=yes
-  enable_monitors=yes
-  enable_iptraf=yes
-fi
-
-AM_CONDITIONAL(ENABLE_SERVER, test x$enable_all = xyes)
-AM_CONDITIONAL(ENABLE_MONITORS, test x$enable_all = xyes)
-AM_CONDITIONAL(ENABLE_IPTRAF, test x$enable_all = xyes)
 
 # Checks for libraries.
 
@@ -511,7 +511,7 @@ AC_CONFIG_FILES([Makefile
                  uw_sysstat/Makefile
 ])
 
-cp patches/libstatgrab-configure.gnu libstatgrab-0.7/configure.gnu
-AC_CONFIG_SUBDIRS(libstatgrab-0.7)
+cp patches/libstatgrab-configure.gnu libstatgrab/configure.gnu
+AC_CONFIG_SUBDIRS(libstatgrab)
 
 AC_OUTPUT
