@@ -65,7 +65,12 @@ PROGNAMES = ${CLIENTPROG} ${MONITORPROG} ${EXTRAPROG} ${SERVERPROG}
 export PROGNAMES MONITORPROG CLIENTPROG SERVERPROG EXTRAPROG
 export TOP_SRCDIR = $(top_srcdir)
 
+if ENABLE_SERVER
 SUBDIRS = upwatch st-1.4 ${XMBMON} libstatgrab ${PROGNAMES} compat util scripts config common
+else
+SUBDIRS = upwatch st-1.4 ${XMBMON} libstatgrab ${PROGNAMES} util config common
+endif
+
 DIST_SUBDIRS = ${SUBDIRS} doc
 
 doc_DATA = AUTHORS COPYING ChangeLog NEWS README upwatch-base.mysql upwatch-full.mysql
