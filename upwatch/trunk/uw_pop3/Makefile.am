@@ -1,5 +1,6 @@
 include $(top_srcdir)/Makefile.am.path
 
+AM_CFLAGS = -I$(INCL_ST)
 program = uw_pop3
 sbin_PROGRAMS = $(program)
 man_MANS = uw_pop3.1

@@ -30,7 +30,7 @@ CLIENTPROG = uw_send uw_sysstat uw_null
 
 if ENABLE_SERVER
 # order is important here: uw_process should be last
-SERVERPROG = uw_acceptbb uw_accept uw_route uw_setip uw_process uw_notify
+SERVERPROG = uw_acceptbb uw_accept uw_route uw_setip uw_process uw_notify scripts
 ENABLE_SERVER = --enable-server
 endif
 
@@ -53,7 +53,7 @@ PROGNAMES = ${CLIENTPROG} ${MONITORPROG} ${EXTRAPROG} ${SERVERPROG}
 export PROGNAMES MONITORPROG CLIENTPROG SERVERPROG EXTRAPROG
 export TOP_SRCDIR = $(top_srcdir)
 
-SUBDIRS = upwatch st-1.4 libstatgrab ${PROGNAMES} compat util scripts config common
+SUBDIRS = upwatch st-1.4 libstatgrab ${PROGNAMES} compat util config common
 #DIST_SUBDIRS = ${SUBDIRS} doc
 
 doc_DATA = AUTHORS COPYING ChangeLog NEWS README upwatch.mysql
