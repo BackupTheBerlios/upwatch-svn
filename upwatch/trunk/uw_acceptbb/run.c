@@ -260,7 +260,10 @@ void runbb(char *cmd)
 
     memset(&probedate, 0, sizeof(struct tm));
     cmd += 6;
-    if (*cmd == ' ') cmd++;    /* maybe status+<delay> format, check later */
+    if (*cmd == '+') {      // status+<delay> format - skip for now
+      while (*cmd && *cmd != ' ') cmd++;
+    }
+    while (*cmd && *cmd == ' ') cmd++;
     if (!*cmd) {
       LOG(LOG_DEBUG, "Illegal status message format, dot not found");
       return;
