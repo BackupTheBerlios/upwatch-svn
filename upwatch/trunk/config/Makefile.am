@@ -20,7 +20,7 @@ install-data-local:
 	  ${INSTALL} -d -m 770  -o upwatch -g upwatch ${DESTDIR}${upwatchdir}/uw_sysstat.d ;\
 	  cp -r uw_sysstat.d/* ${DESTDIR}${confdir}/uw_sysstat.d ; \
 	  find ${DESTDIR}${confdir}/uw_sysstat.d -type d -name CVS | xargs rm -rf ; \
-	  chown upwatch.upwatch -R ${DESTDIR}${confdir}/uw_sysstat.d ; \
+	  chown -R upwatch:upwatch ${DESTDIR}${confdir}/uw_sysstat.d ; \
 	else \
 	  mkdir ${DESTDIR}${sysconfdir}/sysconfig; \
 	  ${INSTALL} -m 644 sysconfig ${DESTDIR}${sysconfdir}/sysconfig/upwatch ; \

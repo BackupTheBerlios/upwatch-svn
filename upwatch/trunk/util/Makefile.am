@@ -12,7 +12,7 @@ FREEBSDLIBS = -lkvm -ldevstat
 endif
 
 if SOLARIS
-SOLARISLIBS = -lkstat -ldevinfo
+SOLARISLIBS = -lkstat -ldevinfo -lsocket -lnsl
 endif
 
 if CYGWIN

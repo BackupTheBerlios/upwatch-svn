@@ -44,7 +44,9 @@
                 compilation tools, and the development versions of the above mentioned packages,
                 you'll need the following on your system to build upwatch:</para>
             <itemizedlist>
+                <listitem><para>lynx</para></listitem>
                 <listitem><para>autogen 5.3.6 (autogen.sourceforge.net)</para></listitem>
+                <listitem><para>autogen needs libguile and umb-scheme</para></listitem>
                 <listitem><para>RPM tools, if you want to build RPM's</para></listitem>
             </itemizedlist>
             <para>If you run RedHat, Debian or SuSE, don't forget to install the *-devel packages
