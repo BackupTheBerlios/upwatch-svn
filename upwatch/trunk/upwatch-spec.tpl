@@ -120,6 +120,7 @@ if [ "$1" -eq "0" ]; then
 %files
 %defattr(0660,root,upwatch,0770)
 %doc AUTHORS ChangeLog COPYING INSTALL README NEWS TODO VERSION
+%doc upwatch-base.mysql upwatch-full.mysql
 %doc doc/upwatch.txt doc/upwatch.html doc/upwatch.pdf
 %attr(0770,upwatch,upwatch) %dir /etc/upwatch.d
 %attr(0770,upwatch,upwatch) %dir /usr/share/upwatch

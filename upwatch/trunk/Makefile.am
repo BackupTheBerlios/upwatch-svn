@@ -73,7 +73,7 @@ endif
 
 DIST_SUBDIRS = ${SUBDIRS} doc
 
-doc_DATA = AUTHORS COPYING ChangeLog NEWS README upwatch-base.mysql upwatch-full.mysql
+dist_doc_DATA = AUTHORS COPYING ChangeLog NEWS README upwatch-base.mysql upwatch-full.mysql
 
 if ENABLE_SERVER
 SERVER_DIST = probes.enum 
