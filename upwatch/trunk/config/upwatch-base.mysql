@@ -10,6 +10,8 @@ CREATE TABLE probe (
   addbyhand enum('yes','no') NOT NULL default 'yes',
   fuse enum('yes','no') NOT NULL default 'no',
   addbycust enum('yes','no') NOT NULL default 'no',
+  lagwarn enum('yes','no') NOT NULL default 'no',
+  maxlag int unsigned NOT NULL default '300',
   lastseen int unsigned NOT NULL default '0',
   class varchar(16) NOT NULL default '',
   graphgroup varchar(16) NOT NULL default '',

@@ -1,16 +1,16 @@
 #! /bin/sh
 set -x
 # libstatgrab
-cd libstatgrab
-if [ ! -f libstatgrab-configure.gnu ]
-then
-  cp ../patches/libstatgrab-configure.gnu .
+#cd libstatgrab
+#if [ ! -f libstatgrab-configure.gnu ]
+#then
+#  cp ../patches/libstatgrab-configure.gnu .
 #  aclocal
 #  libtoolize
 #  automake --gnu --add-missing
 #  autoconf
-fi
-cd ..
+#fi
+#cd ..
 
 aclocal \
 && autoheader \

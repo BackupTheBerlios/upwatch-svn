@@ -120,8 +120,8 @@ void *hwstat_get_def(trx *t, int create)
     if (mysql_num_rows(result) == 0) { // DEF RECORD NOT FOUND
       mysql_free_result(result);
       if (!create) {
-        LOG(LOG_NOTICE, "pr_%s_def id %u not found - skipped", 
-                         res->name, def->probeid);
+        LOG(LOG_NOTICE, "pr_%s_def for server %u not found and not trusted - skipped", 
+                         res->name, def->server);
         return(NULL);
       }
       result = my_query(t->probe->db, 0,

@@ -178,12 +178,12 @@ probe = {
   addbyhand = "no";
   class = "";
   graphgroup = "hwstat";
-  graphtypes = "cpu loadavg memory blockio swap systemp";
+  graphtypes = "temp rotation voltage";
   comment = "";
   max_rows = 1000000;
   yellow = "40";
   red = "50";
-  message = "CPU temperature";
+  message = "Hardware status";
 
   attribute = {
     name = "server";

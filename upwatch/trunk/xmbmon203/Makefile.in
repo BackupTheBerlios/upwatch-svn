@@ -144,7 +144,7 @@ distclean: clean
 
 install: $(PROGRAM)
 	mkdir -p $(INST_DIR)
-	if test `${ID} -u` -eq 0; then \
+	if test `id -u` -eq 0; then \
 	  $(INSTALL) -o root -g wheel -m 4555 -c -p mbmon $(INST_DIR); \
 	else \
 	  cp mbmon $(INST_DIR); \

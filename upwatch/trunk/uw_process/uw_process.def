@@ -119,6 +119,13 @@ flag = {
 };
 
 flag = {
+    name      = noc-mail;
+    arg_type  = string;
+    arg_default = "root@localhost";
+    descrip   = "Email address for warnings about Upwatch itself";
+};
+
+flag = {
     name      = copy;
     value     = c;
     arg_type  = string;

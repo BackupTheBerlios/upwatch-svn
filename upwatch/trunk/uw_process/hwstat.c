@@ -33,7 +33,7 @@ static gint hwstat_store_raw_result(trx *t)
                     "       temp1 = '%f', temp2 = '%f', temp3 = '%f', "
                     "       rot1 = '%d', rot2 = '%d', rot3 = '%d', "
                     "       vc0 = '%f', vc1 = '%f', v33 = '%f', " 
-                    "       v50p = '%f', v12p = '%f', v12n = '%f', v50n = '%f' "
+                    "       v50p = '%f', v12p = '%f', v12n = '%f', v50n = '%f', "
                     "       message = '%s'",
                     def->probeid, def->yellow, def->red, res->stattime, res->color, 
                     res->temp1, res->temp2, res->temp3, 

@@ -67,5 +67,7 @@ int domain_server_by_name(char *domain, char *name);
 char *domain_server_by_id(char *domain, int id);
 int domain_server_by_ip(char *domain, char *ip);
 
+int mail(char *to, char *subject, char *body, time_t date);
+
 #endif /* __UW_PROCESS_GLOB_H */
 

@@ -7,7 +7,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.61 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.62 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -549,7 +549,7 @@ AC_CONFIG_FILES([uw_postgresql/Makefile])
 AC_CONFIG_FILES([uw_iptraf/Makefile])
 
 cp patches/libstatgrab-configure.gnu libstatgrab/configure.gnu
-( cd libstatgrab ; ./configure ; cd .. )
+( cd libstatgrab ; ./configure --disable-manpages --disable-examples ; cd .. )
 
 ( cd xmbmon203 ; ./configure ; cd .. )
 

@@ -93,25 +93,16 @@ libesmtp_messagefp_cb(void **buf, int *len, void *arg)
   return *buf;
 }
 
-//*******************************************************************
-// Notify user if necessary
-//*******************************************************************
-static int do_notification(trx *t)
+int mail(char *to, char *subject, char *body, time_t date)
 {
   int notified = FALSE;
-  int probeid;
 
 #if HAVE_LIBESMTP
   smtp_session_t session;
   smtp_message_t message;
-  char buf[256];
+  char buf[128];
   FILE *fp;
-  char *servername;
-
-  if (t->def->email[0] == 0) {
-    return(notified);
-  }
-  servername = domain_server_by_id(t->res->domain, t->def->server);
+  time_t now = time(NULL);
 
   session = smtp_create_session ();
   sprintf(buf, "%s:%lu", OPT_ARG(SMTPSERVER), OPT_VALUE_SMTPSERVERPORT);
@@ -119,8 +110,8 @@ static int do_notification(trx *t)
 
   message = smtp_add_message (session);
   smtp_set_reverse_path (message, OPT_ARG(FROM_EMAIL));
-  smtp_set_header (message, "Date", &t->res->stattime);
-  smtp_add_recipient (message, t->def->email);
+  smtp_set_header (message, "Date", date ? &date : &now);
+  smtp_add_recipient (message, to);
 
   fp = tmpfile();
   if (!fp) {
@@ -128,27 +119,10 @@ static int do_notification(trx *t)
     return(notified);
   }
   fprintf(fp, "From: %s <%s>\n", OPT_ARG(FROM_NAME), OPT_ARG(FROM_EMAIL));
-  fprintf(fp, "To: %s\n", t->def->email);
-  if (t->probe->notify_mail_subject) {
-    t->probe->notify_mail_subject(t, fp, servername);
-  } else {
-    fprintf(fp, "Subject: %s: %s %s (was %s)\n", servername,
-                     t->probe->module_name, color2string(t->res->color),
-                     color2string(t->res->prevhistcolor));
-  }
+  fprintf(fp, "To: %s\n", to);
+  fprintf(fp, "Subject: %s\n", subject);
   fprintf(fp, "\n");
-  fprintf(fp, "Geachte klant,\n\n"
-              "zojuist, om %s"
-              "is de status van de probe %s\n"
-              "op server %s\n"
-              "overgegaan van %s in %s\n", ctime((time_t *)&t->res->stattime), t->probe->module_name,
-                   servername, color2string(t->res->prevhistcolor), color2string(t->res->color));
-  if (t->res->message) {
-    fprintf(fp, "\nDe volgende melding werd hierbij gegeven:\n%s\n", t->res->message);
-  }
-  fprintf(fp, "\n"
-              "vriendelijke groet\n"
-              "%s\n", OPT_ARG(FROM_NAME));
+  fprintf(fp, "%s", body);
   smtp_set_messagecb(message, libesmtp_messagefp_cb, fp);
 
   // Initiate a connection to the SMTP server and transfer the message.
@@ -160,24 +134,69 @@ static int do_notification(trx *t)
   } else {
     const smtp_status_t *status;
 
-    strcpy(t->res->notified, "yes");
-
     // Report on the success or otherwise of the mail transfer.
     status = smtp_message_transfer_status (message);
-    LOG(LOG_NOTICE, "%s: %s %u %s (was %s)", servername, t->res->name, probeid, 
-                   color2string(t->res->color), color2string(t->res->prevhistcolor));
-    LOG(LOG_NOTICE, "MAILTO: %s %d %s", t->def->email, status->code, status->text ? status->text : "");
-    if (debug > 3) fprintf(stderr, "MAILTO: %s %d %s", t->def->email, status->code, status->text ? status->text : "");
+    LOG(LOG_NOTICE, "%s", subject);
+    LOG(LOG_NOTICE, "MAILTO: %s %d %s", to, status->code, status->text ? status->text : "");
+    if (debug > 3) fprintf(stderr, "MAILTO: %s %d %s", to, status->code, status->text ? status->text : "");
     if (status->code == 250) {
       notified = TRUE;
     }
   }
   smtp_destroy_session (session);
   fclose(fp);
-  free(servername);
 #else /* HAVE_LIBESMTP */
   LOG(LOG_WARNING, "STMP support not compiled in");
 #endif /* HAVE_LIBESMTP */
+  return(notified);
+}
+
+//*******************************************************************
+// Notify user if necessary
+//*******************************************************************
+static int do_notification(trx *t)
+{
+  int notified = FALSE;
+  char *servername;
+  char subject[256];
+  char body[8192];
+  char msg[8192];
+
+  if (t->def->email[0] == 0) {
+    return(notified);
+  }
+  servername = domain_server_by_id(t->res->domain, t->def->server);
+
+  sprintf(subject, "Subject: %s: %s %s (was %s)\n", servername,
+                   t->probe->module_name, color2string(t->res->color),
+                   color2string(t->res->prevhistcolor));
+
+  if (t->res->message) {
+    sprintf(msg, "\nDe volgende melding werd hierbij gegeven:\n%s\n", t->res->message);
+  } else {
+    msg[0] = 0;
+  }
+  sprintf(body, "Geachte klant,\n\n"
+                "zojuist, om %s"
+                "is de status van de probe %s\n"
+                "op server %s\n"
+                "overgegaan van %s in %s\n"
+                "%s"
+                "\n"
+                "vriendelijke groet\n"
+                "%s\n", 
+                   ctime((time_t *)&t->res->stattime), 
+                   t->probe->module_name,
+                   servername, 
+                   color2string(t->res->prevhistcolor), color2string(t->res->color),
+                   msg,
+                   OPT_ARG(FROM_NAME)
+  );
+  free(servername);
+  notified = mail(t->def->email, subject, body, t->res->stattime);
+  if (notified) {
+    strcpy(t->res->notified, "yes");
+  }
   return(notified);
 }
 

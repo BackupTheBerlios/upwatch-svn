@@ -331,7 +331,7 @@ void child_termination_handler (int signum)
     }
 #ifdef WCOREDUMP
     if (WCOREDUMP(status)) {
-      LOG(LOG_NOTICE, "cure dumped");
+      LOG(LOG_NOTICE, "pid %u dumped core", pid);
     }
 #endif
   }
@@ -391,13 +391,23 @@ int init(void)
   if (HAVE_OPT(SLAVE)) {
     sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), OPT_ARG(SLAVE));
     master = 0;
-  }
+  } else { // master process
+    struct hostent *host;
 
-  /* set up SIGCHLD handler */
-  new_action.sa_handler = child_termination_handler;
-  sigemptyset (&new_action.sa_mask);
-  new_action.sa_flags = SA_RESTART|SA_NOCLDSTOP; // not interested in children that stopped
-  sigaction (SIGCHLD, &new_action, NULL);
+    chdir("/tmp"); // for core dumps
+
+    // the following statement ensures the nss-*.so libraries are loaded
+    // before fork() is called. If not, AND this program is run under gdb,
+    // children will get a SIGTRAP when THEY load nss-*.so libs, and will
+    // be killed.
+    host = gethostbyname("localhost");
+
+    /* set up SIGCHLD handler */
+    new_action.sa_handler = child_termination_handler;
+    sigemptyset (&new_action.sa_mask);
+    new_action.sa_flags = SA_RESTART|SA_NOCLDSTOP; // not interested in children that stopped
+    sigaction (SIGCHLD, &new_action, NULL);
+  }
 
   xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
   modules_init();
@@ -533,64 +543,107 @@ extern int forever;
   return(count);
 }
 
+int master_checks(void)
+{
+  int i;
+  int     ct  = STACKCT_OPT( INPUT );
+  char**  pn = STACKLST_OPT( INPUT );
+
+  childpidcnt = ct;
+  if (debug > 2) fprintf(stderr, "pondering..\n");
+  while (ct--) {
+    pid_t pid;
+
+    if (childpid[ct] > 0) continue;
+
+    sprintf(path, "%s/%s", OPT_ARG(SPOOLDIR), pn[ct]);
+    chdir(path); // for coredumps
+    sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), pn[ct]);
+    pid = fork();
+    if (pid == -1) {
+      LOG(LOG_ERR, "fork: %m");
+      return 1;
+    }
+    if (pid == 0) {
+      master = FALSE; 
+      break;
+    }
+    if (debug > 2) fprintf(stderr, "started [%u] on %s\n", pid, path);
+    LOG(LOG_NOTICE, "started [%u] on %s", pid, path);
+    childpid[ct] = pid;
+    sleep(1);
+  } 
+
+  for (i = 0; modules[i]; i++) {
+    modules[i]->db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
+                                   OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
+    if (modules[i]->db) {
+      MYSQL_RES *result;
+
+      result = my_query(modules[i]->db, 0, "select lastseen, maxlag, lagwarn from probe where id = '%u'", 
+                                           modules[i]->class);
+      if (result) {
+        MYSQL_ROW row;
+
+        row = mysql_fetch_row(result);
+        if (row && row[0]) {
+          unsigned now;
+          int lastseen = atoi(row[0]);
+          int maxlag = atoi(row[1]);
+          int lagwarn = strcmp(row[2], "yes") == 0;
+
+          now = (int) time(NULL);
+          if ((now - lastseen) > maxlag) {
+            if (!lagwarn) {
+              char subject[256];
+
+              sprintf(subject, "UPWATCH: probe %s is lagging in processing", modules[i]->module_name);
+              mail(OPT_ARG(NOC_MAIL), subject, subject, (time_t)NULL);
+              my_query(modules[i]->db, 0, "update probe set lagwarn = 'yes' where id = '%u'",
+                                           modules[i]->class);
+            }
+          } else {
+            if (lagwarn) {
+              char subject[256];
+
+              sprintf(subject, "UPWATCH: probe %s is up-to-date again", modules[i]->module_name);
+              mail(OPT_ARG(NOC_MAIL), subject, subject, (time_t)NULL);
+              my_query(modules[i]->db, 0, "update probe set lagwarn = 'no' where id = '%u'",
+                                           modules[i]->class);
+            }
+          }
+        } else {
+          LOG(LOG_NOTICE, "probe record for id %u not found", modules[i]->class);
+        }
+        mysql_free_result(result);
+      }
+      close_database(modules[i]->db);
+      modules[i]->db = NULL;
+    }
+  }
+  return 0;
+}
 
 int run(void)
 {
   int count = 0;
-  struct hostent *host;
-static int resummarize(void);
 
   if (debug > 3) { LOG(LOG_DEBUG, "run()"); }
 
   if (HAVE_OPT(SUMMARIZE)) {
+static int resummarize(void);
     return(resummarize()); // --summarize
   }
 
-  // the following statement ensures the nss-*.so libraries are loaded
-  // before fork() is called. If not, AND this program is run under gdb,
-  // children will get a SIGTRAP when THEY load nss-*.so libs, and will
-  // be killed.
-  host = gethostbyname("localhost");
-
   if (master) {
-    int     ct  = STACKCT_OPT( INPUT );
-    char**  pn = STACKLST_OPT( INPUT );
-
-    childpidcnt = ct;
-    if (debug > 2) fprintf(stderr, "pondering..\n");
-    while (ct--) {
-      pid_t pid;
-
-      if (childpid[ct] > 0) continue;
-
-      sprintf(path, "%s/%s", OPT_ARG(SPOOLDIR), pn[ct]);
-      chdir(path); // for coredumps
-      sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), pn[ct]);
-      pid = fork();
-      if (pid == -1) {
-        LOG(LOG_ERR, "fork: %m");
-        return 1;
-      }
-      if (pid == 0) {
-        master = FALSE; 
-        break;
-      }
-      if (debug > 2) fprintf(stderr, "started [%u] on %s\n", pid, path);
-      LOG(LOG_NOTICE, "started [%u] on %s", pid, path);
-      childpid[ct] = pid;
-      sleep(1);
-    } 
+    uw_setproctitle("doing checks");
+    count = master_checks();
+  } else {
+    modules_start_run();
+    uw_setproctitle("listing %s", path);
+    count = read_input_files(path);
+    modules_end_run();
   }
-  if (master) {
-    chdir("/tmp");
-    return 0;
-  }
-
-  uw_setproctitle("listing %s", path);
-
-  modules_start_run();
-  count = read_input_files(path);
-  modules_end_run();
  
   return(count);
 }
