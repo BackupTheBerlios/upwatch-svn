@@ -120,6 +120,7 @@ int check_log(GString *string, int idx, int *color)
   int logcolor = STAT_GREEN;
   int lines = 0;
 
+  uw_setproctitle("scanning %s", errlogspec[idx].path);
   in = fopen(errlogspec[idx].path, "r");
   if (!in) {
     errlogspec[idx].offset = 0;
@@ -546,6 +547,7 @@ int run(void)
   char buf[24];
 extern int forever;
 
+  uw_setproctitle("sleeping");
   for (i=0; i < OPT_VALUE_INTERVAL; i++) { // wait some minutes
     sleep(1);
     if (!forever)  {
@@ -553,6 +555,7 @@ extern int forever;
     }
   }
 
+  uw_setproctitle("getting system statistics");
   get_stats();
   doc = UpwatchXmlDoc("result", NULL);
   xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
@@ -594,6 +597,7 @@ extern int forever;
   }
 
   // do the diskfree
+  uw_setproctitle("checking diskspace");
   node = newnode(doc, "diskfree");
   add_diskfree_info(node);
   color = xmlGetPropInt(node, "color");

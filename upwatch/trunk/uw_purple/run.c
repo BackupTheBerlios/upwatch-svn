@@ -65,13 +65,13 @@ int find_expired_probes(struct dbspec *dbspec)
     xmlNewChild(probe, NULL, "color", "400");  // PURPLE
     xmlNewChild(probe, NULL, "prevcolor", row[3]);
 
-    LOG(LOG_NOTICE, "%s: purpled %s %s", dbspec->realm, row[0], row[1]);
+    LOG(LOG_INFO, "%s: purpled %s %s", dbspec->realm, row[0], row[1]);
     count++;
   }
   if (count) {
     xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
     spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc, NULL);
-    LOG(LOG_NOTICE, "%s: purpled %u probes", dbspec->realm, count);
+    LOG(LOG_INFO, "%s: purpled %u probes", dbspec->realm, count);
   }
 
 errexit:
@@ -96,7 +96,7 @@ int run(void)
                         OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
   if (!upwatch) return 0;
 
-  LOG(LOG_INFO, "syncing..");
+  LOG(LOG_INFO, "processing ..");
   uw_setproctitle("reading info from database");
   result = my_query(upwatch, 0, "select pr_realm.id, pr_realm.name, pr_realm.host, "
                                 "       pr_realm.port, pr_realm.db, pr_realm.user, "
@@ -114,8 +114,8 @@ int run(void)
       db.db = row[4];
       db.user = row[5];
       db.password = row[6];
-      uw_setproctitle("purpling %s", row[1]);
-      LOG(LOG_DEBUG, "purpling %s", row[1]);
+      uw_setproctitle("checking %s", row[1]);
+      LOG(LOG_DEBUG, "checking %s", row[1]);
       count += find_expired_probes(&db);
     }
     mysql_free_result(result);
