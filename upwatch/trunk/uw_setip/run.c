@@ -63,7 +63,7 @@ static int uw_password_ok(char *user, char *passwd)
   return(TRUE);
 }
 
-static int uw_set_ip(char *user, char *ip) 
+static int uw_set_ip(char *user, char *ip, char *remotehost) 
 {
   MYSQL *mysql;
 
@@ -72,7 +72,7 @@ static int uw_set_ip(char *user, char *ip)
   if (mysql) {
     gchar buffer[256];
 
-    sprintf(buffer, OPT_ARG(SETIPQUERY), ip, user);
+    sprintf(buffer, OPT_ARG(SETIPQUERY), ip, remotehost, user);
     if (debug > 1) LOG(LOG_DEBUG, buffer);
     if (mysql_query(mysql, buffer)) {
       LOG(LOG_ERR, "buffer: %s", mysql_error(mysql));
@@ -233,7 +233,7 @@ void handle_session(st_netfd_t rmt_nfd, char *remotehost)
     LOG(LOG_WARNING, "Login error: %s/%s", user, passwd);
     return;
   }
-  uw_set_ip(user, ip);
+  uw_set_ip(user, ip, remotehost);
 
   sprintf(buffer, "+OK Arrivederci\n");
   uw_setproctitle("%s: %s", remotehost, buffer);

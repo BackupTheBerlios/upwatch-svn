@@ -45,10 +45,11 @@ flag = {
     name      = setipquery;
     value     = A;
     arg_type  = string;
-    arg_default = "update server set ip = '%s' where id = '%s'";
+    arg_default = "update server set ip = '%s', nat = '%s' where id = '%s'";
     descrip   = "SQL query to use for updating ip addresses";
     doc       =
-'This query will be issued to actually update the ip address';
+'This query will be issued to actually update the ip address. The update query is
+filled with ip address, nat-router address and customer number, in that order.';
 };
 
 #include dbase_options.def
