@@ -1,0 +1,3952 @@
+2004-08-24 Tuesday 20:02  tdb
+
+	* NEWS (1.32, LIBSTATGRAB_0_10_3):
+
+	Add mention of FreeBSD 6.0 -CURRENT support.
+	
+2004-08-24 Tuesday 20:00  tdb
+
+	* configure.in (1.75, LIBSTATGRAB_0_10_3):
+
+	Add support for FreeBSD 6.0.
+	Drop version back to get this into the new release.
+	
+2004-08-23 Monday 17:09  tdb
+
+	* configure.in (1.74):
+
+	Post release version increment.
+	
+2004-08-23 Monday 16:04  ats
+
+	* src/statgrab/statgrab-make-mrtg-config.in (1.8,
+	LIBSTATGRAB_0_10_3):
+
+	Fix logic error: maximum network speeds should be KiB, not Mbit.
+	
+2004-08-23 Monday 15:56  ats
+
+	* NEWS (1.31):
+
+	Update NEWS for statgrab changes.
+	
+2004-08-10 Tuesday 22:10  ats
+
+	* src/statgrab/statgrab.c (1.32, LIBSTATGRAB_0_10_3):
+
+	Repair whitespace damage in help message. (It's still there in the
+	other code.)
+	
+2004-08-10 Tuesday 22:08  ats
+
+	* src/statgrab/statgrab.c (1.31):
+
+	"Mebibyte", not "mibibyte".
+	
+2004-08-10 Tuesday 20:13  ats
+
+	* src/statgrab/statgrab-make-mrtg-config.in (1.7):
+
+	We do know the interface speed these days, so we don't (always) have to
+	guess.
+	
+2004-08-10 Tuesday 20:07  ats
+
+	* src/statgrab/statgrab-make-mrtg-config.in (1.6):
+
+	Use -K and -f to produce better MRTG output.
+	
+2004-08-10 Tuesday 19:58  ats
+
+	* src/statgrab/statgrab.c (1.30):
+
+	Add -K, -M and -G to display byte counts in kibibytes, mibibytes and
+	gibibytes (mostly for MRTG use, since it can't deal with numbers bigger
+	than 32 bits).
+	
+2004-08-10 Tuesday 19:50  ats
+
+	* src/statgrab/statgrab.c (1.29):
+
+	Add -f option to scale floating-point values to integers for MRTG
+	output.
+	
+2004-07-27 Tuesday 21:25  tdb
+
+	* configure.in (1.73):
+
+	Post release version increment.
+	
+2004-07-27 Tuesday 21:24  tdb
+
+	* NEWS (1.30), src/libstatgrab/Makefile.am (1.27,
+	LIBSTATGRAB_0_10_3) (utags: LIBSTATGRAB_0_10_2):
+
+	Fix the shared library version.
+	
+2004-07-26 Monday 00:39  tdb
+
+	* NEWS (1.29, LIBSTATGRAB_0_10_1):
+
+	Fix release date.
+	
+2004-07-18 Sunday 22:31  ats
+
+	* src/libstatgrab/memory_stats.c (1.29, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1):
+
+	getpagesize() cannot fail.
+	
+2004-07-18 Sunday 22:30  ats
+
+	* src/libstatgrab/: cpu_stats.c (1.24, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1), disk_stats.c (1.72,
+	LIBSTATGRAB_0_10_3, LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1),
+	memory_stats.c (1.28), network_stats.c (1.69, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1), os_info.c (1.19,
+	LIBSTATGRAB_0_10_3, LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1),
+	page_stats.c (1.22, LIBSTATGRAB_0_10_3, LIBSTATGRAB_0_10_2,
+	LIBSTATGRAB_0_10_1), process_stats.c (1.74, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1), swap_stats.c (1.21,
+	LIBSTATGRAB_0_10_3, LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1),
+	tools.c (1.56, LIBSTATGRAB_0_10_3, LIBSTATGRAB_0_10_2,
+	LIBSTATGRAB_0_10_1), user_stats.c (1.26, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1):
+
+	Use sg_set_error_with_errno whenever errno's valid.
+	Change the one user of SG_ERROR_ENOENT to SG_ERROR_SYSCTL instead (since
+	that's what it should have been).
+	
+2004-07-18 Sunday 21:48  ats
+
+	* docs/statgrab.xml (1.12, LIBSTATGRAB_0_10_3, LIBSTATGRAB_0_10_2,
+	LIBSTATGRAB_0_10_1):
+
+	Document sg_get_error_errno.
+	Note that sg_get_error_arg can return NULL.
+	
+2004-07-18 Sunday 21:44  ats
+
+	* src/libstatgrab/: error.c (1.15), statgrab.h (1.53) (utags:
+	LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_3):
+
+	Remove extraneous consts.
+	
+2004-07-18 Sunday 21:39  ats
+
+	* src/libstatgrab/error.c (1.14):
+
+	Clear errno_value on errors that don't have a valid errno.
+	
+2004-07-18 Sunday 21:36  ats
+
+	* NEWS (1.28):
+
+	Fix a couple of typos.
+	
+2004-07-18 Sunday 21:22  tdb
+
+	* configure.in (1.72, LIBSTATGRAB_0_10_2):
+
+	Post-release version increment.
+	
+2004-07-18 Sunday 21:21  tdb
+
+	* PLATFORMS (1.8, LIBSTATGRAB_0_10_3),
+	docs/sg_get_disk_io_stats.xml (1.8, LIBSTATGRAB_0_10_3),
+	src/statgrab/statgrab.c (1.28) (utags: LIBSTATGRAB_0_10_1,
+	LIBSTATGRAB_0_10_2):
+
+	Catch a few bits of documentation/comments containing the deprecated
+	function names.
+	
+2004-07-18 Sunday 21:17  tdb
+
+	* NEWS (1.27), src/libstatgrab/Makefile.am (1.26,
+	LIBSTATGRAB_0_10_1):
+
+	Update NEWS and library version for next release.
+	
+2004-07-16 Friday 16:28  tdb
+
+	* src/libstatgrab/: error.c (1.13), statgrab.h (1.52), tools.c
+	(1.55):
+
+	Do the errno capturing in a nicer way.
+	
+2004-07-16 Friday 16:07  tdb
+
+	* src/libstatgrab/: error.c (1.12), statgrab.h (1.51), tools.c
+	(1.54):
+
+	Add function to allow grabbing of the current errno. Should we store errno
+	too maybe?
+	
+2004-07-16 Friday 12:17  ats
+
+	* src/statgrab/statgrab.c (1.27):
+
+	Make sure that network interfaces get an interface_name stat, even if they
+	don't have IO stats (like for loopback interfaces on Solaris).
+	
+2004-07-02 Friday 12:21  tdb
+
+	* src/libstatgrab/statgrab.h (1.50):
+
+	Make sure statgrab.h can't be included twice.
+	
+2004-06-21 Monday 22:41  tdb
+
+	* configure.in (1.71), libstatgrab.pc.in (1.4, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2) (utags: LIBSTATGRAB_0_10_1):
+
+	Add three variables to the pkg-config file: bin_owner, bin_group, bin_perm
+	
+	The purpose of these variables is to suggest the required owner, group and
+	permissions that might be used to make a binary using libstatgrab work
+	fully. I'm not sure if this is the "best" way of doing this, but it seems
+	like a reasonable idea.
+	
+2004-06-21 Monday 17:40  tdb
+
+	* src/libstatgrab/disk_stats.c (1.71):
+
+	Let libstatgrab know about the veritas file system (vxfs).
+	
+2004-06-21 Monday 15:48  tdb
+
+	* src/libstatgrab/process_stats.c (1.73):
+
+	Fix memory leak on NetBSD 2.0.
+	(kl_stats wasn't being free'd)
+	
+2004-06-20 Sunday 21:32  tdb
+
+	* configure.in (1.70), src/libstatgrab/disk_stats.c (1.70):
+
+	On NetBSD 2.0 (in fact, all BSD's, but only know of NetBSD 2.0) use statvfs
+	instead of statfs when available.
+	
+	No guarantees I've got this right - I need to upgrade our NetBSD 2 test
+	machine to a more recent build.
+	
+2004-06-20 Sunday 18:00  tdb
+
+	* configure.in (1.69), src/libstatgrab/disk_stats.c (1.69):
+
+	Since OpenBSD 3.5 disk io stats have been seperated into read and write,
+	just like NetBSD. This fixes libstatgrab to work on 3.5+.
+	
+	Bug reported by Wijnand Wiersma and Christian Weisgerber.
+	
+2004-06-19 Saturday 00:45  tdb
+
+	* src/: saidar/Makefile.am (1.7), statgrab/Makefile.am (1.10)
+	(utags: LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10_2,
+	LIBSTATGRAB_0_10_3):
+
+	Fix permission setting when DESTDIR is used. There still seems to be an
+	issue with libtool on my FreeBSD box, but a google search suggests this is
+	fixed in later versions of libtool.
+	
+	Thanks to Daniel <dragonheart@gentoo.org> for this one.
+	
+2004-05-30 Sunday 18:07  ats
+
+	* src/libstatgrab/tools.c (1.53):
+
+	Clear the error buffer on startup.
+	
+2004-05-19 Wednesday 16:12  tdb
+
+	* configure.in (1.68):
+
+	Post-release increment.
+	
+2004-05-19 Wednesday 15:54  tdb
+
+	* NEWS (1.26), src/libstatgrab/Makefile.am (1.25) (utags:
+	LIBSTATGRAB_0_10):
+
+	Update NEWS file for 0.10 release.
+	
+2004-05-18 Tuesday 15:33  pajs
+
+	* docs/sg_get_process_stats.xml (1.9, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10):
+
+	Added details about the supplied sorting functions that can be passed to qsort
+	
+2004-05-08 Saturday 17:40  tdb
+
+	* docs/sg_get_fs_stats.xml (1.3, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10):
+
+	Eek. I commited XML that didn't parse!
+	
+2004-05-08 Saturday 17:27  tdb
+
+	* docs/: sg_get_fs_stats.xml (1.2), sg_get_process_stats.xml (1.8):
+
+	Reword some bits about the entries parameter.
+	
+2004-05-05 Wednesday 11:41  tdb
+
+	* docs/statgrab.xml (1.11, LIBSTATGRAB_0_10):
+
+	And add sg_get_fs_stats properly :-)
+	
+2004-05-05 Wednesday 11:40  tdb
+
+	* docs/statgrab.xml (1.10):
+
+	Add sg_get_fs_stats to statgrab.xml.
+	
+2004-05-05 Wednesday 11:19  tdb
+
+	* docs/: Makefile.am (1.27, LIBSTATGRAB_0_10_3, LIBSTATGRAB_0_10_2,
+	LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10), sg_get_fs_stats.xml (1.1):
+
+	Add docs for sg_get_fs_stats.
+	
+2004-05-04 Tuesday 20:28  tdb
+
+	* docs/: Makefile.am (1.26), sg_get_process_stats.xml (1.7),
+	statgrab.xml (1.9):
+
+	Document the new process stats code a bit, and the error reporting code.
+	No mention of the sorting stuff, because I'm not sure how that works.
+	
+	That's it for new stuff - assuming I haven't missed anything.
+	
+2004-05-02 Sunday 18:39  tdb
+
+	* docs/: Makefile.am (1.25), sg_get_cpu_stats.xml (1.6,
+	LIBSTATGRAB_0_10_3, LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1,
+	LIBSTATGRAB_0_10), sg_get_process_stats.xml (1.6), statgrab.xml
+	(1.8):
+
+	Another pass, finish off the main page and fix a few problems.
+	
+	Still to document: process stats (new stuff), error stuff, and some fs
+	related stuff.
+	
+2004-05-02 Sunday 18:21  tdb
+
+	* docs/: Makefile.am (1.24), sg_get_cpu_stats.xml (1.5),
+	sg_get_disk_io_stats.xml (1.7, LIBSTATGRAB_0_10),
+	sg_get_host_info.xml (1.5, LIBSTATGRAB_0_10_3, LIBSTATGRAB_0_10_2,
+	LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10), sg_get_load_stats.xml (1.5,
+	LIBSTATGRAB_0_10_3, LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1,
+	LIBSTATGRAB_0_10), sg_get_mem_stats.xml (1.5, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10),
+	sg_get_network_iface_stats.xml (1.5, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10),
+	sg_get_network_io_stats.xml (1.7, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10),
+	sg_get_page_stats.xml (1.5, LIBSTATGRAB_0_10_3, LIBSTATGRAB_0_10_2,
+	LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10), sg_get_process_stats.xml
+	(1.5), sg_get_user_stats.xml (1.5, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10):
+
+	First pass as updating contents of documentation.
+	
+2004-05-02 Sunday 10:35  tdb
+
+	* docs/: sg_get_cpu_stats.xml (1.4), sg_get_disk_io_stats.xml
+	(1.6), sg_get_host_info.xml (1.4), sg_get_load_stats.xml (1.4),
+	sg_get_mem_stats.xml (1.4), sg_get_network_iface_stats.xml (1.4),
+	sg_get_network_io_stats.xml (1.6), sg_get_page_stats.xml (1.4),
+	sg_get_process_stats.xml (1.4), sg_get_user_stats.xml (1.4):
+
+	Do a repo copy of the documentation to their new names, then delete the old
+	ones. They still need their content updating though. We also need docs for
+	the new process stats stuff, the error reporting code, and I think the FS
+	stats which seem to be missing.
+	
+2004-04-09 Friday 00:30  ats
+
+	* src/libstatgrab/process_stats.c (1.72, LIBSTATGRAB_0_10):
+
+	Skip over argv pointers on OpenBSD.
+	
+2004-04-08 Thursday 18:20  tdb
+
+	* src/libstatgrab/process_stats.c (1.71):
+
+	Attempt to rework the command line argument fetching - mallocing 256Kb was
+	a bit on the large side. Now we start with something sensible and make it
+	bigger as required.
+	
+	This produces odd results on OpenBSD.
+	
+2004-04-08 Thursday 15:30  tdb
+
+	* src/libstatgrab/disk_stats.c (1.68, LIBSTATGRAB_0_10):
+
+	Fix bugs in error code.
+	
+2004-04-08 Thursday 14:44  ats
+
+	* examples/network_iface_stats.c (1.6, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10),
+	src/libstatgrab/disk_stats.c (1.67),
+	src/libstatgrab/network_stats.c (1.68, LIBSTATGRAB_0_10),
+	src/libstatgrab/process_stats.c (1.70), src/libstatgrab/statgrab.h
+	(1.49, LIBSTATGRAB_0_10):
+
+	Add comparison functions for names where that's likely to be useful.
+	
+	Make the network_iface_stats example show how to use bsearch to find an
+	interface by name.
+	
+2004-04-08 Thursday 14:16  ats
+
+	* examples/process_snapshot.c (1.10, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10),
+	src/libstatgrab/process_stats.c (1.69), src/libstatgrab/statgrab.h
+	(1.48):
+
+	Nuke sg_process_sort, and make the process stats example demonstrate how
+	to sort using the compare functions and qsort.
+	
+2004-04-08 Thursday 14:03  tdb
+
+	* src/libstatgrab/: process_stats.c (1.68), statgrab.h (1.47):
+
+	s/sg_sort_method/sg_process_sort_method/
+	
+2004-04-08 Thursday 13:40  pajs
+
+	* src/libstatgrab/: process_stats.c (1.67), statgrab.h (1.46):
+
+	Name change for future friendlyness.
+	
+2004-04-08 Thursday 12:26  pajs
+
+	* src/libstatgrab/: process_stats.c (1.66), statgrab.h (1.45):
+
+	Added some generic sorting methods for process_stats.
+	
+2004-04-08 Thursday 12:14  ats
+
+	* src/libstatgrab/error.c (1.11, LIBSTATGRAB_0_10):
+
+	... and include tools.h to get the definition of sg_strlcpy.
+	
+2004-04-08 Thursday 12:01  ats
+
+	* src/libstatgrab/error.c (1.10):
+
+	sg_strlcpy, not strlcpy.
+	
+	(I think that bit of code's won the "most errors in a three-line commit"
+	award...)
+	
+2004-04-08 Thursday 11:56  tdb
+
+	* src/libstatgrab/: network_stats.c (1.67), tools.c (1.52,
+	LIBSTATGRAB_0_10), tools.h (1.24, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10):
+
+	Shift a bunch of parsing functions to be linux/cygwin only. Prompted by
+	a regex related compile error on FreeBSD (we don't use regex's on FreeBSD).
+	
+2004-04-07 Wednesday 22:47  tdb
+
+	* examples/vm_stats.c (1.11, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10),
+	src/libstatgrab/error.c (1.9):
+
+	Bugfix in error setting code - we can't strlcpy a NULL.
+	Test out the error code in an example.
+	
+2004-04-07 Wednesday 22:20  ats
+
+	* src/libstatgrab/statgrab.h (1.44):
+
+	Remove a couple of FIXMEs that have been dealt with.
+	
+2004-04-07 Wednesday 22:19  ats
+
+	* src/libstatgrab/: error.c (1.8), statgrab.h (1.43):
+
+	Add sg_get_error_arg. It uses a static buffer for storage rather than
+	sg_update_string because we can't do anything about a malloc failure at
+	that point.
+	
+	Remove the default case in the switch, so GCC will give an "unhandled
+	enum value in switch" warning if we add a new error code without a
+	string.
+	
+2004-04-07 Wednesday 22:08  tdb
+
+	* src/libstatgrab/: error.c (1.7), load_stats.c (1.15,
+	LIBSTATGRAB_0_10_3, LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1,
+	LIBSTATGRAB_0_10), memory_stats.c (1.27, LIBSTATGRAB_0_10),
+	network_stats.c (1.66), os_info.c (1.18, LIBSTATGRAB_0_10),
+	page_stats.c (1.21, LIBSTATGRAB_0_10), process_stats.c (1.65),
+	statgrab.h (1.42), swap_stats.c (1.20, LIBSTATGRAB_0_10), tools.c
+	(1.51), user_stats.c (1.25, LIBSTATGRAB_0_10):
+
+	The rest of the error handling stuff (except the vector code).
+	
+	I've been extremely unimaginative with the string names in error.c, but
+	they're all in one place so much easier to tidy up. I'm also beginning to
+	wonder if we actually needed an SG_ERROR_SYSTEM_CALL to indicate some call
+	into the system failed - because the majority of our errors are those :-)
+	
+	Still to do, then:
+	 - vector code
+	 - better string names in error.c
+	 - deal with arg string in some way
+	 - make use of the error status in statgrab/saidar/examples
+	
+2004-04-07 Wednesday 20:26  tdb
+
+	* src/libstatgrab/: disk_stats.c (1.66), error.c (1.6), statgrab.h
+	(1.41):
+
+	Error reporting for disk_stats.
+	
+2004-04-07 Wednesday 16:50  tdb
+
+	* examples/process_snapshot.c (1.9), src/saidar/saidar.c (1.29,
+	LIBSTATGRAB_0_10_3, LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1,
+	LIBSTATGRAB_0_10), src/statgrab/statgrab.c (1.26,
+	LIBSTATGRAB_0_10):
+
+	More whitespace tidyup (spaces->tabs).
+	
+2004-04-07 Wednesday 16:46  pajs
+
+	* src/libstatgrab/: process_stats.c (1.64), tools.c (1.50):
+
+	Fixed tools.c change of enum
+	Fixed a FD leak in solaris and added nice value.
+	
+2004-04-07 Wednesday 15:53  tdb
+
+	* src/libstatgrab/: cpu_stats.c (1.23, LIBSTATGRAB_0_10),
+	disk_stats.c (1.65), error.c (1.5), load_stats.c (1.14),
+	memory_stats.c (1.26), network_stats.c (1.65), os_info.c (1.17),
+	page_stats.c (1.20), process_stats.c (1.63), statgrab.h (1.40),
+	tools.c (1.49), user_stats.c (1.24), vector.c (1.9,
+	LIBSTATGRAB_0_10_3, LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1,
+	LIBSTATGRAB_0_10):
+
+	Whitespace tidyup - change spaces to tabs.
+	
+2004-04-07 Wednesday 15:45  tdb
+
+	* src/libstatgrab/: cpu_stats.c (1.22), error.c (1.4), statgrab.h
+	(1.39):
+
+	Add error reporting to cpu_stats.
+	
+2004-04-07 Wednesday 15:45  pajs
+
+	* src/libstatgrab/process_stats.c (1.62):
+
+	More linux code, now does uid/gid.
+	
+2004-04-07 Wednesday 15:36  ats
+
+	* src/libstatgrab/vector.c (1.8):
+
+	Include tools.h to get sg_realloc.
+	
+2004-04-07 Wednesday 11:33  ats
+
+	* src/libstatgrab/: disk_stats.c (1.64), process_stats.c (1.61),
+	tools.c (1.48), vector.c (1.7):
+
+	Change malloc -> sg_malloc, realloc -> sg_realloc, and rewrite the one
+	calloc call to use sg_malloc.
+	
+2004-04-07 Wednesday 11:27  ats
+
+	* src/libstatgrab/: process_stats.c (1.60), tools.c (1.47):
+
+	Change the last few instances of strdup to use sg_update_string.
+	
+2004-04-07 Wednesday 10:44  tdb
+
+	* src/libstatgrab/: error.c (1.3), statgrab.h (1.38), tools.c
+	(1.46), tools.h (1.23):
+
+	Add sg_realloc, and a macro fo sg_malloc.
+	
+2004-04-06 Tuesday 23:09  ats
+
+	* src/libstatgrab/: error.c (1.2), statgrab.h (1.37):
+
+	Add SG_ERROR_NONE.
+	
+	Make sg_str_error return const char *.
+	
+2004-04-06 Tuesday 22:38  tdb
+
+	* src/libstatgrab/: Makefile.am (1.24), error.c (1.1), statgrab.h
+	(1.36):
+
+	Some very basic startings of error handling stuff. I've not put much
+	thought into this yet, it's basically just the idea we've discussed.
+	
+	Of course, this is the easy task. The hard job is creating a whole list of
+	different errors and using them across libstatgrab :-)
+	
+2004-04-06 Tuesday 22:08  tdb
+
+	* src/libstatgrab/: process_stats.c (1.59), statgrab_deprecated.c
+	(1.2, LIBSTATGRAB_0_10_3, LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1,
+	LIBSTATGRAB_0_10):
+
+	Fix a couple of includes.
+	
+2004-04-06 Tuesday 18:55  ats
+
+	* src/libstatgrab/tools.c (1.45):
+
+	Consistently return -1 for error.
+	
+2004-04-06 Tuesday 18:42  ats
+
+	* src/libstatgrab/tools.c (1.44):
+
+	NetBSD's sysctl sometimes (repeatably) misreports the size of struct uvmexp.
+	Fortunately, it's a fixed-size structure anyway, so we don't need to
+	dynamically allocate it.
+	
+	We probably should be using struct uvmexp_sysctl anyway, since it's ABI-stable.
+	
+2004-04-06 Tuesday 17:37  tdb
+
+	* configure.in (1.67, LIBSTATGRAB_0_10),
+	src/libstatgrab/Makefile.am (1.23), src/libstatgrab/statgrab.h
+	(1.35), src/libstatgrab/statgrab_deprecated.c (1.1),
+	src/libstatgrab/statgrab_deprecated.h (1.1, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10):
+
+	Add compatibility code. This provides a working pre-0.10 API for old
+	applications. To use simply change the #include line to:
+	
+	#define SG_ENABLE_DEPRECATED
+	#include <statgrab.h>
+	
+	This can be disabled at build time completely using --disable-deprecated.
+	
+2004-04-06 Tuesday 17:29  pajs
+
+	* src/libstatgrab/process_stats.c (1.58):
+
+	A bit more of the linux code.. Need to do uid/gid bit still.
+	Also, haven't done nice on solaris yet.
+	
+2004-04-06 Tuesday 15:54  tdb
+
+	* src/libstatgrab/vector.h (1.7, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10):
+
+	Add header block.
+	
+2004-04-06 Tuesday 15:52  tdb
+
+	* examples/cpu_usage.c (1.10, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10),
+	examples/disk_traffic.c (1.10, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10),
+	examples/load_stats.c (1.10, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10),
+	examples/network_iface_stats.c (1.5), examples/network_traffic.c
+	(1.14, LIBSTATGRAB_0_10_3, LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1,
+	LIBSTATGRAB_0_10), examples/os_info.c (1.8, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10),
+	examples/page_stats.c (1.9, LIBSTATGRAB_0_10_3, LIBSTATGRAB_0_10_2,
+	LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10), examples/process_snapshot.c
+	(1.8), examples/process_stats.c (1.10, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10),
+	examples/user_list.c (1.10, LIBSTATGRAB_0_10_3, LIBSTATGRAB_0_10_2,
+	LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10), examples/vm_stats.c (1.10),
+	src/libstatgrab/cpu_stats.c (1.21), src/libstatgrab/disk_stats.c
+	(1.63), src/libstatgrab/load_stats.c (1.13),
+	src/libstatgrab/memory_stats.c (1.25),
+	src/libstatgrab/network_stats.c (1.64), src/libstatgrab/os_info.c
+	(1.16), src/libstatgrab/page_stats.c (1.19),
+	src/libstatgrab/process_stats.c (1.57), src/libstatgrab/statgrab.h
+	(1.34), src/libstatgrab/swap_stats.c (1.19),
+	src/libstatgrab/tools.c (1.43), src/libstatgrab/tools.h (1.22),
+	src/libstatgrab/user_stats.c (1.23), src/libstatgrab/vector.c
+	(1.6), src/saidar/saidar.c (1.28),
+	src/statgrab/statgrab-make-mrtg-config.in (1.5, LIBSTATGRAB_0_10_2,
+	LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10),
+	src/statgrab/statgrab-make-mrtg-index.in (1.7, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10),
+	src/statgrab/statgrab.c (1.25):
+
+	Update name of project at the top of all soure files. These files now exist
+	in their own right, rather than as part of the "CMS".
+	
+2004-04-06 Tuesday 15:44  tdb
+
+	* src/libstatgrab/process_stats.c (1.56):
+
+	Add a note about something that needs fixing. We still have problems
+	getting proctitle on some of the BSD's :-(
+	
+2004-04-06 Tuesday 15:21  tdb
+
+	* PLATFORMS (1.7, LIBSTATGRAB_0_10):
+
+	Add mention of NetBSD 2.0.
+	I'm not sure of the best way to format this.. we have platforms we
+	expect to work, and platforms we know to work. For example, we might
+	not have tested OpenBSD 3.4 but we're pretty sure it works.
+	
+2004-04-06 Tuesday 14:40  tdb
+
+	* configure.in (1.66), src/libstatgrab/process_stats.c (1.55):
+
+	Fix process stats on NetBSD 2.0 (beta).
+	Also fix the 5-processes-workaround Adam committed yesterday on the rest
+	of the BSD's (not just FreeBSD5).
+	
+2004-04-05 Monday 20:55  ats
+
+	* src/libstatgrab/process_stats.c (1.54):
+
+	To quote from the FreeBSD kernel source: "/* overestimate by 5 procs */".
+	This is the workaround.
+	
+2004-04-05 Monday 19:10  ats
+
+	* src/libstatgrab/: disk_stats.c (1.62), network_stats.c (1.63),
+	process_stats.c (1.53), tools.c (1.42), tools.h (1.21):
+
+	Make sg_update_string return an int to indicate success, so that it can
+	be used to set a string to NULL.
+	
+	Make Linux process_stats code set proctitle to NULL if it's empty rather
+	than "".
+	
+2004-04-05 Monday 17:23  tdb
+
+	* examples/: cpu_usage.c (1.9), disk_traffic.c (1.9), load_stats.c
+	(1.9), network_iface_stats.c (1.4), network_traffic.c (1.13),
+	os_info.c (1.7), page_stats.c (1.8), process_snapshot.c (1.7),
+	process_stats.c (1.9), user_list.c (1.9), vm_stats.c (1.9):
+
+	Update examples to use new names. I guess some renaming could probably be
+	done here, but at least they all compile again now.
+	
+2004-04-05 Monday 16:40  ats
+
+	* src/: libstatgrab/cpu_stats.c (1.20), libstatgrab/disk_stats.c
+	(1.61), libstatgrab/load_stats.c (1.12), libstatgrab/memory_stats.c
+	(1.24), libstatgrab/network_stats.c (1.62), libstatgrab/os_info.c
+	(1.15), libstatgrab/page_stats.c (1.18),
+	libstatgrab/process_stats.c (1.52), libstatgrab/statgrab.h (1.33),
+	libstatgrab/swap_stats.c (1.18), libstatgrab/tools.c (1.41),
+	libstatgrab/tools.h (1.20), libstatgrab/user_stats.c (1.22),
+	libstatgrab/vector.c (1.5), libstatgrab/vector.h (1.6),
+	saidar/saidar.c (1.27), statgrab/statgrab.c (1.24):
+
+	Rename all the functions, types and enums in the API to be consistent.
+	Types are now of the form "sg_mem_stats"; functions of the form
+	"sg_get_mem_stats"; enums of the form "SG_PROCESS_STATE_RUNNING".
+	(The old get_proc_snapshot follows the usual calling convention now.)
+	
+	Make internal functions static where possible.
+	
+	Rename non-static internal functions to have an sg_ prefix so they don't
+	collide with those from other libraries. In particular, strlcpy and
+	strlcat are now called sg_strlcpy and sg_strlcat and are always
+	included.
+	
+	Fix saidar and statgrab to use the new API.
+	
+2004-04-05 Monday 12:21  tdb
+
+	* src/libstatgrab/process_stats.c (1.51):
+
+	Fixed, and properly tested.
+	
+2004-04-05 Monday 10:33  tdb
+
+	* src/libstatgrab/process_stats.c (1.50):
+
+	Instead of reallocing on the fly, work out the size of the buffer in
+	advance and then fill it on a second pass. Suggested by Adam.
+	
+2004-04-05 Monday 02:44  ats
+
+	* src/libstatgrab/process_stats.c (1.49):
+
+	NULL -> \0, initialise malloced memory to \0, and plug a memory leak.
+	
+2004-04-05 Monday 02:41  ats
+
+	* src/libstatgrab/process_stats.c (1.48):
+
+	Use vectors and update_string. (I haven't really touched the BSD code
+	here yet.)
+	
+2004-04-05 Monday 02:06  ats
+
+	* src/libstatgrab/tools.c (1.40):
+
+	Kill a memory leak when the mapping already exists.
+	
+2004-04-05 Monday 01:59  ats
+
+	* src/libstatgrab/user_stats.c (1.21):
+
+	Add a missing check for vector resize failing.
+	
+2004-04-05 Monday 01:58  ats
+
+	* src/libstatgrab/: vector.c (1.4), vector.h (1.5):
+
+	Fix the strict-aliasing problem in a clean, sensible way that actually
+	works.
+	
+	As a bonus, we now get a "value computed is not used" warning from GCC
+	if we don't check the return value of VECTOR_RESIZE. (This is dubiously
+	a bonus when it's being resized to 0, but it's not going to hurt to
+	check even then -- we might support destructors failing in the future.)
+	
+2004-04-05 Monday 01:45  ats
+
+	* src/libstatgrab/: vector.c (1.3), vector.h (1.4):
+
+	Fix the strict-aliasing warnings.
+	
+	This is even uglier than the previous code, since it pushes a test for a
+	sentinel value into the VECTOR_RESIZE macro. I'm pretty certain that the
+	pointer-to-static-used-as-sentinel is my own invention. I'm not entirely
+	convinced that it's a good idea, but I can't see anything technically
+	wrong with it...
+	
+2004-04-05 Monday 01:21  tdb
+
+	* src/libstatgrab/process_stats.c (1.47):
+
+	We nearly forgot to make the process stats work on cygwin again :-)
+	
+2004-04-05 Monday 01:20  ats
+
+	* src/libstatgrab/: vector.c (1.2), vector.h (1.3):
+
+	Deal with vectors as char ** rather than void **, so we can do pointer
+	arithmetic without Sun cc complaining.
+	
+2004-04-05 Monday 01:17  tdb
+
+	* src/libstatgrab/: network_stats.c (1.61), tools.c (1.39):
+
+	Fix a couple of warnings on Solaris.
+	
+2004-04-05 Monday 01:16  ats
+
+	* src/libstatgrab/network_stats.c (1.60):
+
+	Use update_string.
+	
+2004-04-05 Monday 01:07  ats
+
+	* src/libstatgrab/disk_stats.c (1.60):
+
+	Use update_string throughout.
+	
+2004-04-05 Monday 01:01  ats
+
+	* src/libstatgrab/: tools.c (1.38), tools.h (1.19):
+
+	Add prototype for get_svr_from_bsd, and make it take and return const
+	char *.
+	
+2004-04-05 Monday 00:57  tdb
+
+	* examples/process_snapshot.c (1.6),
+	src/libstatgrab/process_stats.c (1.46):
+
+	Returning NULL in a function that returns int's is wrong :)
+	
+	Now returns -1 on failure. Also change code that calls us to check for < 0
+	for failures.
+	
+2004-04-05 Monday 00:55  ats
+
+	* src/libstatgrab/: disk_stats.c (1.59), tools.c (1.37), tools.h
+	(1.18):
+
+	I like copy_string. We should use it EVERYWHERE. Also, the name needed
+	changing.
+	
+2004-04-05 Monday 00:48  ats
+
+	* src/libstatgrab/tools.c (1.36):
+
+	Fix realloc memory leak.
+	
+2004-04-05 Monday 00:45  ats
+
+	* src/libstatgrab/user_stats.c (1.20):
+
+	Rework user_stats to use vectors, which gets rid of all the
+	MAX_LOGIN_NAME_SIZE stuff too.
+	
+2004-04-05 Monday 00:35  tdb
+
+	* src/libstatgrab/process_stats.c (1.45):
+
+	Minor bugfixes.
+	
+2004-04-05 Monday 00:26  ats
+
+	* src/libstatgrab/disk_stats.c (1.58):
+
+	Convert another realloc-managed static array to a vector.
+	
+2004-04-05 Monday 00:24  tdb
+
+	* src/libstatgrab/process_stats.c (1.44):
+
+	Fix a bunch of silly errors.
+	
+2004-04-04 Sunday 23:52  tdb
+
+	* examples/process_snapshot.c (1.5):
+
+	get_proc_snapshot returns an int, not a pointer.
+	
+2004-04-04 Sunday 23:52  ats
+
+	* src/libstatgrab/network_stats.c (1.59):
+
+	Make network_stats use vectors.
+	
+2004-04-04 Sunday 23:48  tdb
+
+	* examples/cpu_usage.c (1.8), examples/disk_traffic.c (1.8),
+	examples/load_stats.c (1.8), examples/network_traffic.c (1.12),
+	examples/page_stats.c (1.7), examples/process_snapshot.c (1.4),
+	examples/process_stats.c (1.8), examples/user_list.c (1.8),
+	examples/vm_stats.c (1.8), src/libstatgrab/process_stats.c (1.43),
+	src/libstatgrab/tools.c (1.35), src/libstatgrab/tools.h (1.17),
+	src/saidar/saidar.c (1.26):
+
+	Fix a bunch of warnings on the BSD's.
+	
+2004-04-04 Sunday 23:40  ats
+
+	* src/libstatgrab/tools.h (1.16):
+
+	atoll's a static helper function; it shouldn't be in the header.
+	
+2004-04-04 Sunday 23:29  ats
+
+	* src/libstatgrab/disk_stats.c (1.57):
+
+	Make copy_string not leak memory on realloc() failure.
+	Make copy_string static.
+	
+	We probably ought to move copy_string to tools.c/h at some point in the
+	future, since it's useful.
+	
+2004-04-04 Sunday 23:18  ats
+
+	* src/libstatgrab/disk_stats.c (1.56):
+
+	Make disk_stats use vectors.
+	
+	(Note that this introduces some harmless strict aliasing warnings on GCC
+	3.3; I'll do something about that later.)
+	
+2004-04-04 Sunday 23:09  tdb
+
+	* src/libstatgrab/: process_stats.c (1.42), tools.c (1.34):
+
+	Add an get_kvm2 function to open kvm with slightly different args. This
+	set of args doesn't seem to need elevated privileges, but in my last test
+	wouldn't perform the functions required in swap_stats.
+	
+2004-04-04 Sunday 22:59  ats
+
+	* src/statgrab/statgrab.c (1.23):
+
+	Fix TIME_T printing on systems where time_t isn't a long.
+	
+2004-04-04 Sunday 22:54  tdb
+
+	* src/libstatgrab/: network_stats.c (1.58), process_stats.c (1.41),
+	swap_stats.c (1.17):
+
+	Fix a bunch of warnings.
+	
+2004-04-04 Sunday 22:44  ats
+
+	* src/libstatgrab/process_stats.c (1.40):
+
+	Silence a (harmless) "enumeration value `UNKNOWN' not handled in switch"
+	error.
+	
+2004-04-04 Sunday 22:42  ats
+
+	* src/libstatgrab/process_stats.c (1.39):
+
+	get_proc_snapshot returns an integer, not a pointer.
+	
+2004-04-04 Sunday 22:40  ats
+
+	* src/libstatgrab/process_stats.c (1.38):
+
+	Silence 40-odd (harmless) "use of assignment suppression and length
+	modifier together" errors.
+	
+2004-04-04 Sunday 22:38  ats
+
+	* src/libstatgrab/network_stats.c (1.57):
+
+	Silence another (harmless) "may be used uninitialised" error.
+	
+2004-04-04 Sunday 22:38  ats
+
+	* src/libstatgrab/disk_stats.c (1.55):
+
+	Silence a (harmless) "may be used uninitialised" error.
+	
+2004-04-04 Sunday 22:35  tdb
+
+	* configure.in (1.65):
+
+	No longer need kvm on FreeBSD 5, OpenBSD, and NetBSD.
+	
+2004-04-04 Sunday 22:34  tdb
+
+	* src/libstatgrab/process_stats.c (1.37):
+
+	This has been a bit more complex than it probably should have been. We now
+	have the command line arguments on FreeBSD5, NetBSD, and probably OpenBSD
+	without using kvm. The sysctl interface provided the required information.
+	
+	However, on FreeBSD 4 and Dragonfly BSD there was no matching sysctl
+	interface, so the kvm way remains. Fortunately neither of those two OS's
+	require elevated privileges to use that bit of kvm.
+	
+	Finally in a decent position with no elevated privileges required for this
+	section of code, on any of the BSD's.
+	
+	Still one bug to fix: there are 5 "null" processes on the end of the list.
+	This has been introduced at some point, because it wasn't there yesterday.
+	
+2004-04-04 Sunday 22:33  ats
+
+	* src/libstatgrab/vector.h (1.2):
+
+	Add a macro for declaring static vectors too.
+	
+2004-04-04 Sunday 22:17  ats
+
+	* src/libstatgrab/: Makefile.am (1.22), vector.c (1.1), vector.h
+	(1.1):
+
+	Add generic vector-handling code. This can be used to implement
+	resizable arrays of objects with optional initialisation/destruction
+	functions.
+	
+2004-04-04 Sunday 17:12  tdb
+
+	* src/libstatgrab/process_stats.c (1.36):
+
+	Revert to using sysctl instead of kvm to get process stats. This should be
+	more compatible with NetBSD and OpenBSD. Still need to use kvm to get the
+	command line args, but this seems unavoidable.
+	
+	At this stage we don't bail if kvm fails (eg. not enough privs), instead
+	the command line args will just be set to NULL. Seems a fair compromise.
+	
+2004-04-04 Sunday 16:56  tdb
+
+	* src/libstatgrab/process_stats.c (1.35):
+
+	Add support for DragonFly BSD. Seems to be working correctly, and works
+	without needing any extra privileges. Some stuff comes from proc.h,
+	whilst some comes from thread.h.
+	
+	A word of warning - the DragonFly folk seem to be changing a lot of stuff
+	to do with processes and threads, so it's likely this could break very
+	easily :-)
+	
+2004-04-04 Sunday 12:46  tdb
+
+	* src/libstatgrab/process_stats.c (1.34):
+
+	Support for OpenBSD, although it suffers the same problems as NetBSD.
+	
+2004-04-04 Sunday 12:28  tdb
+
+	* configure.in (1.64), src/libstatgrab/process_stats.c (1.33):
+
+	This adds support for NetBSD, although it currently needs elevated
+	privileges. I will try and fix that.
+	
+2004-04-04 Sunday 12:02  tdb
+
+	* src/libstatgrab/process_stats.c (1.32):
+
+	Handle failure to get a snapshot.
+	
+2004-04-04 Sunday 00:02  tdb
+
+	* src/libstatgrab/process_stats.c (1.31):
+
+	Add default to case statement which uses the UNKNOWN process state.
+	
+2004-04-03 Saturday 23:59  tdb
+
+	* examples/process_snapshot.c (1.3),
+	src/libstatgrab/process_stats.c (1.30), src/libstatgrab/statgrab.h
+	(1.32):
+
+	Add support for FreeBSD 4. I suspect this may work on OpenBSD and NetBSD
+	too, although I'll need to verify that.
+	
+	Also add an additional process state of UNKNOWN.
+	
+2004-04-03 Saturday 22:05  tdb
+
+	* configure.in (1.63):
+
+	Now need -lkvm on FreeBSD 5.
+	
+2004-04-03 Saturday 22:02  tdb
+
+	* examples/process_snapshot.c (1.2):
+
+	Add test for failure to get stats.
+	
+2004-04-03 Saturday 21:33  tdb
+
+	* src/libstatgrab/process_stats.c (1.29):
+
+	Got the command line args. Now using kvm to get information, although
+	fortunately this doesn't need any special privileges. Switched to using
+	kvm to get the process listing too.
+	
+	When no command line arguments available doing something similar to ps and
+	putting the command name in brackets.
+	
+2004-04-03 Saturday 17:57  tdb
+
+	* src/libstatgrab/process_stats.c (1.28):
+
+	Fix CPU percentages on FreeBSD 5. Set args to NULL until we can figure out
+	how to collect them. Still need to add code for other BSD's.
+	
+2004-04-03 Saturday 17:55  tdb
+
+	* examples/: Makefile.am (1.12, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10),
+	process_snapshot.c (1.1):
+
+	Add process_snapshot example for testing the new process stats code.
+	
+2004-04-02 Friday 22:20  tdb
+
+	* src/libstatgrab/process_stats.c (1.27):
+
+	Reimplement get_process_stats. I presume the plan was to rewrite this to
+	use the new function for collecting stats :-)
+	
+	Seems to work on FreeBSD5 - but I'm not entirely convinced my BSD code is
+	working yet.
+	
+2004-03-30 Tuesday 23:10  tdb
+
+	* src/libstatgrab/: process_stats.c (1.26), statgrab.h (1.31):
+
+	The startings of the BSD code. Only works on FreeBSD 5 so far.
+	
+	Doesn't yet do command line arguments, or CPU percentages correctly.
+	
+2004-03-30 Tuesday 14:41  pajs
+
+	* src/libstatgrab/process_stats.c (1.25):
+
+	Basic framework for linux.. Doesn't do CPU on a per process basis, as i'm
+	not sure the best way to approach that yet.
+	
+2004-03-28 Sunday 19:22  pajs
+
+	* src/libstatgrab/process_stats.c (1.24):
+
+	Added the state for solaris
+	
+2004-03-28 Sunday 19:07  pajs
+
+	* src/libstatgrab/statgrab.h (1.30):
+
+	Modifying the type of process states to an enum. The names maybe a touch
+	unfriendly however..?
+	
+2004-03-28 Sunday 19:04  pajs
+
+	* src/libstatgrab/: process_stats.c (1.23), statgrab.h (1.29):
+
+	The start of the rework for process_stats to give more information, and
+	to become a standard proc interface.
+	
+2004-03-20 Saturday 21:28  tdb
+
+	* src/libstatgrab/tools.c (1.33):
+
+	We don't need kvm on FreeBSD 5 any more.
+	
+2004-03-20 Saturday 19:25  tdb
+
+	* Makefile.am (1.17, LIBSTATGRAB_0_10_3, LIBSTATGRAB_0_10_2,
+	LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10):
+
+	The libstatgrab python bindings are now their own package - pystatgrab.
+	
+2004-03-19 Friday 23:44  ats
+
+	* src/libstatgrab/disk_stats.c (1.54):
+
+	People using devfs have partition names longer than 20 characters.
+	
+2004-03-17 Wednesday 11:58  ats
+
+	* src/libstatgrab/tools.c (1.32):
+
+	Add a workaround for NetBSD: the first call to get_uvmexp() doesn't fill
+	in the structure, so we would normally get junk values on the first call
+	that used it.
+	
+2004-03-11 Thursday 17:35  tdb
+
+	* docs/: sg_get_cpu_stats.xml (1.3), sg_get_disk_io_stats.xml
+	(1.5), sg_get_host_info.xml (1.3), sg_get_load_stats.xml (1.3),
+	sg_get_mem_stats.xml (1.3), sg_get_network_iface_stats.xml (1.3),
+	sg_get_network_io_stats.xml (1.5), sg_get_page_stats.xml (1.3),
+	sg_get_process_stats.xml (1.3), sg_get_user_stats.xml (1.3),
+	statgrab.xml (1.7):
+
+	Put libstatgrab URL, rather than i-scream URL, in the docs.
+	
+2004-03-09 Tuesday 18:57  tdb
+
+	* configure.in (1.62):
+
+	Post release version increment.
+	
+2004-03-09 Tuesday 13:50  tdb
+
+	* docs/sg_get_network_iface_stats.xml (1.2, LIBSTATGRAB_0_9):
+
+	Mention what UNKNOWN_DUPLEX could mean.
+	
+2004-03-09 Tuesday 12:43  ats
+
+	* src/libstatgrab/network_stats.c (1.56, LIBSTATGRAB_0_9):
+
+	Rework transfer_diff so that it doesn't need an inexpressible constant
+	on 64-bit systems.
+	Add OpenBSD to the platforms with 32-bit transfer stats.
+	
+2004-03-09 Tuesday 12:34  tdb
+
+	* PLATFORMS (1.6, LIBSTATGRAB_0_9):
+
+	Add note about privileges, and more comment on state of cygwin port.
+	
+2004-03-09 Tuesday 12:25  tdb
+
+	* NEWS (1.25, LIBSTATGRAB_0_9):
+
+	Add note about PLATFORMS to the NEWS file.
+	
+2004-03-09 Tuesday 12:24  tdb
+
+	* PLATFORMS (1.5), README (1.9, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10,
+	LIBSTATGRAB_0_9):
+
+	Add platform specific notes (particularly on required privileges) to
+	the PLATFORMS file.
+	
+2004-03-09 Tuesday 11:29  ats
+
+	* src/libstatgrab/network_stats.c (1.55):
+
+	Add a FIXME note on the network interface stats code; some Solaris
+	interfaces have packet counts but not byte counts, so it would be useful
+	to return those once we have a way of indicating the byte count is
+	unknown.
+	
+2004-03-08 Monday 14:27  tdb
+
+	* NEWS (1.24), src/libstatgrab/Makefile.am (1.21, LIBSTATGRAB_0_9):
+
+	Getting ready for 0.9.
+	
+2004-03-08 Monday 13:48  tdb
+
+	* src/libstatgrab/network_stats.c (1.54):
+
+	On OpenBSD IFM_1000_TX is defined to be IFM_1000_T. We can't have both in
+	our case statement, so ignore IFM_1000_TX.
+	
+2004-03-08 Monday 12:31  tdb
+
+	* src/libstatgrab/network_stats.c (1.53):
+
+	Add support for new network stats on Solaris. Please check this change cos
+	this is the first time I've coded Solaris stuff :-)
+	
+2004-03-08 Monday 12:30  tdb
+
+	* examples/network_traffic.c (1.11, LIBSTATGRAB_0_9):
+
+	The values are long long, not long.
+	
+2004-03-08 Monday 11:58  tdb
+
+	* src/libstatgrab/network_stats.c (1.52):
+
+	Change MAXVAL to Hex. I've made an assumption that they were +1 too big
+	before. I might be wrong, though.
+	
+2004-03-08 Monday 11:58  tdb
+
+	* examples/network_traffic.c (1.10):
+
+	Fix layout problems with network traffic example.
+	
+2004-03-06 Saturday 23:35  tdb
+
+	* docs/: Makefile.am (1.23, LIBSTATGRAB_0_9),
+	sg_get_network_iface_stats.xml (1.1), sg_get_network_io_stats.xml
+	(1.4, LIBSTATGRAB_0_9), statgrab.xml (1.6, LIBSTATGRAB_0_9):
+
+	Update documentation to know about the new functions and return data.
+	
+2004-03-06 Saturday 23:03  ats
+
+	* src/libstatgrab/network_stats.c (1.51):
+
+	"And if a 4 turned out to be 9, I don't mind, I don't mind..."
+	Fix regexec result count.
+	
+2004-03-06 Saturday 22:41  tdb
+
+	* examples/network_iface_stats.c (1.3, LIBSTATGRAB_0_9):
+
+	Fix bug in network_iface_stats example - I forgot to increment pointer :-)
+	
+2004-03-06 Saturday 22:37  tdb
+
+	* examples/network_traffic.c (1.9):
+
+	Update network traffic example to make it aware of new data.
+	
+2004-03-06 Saturday 22:34  ats
+
+	* src/statgrab/statgrab.c (1.22, LIBSTATGRAB_0_9):
+
+	Chase new network interface stats.
+	
+2004-03-06 Saturday 22:30  ats
+
+	* src/libstatgrab/network_stats.c (1.50):
+
+	Make the network stats regexp simpler. Since /proc/net/dev is a fixed
+	format, there's no need to use [[:space:]] and [[:digit:]]; a literal
+	space and [0-9] will suffice.
+	
+2004-03-06 Saturday 22:27  ats
+
+	* src/libstatgrab/network_stats.c (1.49):
+
+	Make the regexp match array the right size for Linux.
+	
+2004-03-06 Saturday 21:56  tdb
+
+	* src/libstatgrab/network_stats.c (1.48):
+
+	Add support for errors/packets/collisions to Linux.
+	
+2004-03-06 Saturday 21:49  tdb
+
+	* src/libstatgrab/network_stats.c (1.47):
+
+	Make the rest of the code aware of the new values in the struct.
+	
+2004-03-06 Saturday 19:04  tdb
+
+	* src/libstatgrab/network_stats.c (1.46):
+
+	Add getting errors, packets, and collisions for network interfaces on BSD.
+	
+2004-03-04 Thursday 23:38  tdb
+
+	* src/libstatgrab/statgrab.h (1.28, LIBSTATGRAB_0_9):
+
+	An "idea" what the network stats might look like with extra stuff in. Pete,
+	please approve/fix then I'll do the BSD code :-)
+	
+2004-02-18 Wednesday 17:29  ats
+
+	* src/statgrab/statgrab.c (1.21):
+
+	Buggy Solaris qsort/bsearch still try to access the array if the length
+	is zero.
+	
+2004-02-16 Monday 14:55  tdb
+
+	* PLATFORMS (1.4), configure.in (1.61, LIBSTATGRAB_0_9),
+	src/libstatgrab/cpu_stats.c (1.19, LIBSTATGRAB_0_9),
+	src/libstatgrab/disk_stats.c (1.53, LIBSTATGRAB_0_9),
+	src/libstatgrab/memory_stats.c (1.23, LIBSTATGRAB_0_9),
+	src/libstatgrab/network_stats.c (1.45), src/libstatgrab/os_info.c
+	(1.14, LIBSTATGRAB_0_9), src/libstatgrab/page_stats.c (1.17,
+	LIBSTATGRAB_0_9), src/libstatgrab/process_stats.c (1.22,
+	LIBSTATGRAB_0_9), src/libstatgrab/swap_stats.c (1.16,
+	LIBSTATGRAB_0_9), src/libstatgrab/tools.c (1.31, LIBSTATGRAB_0_9),
+	src/libstatgrab/tools.h (1.15, LIBSTATGRAB_0_9),
+	src/libstatgrab/user_stats.c (1.19, LIBSTATGRAB_0_9):
+
+	Add support for DragonFly BSD 1.0.
+	Also a minor tweak to the network interface code to make it more portable.
+	
+2004-02-15 Sunday 21:18  tdb
+
+	* configure.in (1.60), src/saidar/Makefile.am (1.6,
+	LIBSTATGRAB_0_10, LIBSTATGRAB_0_9), src/statgrab/Makefile.am (1.9,
+	LIBSTATGRAB_0_10, LIBSTATGRAB_0_9):
+
+	Seems we sometimes need root privs on linux :/
+	
+2004-02-15 Sunday 17:47  tdb
+
+	* AUTHORS (1.7, LIBSTATGRAB_0_10_3, LIBSTATGRAB_0_10_2,
+	LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10, LIBSTATGRAB_0_9):
+
+	Update AUTHORS; it's not quite so clear cut anymore, so just list
+	names.
+	
+2004-02-14 Saturday 20:42  ats
+
+	* src/libstatgrab/tools.h (1.14):
+
+	get_kvm() only on FreeBSD.
+	
+2004-02-14 Saturday 19:21  tdb
+
+	* configure.in (1.59):
+
+	We don't need to be setuid root on Solaris 8+. On Solaris 7 and below we
+	do need to, but only if we care about the disk mappings.
+	
+	This leaves us needing to be setuid root for disk mappings on Solaris 7
+	and below, and needing setgid kmem on FreeBSD 4 for swap statistics.
+	
+2004-02-14 Saturday 19:03  tdb
+
+	* configure.in (1.58), src/libstatgrab/swap_stats.c (1.15):
+
+	Change swap_stats on FreeBSD 5 - no longer uses kvm. This means that we
+	no longer need setgid kmem on FreeBSD 5, or kvm, at all. However, this
+	change doesn't work on FreeBSD 4 - so kvm is still needed there.
+	
+2004-02-14 Saturday 16:58  ats
+
+	* configure.in (1.57), src/libstatgrab/network_stats.c (1.44):
+
+	Rework iface_stat code for Solaris so that it uses SIOCGIFFLAGS to find out
+	whether an interface is up or not. This means that we need to link with
+	-lsocket -lnsl now to get socket().
+	
+	Also make the comment about when bytes-transferred stats a bit more explicit.
+	We're now in the slightly odd situation where it's possible for an interface to
+	show up in either or both of get_network_stats and get_network_iface_stats: for
+	instance, on raptor at the moment, ce0 is in use so shows up in both, lo0
+	doesn't have kstats for bytes transferred and thus only shows up in the second,
+	and ce1 exists but hasn't been plumbed so only shows up in the first. I'd be
+	mildly inclined to "fix" this by making get_network_stats do a SIOCGIFFLAGS
+	ioctl so unplumbed interfaces don't show up at all (and add packets
+	received/transmited to the get_network_stats result so we can at least show
+	something for lo0).
+	
+2004-02-14 Saturday 16:43  ats
+
+	* src/libstatgrab/process_stats.c (1.21):
+
+	Move free inside the right #ifdef, and fix a memory leak when sysctl fails.
+	
+2004-02-14 Saturday 16:12  tdb
+
+	* src/libstatgrab/process_stats.c (1.20):
+
+	Look at all the process states on all the BSD's. Tidly done using ifdef's.
+	
+2004-02-14 Saturday 15:48  ats
+
+	* src/libstatgrab/network_stats.c (1.43):
+
+	ifaces doesn't need to be static.
+	
+2004-02-14 Saturday 13:43  ats
+
+	* src/libstatgrab/tools.c (1.30):
+
+	There's no need to get_uvmexp on startup on NetBSD any more.
+	
+2004-02-14 Saturday 12:38  tdb
+
+	* src/libstatgrab/: tools.c (1.29), tools.h (1.13):
+
+	kvm is now only needed for FreeBSD, so change defines accordingly.
+	
+2004-02-14 Saturday 12:22  ats
+
+	* src/libstatgrab/network_stats.c (1.42):
+
+	Define u64 to fix Linux 2.4.21 build.
+	
+2004-02-14 Saturday 12:20  tdb
+
+	* configure.in (1.56):
+
+	NetBSD and OpenBSD no longer need any elevated privileges, or any extra
+	libraries to link against.
+	
+2004-02-14 Saturday 11:33  pajs
+
+	* src/libstatgrab/network_stats.c (1.41):
+
+	Fixed compile error. We not sure that link_up gets us what we want tho.
+	
+2004-02-14 Saturday 02:56  tdb
+
+	* src/libstatgrab/process_stats.c (1.19):
+
+	Switch process stats to using sysctl on ALLBSD. On OpenBSD and hopefully
+	NetBSD (this hasn't been tested yet - but I'm quite confident) this means
+	we no longer need any elevated privileges.
+	
+2004-02-14 Saturday 00:47  ats
+
+	* src/libstatgrab/network_stats.c (1.40):
+
+	Rearrange the BSD network_iface_stat code in the same way as the Linux code;
+	try SIOCGIFFLAGS first to find out whether the interface is up, then only
+	fill in the other information if it's available.
+	
+2004-02-14 Saturday 00:29  ats
+
+	* src/libstatgrab/network_stats.c (1.39):
+
+	Make the unknown speed 0 to match the BSD code.
+	
+2004-02-14 Saturday 00:27  ats
+
+	* src/libstatgrab/network_stats.c (1.38):
+
+	Tidy up the Linux iface_stat code.
+	
+	- fclose(f) once we're done to avoid fd leak
+	- no need to malloc struct ethtool_cmd since it's of constant size (and
+	  this avoids some odd-looking casts)
+	- use switch rather than multiple ifs for duplex codes
+	- use SIOCGIFFLAGS ioctl first to find out whether the interface is up,
+	  since this works on all interfaces
+	
+	The user-visible change here is that ->speed and ->dup now get filled in
+	with -1, UNKNOWN_DUPLEX for interfaces that don't support SIOCETHTOOL.
+	Fixing this properly is on the todo list...
+	
+2004-02-14 Saturday 00:08  ats
+
+	* src/libstatgrab/network_stats.c (1.37):
+
+	Rename BSD "int s" to "int sock" to match Linux code and fix compile error.
+	Make BSD code set the interface name before calling ioctl so it gets the
+	stats for the right interface.
+	
+2004-02-14 Saturday 00:06  ats
+
+	* src/statgrab/statgrab.c (1.20):
+
+	Add support for interface .up.
+	
+2004-02-14 Saturday 00:04  ats
+
+	* src/libstatgrab/: memory_stats.c (1.22), swap_stats.c (1.14):
+
+	uvm.h needs sys/time.h on NetBSD to get struct timeval.
+	
+2004-02-13 Friday 18:54  pajs
+
+	* src/libstatgrab/network_stats.c (1.36):
+
+	*bsd didn't do what i wanted. Still needs testing for all platforms.
+	
+2004-02-13 Friday 18:45  pajs
+
+	* src/libstatgrab/: network_stats.c (1.35), statgrab.h (1.27):
+
+	Added up/down interface detection. Not tested (or even compiled) on any
+	os. So that really needs to be done :)
+	
+2004-02-13 Friday 16:46  tdb
+
+	* src/libstatgrab/: disk_stats.c (1.52), memory_stats.c (1.21),
+	page_stats.c (1.16), swap_stats.c (1.13), tools.h (1.12):
+
+	Finish support for OpenBSD.
+	
+	Get disknames out of sysctl as well for Disk IO.
+	Fix memory/page/swap stats to use get_uvmexp in tools.c (same as NetBSD).
+	
+2004-02-13 Friday 15:51  tdb
+
+	* examples/network_iface_stats.c (1.2):
+
+	Remove debugging line.
+	
+2004-02-13 Friday 15:40  tdb
+
+	* examples/Makefile.am (1.11, LIBSTATGRAB_0_9),
+	examples/network_iface_stats.c (1.1),
+	src/libstatgrab/network_stats.c (1.34):
+
+	Add example for network_iface_stats.
+	Fix duplex on Solaris.
+	
+2004-02-13 Friday 15:29  pajs
+
+	* src/libstatgrab/network_stats.c (1.33):
+
+	Solaris bug fix for duplex detection.
+	
+2004-02-13 Friday 15:24  ats
+
+	* src/libstatgrab/network_stats.c (1.32):
+
+	Fix another DUPEX-for-DUPLEX typo.
+	Include <unistd.h> to get the definition of close().
+	
+2004-02-13 Friday 15:22  ats
+
+	* src/libstatgrab/tools.c (1.28):
+
+	Use sysctl to read struct uvmexp, since this works on both NetBSD and OpenBSD.
+	
+2004-02-13 Friday 15:13  ats
+
+	* src/statgrab/statgrab.c (1.19):
+
+	Track rename of duplex to statgrab_duplex.
+	
+2004-02-13 Friday 15:12  ats
+
+	* src/libstatgrab/network_stats.c (1.31):
+
+	DUPLEX, not DUPEX.
+	NetBSD has FreeBSD 5-like speed definitions.
+	
+2004-02-13 Friday 14:41  pajs
+
+	* src/libstatgrab/network_stats.c (1.30):
+
+	Added a couple of forgotten close's.
+	
+2004-02-13 Friday 14:39  pajs
+
+	* src/libstatgrab/: network_stats.c (1.29), statgrab.h (1.26):
+
+	Couple of name changes, and a tidy up.
+	
+2004-02-13 Friday 12:52  ats
+
+	* src/statgrab/statgrab.c (1.18):
+
+	Add network_iface_stat support.
+	
+2004-02-12 Thursday 23:58  tdb
+
+	* src/libstatgrab/network_stats.c (1.28):
+
+	Fix on FreeBSD 5. Also add IFM_1000_FX missed on FreeBSD 4.
+	
+2004-02-12 Thursday 23:28  tdb
+
+	* configure.in (1.55):
+
+	We'll almost certainly go with 0.9 for our next release.
+	
+2004-02-12 Thursday 23:04  tdb
+
+	* PLATFORMS (1.3), configure.in (1.54), src/libstatgrab/cpu_stats.c
+	(1.18), src/libstatgrab/disk_stats.c (1.51),
+	src/libstatgrab/memory_stats.c (1.20), src/libstatgrab/page_stats.c
+	(1.15), src/libstatgrab/swap_stats.c (1.12),
+	src/libstatgrab/user_stats.c (1.18):
+
+	Add preliminary support for OpenBSD (tested on 3.3).
+	
+	All works apart from Disk IO stats - currently the disks are not named
+	correctly. The fix for this is probably to use KVM.
+	
+	Mostly similar to the NetBSD code, the notable exception being the uvm
+	stuff. In NetBSD there's a function to get it, in OpenBSD sysctl is needed
+	to get hold of it.
+	
+2004-02-12 Thursday 21:25  pajs
+
+	* src/libstatgrab/network_stats.c (1.27):
+
+	Added network interface stats for linux.
+	
+	Points to remember:
+	a) This code will need to be run as root. Otherwise, it should
+	   safely return null.
+	b) the "speed" may be incorrect if the interface is not actually up
+	   and talking to anything. However, duplex will be set to NO_DUPLEX
+	   so as long as they use that test first, there should be no problem.
+	   (This is safe assumption to work on, even for other platforms)
+	c) This was a nastyish and hard bit of code. Maybe bugs, would appricate
+	   a look over by people :)
+	
+2004-02-10 Tuesday 20:03  tdb
+
+	* configure.in (1.53):
+
+	Post release version increment.
+	
+2004-02-10 Tuesday 19:50  tdb
+
+	* NEWS (1.23), PLATFORMS (1.2), src/libstatgrab/Makefile.am (1.20)
+	(utags: LIBSTATGRAB_0_8_2):
+
+	Update for release of 0.8.2.
+	
+2004-02-10 Tuesday 16:42  tdb
+
+	* configure.in (1.52, LIBSTATGRAB_0_8_2):
+
+	On solaris 6/7 test for libdevinfo and only try to link it if we find it.
+	
+2004-02-10 Tuesday 16:23  pajs
+
+	* src/libstatgrab/tools.c (1.27, LIBSTATGRAB_0_8_2):
+
+	Added extra ifdef due to compile error
+	
+2004-02-10 Tuesday 16:16  pajs
+
+	* src/libstatgrab/tools.c (1.26):
+
+	Ooops, wrong logic and didn't think hard enough about it.
+	
+2004-02-10 Tuesday 16:07  pajs
+
+	* src/libstatgrab/tools.c (1.25):
+
+	Solaris 6 doesn't have libdevinfo. So, as a way to get it to compile, we will
+	not do the drive mappings sol 6 and lower.
+	
+2004-02-10 Tuesday 16:02  tdb
+
+	* configure.in (1.51):
+
+	Add check for libdevinfo.h
+	
+2004-02-10 Tuesday 14:44  pajs
+
+	* src/libstatgrab/load_stats.c (1.11, LIBSTATGRAB_0_9,
+	LIBSTATGRAB_0_8_2):
+
+	Fix it so it will actually work :)
+	
+2004-02-10 Tuesday 12:24  pajs
+
+	* src/libstatgrab/load_stats.c (1.10):
+
+	Allow load_stats to work on solaris 6 (and probably 5)
+	
+2004-02-10 Tuesday 12:14  tdb
+
+	* configure.in (1.50):
+
+	Add check for sys/loadavg.h. We need to test for it on Solaris 2.6...
+	
+2004-02-09 Monday 23:18  tdb
+
+	* Makefile.am (1.16, LIBSTATGRAB_0_9, LIBSTATGRAB_0_8_2):
+
+	statgrabmodule -> statgrab.
+	
+2004-02-09 Monday 23:07  tdb
+
+	* Makefile.am (1.15):
+
+	Add error checking to the python bindings. They previously didn't check
+	for a NULL response from the libstatgrab functions - which resulted in
+	python core dumping. It now raises an exception instead.
+	Also add a first stab at a setup.py so people can quickly build/install
+	this extension if they want.
+	
+2004-02-06 Friday 14:18  tdb
+
+	* Makefile.am (1.14):
+
+	Add the python wrappers to the Makefile so they're added to the dist.
+	
+2004-01-25 Sunday 20:13  pajs
+
+	* src/libstatgrab/: network_stats.c (1.26), statgrab.h (1.25):
+
+	Added code for freebsd to do the network interface speeds. I've put it
+	under the label ALLBSD however, as i suspect it will work on all the
+	BSD's of intrest.
+	
+2004-01-23 Friday 23:23  pajs
+
+	* src/libstatgrab/: network_stats.c (1.25), statgrab.h (1.24):
+
+	Added the ability to get the interface speed/duplex for solaris.
+	Not really checked code, but it appears to work.
+	
+2004-01-21 Wednesday 23:46  ats
+
+	* src/libstatgrab/: disk_stats.c (1.50), network_stats.c (1.24)
+	(utags: LIBSTATGRAB_0_8_2):
+
+	Tidy up get_network_stats_diff and get_diskio_stats_diff.
+	
+2004-01-21 Wednesday 14:44  ats
+
+	* src/libstatgrab/user_stats.c (1.17, LIBSTATGRAB_0_8_2,
+	LIBSTATGRAB_0_8_1):
+
+	Fix build on NetBSD.
+	
+2004-01-21 Wednesday 11:32  tdb
+
+	* src/libstatgrab/user_stats.c (1.16):
+
+	Fix compile error on cygwin.
+	
+2004-01-21 Wednesday 10:27  tdb
+
+	* NEWS (1.22), src/saidar/saidar.c (1.25, LIBSTATGRAB_0_9,
+	LIBSTATGRAB_0_8_2) (utags: LIBSTATGRAB_0_8_1):
+
+	Very minor fix to saidar. It happily accepted a negative number for
+	it's delay flag - which wasn't overly useful :-)
+	
+2004-01-19 Monday 17:01  tdb
+
+	* configure.in (1.49):
+
+	Post release version increment.
+	
+2004-01-19 Monday 16:49  tdb
+
+	* AUTHORS (1.6, LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1), Makefile.am
+	(1.13, LIBSTATGRAB_0_8_1), NEWS (1.21), README (1.8,
+	LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1), README.CVS (1.5,
+	LIBSTATGRAB_0_10_3, LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1,
+	LIBSTATGRAB_0_10, LIBSTATGRAB_0_9, LIBSTATGRAB_0_8_2,
+	LIBSTATGRAB_0_8_1), libstatgrab.pc.in (1.3, LIBSTATGRAB_0_10,
+	LIBSTATGRAB_0_9, LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1),
+	docs/Makefile.am (1.22, LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1),
+	examples/Makefile.am (1.10, LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1),
+	examples/cpu_usage.c (1.7, LIBSTATGRAB_0_9, LIBSTATGRAB_0_8_2,
+	LIBSTATGRAB_0_8_1), examples/disk_traffic.c (1.7, LIBSTATGRAB_0_9,
+	LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1), examples/load_stats.c (1.7,
+	LIBSTATGRAB_0_9, LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1),
+	examples/network_traffic.c (1.8, LIBSTATGRAB_0_8_2,
+	LIBSTATGRAB_0_8_1), examples/os_info.c (1.6, LIBSTATGRAB_0_9,
+	LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1), examples/page_stats.c (1.6,
+	LIBSTATGRAB_0_9, LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1),
+	examples/process_stats.c (1.7, LIBSTATGRAB_0_9, LIBSTATGRAB_0_8_2,
+	LIBSTATGRAB_0_8_1), examples/user_list.c (1.7, LIBSTATGRAB_0_9,
+	LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1), examples/vm_stats.c (1.7,
+	LIBSTATGRAB_0_9, LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1),
+	src/Makefile.am (1.3, LIBSTATGRAB_0_10_3, LIBSTATGRAB_0_10_2,
+	LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10, LIBSTATGRAB_0_9,
+	LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1), src/libstatgrab/Makefile.am
+	(1.19, LIBSTATGRAB_0_8_1), src/libstatgrab/cpu_stats.c (1.17,
+	LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1), src/libstatgrab/disk_stats.c
+	(1.49, LIBSTATGRAB_0_8_1), src/libstatgrab/load_stats.c (1.9,
+	LIBSTATGRAB_0_8_1), src/libstatgrab/memory_stats.c (1.19,
+	LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1),
+	src/libstatgrab/network_stats.c (1.23, LIBSTATGRAB_0_8_1),
+	src/libstatgrab/os_info.c (1.13, LIBSTATGRAB_0_8_2,
+	LIBSTATGRAB_0_8_1), src/libstatgrab/page_stats.c (1.14,
+	LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1),
+	src/libstatgrab/process_stats.c (1.18, LIBSTATGRAB_0_8_2,
+	LIBSTATGRAB_0_8_1), src/libstatgrab/statgrab.h (1.23,
+	LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1), src/libstatgrab/swap_stats.c
+	(1.11, LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1),
+	src/libstatgrab/tools.c (1.24, LIBSTATGRAB_0_8_1),
+	src/libstatgrab/tools.h (1.11, LIBSTATGRAB_0_8_2,
+	LIBSTATGRAB_0_8_1), src/libstatgrab/user_stats.c (1.15),
+	src/saidar/Makefile.am (1.5, LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1),
+	src/saidar/saidar.c (1.24), src/statgrab/Makefile.am (1.8,
+	LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1),
+	src/statgrab/statgrab-make-mrtg-config.in (1.4, LIBSTATGRAB_0_9,
+	LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1),
+	src/statgrab/statgrab-make-mrtg-index.in (1.6, LIBSTATGRAB_0_9,
+	LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1), src/statgrab/statgrab.c
+	(1.17, LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1):
+
+	A whole bunch of minor cosmetic changes.
+	
+2004-01-19 Monday 16:38  tdb
+
+	* NEWS (1.20), src/libstatgrab/Makefile.am (1.18):
+
+	Update relevant files for release of 0.8.1.
+	
+2004-01-16 Friday 15:54  tdb
+
+	* COPYING (1.1, LIBSTATGRAB_0_10_3, LIBSTATGRAB_0_10_2,
+	LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10, LIBSTATGRAB_0_9,
+	LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1), COPYING.LGPL (1.1,
+	LIBSTATGRAB_0_10_3, LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1,
+	LIBSTATGRAB_0_10, LIBSTATGRAB_0_9, LIBSTATGRAB_0_8_2,
+	LIBSTATGRAB_0_8_1), Makefile.am (1.12), README (1.7),
+	examples/cpu_usage.c (1.6), examples/disk_traffic.c (1.6),
+	examples/load_stats.c (1.6), examples/network_traffic.c (1.7),
+	examples/os_info.c (1.5), examples/page_stats.c (1.5),
+	examples/process_stats.c (1.6), examples/user_list.c (1.6),
+	examples/vm_stats.c (1.6), src/libstatgrab/cpu_stats.c (1.16),
+	src/libstatgrab/disk_stats.c (1.48), src/libstatgrab/load_stats.c
+	(1.8), src/libstatgrab/memory_stats.c (1.18),
+	src/libstatgrab/network_stats.c (1.22), src/libstatgrab/os_info.c
+	(1.12), src/libstatgrab/page_stats.c (1.13),
+	src/libstatgrab/process_stats.c (1.17), src/libstatgrab/statgrab.h
+	(1.22), src/libstatgrab/swap_stats.c (1.10),
+	src/libstatgrab/tools.c (1.23), src/libstatgrab/tools.h (1.10),
+	src/libstatgrab/user_stats.c (1.14), src/saidar/saidar.c (1.23),
+	src/statgrab/statgrab-make-mrtg-config.in (1.3),
+	src/statgrab/statgrab-make-mrtg-index.in (1.5),
+	src/statgrab/statgrab.c (1.16):
+
+	Alter the licensing of libstatgrab. The library part is now under the
+	LGPL, whilst the tools/examples are under the GPL. Both licenses are
+	included in the distribution (and are both now in CVS). Also made a
+	minor alteration to the webpage where it said everything was licensed
+	under the GPL.
+	
+2004-01-15 Thursday 22:21  pajs
+
+	* src/libstatgrab/tools.c (1.22):
+
+	Not the exactly "nice" code. Infact, not entirely happy with it...
+	But, it makes a *massive* speed increase to the statgrab_init() function on
+	solaris. It goes from take 15-20 seconds on pelican to < 1.
+	
+2004-01-10 Saturday 16:25  ats
+
+	* src/libstatgrab/: disk_stats.c (1.47), network_stats.c (1.21):
+
+	Add a couple of missing checks for NULL return values; this fixes the
+	crash when libstatgrab runs out of FDs.
+	
+2004-01-10 Saturday 16:12  ats
+
+	* src/libstatgrab/disk_stats.c (1.46):
+
+	Don't close f twice.
+	
+2004-01-10 Saturday 15:28  ats
+
+	* src/libstatgrab/tools.c (1.21):
+
+	Fix broken comment.
+	
+2004-01-09 Friday 22:06  pajs
+
+	* src/libstatgrab/statgrab.h (1.21):
+
+	As pointed out by azz.... time_t will be needed, thus the #include of
+	sys/types.h
+	
+2004-01-09 Friday 16:37  pajs
+
+	* src/libstatgrab/tools.c (1.20):
+
+	Solaris 7 "fix" :)
+	
+2004-01-09 Friday 16:31  pajs
+
+	* src/libstatgrab/statgrab.h (1.20):
+
+	Removed #ifdef's as they should not be there.
+	
+2004-01-09 Friday 16:19  pajs
+
+	* src/libstatgrab/: tools.c (1.19), tools.h (1.9):
+
+	Added strlcat/strlcpy (taken from openssh). Added a #define for both, and
+	also atoll which we appear to of forgotten about when it was written.
+	
+	Removed that #ifdef around get_ll_match as atoll will now always be defined.
+	
+2004-01-09 Friday 12:32  ats
+
+	* src/libstatgrab/disk_stats.c (1.45):
+
+	Oops, yes. f can't be NULL at that point, though.
+	Fix unterminated comment.
+	
+2004-01-09 Friday 10:06  pajs
+
+	* src/libstatgrab/: disk_stats.c (1.44), page_stats.c (1.12):
+
+	Fixed leaking fd in diskio_stats code. Fixed a potential leak in page_stats.
+	
+2004-01-06 Tuesday 22:28  pajs
+
+	* src/libstatgrab/: statgrab.h (1.19), user_stats.c (1.13):
+
+	Moving the MAX_LOGIN_NAME_SIZE to where it should be.
+	
+2004-01-06 Tuesday 17:15  pajs
+
+	* docs/statgrab.xml (1.5, LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1,
+	LIBSTATGRAB_0_8):
+
+	Minor correction in docs.
+	
+2004-01-06 Tuesday 17:02  tdb
+
+	* configure.in (1.48, LIBSTATGRAB_0_8_1):
+
+	Post-release version increments.
+	
+2004-01-06 Tuesday 16:02  tdb
+
+	* NEWS (1.19), configure.in (1.47) (utags: LIBSTATGRAB_0_8):
+
+	We're going with 0.8.
+	
+2004-01-06 Tuesday 15:49  tdb
+
+	* NEWS (1.18):
+
+	Add new drop privileges function to NEWS.
+	
+2004-01-06 Tuesday 15:35  tdb
+
+	* examples/: cpu_usage.c (1.5), disk_traffic.c (1.5), load_stats.c
+	(1.5), os_info.c (1.4), page_stats.c (1.4), process_stats.c (1.5),
+	user_list.c (1.5), vm_stats.c (1.5) (utags: LIBSTATGRAB_0_8):
+
+	Add dropping privileges to all the examples.
+	
+2004-01-05 Monday 17:29  ats
+
+	* examples/network_traffic.c (1.6, LIBSTATGRAB_0_8):
+
+	Make one of the examples use statgrab_drop_privileges.
+	
+2004-01-05 Monday 17:27  ats
+
+	* docs/statgrab.xml (1.4):
+
+	Fix a typo.
+	Tidy up the description of statgrab_init a bit.
+	Update the list of supported platforms.
+	
+2004-01-05 Monday 17:24  tdb
+
+	* src/libstatgrab/Makefile.am (1.17, LIBSTATGRAB_0_8):
+
+	Update shared library version.
+	
+2004-01-05 Monday 17:20  ats
+
+	* docs/statgrab.xml (1.3), src/libstatgrab/statgrab.h (1.18,
+	LIBSTATGRAB_0_8), src/libstatgrab/tools.c (1.18, LIBSTATGRAB_0_8),
+	src/saidar/saidar.c (1.22, LIBSTATGRAB_0_8),
+	src/statgrab/statgrab.c (1.15, LIBSTATGRAB_0_8):
+
+	Replace duplicated code for dropping privileges with a library
+	function that always drops setuid/setgid privileges.
+	
+2004-01-05 Monday 16:47  ats
+
+	* src/saidar/saidar.c (1.21):
+
+	Remove unused variable "gid".
+	
+2004-01-05 Monday 16:39  ats
+
+	* src/statgrab/statgrab.c (1.14):
+
+	Drop setuidness on Solaris.
+	
+2004-01-05 Monday 15:04  tdb
+
+	* NEWS (1.17), src/libstatgrab/Makefile.am (1.16):
+
+	Update stuff for new release.
+	
+2004-01-05 Monday 14:25  pajs
+
+	* src/saidar/saidar.c (1.20):
+
+	Drop setuid for solaris.
+	
+2004-01-05 Monday 14:21  pajs
+
+	* src/libstatgrab/tools.c (1.17):
+
+	Minor tiding
+	
+2003-12-12 Friday 09:48  tdb
+
+	* configure.in (1.46), src/saidar/Makefile.am (1.4,
+	LIBSTATGRAB_0_8), src/statgrab/Makefile.am (1.7, LIBSTATGRAB_0_8):
+
+	On Solaris we sometimes need to be setuid root.
+	
+2003-12-11 Thursday 14:27  tdb
+
+	* src/saidar/saidar.c (1.19):
+
+	Fix problem with -d flag in saidar. The line removed subtracted 1 from
+	the delay. I guess at some point this was needed, but not now. So
+	setting a delay of 1 resulted in a sleep 0 :-)
+	
+2003-11-23 Sunday 13:51  tdb
+
+	* examples/: cpu_usage.c (1.4), disk_traffic.c (1.4), load_stats.c
+	(1.4), network_traffic.c (1.5), os_info.c (1.3), page_stats.c
+	(1.3), process_stats.c (1.4), user_list.c (1.4), vm_stats.c (1.4):
+
+	Add statgrab_init() call to the examples. If people are going to copy them
+	I guess we should try and make them correct :-)
+	
+	Also tidied up whitespace in the examples.
+	
+2003-11-21 Friday 09:24  tdb
+
+	* docs/sg_get_disk_io_stats.xml (1.4, LIBSTATGRAB_0_9,
+	LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1, LIBSTATGRAB_0_8):
+
+	Add section about new disk mappings.
+	
+2003-11-20 Thursday 23:15  tdb
+
+	* Makefile.am (1.11), PLATFORMS (1.1, LIBSTATGRAB_0_8_1) (utags:
+	LIBSTATGRAB_0_8):
+
+	Add PLATFORMS file to list the known working operating systems.
+	The list is roughly right, I think. It's just a starting point really.
+	
+2003-11-20 Thursday 12:13  tdb
+
+	* configure.in (1.45), src/libstatgrab/disk_stats.c (1.43,
+	LIBSTATGRAB_0_8), src/libstatgrab/tools.c (1.16):
+
+	Turn on the solaris disk mapping code. Fix some minor bugs, and remove
+	some debugging code.
+	
+2003-11-19 Wednesday 21:56  tdb
+
+	* src/libstatgrab/tools.c (1.15):
+
+	Die nasty incorrect whitespace. Ahem. Excuse me.
+	
+2003-11-13 Thursday 17:02  pajs
+
+	* src/libstatgrab/tools.c (1.14):
+
+	Basic implementation of name mapping for solaris. The code is ugly, mostly
+	because its initially taken from a sun example, and modified. It needs tiding
+	somewhat. I'm not sure if tools.c is the right place for this, i guess it could
+	go in disk_stats.c, but its doing a specific job, and we could right another
+	mini-program which does the disk mappings.
+	
+	Comments welcome about the general implementation.
+	
+	Should we call build_mapping if the user calls get_svr_from_bsd and
+	build_mapping hasn't been run before? Or should we force them to use the
+	init function? (Bare in mind, on some systems, to do the mappings correctly
+	the program will require to be root. (Only ones with a /dev/osa , so everything
+	with an A1000 for e.g.)
+	
+2003-11-12 Wednesday 11:48  tdb
+
+	* src/libstatgrab/load_stats.c (1.7, LIBSTATGRAB_0_8):
+
+	Remove a line added for Cygwin that's no longer needed.
+	
+2003-11-12 Wednesday 01:41  ats
+
+	* src/libstatgrab/process_stats.c (1.16, LIBSTATGRAB_0_8):
+
+	Use the userspace limits.h header, not the kernel one.
+	
+2003-11-12 Wednesday 01:36  ats
+
+	* src/libstatgrab/: disk_stats.c (1.42), load_stats.c (1.6),
+	network_stats.c (1.20, LIBSTATGRAB_0_8), process_stats.c (1.15):
+
+	Make libstatgrab functions return NULL for stats that can't be fetched
+	on cygwin.
+	
+2003-11-11 Tuesday 10:27  tdb
+
+	* src/libstatgrab/: cpu_stats.c (1.15, LIBSTATGRAB_0_8), statgrab.h
+	(1.17):
+
+	Fix a couple of Cygwin build issues. Not all the #ifdef LINUX's were
+	changed in a previous commit.
+	
+2003-11-10 Monday 23:35  ats
+
+	* src/statgrab/statgrab.c (1.13):
+
+	Strip colons from Cygwin drive names.
+	
+2003-11-10 Monday 23:32  ats
+
+	* src/libstatgrab/disk_stats.c (1.41):
+
+	Factor out duplicated code that checks for valid FS types.
+	
+2003-11-10 Monday 23:25  ats
+
+	* configure.in (1.44), src/libstatgrab/cpu_stats.c (1.14),
+	src/libstatgrab/disk_stats.c (1.40), src/libstatgrab/memory_stats.c
+	(1.17, LIBSTATGRAB_0_8), src/libstatgrab/os_info.c (1.11,
+	LIBSTATGRAB_0_8), src/libstatgrab/page_stats.c (1.11,
+	LIBSTATGRAB_0_8), src/libstatgrab/swap_stats.c (1.9,
+	LIBSTATGRAB_0_8), src/libstatgrab/user_stats.c (1.12,
+	LIBSTATGRAB_0_8):
+
+	Make Cygwin its own platform, rather than defining LINUX. This stops
+	libstatgrab from trying to fetch stats that Cygwin doesn't have.
+	
+2003-11-10 Monday 22:46  ats
+
+	* src/libstatgrab/tools.c (1.13):
+
+	Provide atoll() on platforms that don't have it.
+	
+2003-11-10 Monday 21:07  tdb
+
+	* README (1.6, LIBSTATGRAB_0_8), configure.in (1.43),
+	src/libstatgrab/disk_stats.c (1.39), src/libstatgrab/load_stats.c
+	(1.5), src/libstatgrab/process_stats.c (1.14),
+	src/libstatgrab/statgrab.h (1.16), src/libstatgrab/tools.c (1.12):
+
+	Add support for cygwin. This is a bit limited, there's a few things that
+	can't be retrieved on cygwin such as load averages, diskio, network io,
+	and process stats. The package compiles and runs, and both saidar and
+	statgrab work.
+	
+	Taken from a patch submitted by Ron Arts <raarts@netland.nl>. Thanks Ron!
+	
+2003-11-07 Friday 18:43  ats
+
+	* examples/: cpu_usage.c (1.3), disk_traffic.c (1.3), load_stats.c
+	(1.3), network_traffic.c (1.4), page_stats.c (1.2), process_stats.c
+	(1.3), user_list.c (1.3), vm_stats.c (1.3):
+
+	Fix getopt() return value.
+	
+2003-11-07 Friday 18:39  ats
+
+	* src/saidar/saidar.c (1.18):
+
+	Remove a little bit of duplicated code.
+	
+2003-11-07 Friday 18:38  ats
+
+	* src/saidar/saidar.c (1.17):
+
+	Do the "don't update more than once a second" thing slightly
+	differently; this avoids having it be unresponsive for 20 seconds if
+	you type 20 spaces.
+	
+2003-11-07 Friday 18:28  ats
+
+	* src/saidar/saidar.c (1.16):
+
+	getopt returns -1 on completion, not EOF.
+	
+2003-11-07 Friday 18:27  ats
+
+	* src/saidar/saidar.c (1.15):
+
+	Fix type of ch.
+	
+2003-11-07 Friday 18:25  ats
+
+	* src/saidar/saidar.c (1.14):
+
+	Use curses' timeout() rather than select().
+	
+2003-11-07 Friday 12:57  tdb
+
+	* src/statgrab/statgrab-make-mrtg-index.in (1.4, LIBSTATGRAB_0_8):
+
+	Add a space I removed by accident.
+	
+2003-11-07 Friday 12:34  tdb
+
+	* src/statgrab/statgrab-make-mrtg-index.in (1.3):
+
+	Now generates valid XHTML.
+	Also added a line to the end of the page saying what generated it :-)
+	
+2003-10-24 Friday 18:46  ats
+
+	* src/libstatgrab/disk_stats.c (1.38):
+
+	Support disk IO statistics on Linux 2.6.
+	Remove a couple of unused variables.
+	
+2003-10-24 Friday 18:26  ats
+
+	* src/libstatgrab/: memory_stats.c (1.16), page_stats.c (1.10),
+	swap_stats.c (1.8):
+
+	Support memory, swap and paging stats on Linux 2.6. For memory and swap,
+	this just means reading the new-style data in /proc/meminfo (since it's
+	present in 2.2 and 2.4 too); for paging, this means trying to read
+	/proc/vmstat if it's available, else reading /proc/stat (for 2.2).
+	
+2003-10-24 Friday 18:03  ats
+
+	* src/libstatgrab/network_stats.c (1.19):
+
+	Add the correct type to a couple of long long constants.
+	
+2003-10-24 Friday 18:03  ats
+
+	* src/libstatgrab/memory_stats.c (1.15):
+
+	Initial Linux 2.6 support.
+	
+2003-10-24 Friday 18:00  ats
+
+	* src/libstatgrab/: statgrab.h (1.15), user_stats.c (1.11):
+
+	Move MAX_LOGIN_NAME_SIZE definition to the right place.
+	
+2003-10-24 Friday 14:33  tdb
+
+	* src/: saidar/Makefile.am (1.3), statgrab/Makefile.am (1.6):
+
+	Fix when --disable-saidar or --disable-statgrab used on BSD platforms.
+	It seems you can do nested if statements, which is nice. Not sure if
+	you can do combined ones (if foo && bar) or similar, though.
+	
+2003-10-24 Friday 14:17  tdb
+
+	* configure.in (1.42):
+
+	Fix for building from NetBSD pkgsrc. There the OS is detected as just
+	netbsdelf, without a version suffix. I've left the elf bit, because
+	I'm not sure what the implications would be for non-elf NetBSD's?
+	
+2003-10-22 Wednesday 15:41  tdb
+
+	* configure.in (1.41):
+
+	Bump version post release.
+	
+2003-10-22 Wednesday 15:38  tdb
+
+	* NEWS (1.16, LIBSTATGRAB_0_7):
+
+	Update the NEWS file to add new platforms we've tested on.
+	
+2003-10-22 Wednesday 14:07  tdb
+
+	* src/saidar/saidar.c (1.13):
+
+	Do the divides a bit more safely :-)
+	
+2003-10-21 Tuesday 19:01  tdb
+
+	* src/saidar/saidar.c (1.12, LIBSTATGRAB_0_7):
+
+	Make saidar display the VM percentages for swap *or* memory if it can,
+	rather than not displaying either if it can't get one or the other.
+	
+2003-10-21 Tuesday 17:35  tdb
+
+	* NEWS (1.15), src/libstatgrab/Makefile.am (1.15, LIBSTATGRAB_0_7):
+
+	Update for new release.
+	
+2003-10-21 Tuesday 16:48  pajs
+
+	* docs/statgrab.xml (1.2, LIBSTATGRAB_0_7):
+
+	Added doc's for statgrab_init
+	
+2003-10-20 Monday 23:35  ats
+
+	* src/saidar/saidar.c (1.11):
+
+	Only display the stats that are available (rather than bombing out if they
+	aren't all available).
+	
+2003-10-20 Monday 23:18  ats
+
+	* src/statgrab/statgrab.c (1.12, LIBSTATGRAB_0_7):
+
+	Use statgrab_init and drop privs as soon as possible.
+	
+2003-10-20 Monday 19:13  ats
+
+	* src/libstatgrab/memory_stats.c (1.14, LIBSTATGRAB_0_7):
+
+	Clean up NetBSD memory calculations.
+	
+2003-10-20 Monday 17:20  pajs
+
+	* src/libstatgrab/tools.c (1.11, LIBSTATGRAB_0_7):
+
+	Changed the style slightly to be more readable.
+	
+2003-10-20 Monday 16:25  pajs
+
+	* src/: libstatgrab/statgrab.h (1.14, LIBSTATGRAB_0_7),
+	libstatgrab/tools.c (1.10), saidar/saidar.c (1.10):
+
+	Added statgrab_init()
+	
+	This function just calls the get_kvm type functions so all special privilages
+	can be dropped after this function has been called. It currently only does
+	stuff on *bsd (and needs testing on netbsd). All other OS's will just have
+	a function that returns 0
+	
+	Solaris at somepoint may need to do something here so we can do the drive mappings.
+	
+2003-10-19 Sunday 22:25  tdb
+
+	* configure.in (1.40, LIBSTATGRAB_0_7):
+
+	Bump the version number.
+	
+2003-10-19 Sunday 22:22  ats
+
+	* src/libstatgrab/disk_stats.c (1.37, LIBSTATGRAB_0_7):
+
+	Correct comment about where dk_rbytes is available.
+	
+2003-10-19 Sunday 22:12  ats
+
+	* src/libstatgrab/disk_stats.c (1.36):
+
+	Update VALID_FS_TYPES for FreeBSD (at least, those that I can see from
+	a quick look at src/sys).
+	
+2003-10-19 Sunday 22:06  ats
+
+	* src/libstatgrab/disk_stats.c (1.35):
+
+	Update VALID_FS_TYPES for NetBSD.
+	
+2003-10-19 Sunday 13:04  ats
+
+	* configure.in (1.39), src/libstatgrab/disk_stats.c (1.34):
+
+	Implement diskio stats on NetBSD. Tested on 1.6, but should work on 1.6.1
+	(and give more useful output, since 1.6.1 seperates read and write statistics).
+	
+2003-10-19 Sunday 12:23  ats
+
+	* src/libstatgrab/disk_stats.c (1.33):
+
+	Avoid bzero(NULL, ...) on malloc failure.
+	
+2003-10-19 Sunday 12:15  ats
+
+	* src/libstatgrab/disk_stats.c (1.32):
+
+	Update the Linux VALID_FS_TYPES list based on the writable disk-based
+	filesystems in 2.4.22 (plus xfs and jfs).
+	
+2003-10-19 Sunday 03:15  ats
+
+	* src/libstatgrab/os_info.c (1.10, LIBSTATGRAB_0_7):
+
+	Remove another patch glitch.
+	
+2003-10-19 Sunday 03:11  ats
+
+	* src/libstatgrab/memory_stats.c (1.13):
+
+	Dear patch(1),
+	  Kindly don't insert random lines from my code into the middle of
+	other peoples' sscanfs.
+	       love,
+	         Adam
+	
+2003-10-19 Sunday 03:03  ats
+
+	* configure.in (1.38), src/libstatgrab/cpu_stats.c (1.13,
+	LIBSTATGRAB_0_7), src/libstatgrab/disk_stats.c (1.31),
+	src/libstatgrab/memory_stats.c (1.12),
+	src/libstatgrab/network_stats.c (1.18, LIBSTATGRAB_0_7),
+	src/libstatgrab/os_info.c (1.9), src/libstatgrab/page_stats.c (1.9,
+	LIBSTATGRAB_0_7), src/libstatgrab/process_stats.c (1.13,
+	LIBSTATGRAB_0_7), src/libstatgrab/swap_stats.c (1.7,
+	LIBSTATGRAB_0_7), src/libstatgrab/tools.c (1.9),
+	src/libstatgrab/tools.h (1.8, LIBSTATGRAB_0_8, LIBSTATGRAB_0_7),
+	src/libstatgrab/user_stats.c (1.10, LIBSTATGRAB_0_7):
+
+	Initial support for NetBSD. This adds NetBSD support for everything
+	except diskio stats (since they're even more disturbingly complex to get
+	at on NetBSD than the three OSs we already support). Tested against
+	NetBSD 1.6 on i386.
+	
+2003-10-19 Sunday 02:25  ats
+
+	* src/statgrab/statgrab.c (1.11):
+
+	Correct type of page.systime.
+	
+2003-10-19 Sunday 01:25  ats
+
+	* src/libstatgrab/: process_stats.c (1.12), swap_stats.c (1.6),
+	tools.c (1.8), tools.h (1.7):
+
+	Add a helper function for opening the kvm handle. This removes a little
+	bit of duplicated code, and means that we don't open and close kvm
+	(which can potentially be quite expensive) each time we use it. This
+	will also be useful for NetBSD.
+	
+2003-10-19 Sunday 01:10  ats
+
+	* src/libstatgrab/disk_stats.c (1.30):
+
+	Fix warning when building on Linux.
+	
+2003-10-19 Sunday 01:09  ats
+
+	* src/libstatgrab/: tools.c (1.7), tools.h (1.6):
+
+	Remove headers from tools.h that the prototypes don't need (since
+	  they're included elsewhere where needed).
+	Include tools.h in tools.c, so we get warnings if the prototypes are
+	  wrong.
+	
+2003-10-19 Sunday 00:04  ats
+
+	* src/libstatgrab/: cpu_stats.c (1.12), memory_stats.c (1.11),
+	os_info.c (1.8), page_stats.c (1.8):
+
+	... and the size parameter should be initialised to the size of the
+	buffer first (although FreeBSD doesn't actually seem to care, NetBSD
+	does, and the manual page says so).
+	
+2003-10-18 Saturday 23:16  ats
+
+	* src/libstatgrab/disk_stats.c (1.29):
+
+	Fix a little bit of slightly-confused comment formatting.
+	
+2003-10-18 Saturday 23:15  ats
+
+	* src/libstatgrab/: cpu_stats.c (1.11), memory_stats.c (1.10),
+	os_info.c (1.7), page_stats.c (1.7):
+
+	You only need to call sysctl{,byname}() twice if you're actually going
+	  to do something with the size the first call returns.
+	The last argument to sysctl{,byname}() is a size_t, not a pointer, so it
+	  should be 0, not NULL.
+	
+2003-10-18 Saturday 18:15  tdb
+
+	* NEWS (1.14), src/libstatgrab/Makefile.am (1.14) (utags:
+	LIBSTATGRAB_0_6_1):
+
+	Update for new release - 0.6.1.
+	
+2003-10-18 Saturday 17:12  ats
+
+	* src/statgrab/statgrab.c (1.10, LIBSTATGRAB_0_6_1):
+
+	Mangle device names more correctly; now a device like "/dev/vinum/foo"
+	will become "vinum_foo", rather than "foo".
+	
+2003-10-18 Saturday 17:00  ats
+
+	* src/statgrab/statgrab-make-mrtg-index.in (1.2, LIBSTATGRAB_0_7,
+	LIBSTATGRAB_0_6_1):
+
+	Allow the user to specify the page title.
+	Include the hostname in the page title by default.
+	
+2003-10-18 Saturday 16:05  tdb
+
+	* src/saidar/saidar.c (1.9, LIBSTATGRAB_0_6_1):
+
+	Now behaves a little bit more like df with regard to percentages. This
+	needs a better fix somewhere in libstatgrab really; we don't currently know
+	anything about the reserved space.
+	
+2003-10-18 Saturday 15:08  pajs
+
+	* src/saidar/saidar.c (1.8):
+
+	Brain failure over a confusion with strncpy (thinking it worked like strlcpy)
+	
+2003-10-18 Saturday 15:00  pajs
+
+	* src/saidar/saidar.c (1.7):
+
+	Fix an annoying long hostname problem.
+	
+2003-10-18 Saturday 13:40  tdb
+
+	* src/libstatgrab/memory_stats.c (1.9, LIBSTATGRAB_0_6_1):
+
+	Fix the total memory that I broke in the last commit.
+	
+2003-10-18 Saturday 13:28  tdb
+
+	* src/libstatgrab/memory_stats.c (1.8):
+
+	Fix the FreeBSD memory code. The sysctl calls are returning ints, not
+	long longs, so putting the values straight in to long longs was breaking.
+	Now put the values into ints and then fill in the structure afterwards.
+	
+	This, for some reason, only showed up on FreeBSD 5.1/sparc64. The changed
+	code works on the other FreeBSD's too.
+	
+	One bug still outstanding: on sparc64 the total memory isn't working.
+	
+2003-10-16 Thursday 18:54  tdb
+
+	* src/saidar/saidar.c (1.6):
+
+	Disk percentage may be arguably more "right" than it is before. It's
+	debatable, of course :)
+	
+2003-10-12 Sunday 15:46  tdb
+
+	* Makefile.am (1.10, LIBSTATGRAB_0_7), configure.in (1.37) (utags:
+	LIBSTATGRAB_0_6_1):
+
+	Unbodge the pkgconfig stuff.
+	
+2003-10-09 Thursday 23:56  tdb
+
+	* configure.in (1.36):
+
+	Push version number for next release.
+	
+2003-10-09 Thursday 20:40  pajs
+
+	* src/libstatgrab/process_stats.c (1.11, LIBSTATGRAB_0_6_1,
+	LIBSTATGRAB_0_6):
+
+	Fixed for freebsd 5 to count the new states a process can be in. Reverted
+	back to the proper way for the total now this has been proven was the
+	problem.
+	
+2003-10-09 Thursday 17:48  pajs
+
+	* src/libstatgrab/process_stats.c (1.10):
+
+	Possibly making sure that the total is always correct on freebsd 5, even
+	if some of the states are left out.
+	
+2003-10-09 Thursday 17:35  pajs
+
+	* src/saidar/saidar.c (1.5, LIBSTATGRAB_0_6):
+
+	Another stupid mistake. Now actually prints the program name :)
+	
+2003-10-09 Thursday 17:24  pajs
+
+	* src/saidar/saidar.c (1.4):
+
+	Tab problem in a fprintf and actually turn on the new command line options ;)
+	
+2003-10-09 Thursday 17:14  tdb
+
+	* AUTHORS (1.5, LIBSTATGRAB_0_8, LIBSTATGRAB_0_7,
+	LIBSTATGRAB_0_6_1), NEWS (1.13), src/libstatgrab/Makefile.am (1.13)
+	(utags: LIBSTATGRAB_0_6):
+
+	Ready for new release of libstatgrab - 0.6.
+	
+2003-10-09 Thursday 17:08  pajs
+
+	* src/saidar/saidar.c (1.3):
+
+	Added some usage flags, and a -v for version and -h for help.
+	
+2003-10-09 Thursday 17:00  tdb
+
+	* src/saidar/saidar.c (1.2):
+
+	Standard header, plus make it include the right curses.h dependent on
+	what the configure system finds.
+	
+2003-10-09 Thursday 16:57  pajs
+
+	* src/saidar/saidar.c (1.1):
+
+	First release of saidar. This version works on all platforms, using ncurses
+	fine. Bugs exist when linked against the solaris curses. (E.g. if while
+	running saidar you hammer a key repeatedly, the screen no longer updates.
+	This only happens with the solaris curses however)
+	
+	Saidar takes a single optional flag, "-d" and an argument of the delay in
+	seconds. e.g.
+	
+	saidar -d 1
+	
+	Will update the screen once a second (the fastest allowed update time). The
+	default update it every 3 seconds. However, if you press any other key, it
+	will update immidiately (unless its less than 1 second, in which case it will
+	update at the earlist available time)
+	
+2003-10-09 Thursday 16:22  pajs
+
+	* src/libstatgrab/disk_stats.c (1.28, LIBSTATGRAB_0_6_1,
+	LIBSTATGRAB_0_6):
+
+	Fixed a forgotten line from the patch
+	
+2003-10-09 Thursday 16:12  pajs
+
+	* src/libstatgrab/process_stats.c (1.9):
+
+	Update to work for Freebsd5. Thanks to Tim Bishop for doing the hard work
+	for this patch.
+	
+2003-10-09 Thursday 15:59  pajs
+
+	* src/libstatgrab/disk_stats.c (1.27):
+
+	Freebsd 5 patch for disk stats. Thanks to Tim Bishop for doing the hard
+	work on this patch.
+	
+2003-10-09 Thursday 11:37  tdb
+
+	* configure.in (1.35), src/saidar/Makefile.am (1.2,
+	LIBSTATGRAB_0_7, LIBSTATGRAB_0_6_1), src/statgrab/Makefile.am (1.5,
+	LIBSTATGRAB_0_7, LIBSTATGRAB_0_6_1) (utags: LIBSTATGRAB_0_6):
+
+	Enable binaries being setgid kmem on FreeBSD. Will set this based on
+	the operating system, but is overridable using a configure flag.
+	
+2003-10-08 Wednesday 18:49  tdb
+
+	* configure.in (1.34):
+
+	Add a define for FreeBSD 5.x.
+	
+2003-10-08 Wednesday 10:20  tdb
+
+	* src/libstatgrab/disk_stats.c (1.26):
+
+	Unroll Pete's commits for doing drive mappings on Solaris. It doesn't
+	work right and he wants to start again. Also, we don't want it in the
+	next release :) This effectively removes revisions 1.22 and 1.23.
+	
+2003-10-07 Tuesday 23:07  tdb
+
+	* Makefile.am (1.9, LIBSTATGRAB_0_6), configure.in (1.33):
+
+	Allow user to specify a different pkgconfig directory. Default is the
+	sensible one (prefix/lib/pkgconfig). Main reason was that on FreeBSD
+	they use prefix/libdata/pkgconfig, so a simple configure flag made it
+	easier to do the port :-)
+	
+2003-10-07 Tuesday 21:32  tdb
+
+	* src/libstatgrab/disk_stats.c (1.25):
+
+	Further following of the manpage:
+	
+	"getdevs() expects the statinfo structure to be allocated, and it also
+	expects the dinfo subelement to be allocated and zeroed prior to the
+	first invocation of getdevs()."
+	
+	This finally makes saider work on FreeBSD.
+	
+2003-10-07 Tuesday 20:58  tdb
+
+	* src/libstatgrab/disk_stats.c (1.24):
+
+	Don't free stats.dinfo. If it used to store state between calls of
+	getdevs it probably doesn't make sense to free it at the end of the
+	first call of the function :)
+	
+	This follows Adam's last commit on this bit of which made sure we
+	didn't reinitialise stats.dinfo every time round the loop.
+	
+2003-10-04 Saturday 18:07  tdb
+
+	* README.CVS (1.4), autogen.sh (1.1, LIBSTATGRAB_0_10_3,
+	LIBSTATGRAB_0_10_2, LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10,
+	LIBSTATGRAB_0_9, LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1) (utags:
+	LIBSTATGRAB_0_6, LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_7,
+	LIBSTATGRAB_0_8):
+
+	Add autogen.sh, a script to run automake/autoconf/etc. This is used
+	to build the build system when the package is checked out of CVS.
+	
+	Updated README.CVS files accordingly.
+	
+2003-10-04 Saturday 17:32  tdb
+
+	* configure.in (1.32):
+
+	The new version of ncurses installs it's headers in include/ncurses.
+	Make the prefix setting stuff aware of this.
+	
+2003-10-04 Saturday 17:05  tdb
+
+	* acinclude.m4 (1.1, LIBSTATGRAB_0_10_3, LIBSTATGRAB_0_10_2,
+	LIBSTATGRAB_0_10_1, LIBSTATGRAB_0_10, LIBSTATGRAB_0_9,
+	LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1, LIBSTATGRAB_0_8,
+	LIBSTATGRAB_0_7, LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6), configure.in
+	(1.31), docs/Makefile.am (1.21, LIBSTATGRAB_0_8, LIBSTATGRAB_0_7,
+	LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6), examples/Makefile.am (1.9,
+	LIBSTATGRAB_0_8, LIBSTATGRAB_0_7, LIBSTATGRAB_0_6_1,
+	LIBSTATGRAB_0_6), src/Makefile.am (1.2, LIBSTATGRAB_0_8,
+	LIBSTATGRAB_0_7, LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6),
+	src/saidar/Makefile.am (1.1), src/statgrab/Makefile.am (1.4):
+
+	Add all the build stuff for saidar (assuming Pete sticks with that
+	name). The configure script will attempt to find curses, but if it
+	can't will simply disable building of saidar (after giving a warning).
+	
+	Also made the building of saidar, statgrab, and the examples
+	conditional. They're enabled by default, but can be disabled using a
+	configure flag. Whilst I was at it, added a configure flag to disable
+	manpage installation at configure time.
+	
+	I'm not sure how well the curses detection works; we've had at least
+	one report of a problem with it. Testing will be required.
+	
+2003-10-02 Thursday 18:38  tdb
+
+	* docs/: Makefile.am (1.20), sg_get_cpu_stats.xml (1.2,
+	LIBSTATGRAB_0_9, LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1,
+	LIBSTATGRAB_0_8, LIBSTATGRAB_0_7, LIBSTATGRAB_0_6_1,
+	LIBSTATGRAB_0_6), sg_get_disk_io_stats.xml (1.3, LIBSTATGRAB_0_7,
+	LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6), sg_get_host_info.xml (1.2,
+	LIBSTATGRAB_0_9, LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1,
+	LIBSTATGRAB_0_8, LIBSTATGRAB_0_7, LIBSTATGRAB_0_6_1,
+	LIBSTATGRAB_0_6), sg_get_load_stats.xml (1.2, LIBSTATGRAB_0_9,
+	LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1, LIBSTATGRAB_0_8,
+	LIBSTATGRAB_0_7, LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6),
+	sg_get_mem_stats.xml (1.2, LIBSTATGRAB_0_9, LIBSTATGRAB_0_8_2,
+	LIBSTATGRAB_0_8_1, LIBSTATGRAB_0_8, LIBSTATGRAB_0_7,
+	LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6), sg_get_network_io_stats.xml
+	(1.3, LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1, LIBSTATGRAB_0_8,
+	LIBSTATGRAB_0_7, LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6),
+	sg_get_page_stats.xml (1.2, LIBSTATGRAB_0_9, LIBSTATGRAB_0_8_2,
+	LIBSTATGRAB_0_8_1, LIBSTATGRAB_0_8, LIBSTATGRAB_0_7,
+	LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6), sg_get_process_stats.xml (1.2,
+	LIBSTATGRAB_0_9, LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1,
+	LIBSTATGRAB_0_8, LIBSTATGRAB_0_7, LIBSTATGRAB_0_6_1,
+	LIBSTATGRAB_0_6), sg_get_user_stats.xml (1.2, LIBSTATGRAB_0_9,
+	LIBSTATGRAB_0_8_2, LIBSTATGRAB_0_8_1, LIBSTATGRAB_0_8,
+	LIBSTATGRAB_0_7, LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6), statgrab.xml
+	(1.1, LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6):
+
+	Add a central page statgrab(3) which links all the functions together. Add
+	a link in the See Also section of each manual page back to the central one.
+	
+2003-10-02 Thursday 17:30  tdb
+
+	* docs/Makefile.am (1.19):
+
+	Dropped the old text documentation in favour of manpages.
+	
+2003-10-02 Thursday 17:20  tdb
+
+	* docs/: Makefile.am (1.18), sg_get_mem_stats.xml (1.1):
+
+	Add final manpage - swap and memory.
+	
+2003-10-02 Thursday 17:08  tdb
+
+	* docs/: Makefile.am (1.17), sg_get_process_stats.xml (1.1):
+
+	Add process statistics.
+	
+2003-10-02 Thursday 17:01  tdb
+
+	* docs/: sg_get_disk_io_stats.xml (1.2),
+	sg_get_network_io_stats.xml (1.2):
+
+	Fix some markup.
+	
+2003-10-02 Thursday 17:00  tdb
+
+	* docs/: Makefile.am (1.16), sg_get_page_stats.xml (1.1):
+
+	Add page stats manpage.
+	
+2003-10-02 Thursday 16:32  tdb
+
+	* docs/: Makefile.am (1.15), sg_get_user_stats.xml (1.1):
+
+	Add user statistics.
+	
+2003-10-02 Thursday 16:17  tdb
+
+	* docs/: Makefile.am (1.14), sg_get_disk_io_stats.xml (1.1):
+
+	Add diskio stats. Anyone notice there's no documentation or examples
+	for the disk stats? :)
+	
+2003-10-02 Thursday 15:53  tdb
+
+	* docs/: Makefile.am (1.13), sg_get_network_io_stats.xml (1.1):
+
+	Add network stats manpage.
+	
+2003-10-01 Wednesday 15:59  tdb
+
+	* docs/: Makefile.am (1.12), sg_get_cpu_stats.xml (1.1):
+
+	Add CPU statistics documentation.
+	
+2003-10-01 Wednesday 14:47  tdb
+
+	* docs/: Makefile.am (1.11), sg_get_host_info.xml (1.1),
+	sg_get_load_stats.xml (1.1):
+
+	Add manual pages in docbook XML format. The Makefile will convert them
+	in to manual pages at distribution time, so the archive will ship with
+	manual pages, not XML.
+	
+2003-09-29 Monday 10:00  tdb
+
+	* configure.in (1.30):
+
+	By popular demand the next release will be 0.6 :-)
+	
+2003-09-29 Monday 09:59  tdb
+
+	* configure.in (1.29), libstatgrab.pc.in (1.2, LIBSTATGRAB_0_8,
+	LIBSTATGRAB_0_7, LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6),
+	examples/Makefile.am (1.8), src/statgrab/Makefile.am (1.3):
+
+	Seperate out the flags used to link against libstatgrab. We use them to
+	compile the examples and statgrab. They're also in the pkg-config file to
+	allow other app's to know which libraries they'll need.
+	
+2003-09-26 Friday 23:30  pajs
+
+	* src/libstatgrab/disk_stats.c (1.23):
+
+	Bug fix on systems with large path_to_inst files.
+	
+2003-09-26 Friday 22:11  tdb
+
+	* Makefile.am (1.8), configure.in (1.28), libstatgrab.pc.in (1.1):
+
+	Add pkg-config file for libstatgrab.
+	
+2003-09-26 Friday 17:33  pajs
+
+	* src/libstatgrab/disk_stats.c (1.22):
+
+	Added drive mapping for solaris from the old sunos names, to the more
+	modern solaris names.
+	
+	E.g.
+	
+	ssd0 to c0t0d0s0
+	
+	This is rather more useful :)
+	
+2003-09-09 Tuesday 12:02  tdb
+
+	* configure.in (1.27):
+
+	Update configure.in for next release.
+	
+2003-09-09 Tuesday 11:55  tdb
+
+	* AUTHORS (1.4), NEWS (1.12), README (1.5, LIBSTATGRAB_0_7,
+	LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6) (utags: LIBSTATGRAB_0_5_1):
+
+	Update NEWS with latest changes.
+	Change bug report address in README file.
+	Update AUTHORS to include Adam as the statgrab author.
+	Now ready for the 0.5.1 release.
+	
+2003-09-09 Tuesday 09:43  ats
+
+	* src/libstatgrab/disk_stats.c (1.21, LIBSTATGRAB_0_5_1):
+
+	Fix FreeBSD segfault. From the getdevs() man page: "The dinfo subelement
+	is used to store state between calls, and should not be modified after
+	the first call to getdevs()."
+	
+2003-08-31 Sunday 14:23  ats
+
+	* src/statgrab/statgrab.c (1.9, LIBSTATGRAB_0_6,
+	LIBSTATGRAB_0_5_1):
+
+	If invoked as "statgrab foo.", print all stats starting with "foo.".
+	Print multiple values with the same name correctly.
+	
+2003-08-29 Friday 07:56  ats
+
+	* src/statgrab/statgrab.c (1.8):
+
+	Only fetch the stats that we're actually interested in.
+	
+2003-08-29 Friday 07:49  ats
+
+	* src/statgrab/statgrab.c (1.7):
+
+	*Really* fill in time_taken correctly.
+	
+2003-08-29 Friday 07:48  ats
+
+	* src/statgrab/statgrab.c (1.6):
+
+	Fill in time_taken correctly.
+	
+2003-08-29 Friday 00:05  ats
+
+	* src/libstatgrab/disk_stats.c (1.20):
+
+	Make disk_stats read /proc/partitions on Linux, which contains information for
+	  all disks on recent 2.4 kernels. (It'll fall back to /proc/stat if it can't
+	  find the information there.)
+	
+2003-08-28 Thursday 22:33  ats
+
+	* src/libstatgrab/disk_stats.c (1.19):
+
+	Don't fclose(NULL).
+	
+2003-08-28 Thursday 22:21  ats
+
+	* src/statgrab/: statgrab-make-mrtg-config.in (1.2,
+	LIBSTATGRAB_0_8, LIBSTATGRAB_0_7, LIBSTATGRAB_0_6_1,
+	LIBSTATGRAB_0_6, LIBSTATGRAB_0_5_1), statgrab.c (1.5):
+
+	-p doesn't make any sense unless you've got stat differences.
+	-m should work with -o.
+	Make statgrab-make-mrtg-config use -o for CPU stats.
+	
+2003-08-28 Thursday 12:27  ats
+
+	* configure.in (1.26, LIBSTATGRAB_0_5_1):
+
+	Generate statgrab MRTG scripts.
+	
+2003-08-28 Thursday 12:26  ats
+
+	* src/statgrab/: Makefile.am (1.2, LIBSTATGRAB_0_5_1),
+	statgrab-make-mrtg-config.in (1.1), statgrab-make-mrtg-index.in
+	(1.1, LIBSTATGRAB_0_6, LIBSTATGRAB_0_5_1):
+
+	Add scripts to generate MRTG config and index page from statgrab output.
+	
+2003-08-27 Wednesday 21:54  tdb
+
+	* src/statgrab/statgrab.c (1.4):
+
+	Apply patch in bug id #10. Submitted by Adam :-)
+	
+2003-08-27 Wednesday 15:04  tdb
+
+	* src/statgrab/statgrab.c (1.3):
+
+	Have to pull in the definitions from config.h.
+	
+2003-08-27 Wednesday 15:00  tdb
+
+	* src/statgrab/statgrab.c (1.2):
+
+	Put the version number in the usage page.
+	
+2003-08-26 Tuesday 23:34  pajs
+
+	* src/libstatgrab/network_stats.c (1.17, LIBSTATGRAB_0_6_1,
+	LIBSTATGRAB_0_6, LIBSTATGRAB_0_5_1):
+
+	Fix for freebsd network traffic too.. Everything stores it in 32bit
+	with the exception of SOL8+ hosts.
+	
+	Its a stupid world ;)
+	
+2003-08-26 Tuesday 23:11  pajs
+
+	* src/libstatgrab/network_stats.c (1.16):
+
+	Linux stores it as a 32bit unsigned long, so suffers the same wrap around
+	bug as sol 7 hosts. This increases the chances it may happen on freebsd too
+	so some testing maybe needed. If so, we prob should change this to a default
+	and have a #ifdef 64bit for the odd (good) ones :)
+	
+2003-08-26 Tuesday 13:14  tdb
+
+	* configure.in (1.25), examples/Makefile.am (1.7,
+	LIBSTATGRAB_0_5_1), src/Makefile.am (1.1, LIBSTATGRAB_0_5_1),
+	src/libstatgrab/Makefile.am (1.12, LIBSTATGRAB_0_5_1),
+	src/statgrab/Makefile.am (1.1):
+
+	Move the world around a bit to allow for subdirs in src.
+	
+2003-08-26 Tuesday 13:09  tdb
+
+	* src/statgrab/statgrab.c (1.1):
+
+	A sysctl-style program to display system statistics collected through
+	libstatgrab. Contributed by Adam Sampson, azz@us-lot.org.
+	
+2003-08-25 Monday 22:41  tdb
+
+	* configure.in (1.24):
+
+	Update version number for next release.
+	
+2003-08-25 Monday 13:41  tdb
+
+	* NEWS (1.11), configure.in (1.23), docs/Makefile.am (1.10,
+	LIBSTATGRAB_0_5_1), src/libstatgrab/Makefile.am (1.11) (utags:
+	LIBSTATGRAB_0_5):
+
+	Ready for the next release.
+	
+	 - Update NEWS with details of new release.
+	   (FreeBSD bug fix, new docs, new examples)
+	 - Update version number to 0.5.
+	 - Update shared library version.
+	 - Move docs directory to more sensible place.
+	
+2003-08-24 Sunday 22:59  tdb
+
+	* docs/Makefile.am (1.9), examples/Makefile.am (1.6,
+	LIBSTATGRAB_0_5):
+
+	Tidy page_stat.txt, and add the page stats stuff to the Makefiles.
+	
+2003-08-24 Sunday 22:58  pajs
+
+	* examples/page_stats.c (1.1, LIBSTATGRAB_0_7, LIBSTATGRAB_0_6_1,
+	LIBSTATGRAB_0_6, LIBSTATGRAB_0_5_1, LIBSTATGRAB_0_5):
+
+	page stats example
+	
+2003-08-24 Sunday 22:20  tdb
+
+	* docs/Makefile.am (1.8):
+
+	Tidy cpu.txt and add to Makefile.
+	
+2003-08-24 Sunday 21:36  tdb
+
+	* docs/Makefile.am (1.7):
+
+	Tidy user_list too.
+	
+2003-08-24 Sunday 21:24  tdb
+
+	* NEWS (1.10), README (1.4, LIBSTATGRAB_0_5), docs/Makefile.am
+	(1.6), examples/Makefile.am (1.5), examples/cpu_usage.c (1.2,
+	LIBSTATGRAB_0_7, LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6,
+	LIBSTATGRAB_0_5_1, LIBSTATGRAB_0_5), examples/disk_traffic.c (1.2,
+	LIBSTATGRAB_0_7, LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6,
+	LIBSTATGRAB_0_5_1, LIBSTATGRAB_0_5), examples/load_stats.c (1.2,
+	LIBSTATGRAB_0_7, LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6,
+	LIBSTATGRAB_0_5_1, LIBSTATGRAB_0_5), examples/network_traffic.c
+	(1.3, LIBSTATGRAB_0_7, LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6,
+	LIBSTATGRAB_0_5_1, LIBSTATGRAB_0_5), examples/os_info.c (1.2,
+	LIBSTATGRAB_0_7, LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6,
+	LIBSTATGRAB_0_5_1, LIBSTATGRAB_0_5), examples/process_stats.c (1.2,
+	LIBSTATGRAB_0_7, LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6,
+	LIBSTATGRAB_0_5_1, LIBSTATGRAB_0_5), examples/user_list.c (1.2,
+	LIBSTATGRAB_0_7, LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6,
+	LIBSTATGRAB_0_5_1, LIBSTATGRAB_0_5), examples/vm_stats.c (1.2,
+	LIBSTATGRAB_0_7, LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6,
+	LIBSTATGRAB_0_5_1, LIBSTATGRAB_0_5), src/libstatgrab/Makefile.am
+	(1.10), src/libstatgrab/cpu_stats.c (1.10, LIBSTATGRAB_0_6_1,
+	LIBSTATGRAB_0_6, LIBSTATGRAB_0_5_1, LIBSTATGRAB_0_5),
+	src/libstatgrab/disk_stats.c (1.18, LIBSTATGRAB_0_5),
+	src/libstatgrab/load_stats.c (1.4, LIBSTATGRAB_0_7,
+	LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6, LIBSTATGRAB_0_5_1,
+	LIBSTATGRAB_0_5), src/libstatgrab/memory_stats.c (1.7,
+	LIBSTATGRAB_0_6, LIBSTATGRAB_0_5_1, LIBSTATGRAB_0_5),
+	src/libstatgrab/network_stats.c (1.15, LIBSTATGRAB_0_5),
+	src/libstatgrab/os_info.c (1.6, LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6,
+	LIBSTATGRAB_0_5_1, LIBSTATGRAB_0_5), src/libstatgrab/page_stats.c
+	(1.6, LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6, LIBSTATGRAB_0_5_1,
+	LIBSTATGRAB_0_5), src/libstatgrab/process_stats.c (1.8,
+	LIBSTATGRAB_0_5_1, LIBSTATGRAB_0_5), src/libstatgrab/statgrab.h
+	(1.13, LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6, LIBSTATGRAB_0_5_1,
+	LIBSTATGRAB_0_5), src/libstatgrab/swap_stats.c (1.5,
+	LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6, LIBSTATGRAB_0_5_1,
+	LIBSTATGRAB_0_5), src/libstatgrab/tools.c (1.6, LIBSTATGRAB_0_6_1,
+	LIBSTATGRAB_0_6, LIBSTATGRAB_0_5_1, LIBSTATGRAB_0_5),
+	src/libstatgrab/tools.h (1.5, LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6,
+	LIBSTATGRAB_0_5_1, LIBSTATGRAB_0_5), src/libstatgrab/user_stats.c
+	(1.9, LIBSTATGRAB_0_6_1, LIBSTATGRAB_0_6, LIBSTATGRAB_0_5_1,
+	LIBSTATGRAB_0_5):
+
+	Tidy up of lots of little things. :)
+	
+2003-08-24 Sunday 21:09  pajs
+
+	* examples/user_list.c (1.1):
+
+	User details example.
+	
+2003-08-24 Sunday 20:15  pajs
+
+	* examples/vm_stats.c (1.1):
+
+	Memory and swap stats example
+	
+2003-08-24 Sunday 19:20  tdb
+
+	* AUTHORS (1.3, LIBSTATGRAB_0_5):
+
+	The AUTHORS file has been here since it was copied from ihost ;)
+	
+2003-08-24 Sunday 17:18  tdb
+
+	* docs/Makefile.am (1.5), examples/Makefile.am (1.4):
+
+	Add latest docs and examples.
+	
+2003-08-24 Sunday 16:23  pajs
+
+	* examples/os_info.c (1.1):
+
+	OS stats example
+	
+2003-08-21 Thursday 23:48  pajs
+
+	* examples/process_stats.c (1.1):
+
+	Added a process stats example.
+	
+2003-08-21 Thursday 23:32  tdb
+
+	* docs/Makefile.am (1.4), examples/Makefile.am (1.3):
+
+	Add the load stats to the Makefile.
+	
+2003-08-21 Thursday 23:18  pajs
+
+	* examples/load_stats.c (1.1):
+
+	Added load_stats example, and documentation.
+	
+2003-08-21 Thursday 21:48  tdb
+
+	* configure.in (1.22):
+
+	Bug reporting address is now bugs@i-scream.org.
+	
+2003-06-05 Thursday 17:03  tdb
+
+	* examples/Makefile.am (1.2):
+
+	Add new examples to Makefile.
+	
+2003-06-05 Thursday 17:02  tdb
+
+	* docs/Makefile.am (1.3):
+
+	Proof read and slightly alter diskio.txt and network.txt. Also add
+	diskio.txt to the Makefile.
+	
+2003-06-05 Thursday 16:38  pajs
+
+	* examples/disk_traffic.c (1.1):
+
+	Example for disk traffic.
+	
+2003-06-05 Thursday 15:45  pajs
+
+	* examples/: cpu_usage.c (1.1), network_traffic.c (1.2):
+
+	Example of how to get and display cpu usage.
+	
+2003-06-04 Wednesday 17:03  pajs
+
+	* src/libstatgrab/process_stats.c (1.7):
+
+	Fix bug report #748942. Moved the ifdef to where it should be :)
+	
+2003-05-20 Tuesday 15:10  tdb
+
+	* Makefile.am (1.7, LIBSTATGRAB_0_5_1, LIBSTATGRAB_0_5),
+	configure.in (1.21), examples/Makefile.am (1.1):
+
+	Added building of examples. We don't, currently, install them though.
+	
+2003-05-20 Tuesday 14:57  tdb
+
+	* AUTHORS (1.2), Makefile.am (1.6), README (1.3), README.CVS (1.3,
+	LIBSTATGRAB_0_5_1, LIBSTATGRAB_0_5), configure.in (1.20),
+	docs/Makefile.am (1.2):
+
+	Change i-scream.org.uk to i-scream.org.
+	
+2003-05-20 Tuesday 14:44  tdb
+
+	* Makefile.am (1.5), configure.in (1.19), docs/Makefile.am (1.1):
+
+	Allow documentation to be installed to $(datadir)/libstatgrab/docs.
+	
+2003-05-11 Sunday 18:05  pajs
+
+	* examples/network_traffic.c (1.1):
+
+	Added basic docs for network stats, and a example. Needs some basic work, and
+	no doubt several typos :)
+	
+2003-04-09 Wednesday 22:13  tdb
+
+	* configure.in (1.18):
+
+	Increment for next release.
+	
+2003-04-09 Wednesday 22:12  tdb
+
+	* NEWS (1.9), src/libstatgrab/Makefile.am (1.9) (utags:
+	LIBSTATGRAB_0_4):
+
+	Version 0.4 now with FreeBSD support.
+	
+2003-04-09 Wednesday 22:01  tdb
+
+	* src/libstatgrab/tools.c (1.5, LIBSTATGRAB_0_4):
+
+	Add the standard header. Particularly the bit about including config.h was
+	needed to allow the ifdef around the last function to work.
+	
+2003-04-09 Wednesday 21:49  tdb
+
+	* NEWS (1.8), configure.in (1.17, LIBSTATGRAB_0_4):
+
+	libstatgrab needs to do a check for atoll too. This should fix libstatgrab
+	on all platforms. New release coming shortly ;)
+	
+2003-04-06 Sunday 12:59  pajs
+
+	* configure.in (1.16):
+
+	Added a library to link against on freebsd so that it will compile.
+	
+2003-04-06 Sunday 12:57  pajs
+
+	* src/libstatgrab/: tools.c (1.4), tools.h (1.4, LIBSTATGRAB_0_4):
+
+	Make the functions that use atoll have a #ifdef HAVE_ATOLL around them.
+	I did this because freebsd doesn't have this function, and it doesn't
+	need to run any of the functions in tools.h that uses them.
+	
+2003-04-06 Sunday 01:27  pajs
+
+	* src/libstatgrab/network_stats.c (1.14, LIBSTATGRAB_0_4):
+
+	Now works on freebsd. This is the last of parts that needed to be ported
+	so its now "finished" for testing. Solaris and Linux should also be tested
+	as minor changes in code may of disturbed them (it shouldn't have, i just
+	may of made a mistake :) )
+	
+	Certain things will require setgid kmem permissions (swap and processor
+	stats)
+	
+2003-04-06 Sunday 00:56  pajs
+
+	* src/libstatgrab/disk_stats.c (1.17, LIBSTATGRAB_0_4):
+
+	Should now work on freebsd.
+	
+2003-04-05 Saturday 12:25  tdb
+
+	* configure.in (1.15):
+
+	Next release of libstatgrab will (hopefully) have FreeBSD support, and
+	will therefore be version 0.4 I guess.
+	
+2003-04-04 Friday 15:25  pajs
+
+	* src/libstatgrab/disk_stats.c (1.16):
+
+	Disk stats for freebsd. This does not currently include diskio stats.
+	
+2003-04-04 Friday 14:08  pajs
+
+	* src/libstatgrab/: statgrab.h (1.12), user_stats.c (1.8) (utags:
+	LIBSTATGRAB_0_4):
+
+	Ported to work onto freebsd.
+	
+2003-04-04 Friday 12:45  pajs
+
+	* src/libstatgrab/swap_stats.c (1.4, LIBSTATGRAB_0_4):
+
+	Now works on freebsd
+	
+2003-04-04 Friday 00:14  pajs
+
+	* src/libstatgrab/process_stats.c (1.6, LIBSTATGRAB_0_4):
+
+	Now works on freebsd.. Now why couldn't they follow the same scheme as
+	everything else :) ?
+	
+2003-04-03 Thursday 21:26  pajs
+
+	* src/libstatgrab/page_stats.c (1.5, LIBSTATGRAB_0_4):
+
+	Now works on freebsd.
+	
+2003-04-03 Thursday 21:14  pajs
+
+	* src/libstatgrab/os_info.c (1.5, LIBSTATGRAB_0_4):
+
+	Now works on freebsd
+	
+2003-04-03 Thursday 21:05  pajs
+
+	* src/libstatgrab/memory_stats.c (1.6, LIBSTATGRAB_0_4):
+
+	Should now work happily on freebsd. sysctlbyname seems to return a lot of
+	things in long's. Im not completely trusting this code, but it does appear
+	to work, and its the same as the old implementation.
+	
+2003-04-03 Thursday 20:11  pajs
+
+	* src/libstatgrab/cpu_stats.c (1.9, LIBSTATGRAB_0_4):
+
+	Freebsd support. Smile tim ;)
+	
+2003-03-31 Monday 16:47  tdb
+
+	* configure.in (1.14):
+
+	Update version for next release.
+	
+2003-03-31 Monday 16:47  tdb
+
+	* NEWS (1.7), src/libstatgrab/Makefile.am (1.8) (utags:
+	LIBSTATGRAB_0_3_4):
+
+	Package up 0.3.4 which fixes some leaking linux issues :-)
+	
+2003-03-31 Monday 14:24  pajs
+
+	* src/libstatgrab/network_stats.c (1.13, LIBSTATGRAB_0_3_4):
+
+	Fixed memory leak in regex stuff
+	
+2003-03-31 Monday 12:30  pajs
+
+	* src/libstatgrab/: cpu_stats.c (1.8, LIBSTATGRAB_0_3_4),
+	disk_stats.c (1.15, LIBSTATGRAB_0_3_4), network_stats.c (1.12):
+
+	Fixed some issues with not closing FILE*'s.
+	
+2003-03-29 Saturday 18:51  tdb
+
+	* src/libstatgrab/network_stats.c (1.11):
+
+	Fix another #include.
+	
+2003-03-22 Saturday 13:06  tdb
+
+	* configure.in (1.13, LIBSTATGRAB_0_3_4):
+
+	Update version for next release.
+	
+2003-03-22 Saturday 13:05  tdb
+
+	* NEWS (1.6), configure.in (1.12), src/libstatgrab/Makefile.am
+	(1.7) (utags: LIBSTATGRAB_0_3_3):
+
+	Version 0.3.3. Bug fixed in the wraparound code.
+	
+2003-03-22 Saturday 11:42  pajs
+
+	* src/libstatgrab/network_stats.c (1.10, LIBSTATGRAB_0_3_3):
+
+	Another stupid bug in the wrap around code.
+	
+2003-03-21 Friday 15:11  tdb
+
+	* src/libstatgrab/Makefile.am (1.6, LIBSTATGRAB_0_3_2):
+
+	Update the shared library version number too.
+	
+2003-03-21 Friday 14:29  tdb
+
+	* configure.in (1.11):
+
+	Once again, heading for 0.4. If Pete manages to not find any more bugs :-)
+	
+2003-03-21 Friday 14:27  tdb
+
+	* NEWS (1.5), configure.in (1.10) (utags: LIBSTATGRAB_0_3_2):
+
+	Version 0.3.2. Has fixed wraparound stuff, well tested by now :-)
+	
+2003-03-12 Wednesday 16:15  pajs
+
+	* src/libstatgrab/network_stats.c (1.9, LIBSTATGRAB_0_3_2):
+
+	Well, i carefully made the function to look after wrap around issues, and
+	then apparently didn't use it :)
+	
+	It now uses it :)
+	
+2003-03-12 Wednesday 13:40  tdb
+
+	* src/libstatgrab/Makefile.am (1.5, LIBSTATGRAB_0_3_1):
+
+	Bump shared library version for 0.3.1.
+	
+2003-03-12 Wednesday 12:39  tdb
+
+	* configure.in (1.9):
+
+	Hopefully heading towards 0.4 with FreeBSD support :-)
+	
+2003-03-12 Wednesday 12:37  tdb
+
+	* NEWS (1.4), configure.in (1.8) (utags: LIBSTATGRAB_0_3_1):
+
+	The configure setup explicitly checks for Solaris versions older then 8,
+	and sets a define so the code knows not to use 64bit values. Also updated
+	the NEWS file, bringing about version 0.3.1.
+	
+2003-03-11 Tuesday 16:16  pajs
+
+	* src/libstatgrab/network_stats.c (1.8, LIBSTATGRAB_0_3_1):
+
+	Ok, wrap around fixed for 32bit machines, not 64. I really ought to change
+	all the long long's to ulong long's. I'll ponder if i can be bothered :)
+	
+2003-03-11 Tuesday 14:30  pajs
+
+	* src/libstatgrab/network_stats.c (1.7):
+
+	Make network stats work on pre sol8.
+	BUGS: On pre sol8 systems, it doesn't cope with a wrap around once the
+	32bit uint becomes too big. So when this happens it will report one set
+	of dodgy data, then continue. This bug technically is there in the 64bit
+	version too, but it will need to of sent 9223372036854775808 bytes first.
+	(8388608 terrabytes, so basically a *big enough* number that will come around
+	and byte me in 20 years time or something ;) )
+	
+2003-03-11 Tuesday 12:57  pajs
+
+	* src/libstatgrab/disk_stats.c (1.14, LIBSTATGRAB_0_3_3,
+	LIBSTATGRAB_0_3_2, LIBSTATGRAB_0_3_1):
+
+	Bug fix, again :) .. I wasn't reporting the time taken since last statgrab
+	correctly. So got very busy disks apparently ;)
+	
+2003-03-10 Monday 19:01  pajs
+
+	* src/libstatgrab/user_stats.c (1.7, LIBSTATGRAB_0_3_4,
+	LIBSTATGRAB_0_3_3, LIBSTATGRAB_0_3_2, LIBSTATGRAB_0_3_1,
+	LIBSTATGRAB_0_3):
+
+	Think i've fixed another bug which causes seg faults on machines with no
+	users :)
+	
+2003-03-10 Monday 14:25  tdb
+
+	* configure.in (1.7):
+
+	Increment version numbers so we're working towards the next versions...
+	
+2003-03-10 Monday 14:23  tdb
+
+	* NEWS (1.3), src/libstatgrab/Makefile.am (1.4) (utags:
+	LIBSTATGRAB_0_3):
+
+	libstatgrab now has linux support and goes to version 0.3. ihost has only
+	minor bugfixes and changes, so becomes version 1.5.1. NEWS files updated
+	accordingly. libstatgrab shared library version numbered incremented using
+	the libtool rules - under the assumption that someone must have thought
+	about that idea, which is more than we can manage to do ;)
+	
+2003-03-07 Friday 20:17  tdb
+
+	* src/libstatgrab/: Makefile.am (1.3), disk_stats.c (1.13,
+	LIBSTATGRAB_0_3):
+
+	Added tools.c and tools.h to the Makefile. It now compiles ok on both
+	Solaris and Linux. Also fixed a minor compile bug in disk_stats.c - I
+	did check the history in CVS, and it used to be like this. The bug got
+	introduced in the Linux changes.
+	
+2003-03-07 Friday 15:43  pajs
+
+	* src/libstatgrab/swap_stats.c (1.3, LIBSTATGRAB_0_3_4,
+	LIBSTATGRAB_0_3_3, LIBSTATGRAB_0_3_2, LIBSTATGRAB_0_3_1,
+	LIBSTATGRAB_0_3):
+
+	Made work with linux. Last thing that needs to be ported.
+	
+2003-03-07 Friday 15:26  pajs
+
+	* src/libstatgrab/process_stats.c (1.5, LIBSTATGRAB_0_3_4,
+	LIBSTATGRAB_0_3_3, LIBSTATGRAB_0_3_2, LIBSTATGRAB_0_3_1,
+	LIBSTATGRAB_0_3):
+
+	Added linux support.
+	
+2003-03-07 Friday 14:44  pajs
+
+	* src/libstatgrab/: page_stats.c (1.4), statgrab.h (1.11), tools.h
+	(1.3) (utags: LIBSTATGRAB_0_3, LIBSTATGRAB_0_3_1,
+	LIBSTATGRAB_0_3_2, LIBSTATGRAB_0_3_3, LIBSTATGRAB_0_3_4):
+
+	Removed getting of some data we didn't really need or use.
+	Updated page_stats to work with linux.
+	Fixed tools.h to compile nicely :)
+	
+2003-03-07 Friday 13:20  pajs
+
+	* src/libstatgrab/os_info.c (1.4, LIBSTATGRAB_0_3_4,
+	LIBSTATGRAB_0_3_3, LIBSTATGRAB_0_3_2, LIBSTATGRAB_0_3_1,
+	LIBSTATGRAB_0_3):
+
+	Made it work with linux :)
+	
+2003-03-07 Friday 11:56  pajs
+
+	* src/libstatgrab/: network_stats.c (1.6, LIBSTATGRAB_0_3), tools.c
+	(1.3, LIBSTATGRAB_0_3_4, LIBSTATGRAB_0_3_3, LIBSTATGRAB_0_3_2,
+	LIBSTATGRAB_0_3_1, LIBSTATGRAB_0_3), tools.h (1.2):
+
+	Made network stats work with linux.
+	
+2003-03-05 Wednesday 21:00  pajs
+
+	* src/libstatgrab/memory_stats.c (1.5, LIBSTATGRAB_0_3_4,
+	LIBSTATGRAB_0_3_3, LIBSTATGRAB_0_3_2, LIBSTATGRAB_0_3_1,
+	LIBSTATGRAB_0_3):
+
+	Updated Memory stats to work with linux.
+	
+2003-03-05 Wednesday 17:11  pajs
+
+	* src/libstatgrab/disk_stats.c (1.12):
+
+	Linux reports stupid results. Fixed to return real vaules. Side note, gkrellm
+	is doing it wrong ;)
+	
+2003-03-05 Wednesday 12:41  pajs
+
+	* src/libstatgrab/: disk_stats.c (1.11), tools.c (1.2):
+
+	Working linux diskio stats. Fixed bug in tools.c
+	
+2003-03-04 Tuesday 18:07  pajs
+
+	* src/libstatgrab/: tools.c (1.1), tools.h (1.1):
+
+	Useful tools, currently only one function. Function takes a file pointer
+	and will read threw it until it hits a passed string. It will return that
+	line.
+	
+2003-03-04 Tuesday 18:06  pajs
+
+	* src/libstatgrab/disk_stats.c (1.10):
+
+	Diskio stats for linux. Not been checked. Relies on tools.c (seperate comit)
+	If someone knows a nicer way of getting the device name, please tell me, as
+	the way im doing it is horrible! :)
+	
+2003-03-04 Tuesday 12:55  pajs
+
+	* src/libstatgrab/disk_stats.c (1.9):
+
+	disk_stats for linux. Does not do diskio stats yet.
+	
+2003-03-03 Monday 19:33  tdb
+
+	* configure.in (1.6, LIBSTATGRAB_0_3):
+
+	Update version numbers. It seems to make sense to increment version numbers
+	just after a release. Then you're working towards the next version...
+	
+2003-03-03 Monday 15:26  pajs
+
+	* src/libstatgrab/: cpu_stats.c (1.7, LIBSTATGRAB_0_3_3,
+	LIBSTATGRAB_0_3_2, LIBSTATGRAB_0_3_1, LIBSTATGRAB_0_3), statgrab.h
+	(1.10):
+
+	Added linux support for cpu stats
+	
+2003-03-03 Monday 14:37  pajs
+
+	* src/libstatgrab/cpu_stats.c (1.6):
+
+	Removed headers that were not used.
+	
+2003-03-03 Monday 14:29  tdb
+
+	* NEWS (1.2), README (1.2, LIBSTATGRAB_0_4, LIBSTATGRAB_0_3_4,
+	LIBSTATGRAB_0_3_3, LIBSTATGRAB_0_3_2, LIBSTATGRAB_0_3_1,
+	LIBSTATGRAB_0_3) (utags: LIBSTATGRAB_0_2):
+
+	Update NEWS and README files. We now have version 0.2 of libstatgrab!
+	
+2003-03-03 Monday 13:14  pajs
+
+	* src/libstatgrab/: cpu_stats.c (1.5), statgrab.h (1.9) (utags:
+	LIBSTATGRAB_0_2):
+
+	Made cpu stats to a type a bit more cross platform :)
+	
+2003-03-03 Monday 12:33  tdb
+
+	* configure.in (1.5, LIBSTATGRAB_0_2):
+
+	And we have 0.2 :-)
+	
+2003-03-02 Sunday 16:43  pajs
+
+	* src/libstatgrab/user_stats.c (1.6, LIBSTATGRAB_0_2):
+
+	Removed debugging statements
+	
+2003-03-01 Saturday 16:39  pajs
+
+	* src/libstatgrab/process_stats.c (1.4, LIBSTATGRAB_0_2):
+
+	Bug fix :
+	
+2003-03-01 Saturday 15:01  pajs
+
+	* src/libstatgrab/: statgrab.h (1.8), user_stats.c (1.5):
+
+	changed user_stats to return something more useful for ihost, and prob
+	something more useful to everyone else too. Although, they can't just
+	itterate thru it now, they got to find ' ' :)
+	
+2003-03-01 Saturday 02:42  pajs
+
+	* src/libstatgrab/network_stats.c (1.5, LIBSTATGRAB_0_2):
+
+	bug fix
+	
+2003-03-01 Saturday 02:41  pajs
+
+	* src/libstatgrab/disk_stats.c (1.8, LIBSTATGRAB_0_2):
+
+	Bug fix
+	
+2003-03-01 Saturday 02:38  pajs
+
+	* src/libstatgrab/user_stats.c (1.4):
+
+	bug fix
+	
+2003-03-01 Saturday 02:12  pajs
+
+	* src/libstatgrab/process_stats.c (1.3):
+
+	Removed debugging printf
+	
+2003-02-28 Friday 23:52  tdb
+
+	* src/libstatgrab/Makefile.am (1.2, LIBSTATGRAB_0_2):
+
+	Typo which meant the network stats code wasn't being compiled in to
+	the library. Opps :-)
+	
+2003-02-28 Friday 22:59  tdb
+
+	* configure.in (1.4), src/libstatgrab/cpu_stats.c (1.4),
+	src/libstatgrab/disk_stats.c (1.7), src/libstatgrab/load_stats.c
+	(1.3, LIBSTATGRAB_0_4, LIBSTATGRAB_0_3_4, LIBSTATGRAB_0_3_3,
+	LIBSTATGRAB_0_3_2, LIBSTATGRAB_0_3_1, LIBSTATGRAB_0_3,
+	LIBSTATGRAB_0_2), src/libstatgrab/memory_stats.c (1.4,
+	LIBSTATGRAB_0_2), src/libstatgrab/network_stats.c (1.4),
+	src/libstatgrab/os_info.c (1.3, LIBSTATGRAB_0_2),
+	src/libstatgrab/process_stats.c (1.2), src/libstatgrab/user_stats.c
+	(1.3):
+
+	Tidy up of configure script, and includes.
+	
+2003-02-23 Sunday 23:28  pajs
+
+	* src/libstatgrab/: disk_stats.c (1.6), statgrab.h (1.7):
+
+	Changed function name changed to be consistent.
+	
+2003-02-23 Sunday 22:58  pajs
+
+	* src/libstatgrab/: disk_stats.c (1.5), statgrab.h (1.6):
+
+	Added a diff diskio_stats and fixed a bug. This is the last thing needed
+	for the solaris version of the new libstatgrab, bar bug fixes.
+	
+2003-02-23 Sunday 19:24  pajs
+
+	* src/libstatgrab/: disk_stats.c (1.4), statgrab.h (1.5):
+
+	Added support for read/write stats on a per disk basis. This does not count metadisks as disks.
+	I will also add io transfer for mounted devices, and the ususal diff() function that gives you
+	the differences since last time you called it.
+	
+2003-02-20 Thursday 13:19  tdb
+
+	* src/libstatgrab/: cpu_stats.c (1.3), disk_stats.c (1.3),
+	load_stats.c (1.2), memory_stats.c (1.3), swap_stats.c (1.2,
+	LIBSTATGRAB_0_2), user_stats.c (1.2):
+
+	Removed references to ukcprog.h.
+	Fixed a missing * in the disk stats.
+	And removed a block of linux stuff that shouldn't have been there :-)
+	All with Pete's approval, of course.
+	
+2003-02-20 Thursday 13:08  pajs
+
+	* src/libstatgrab/disk_stats.c (1.2):
+
+	Header for new function.
+	
+2003-02-19 Wednesday 23:09  tdb
+
+	* Makefile.am (1.4, LIBSTATGRAB_0_4, LIBSTATGRAB_0_3_4,
+	LIBSTATGRAB_0_3_3, LIBSTATGRAB_0_3_2, LIBSTATGRAB_0_3_1,
+	LIBSTATGRAB_0_3, LIBSTATGRAB_0_2), configure.in (1.3),
+	src/libstatgrab/Makefile.am (1.1):
+
+	Created the structure and automake stuff for the source files to be
+	moved to a src subdirectory. This will break things until I repo-move
+	the actual files, which I don't want to do until Pete is happy :-)
+	
+2003-02-19 Wednesday 20:55  tdb
+
+	* Makefile.am (1.3):
+
+	Specified the version number. Not that I really understand them though,
+	libtool seems a little confusing ;)
+	
+2003-02-19 Wednesday 18:49  tdb
+
+	* Makefile.am (1.2), README.CVS (1.2, LIBSTATGRAB_0_4,
+	LIBSTATGRAB_0_3_4, LIBSTATGRAB_0_3_3, LIBSTATGRAB_0_3_2,
+	LIBSTATGRAB_0_3_1, LIBSTATGRAB_0_3, LIBSTATGRAB_0_2), configure.in
+	(1.2):
+
+	We now use libtool to build libstatgrab. This gives us static and
+	shared versions of the library, which is nice :) Updated the CVS build
+	instructions accordingly.
+	
+2003-02-19 Wednesday 17:13  pajs
+
+	* src/libstatgrab/: network_stats.c (1.3), statgrab.h (1.4):
+
+	network stats now returns a diff() style function, to make it easy to
+	show the exact average network traffic over a period of time.
+	
+2003-02-19 Wednesday 00:25  pajs
+
+	* src/libstatgrab/: page_stats.c (1.3, LIBSTATGRAB_0_2), statgrab.h
+	(1.3):
+
+	Added get_page_stats_diff() which returns the number of pages in/out etc since
+	last time it was called, and the time difference since last time it was called.
+	This makes it very easy for a host to know how many pages averaged over a period
+	of time.
+	
+2003-02-18 Tuesday 23:23  pajs
+
+	* src/libstatgrab/: cpu_stats.c (1.2), memory_stats.c (1.2),
+	network_stats.c (1.2), os_info.c (1.2):
+
+	Changed the kstat_close to not return NULL in event of a failure. If we
+	cant close it, well there is nothing i can do about that, so i may as well
+	at least return something useful since its done all the hardwork by that
+	point. And anywan, it should never fail to close :)
+	
+2003-02-18 Tuesday 23:12  pajs
+
+	* src/libstatgrab/: page_stats.c (1.2), statgrab.h (1.2):
+
+	Finished page stats. It returns 2 things. One, number of pages swapped in and
+	out, 2, the number of pageins and pageouts. As to if this is actually
+	correct or not, im not 100% sure, but tests seem to imply it is.
+	
+	from:
+	http://www.sun.com/sun-on-net/itworld/UIR960901perf.html
+	
+	        ulong   pgin;           /* pageins                              */
+	        ulong   pgpgin;         /* pages paged in                       */
+	        ulong   pgout;          /* pageouts                             */
+	        ulong   pgpgout;        /* pages paged out                      */
+	        ulong   swapin;         /* swapins                              */
+	        ulong   pgswapin;       /* pages swapped in                     */
+	        ulong   swapout;        /* swapouts
+	
+	I am *not* using swapins and swapouts. I did this in the orginal libstatgrab,
+	and it didn't work. Looking at it more closely, it always seems to have 0 in
+	it, so my guess is its broke. :)
+	
+2003-02-18 Tuesday 22:01  tdb
+
+	* AUTHORS (1.1, LIBSTATGRAB_0_4, LIBSTATGRAB_0_3_4,
+	LIBSTATGRAB_0_3_3, LIBSTATGRAB_0_3_2, LIBSTATGRAB_0_3_1,
+	LIBSTATGRAB_0_3, LIBSTATGRAB_0_2), Makefile.am (1.1), NEWS (1.1),
+	README (1.1), README.CVS (1.1), configure.in (1.1):
+
+	Autoconf/Automake setup. README.CVS details how to "get started" from
+	a CVS checked out copy. Then it's just the usual configure and make,
+	as described in the README file.
+	
+2003-02-18 Tuesday 19:28  pajs
+
+	* src/libstatgrab/: cpu_stats.c (1.1), disk_stats.c (1.1),
+	load_stats.c (1.1), memory_stats.c (1.1), network_stats.c (1.1),
+	os_info.c (1.1), page_stats.c (1.1), process_stats.c (1.1),
+	statgrab.h (1.1), swap_stats.c (1.1), user_stats.c (1.1):
+
+	The new revesion of libstatgrab, which is a complete rewrite essentially.
+	
+	Firstly the data is now returned in structures rather than xml strings.
+	The structures returned are all static, so what ever calls the library doesn't
+	have to deal with the memory management of it.
+	
+	Secondly the general efficency of the code is now significantly faster. It no
+	longer needs to fork a process, connect file descriptors and run ps, and then
+	parse the output like it used to. Now it walks /proc and reads it into the
+	correct data structures. This works without needing any special privilages, so
+	it can still run as a normal mortal without needing any special group. (Freebsd
+	will be an exception to this, but this commit only works with solaris, and that
+	requires nothing special)
+	
+	Thridly it has more functionality than it used to. It not for instance is capable
+	of showing network traffic stats, (although its not completely finished yet). It
+	also in the near future be able to disk io stats as well. Several bug fixes have
+	been aplied over the original version. For example the cpu_stats used to only reply
+	the stats for the first processor. This now will report the total stats of all of
+	them. Paging stats will also be fixed, but haven't been done yet.
+	
