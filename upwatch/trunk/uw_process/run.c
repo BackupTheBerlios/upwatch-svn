@@ -368,12 +368,12 @@ static int resummarize(void)
   gint idx, found;
   struct probe_def def;
   struct probe_result res;
-  char *probename = strtok(OPT_ARG(SUMMARIZE), ",");
-  res.stattime = atoi(strtok(NULL, ""));
   MYSQL *mysql;
   MYSQL_RES *result;
   MYSQL_ROW row;
 extern int forever;
+  char *probename = strtok(OPT_ARG(SUMMARIZE), ",");
+  res.stattime = atoi(strtok(NULL, ""));
   
 //  printf("%s: %s", probename, ctime(&res.stattime));
 

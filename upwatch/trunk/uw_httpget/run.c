@@ -1,9 +1,13 @@
 #include "config.h"
 #include <netinet/in_systm.h>
 #include <netinet/in.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
 #include <netdb.h>
 #include <sys/socket.h>        /* for AF_INET */
 #include <curl/curl.h>
+
+
 
 #include <generic.h>
 #include "cmd_options.h"
@@ -52,6 +56,7 @@ int run_actual_probes(int count);
     MYSQL_RES *result;
     MYSQL_ROW row;
     char qry[1024];
+    struct hostinfo **newh;
 
     sprintf(qry,  "SELECT pr_httpget_def.id, %s.%s, pr_httpget_def.hostname, " 
                   "       pr_httpget_def.uri, " 
@@ -61,46 +66,40 @@ int run_actual_probes(int count);
             OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_NAME_FIELD),
             OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_ID_FIELD));
 
-    if (my_query(mysql, 1, qry)) {
-      LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql)); // if we can't read info from the database, use cached info
-      close_database(mysql);
-      break;
-    }
+    result = my_query(mysql, 1, qry);
+    if (!result) break;
 
-    result = mysql_store_result(mysql);
-    if (result) {
-      struct hostinfo **newh = calloc(mysql_num_rows(result)+1, sizeof(struct hostinfo));
-      while ((row = mysql_fetch_row(result))) {
-        newh[id] = calloc(1, sizeof(struct hostinfo));
-        newh[id]->id = atol(row[0]);
-        newh[id]->name = strdup(row[1]);
-        if (debug > 2) LOG(LOG_DEBUG, "read %s", newh[id]->name);
-        newh[id]->hostname = strdup(row[2]);
-        newh[id]->uri = strdup(row[3]);
-        newh[id]->yellow  = atof(row[4]);
-        newh[id]->red = atof(row[5]);
-        newh[id]->info = NULL;
-        newh[id]->info_curlen = 0;
-        newh[id]->info_maxlen = 0;
-        id++;
-      }
-      mysql_free_result(result);
-      newh[id] = NULL;
-      num_hosts = id;
-
-      if (hosts != NULL) {
-        for (id=0; hosts[id]; id++) {
-          printf("%s\n", hosts[id]->name);
-          free(hosts[id]->name);
-          free(hosts[id]->hostname);
-          free(hosts[id]->uri);
-          free(hosts[id]);
-          if (hosts[id]->info) free(hosts[id]->info);
-        }
-        free(hosts);
-      }
-      hosts = newh; // replace with new structure
+    newh = calloc(mysql_num_rows(result)+1, sizeof(struct hostinfo));
+    while ((row = mysql_fetch_row(result))) {
+      newh[id] = calloc(1, sizeof(struct hostinfo));
+      newh[id]->id = atol(row[0]);
+      newh[id]->name = strdup(row[1]);
+      if (debug > 2) LOG(LOG_DEBUG, "read %s", newh[id]->name);
+      newh[id]->hostname = strdup(row[2]);
+      newh[id]->uri = strdup(row[3]);
+      newh[id]->yellow  = atof(row[4]);
+      newh[id]->red = atof(row[5]);
+      newh[id]->info = NULL;
+      newh[id]->info_curlen = 0;
+      newh[id]->info_maxlen = 0;
+      id++;
     }
+    mysql_free_result(result);
+    newh[id] = NULL;
+    num_hosts = id;
+
+    if (hosts != NULL) {
+      for (id=0; hosts[id]; id++) {
+        printf("%s\n", hosts[id]->name);
+        free(hosts[id]->name);
+        free(hosts[id]->hostname);
+        free(hosts[id]->uri);
+        free(hosts[id]);
+        if (hosts[id]->info) free(hosts[id]->info);
+      }
+      free(hosts);
+    }
+    hosts = newh; // replace with new structure
     close_database(mysql);
     if (debug > 0) LOG(LOG_DEBUG, "%d probes read", num_hosts);
     break;
@@ -166,7 +165,7 @@ int run_actual_probes(int count);
       signed char *s;
 
       for (s = hosts[id]->info; *s; s++) {
-        if (*s < 0) *s = ' ';
+        if (*s < 0 || *s == '\r' || *s == '&') *s = ' ';
       }
       subtree = xmlNewTextChild(httpget, NULL, "info", hosts[id]->info);
       free(hosts[id]->info);
@@ -237,7 +236,11 @@ void probe(gpointer data, gpointer user_data)
     int h_errno;
 
     if (gethostbyname_r (host->hostname, &ret, buffer, sizeof(buffer), &result, &h_errno) == 0) {
-      host->ipaddress = strdup(ret.h_addr);
+      int **addresslist = (int **)ret.h_addr_list;
+      struct in_addr myaddr;
+
+      myaddr.s_addr = **addresslist;
+      host->ipaddress = strdup(inet_ntoa(myaddr));
     } else {
       host->info = strdup(buffer);
       return;

@@ -101,13 +101,8 @@ void refresh_database(MYSQL *mysql)
           OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_NAME_FIELD),
           OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_ID_FIELD));
 
-  if (my_query(mysql, 1, qry)) {
-    LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql)); 
-    return;
-  }
-  result = mysql_store_result(mysql);
+  result = my_query(mysql, 1, qry);
   if (!result) {
-    LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql)); 
     return;
   }
     
