@@ -7,7 +7,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.63 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.64 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -522,6 +522,8 @@ AC_CONFIG_FILES([compat/sometests/Makefile])
 AC_CONFIG_FILES([compat/sometests/setproctitle/Makefile])
 
 # server 
+if test "$enable_server" = "yes"
+then
 AC_CONFIG_FILES([uw_setip/Makefile])
 AC_CONFIG_FILES([uw_accept/Makefile])
 AC_CONFIG_FILES([uw_acceptbb/Makefile])
@@ -531,8 +533,11 @@ AC_CONFIG_FILES([uw_process/Makefile])
 AC_CONFIG_FILES([uw_syncprobes/Makefile])
 AC_CONFIG_FILES([compat/bb/Makefile])
 AC_CONFIG_FILES([compat/bb/bbhimport/Makefile])
+fi
 
 # monitors
+if test "$enable_monitors" = "yes"
+then
 AC_CONFIG_FILES([uw_httpget/Makefile])
 AC_CONFIG_FILES([uw_dns/Makefile])
 AC_CONFIG_FILES([uw_ping/Makefile])
@@ -544,9 +549,13 @@ AC_CONFIG_FILES([uw_imap/Makefile])
 AC_CONFIG_FILES([uw_snmpget/Makefile])
 AC_CONFIG_FILES([uw_mssql/Makefile])
 AC_CONFIG_FILES([uw_postgresql/Makefile])
+fi
 
 # extra
+if test "$enable_iptraf" = "yes"
+then
 AC_CONFIG_FILES([uw_iptraf/Makefile])
+fi
 
 cp patches/libstatgrab-configure.gnu libstatgrab/configure.gnu
 ( cd libstatgrab ; ./configure --disable-manpages --disable-examples ; cd .. )

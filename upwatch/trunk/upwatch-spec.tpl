@@ -9,7 +9,7 @@ Packager: Ron Arts <raarts@upwatch.com>
 Copyright: Proprietary - Redistribution Prohibited
 Group: Application/Monitoring
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
-BuildRequires: gzip glib2-devel mysql-devel autogen libxslt lynx readline-devel
+BuildRequires: gzip glib2-devel autogen libxslt lynx readline-devel
 Requires: libxml2 >= 2.4.19 glib2
 [+ FOR clientprog +]# [+clientprog+] requirements:
 [+ include (string-append (get "clientprog") "/" (get "clientprog") ".spec-requires") ;+]
