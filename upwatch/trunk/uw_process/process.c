@@ -200,10 +200,12 @@ static void *get_def(module *probe, struct probe_result *res)
                       "select stattime from pr_%s_raw use index(probstat) "
                       "where probe = '%u' order by stattime desc limit 1",
                        res->name, res->probeid);
-    if (result && mysql_num_rows(result) > 0) {
-      row = mysql_fetch_row(result);
-      if (row && row[0]) {
-        def->newest = atoi(row[0]);
+    if (result) {
+      if (mysql_num_rows(result) > 0) {
+        row = mysql_fetch_row(result);
+        if (row && row[0]) {
+          def->newest = atoi(row[0]);
+        }
       }
       mysql_free_result(result);
     }
@@ -288,11 +290,13 @@ static struct probe_result *get_following_record(module *probe, struct probe_def
 static void update_pr_status(module *probe, struct probe_def *def, struct probe_result *res)
 {
   MYSQL_RES *result;
-  char *escmsg = strdup("");
+  char *escmsg;
 
   if (res->message) {
     escmsg = g_malloc(strlen(res->message) * 2 + 1);
     mysql_real_escape_string(probe->db, escmsg, res->message, strlen(res->message)) ;
+  } else {
+    escmsg = strdup("");
   }
 
   result = my_query(probe->db, 0,
@@ -324,11 +328,13 @@ static void update_pr_status(module *probe, struct probe_def *def, struct probe_
 static void insert_pr_status(module *probe, struct probe_def *def, struct probe_result *res)
 {
   MYSQL_RES *result;
-  char *escmsg = strdup("");
+  char *escmsg;
 
   if (res->message) {
     escmsg = g_malloc(strlen(res->message) * 2 + 1);
     mysql_real_escape_string(probe->db, escmsg, res->message, strlen(res->message)) ;
+  } else {
+    escmsg = strdup("");
   }
 
   result = my_query(probe->db, 0,
@@ -361,11 +367,13 @@ static void insert_pr_status(module *probe, struct probe_def *def, struct probe_
 static void create_pr_hist(module *probe, struct probe_def *def, struct probe_result *res, struct probe_result *prv)
 {
   MYSQL_RES *result;
-  char *escmsg = strdup("");
+  char *escmsg;
 
   if (res->message) {
     escmsg = g_malloc(strlen(res->message) * 2 + 1);
     mysql_real_escape_string(probe->db, escmsg, res->message, strlen(res->message)) ;
+  } else {
+    escmsg = strdup("");
   }
 
   result = my_query(probe->db, 0,

@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.18 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.19 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -43,6 +43,13 @@ AC_ARG_ENABLE(debug,
         CFLAGS="-g -Wall ${LIBOPTS_CFLAGS}"   # note: discard previous CLAGS value
     else
         CFLAGS="${CFLAGS} -Wall -O2 ${LIBOPTS_CFLAGS}"
+    fi]
+)
+
+AC_ARG_ENABLE(profile,
+    [  --enable-profile        Turn on profiling flags (default=no)],
+    [if eval "test x$enable_profile = xyes"; then
+        CFLAGS="${CFLAGS} -pg "
     fi]
 )
 

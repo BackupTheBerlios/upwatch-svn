@@ -28,6 +28,7 @@ struct resfile {
   time_t fromdate;
   int count; // number of results in this file
 };
+GStaticRecMutex resfile_mutex = G_STATIC_REC_MUTEX_INIT;
 GPtrArray *resfile_arr;
 
 static void resfile_free(void *p)
@@ -41,22 +42,28 @@ static void resfile_free(void *p)
 
 void resfile_remove(struct resfile *rf, int ondisk)
 {
+  g_static_rec_mutex_lock (&resfile_mutex);
   if (ondisk) unlink(rf->filename);
   g_ptr_array_remove(resfile_arr, rf);
   resfile_free(rf);
+  g_static_rec_mutex_lock (&resfile_mutex);
 }
 
 void resfile_incr(struct resfile *rf)
 {
+  g_static_rec_mutex_lock (&resfile_mutex);
   rf->count++;
+  g_static_rec_mutex_unlock (&resfile_mutex);
 }
 
 void resfile_decr(struct resfile *rf)
 {
+  g_static_rec_mutex_lock (&resfile_mutex);
   rf->count--;
   if (rf->count < 1) {
     resfile_remove(rf, TRUE);
   }
+  g_static_rec_mutex_unlock (&resfile_mutex);
 }
 
 static void modules_end_run(void)
@@ -170,7 +177,9 @@ int init(void)
       } 
     }
   }
+#ifdef G_THREADS_ENABLED
   //g_thread_init(NULL);
+#endif
   xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
   resfile_arr = g_ptr_array_new();
   modules_init();
@@ -222,6 +231,7 @@ int run(void)
   GPtrArray *arr = g_ptr_array_new();
   int i;
   int files = 0;
+  int failures = 0;
 extern int forever;
 static int resummarize(void);
 
@@ -267,46 +277,66 @@ static int resummarize(void);
         break;
       }
     }
-    if (found) {
+    if (found || resfile_arr->len >= 100) {
       free(g_ptr_array_index(arr,i));
       continue;
     }
     rf = g_malloc0(sizeof(struct resfile));
     rf->filename = g_ptr_array_index(arr,i);
-    uw_setproctitle("added %s", rf->filename);
-    g_ptr_array_add(resfile_arr, rf); // not processing yet, add it
+    uw_setproctitle("reading %s", rf->filename);
+    g_ptr_array_add(resfile_arr, rf); 
+    handle_file(rf, NULL); // extract probe results and queue them
     count++;
   }
   g_ptr_array_free(arr, TRUE);
-
-  // now we refreshed the resfile list, read all files and extract probe results from them
-  // they will be placed in the result-specific queue
-  //
-  modules_start_run();
-  for (i=0; i < resfile_arr->len && i < 100 && forever; i++) {
-    struct resfile *rf;
-
-    rf = g_ptr_array_index(resfile_arr, i);
-    uw_setproctitle("reading %s", rf->filename);
-    handle_file(rf, NULL);
-  } 
+  if (debug) LOG(LOG_DEBUG, "processing %u file entries", resfile_arr->len);
 
   // Now we have the queues updated, process all results
+  //
   for (i = 0; modules[i]; i++) {
-    trx *t;
+    unsigned count = 0;
+    char buf[20];
 
-    while ((t = g_queue_pop_head(modules[i]->queue)) != NULL && forever) {
-      char buf[20];
+    modules[i]->db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
+                                     OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
+                                     OPT_VALUE_DBCOMPRESS);
+    if (modules[i]->start_run) {
+      modules[i]->start_run();
+    }
+    buf[0] = 0;
+    while (forever) {
+      trx *t;
+      int ret;
 
-      strftime(buf, sizeof(buf), "%Y-%m-%d %T", gmtime(&t->rf->fromdate));
-      uw_setproctitle("%s %s@%s", buf, t->res->name, t->rf->fromhost);
-      process(modules[i], t);
+      g_static_mutex_lock (&modules[i]->queue_mutex);
+      t = g_queue_pop_head(modules[i]->queue);
+      g_static_mutex_unlock (&modules[i]->queue_mutex);
+      if (t == NULL) break;
+
+      if (buf[0] == 0 || count % 100 == 0) {
+        strftime(buf, sizeof(buf), "%Y-%m-%d %T", gmtime(&t->rf->fromdate));
+        uw_setproctitle("%s %s@%s", buf, t->res->name, t->rf->fromhost);
+      }
+      ret = process(modules[i], t);
+      if (ret == 0 || ret == -1) { // error in processing this probe
+        failures++; // should log this somewhere
+      } else if (ret == -2) {
+        break; // fatal database error
+      } else {
+        count++;
+      }
       resfile_decr(t->rf);
       g_free(t);
     }
+    if (modules[i]->end_run) { 
+      modules[i]->end_run();
+    }
+    close_database(modules[i]->db);
+    modules[i]->db = NULL;
+    if (debug && count) {
+      LOG(LOG_DEBUG, "Processed: %s:%u", modules[i]->module_name, count);
+    }
   }
-  modules_end_run();
-  if (debug) LOG(LOG_DEBUG, "%d file entries", resfile_arr->len);
 
   return(count);
 }
@@ -476,8 +506,6 @@ static int handle_file(gpointer data, gpointer user_data)
       continue;
     }
     for (i = 0; modules[i]; i++) {
-      int ret;
-      char buf[20];
       trx *t;
       xmlNodePtr del = cur;
 
@@ -496,7 +524,9 @@ static int handle_file(gpointer data, gpointer user_data)
       t = (trx *)g_malloc0(sizeof(trx));
       t->rf = rf;
       t->res = extract_info_from_xml(modules[i], doc, cur, ns);
+      g_static_mutex_lock (&modules[i]->queue_mutex);
       g_queue_push_tail(modules[i]->queue, t);
+      g_static_mutex_unlock (&modules[i]->queue_mutex);
       cur = cur->next;
       xmlUnlinkNode(del); // succeeded, remove this node from the XML tree
       xmlFreeNode(del);

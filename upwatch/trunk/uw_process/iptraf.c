@@ -146,10 +146,12 @@ static void *get_def(module *probe, void *probe_res)
                       "select stattime from pr_%s_raw use index(probstat) "
                       "where probe = '%u' order by stattime desc limit 1",
                        res->name, res->probeid);
-    if (result && mysql_num_rows(result) > 0) {
-      row = mysql_fetch_row(result);
-      if (row && row[0]) {
-        def->newest = atoi(row[0]);
+    if (result) {
+      if (mysql_num_rows(result) > 0) {
+        row = mysql_fetch_row(result);
+        if (row && row[0]) {
+          def->newest = atoi(row[0]);
+        }
       }
       mysql_free_result(result);
     }
@@ -265,18 +267,20 @@ static void summarize(module *probe, void *probe_def, void *probe_res, char *fro
     if (mysql_num_rows(result) == 0) { // no records found
       LOG(LOG_WARNING, "nothing to summarize from %s for probe %u %u %u",
                          from, def->probeid, slotlow, slothigh);
+      mysql_free_result(result);
       return;
     }
 
     row = mysql_fetch_row(result);
     if (!row) {
-      mysql_free_result(result);
       LOG(LOG_ERR, mysql_error(probe->db));
+      mysql_free_result(result);
       return;
     }
     if (row[0] == NULL) {
       LOG(LOG_WARNING, "nothing to summarize from %s for probe %u %u %u", 
                        from, def->probeid, slotlow, slothigh);
+      mysql_free_result(result);
       return;
     }
 

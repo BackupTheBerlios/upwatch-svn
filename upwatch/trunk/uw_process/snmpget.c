@@ -90,18 +90,20 @@ static void summarize(module *probe, void *probe_def, void *probe_res, char *fro
   if (mysql_num_rows(result) == 0) { // no records found
     LOG(LOG_WARNING, "nothing to summarize from %s for probe %u %u %u",
                        from, def->probeid, slotlow, slothigh);
+    mysql_free_result(result);
     return;
   }
 
   row = mysql_fetch_row(result);
   if (!row) {
-    mysql_free_result(result);
     LOG(LOG_ERR, mysql_error(probe->db));
+    mysql_free_result(result);
     return;
   }
   if (row[0] == NULL) {
     LOG(LOG_WARNING, "nothing to summarize from %s for probe %u %u %u", 
                        from, def->probeid, slotlow, slothigh);
+    mysql_free_result(result);
     return;
   }
 
