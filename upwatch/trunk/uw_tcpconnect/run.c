@@ -103,12 +103,12 @@ void refresh_database(MYSQL *mysql)
   MYSQL_ROW row;
   char qry[1024];
 
-  sprintf(qry,  "SELECT pr_pop3_def.id, pr_pop3_def.domid, pr_pop3_def.tblid, pr_domain.name, "
-                "       pr_pop3_def.ipaddress, pr_pop3_def.port, "
-                "       pr_pop3_def.yellow,  pr_pop3_def.red "
-                "FROM   pr_pop3_def, pr_domain "
-                "WHERE  pr_pop3_def.id > 1 and pr_pop3_def.disable <> 'yes'"
-                "       and pr_pop3_def.pgroup = '%d' and pr_domain.id = pr_pop3_def.domid",
+  sprintf(qry,  "SELECT pr_tcpconnect_def.id, pr_tcpconnect_def.domid, pr_tcpconnect_def.tblid, pr_domain.name, "
+                "       pr_tcpconnect_def.ipaddress, pr_tcpconnect_def.port, "
+                "       pr_tcpconnect_def.yellow,  pr_tcpconnect_def.red "
+                "FROM   pr_tcpconnect_def, pr_domain "
+                "WHERE  pr_tcpconnect_def.id > 1 and pr_tcpconnect_def.disable <> 'yes'"
+                "       and pr_tcpconnect_def.pgroup = '%d' and pr_domain.id = pr_tcpconnect_def.domid",
                 (unsigned)OPT_VALUE_GROUPID);
 
   result = my_query(mysql, 1, qry);
@@ -173,7 +173,7 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   xmlDocPtr doc = (xmlDocPtr) user_data;
   struct probedef *probe = (struct probedef *)value;
 
-  xmlNodePtr subtree, pop3;
+  xmlNodePtr subtree, tcpconnect;
   int color;
   char info[1024];
   char buffer[1024];
@@ -192,20 +192,20 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
     }
   }
 
-  pop3 = xmlNewChild(xmlDocGetRootElement(doc), NULL, "pop3", NULL);
+  tcpconnect = xmlNewChild(xmlDocGetRootElement(doc), NULL, "tcpconnect", NULL);
   if (probe->domain) {
-    xmlSetProp(pop3, "domain", probe->domain);
+    xmlSetProp(tcpconnect, "domain", probe->domain);
   }
-  sprintf(buffer, "%d", probe->probeid);      xmlSetProp(pop3, "id", buffer);
-  sprintf(buffer, "%s", probe->ipaddress);    xmlSetProp(pop3, "ipaddress", buffer);
-  sprintf(buffer, "%d", (int) now);           xmlSetProp(pop3, "date", buffer);
+  sprintf(buffer, "%d", probe->probeid);      xmlSetProp(tcpconnect, "id", buffer);
+  sprintf(buffer, "%s", probe->ipaddress);    xmlSetProp(tcpconnect, "ipaddress", buffer);
+  sprintf(buffer, "%d", (int) now);           xmlSetProp(tcpconnect, "date", buffer);
   sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60));
-    xmlSetProp(pop3, "expires", buffer);
-  sprintf(buffer, "%d", color);               xmlSetProp(pop3, "color", buffer);
-  sprintf(buffer, "%f", probe->connect);      subtree = xmlNewChild(pop3, NULL, "connect", buffer);
-  sprintf(buffer, "%f", probe->total);        subtree = xmlNewChild(pop3, NULL, "total", buffer);
+    xmlSetProp(tcpconnect, "expires", buffer);
+  sprintf(buffer, "%d", color);               xmlSetProp(tcpconnect, "color", buffer);
+  sprintf(buffer, "%f", probe->connect);      subtree = xmlNewChild(tcpconnect, NULL, "connect", buffer);
+  sprintf(buffer, "%f", probe->total);        subtree = xmlNewChild(tcpconnect, NULL, "total", buffer);
   if (probe->msg) {
-    subtree = xmlNewTextChild(pop3, NULL, "info", probe->msg);
+    subtree = xmlNewTextChild(tcpconnect, NULL, "info", probe->msg);
     free(probe->msg);
     probe->msg = NULL;
   }
@@ -239,7 +239,7 @@ void *probe(void *data)
 
   memset(&rmt, 0, sizeof(struct sockaddr_in));
   rmt.sin_family = AF_INET;
-  rmt.sin_port = htons(probe->port);
+  rmt.sin_port = htons((uint16_t)probe->port);
   rmt.sin_addr.s_addr = inet_addr(probe->ipaddress);
   if (rmt.sin_addr.s_addr == INADDR_NONE) {
     char buf[50];
