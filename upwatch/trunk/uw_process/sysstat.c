@@ -24,18 +24,9 @@ struct sysstat_result {
   guint buffered;
   guint cached;
   guint used;
-  gchar *message;
 };
 
 extern module sysstat_module;
-
-static void free_res(void *res)
-{
-  struct sysstat_result *r = (struct sysstat_result *)res;
-
-  if (r->message) g_free(r->message);
-  g_free(r);
-}
 
 //*******************************************************************
 // GET THE INFO FROM THE XML FILE
@@ -144,7 +135,7 @@ static void *get_def(module *probe, void *probe_res)
     def->probeid  = atoi(row[0]);
     mysql_free_result(result);
 
-    result = my_query("select server, color, stattime, raw "
+    result = my_query("select server, color, stattime "
                       "from   pr_status "
                       "where  class = '%d' and probe = '%d'", probe->class, def->probeid);
     if (result) {
@@ -153,7 +144,6 @@ static void *get_def(module *probe, void *probe_res)
         def->server   = atoi(row[0]);
         def->color    = atoi(row[1]); 
         def->stattime = atoi(row[2]); // just in case the next query fails
-        def->raw      = strtoull(row[3], NULL, 10);
       }
       mysql_free_result(result);
     } else {
@@ -182,10 +172,9 @@ static void *get_def(module *probe, void *probe_res)
 //*******************************************************************
 // STORE RAW RESULTS
 //*******************************************************************
-static gint store_raw_result(void *probe_def, void *probe_res)
+static gint store_raw_result(struct _module *probe, void *probe_def, void *probe_res)
 {
   MYSQL_RES *result;
-  MYSQL_ROW row;
   struct sysstat_result *res = (struct sysstat_result *)probe_res;
   struct sysstat_result *def = (struct sysstat_result *)probe_def;
   int already_there = TRUE;
@@ -204,17 +193,6 @@ static gint store_raw_result(void *probe_def, void *probe_res)
   mysql_free_result(result);
   if (mysql_affected_rows(mysql) > 0) { // something was actually inserted
     already_there = FALSE;
-    res->raw = mysql_insert_id(mysql);
-  } else {
-    result = my_query("select id  "
-                      "from   pr_sysstat_raw "
-                      "where  probe = '%d' and stattime = '%u'", def->probeid, res->stattime);
-    if (!result) return(FALSE);
-    row = mysql_fetch_row(result);
-    if (row) {
-      res->raw = strtoull(row[0], NULL, 10);
-    }
-    mysql_free_result(result);
   }
   return(already_there); // the record was already in the database
 }
@@ -286,7 +264,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
 module sysstat_module  = {
   STANDARD_MODULE_STUFF(SYSSTAT, "sysstat"),
   NULL,
-  free_res,
+  NULL,
   extract_info_from_xml_node,
   get_def,
   store_raw_result,

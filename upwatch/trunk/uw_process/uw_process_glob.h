@@ -8,7 +8,7 @@
   guint probeid; \
   guint server; \
   guint expires; \
-  my_ulonglong raw
+  char *message;
 
 struct probe_result {
   STANDARD_PROBE_RESULT;
@@ -22,7 +22,7 @@ typedef struct _module {
   void (*free_res)(void *res);
   void *(*extract_from_xml)(xmlDocPtr, xmlNodePtr, xmlNsPtr);
   void *(*get_def)(struct _module *probe, void *res);
-  gint (*store_results)(void *def, void *res);
+  gint (*store_results)(struct _module *probe, void *def, void *res);
   void (*summarize)(void *def, void *res, char *from, char *into, guint slotlow, guint slothigh);
 } module;
 

@@ -99,7 +99,7 @@ static void *get_def(module *probe, void *probe_res)
     def->red      = atoi(row[2]);
     mysql_free_result(result);
 
-    result = my_query("select server, color, stattime, raw "
+    result = my_query("select server, color, stattime "
                       "from   pr_status "
                       "where  class = '%d' and probe = '%d'", probe->class, def->probeid);
     if (result) {
@@ -108,7 +108,6 @@ static void *get_def(module *probe, void *probe_res)
         def->server   = atoi(row[0]);
         def->color    = atoi(row[1]);
         def->stattime = atoi(row[2]); // just in case the next query fails
-        def->raw      = strtoull(row[3], NULL, 10);
       }
       mysql_free_result(result);
     } else {
@@ -129,7 +128,7 @@ static void *get_def(module *probe, void *probe_res)
     }
 
     uw_slot(SLOT_DAY, res->stattime, &slotlow, &slothigh);
-    result = my_query("select sum(in_total), sum(out_total), max(color), max(stattime), max(id) "
+    result = my_query("select sum(in_total), sum(out_total), max(color), max(stattime) "
                       "from   pr_iptraf_raw use index(probtime) "
                       "where  probe = '%u' and stattime >= '%u' and stattime < '%u'",
                       def->probeid, slotlow, slothigh);
@@ -140,7 +139,6 @@ static void *get_def(module *probe, void *probe_res)
         if (row[1]) def->slotday_out_total = atoi(row[1]);
         if (row[2]) def->slotday_max_color = atoi(row[2]);
         if (row[3]) def->stattime = atoi(row[3]);
-        if (row[4]) def->raw      = strtoull(row[4], NULL, 10);
       }
       mysql_free_result(result);
     } else {
@@ -166,10 +164,9 @@ static void *get_def(module *probe, void *probe_res)
 //*******************************************************************
 // STORE RAW RESULTS
 //*******************************************************************
-static gint store_raw_result(void *probe_def, void *probe_res)
+static gint store_raw_result(struct _module *probe, void *probe_def, void *probe_res)
 {
   MYSQL_RES *result;
-  MYSQL_ROW row;
   struct iptraf_result *res = (struct iptraf_result *)probe_res;
   struct iptraf_def *def = (struct iptraf_def *)probe_def;
   int already_there = TRUE;
@@ -188,17 +185,6 @@ static gint store_raw_result(void *probe_def, void *probe_res)
   mysql_free_result(result);
   if (mysql_affected_rows(mysql) > 0) { // something was actually inserted
     already_there = FALSE;
-    res->raw = mysql_insert_id(mysql);
-  } else {
-    result = my_query("select id  "
-                      "from   pr_iptraf_raw "
-                      "where  probe = '%d' and stattime = '%u'", def->probeid, res->stattime);
-    if (!result) return(FALSE);
-    row = mysql_fetch_row(result);
-    if (row) {
-      res->raw = strtoull(row[0], NULL, 10);
-    }
-    mysql_free_result(result);
   }
   return(already_there); // the record was already in the database
 }

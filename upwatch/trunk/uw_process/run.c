@@ -32,6 +32,14 @@ static void cleanup(void)
   }
 }
 
+static void free_res(void *res)
+{
+  struct probe_result *r = (struct probe_result *)res;
+
+  if (r->message) g_free(r->message);
+  g_free(r);
+}
+
 int init(void)
 {
   daemonize = TRUE;
@@ -245,7 +253,7 @@ static void *get_def(module *probe, struct probe_result *res)
     def->stamp    = time(NULL);
     def->probeid  = res->probeid;
 
-    result = my_query("select server, color, stattime, raw "
+    result = my_query("select server, color, stattime "
                       "from   pr_status "
                       "where  class = '%u' and probe = '%u'", probe->class, def->probeid);
     if (result) {
@@ -254,7 +262,6 @@ static void *get_def(module *probe, struct probe_result *res)
         if (row[0]) def->server   = atoi(row[0]);
         if (row[1]) def->color    = atoi(row[1]);
         if (row[2]) def->stattime = atoi(row[2]);
-        if (row[3]) def->raw      = strtoull(row[3], NULL, 10);
       } else {
         LOG(LOG_NOTICE, "pr_status record for %s id %u not found", probe->name, def->probeid);
       }
@@ -274,14 +281,13 @@ static void *get_def(module *probe, struct probe_result *res)
       }
     }
 
-    result = my_query("select id, stattime from pr_%s_raw use index(probtime) "
+    result = my_query("select stattime from pr_%s_raw use index(probtime) "
                       "where probe = '%u' order by stattime desc limit 1",
                        probe->name, def->probeid);
     if (result) {
       row = mysql_fetch_row(result);
       if (row && mysql_num_rows(result) > 0) {
-        if (row[0]) def->raw      = strtoull(row[0], NULL, 10);
-        if (row[1]) def->stattime = atoi(row[1]);
+        if (row[0]) def->stattime = atoi(row[1]);
       }
       mysql_free_result(result);
     }
@@ -304,11 +310,10 @@ static struct probe_result *get_previous_record(char *name, struct probe_result 
   if (prv == NULL) {
     return(NULL);
   }
-  prv->raw = res->raw;
   prv->stattime = res->stattime;
   prv->color = res->color;
 
-  result = my_query("select   id, color, stattime "
+  result = my_query("select   color, stattime "
                     "from     pr_%s_raw use index(probtime) "
                     "where    probe = '%u' and stattime < '%u' "
                     "order by stattime desc limit 1", 
@@ -316,9 +321,8 @@ static struct probe_result *get_previous_record(char *name, struct probe_result 
   if (!result) return(prv);
   row = mysql_fetch_row(result);
   if (row) {
-    prv->raw = strtoull(row[0], NULL, 10);
-    prv->color = atoi(row[1]);
-    prv->stattime = atoi(row[2]);
+    prv->color = atoi(row[0]);
+    prv->stattime = atoi(row[1]);
   }
   mysql_free_result(result);
   return(prv);
@@ -337,11 +341,10 @@ static struct probe_result *get_following_record(char *name, struct probe_result
   if (nxt == NULL) {
     return(NULL);
   }
-  nxt->raw = res->raw;
   nxt->stattime = res->stattime;
   nxt->color = res->color;
 
-  result = my_query("select   id, color, stattime "
+  result = my_query("select   color, stattime "
                     "from     pr_%s_raw use index(probtime) "
                     "where    probe = '%u' and stattime < '%u' "
                     "order by stattime desc limit 1", 
@@ -349,9 +352,8 @@ static struct probe_result *get_following_record(char *name, struct probe_result
   if (!result) return(nxt);
   row = mysql_fetch_row(result);
   if (row) {
-    nxt->raw = strtoull(row[0], NULL, 10);
-    nxt->color = atoi(row[1]);
-    nxt->stattime = atoi(row[2]);
+    nxt->color = atoi(row[0]);
+    nxt->stattime = atoi(row[1]);
   }
   mysql_free_result(result);
   return(nxt);
@@ -365,16 +367,18 @@ static void update_pr_status(int class, struct probe_result *def, struct probe_r
   MYSQL_RES *result;
 
   result = my_query("update pr_status "
-                    "set    stattime = '%u', expires = '%u', color = '%d', raw = '%llu' "
+                    "set    stattime = '%u', expires = '%u', color = '%d', message = '%s' "
                     "where  probe = '%u' and class = '%u'",
-                    res->stattime, res->expires, res->color, res->raw, def->probeid, class);
+                    res->stattime, res->expires, res->color, 
+                    res->message ? res->message : "", def->probeid, class);
   mysql_free_result(result);
   if (mysql_affected_rows(mysql) == 0) { // nothing was actually updated, it was probably already there
     LOG(LOG_NOTICE, "update_pr_status failed, inserting new record (class=%u, probe=%u)", class, def->probeid);
     result = my_query("insert into pr_status "
                       "set    class =  '%d', probe = '%u', stattime = '%u', expires = '%u', "
-                      "       server = '%u', color = '%d', raw = '%llu'",
-                      class, def->probeid, res->stattime, res->expires, def->server, res->color, res->raw);
+                      "       server = '%u', color = '%d', message = '%s'",
+                      class, def->probeid, res->stattime, res->expires, def->server, res->color, 
+                      res->message ? res->message : "");
     mysql_free_result(result);
   }
 }
@@ -388,15 +392,17 @@ static void insert_pr_status(int class, struct probe_result *def, struct probe_r
 
   result = my_query("insert into pr_status "
                     "set    class =  '%d', probe = '%u', stattime = '%u', expires = '%u', "
-                    "       server = '%u', color = '%d', raw = '%llu'",
-                    class, def->probeid, res->stattime, res->expires, def->server, res->color, res->raw);
+                    "       server = '%u', color = '%d', msg = '%s'",
+                    class, def->probeid, res->stattime, res->expires, def->server, res->color, 
+                    res->message ? res->message : "");
   mysql_free_result(result);
   if (mysql_affected_rows(mysql) == 0) { // nothing was actually inserted, it was probably already there
     LOG(LOG_NOTICE, "insert_pr_status failed, updating current record (class=%u, probe=%u)", class, def->probeid);
     result = my_query("update pr_status "
-                      "set    stattime = '%u', expires = '%u', color = '%d', raw = '%llu' "
+                      "set    stattime = '%u', expires = '%u', color = '%d', message = '%s' "
                       "where  probe = '%u' and class = '%u'",
-                      res->stattime, res->expires, res->color, res->raw, def->probeid, class);
+                      res->stattime, res->expires, res->color,
+                      res->message ? res->message : "", def->probeid, class);
     mysql_free_result(result);
   }
 }
@@ -410,9 +416,9 @@ static void create_pr_hist(int class, struct probe_result *def, struct probe_res
 
   result = my_query("insert into pr_hist "
                     "set    server = '%u', class = '%u', probe = '%u', stattime = '%u', "
-                    "       prv_color = '%d', prv_raw = '%llu', color = '%d', raw = '%llu'",
+                    "       prv_color = '%d', color = '%d', message = '%s'",
                     def->server, class, def->probeid, res->stattime,
-                    prv->color, prv->raw, res->color, res->raw);
+                    prv->color, res->color, res->message ? res->message : "");
   mysql_free_result(result);
 }
 
@@ -536,6 +542,7 @@ static int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
   }
 
   res = probe->extract_from_xml(doc, cur, ns); // EXTRACT INFO FROM XML NODE
+  if (!res) return 1;
   if (probe->get_def) {
     def = probe->get_def(probe, res); // RETRIEVE PROBE DEFINITION RECORD FROM DATABASE
   } else {
@@ -550,13 +557,16 @@ static int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
     return 1;  
   }
 
-  seen_before = probe->store_results(def, res); // STORE RAW RESULTS
+  if (probe->store_results) {
+    seen_before = probe->store_results(probe, def, res); // STORE RAW RESULTS
+  } else {
+    seen_before = FALSE;
+  }
 
   if (res->stattime > def->stattime) { // IF CURRENT RAW RECORD IS THE MOST RECENT 
     prv = g_malloc0(sizeof(struct probe_result));
     prv->color = def->color;  // USE PREVIOUS COLOR FROM DEF RECORD
     prv->stattime = def->stattime;
-    prv->raw = def->raw;
   } else {
     prv = get_previous_record(probe->name, def, res); // RETRIEVE PRECEDING RAW RECORD FROM DATABASE
   }
@@ -571,7 +581,7 @@ static int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
         struct probe_result *nxt;
         create_pr_hist(probe->class, def, res, prv); // CREATE PR_HIST
         nxt = get_following_record(probe->name, def, res); // RETRIEVE FOLLOWING RAW RECORD
-        if (nxt && nxt->raw) { // IF FOUND
+        if (nxt && nxt->color) { // IF FOUND
           if (nxt->color == res->color) {  // IF COLOR OF FOLLOWING IS THE SAME AS CURRENT
             delete_history(probe->class, def, nxt); // DELETE POSSIBLE HISTORY RECORDS FOR FOLLOWING RECORD
           }
@@ -628,7 +638,7 @@ static int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
   if (probe->free_res) {
     if (res) probe->free_res(res);
   } else {
-    if (res) g_free(res);
+    if (res) free_res(res);
   }
   // note we don't free the *def here, because that structure is owned by the hashtable
   return 1;

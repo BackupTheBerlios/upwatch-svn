@@ -16,7 +16,6 @@ struct ping_result {
   gfloat highest;
   gchar *hostname;
   gchar *ipaddress;
-  gchar *message;
 };
 extern module ping_module;
 
@@ -97,10 +96,9 @@ static void *extract_info_from_xml_node(xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr 
 //*******************************************************************
 // STORE RAW RESULTS
 //*******************************************************************
-static gint store_raw_result(void *probe_def, void *probe_res)
+static gint store_raw_result(struct _module *probe, void *probe_def, void *probe_res)
 {
   MYSQL_RES *result;
-  MYSQL_ROW row;
   struct ping_result *res = (struct ping_result *)probe_res;
   struct ping_result *def = (struct ping_result *)probe_def;
   int already_there = TRUE;
@@ -113,17 +111,6 @@ static gint store_raw_result(void *probe_def, void *probe_res)
   mysql_free_result(result);
   if (mysql_affected_rows(mysql) > 0) { // something was actually inserted
     already_there = FALSE;
-    res->raw = mysql_insert_id(mysql);
-  } else {
-    result = my_query("select id  "
-                      "from   pr_ping_raw "
-                      "where  probe = '%d' and stattime = '%u'", def->probeid, res->stattime);
-    if (!result) return(FALSE);
-    row = mysql_fetch_row(result);
-    if (row) {
-      res->raw = strtoull(row[0], NULL, 10);
-    }
-    mysql_free_result(result);
   }
   return(already_there); // the record was already in the database
 }
