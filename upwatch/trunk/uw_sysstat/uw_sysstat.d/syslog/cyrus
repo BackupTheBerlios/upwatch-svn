@@ -21,6 +21,7 @@ green [LOGDATE] lmtpd[PID]: connection from [HOSTNAME] \[[IPADDR]\] preauth'd as
 green [LOGDATE] lmtpd[PID]: dupelim: eliminated duplicate message to
 green [LOGDATE] lmtpd[PID]: lmtp connection preauth'd as [USER]
 green [LOGDATE] lmtpd[PID]: lmtpd: unable to init duplicate delivery database 
+green [LOGDATE] lmtpd[PID]: duplicate_mark: .*: DB_INCOMPLETE:
 green [LOGDATE] master[PID]: about to exec [PATH]
 green [LOGDATE] master[PID]: exiting on SIGTERM
 green [LOGDATE] master[PID]: process [NUM] exited, signaled to death by [NUM]
