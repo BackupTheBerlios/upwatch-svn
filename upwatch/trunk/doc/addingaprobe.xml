@@ -8,4 +8,90 @@
           tables and queue result files, creating PHP pages, and PHP graphs, writing documentation and submitting
           these changes to CVS. It is a lot of work, though potentially very rewarding. </para>
     </sect1>
+    <sect1 id="Adding_probe_Basic_Steps">
+       <title>Basic steps for adding a probe</title>
+       <sect2 id="Think_carefully_befire_you_start">
+          <title>Think carefully before you start</title>
+          <para> You should not think lightly of adding a probe. Think things over before you start. Isn't there a
+             probe available you can use? Or maybe you can get away with extending an existing one? If not,
+             perhaps you can copy and modify one? </para>
+          <para> If not, you're in for the rewarding process of adding a new probe. Go to the next step.</para>
+       </sect2>
+       <sect2 id="Pick_a_name">
+          <title>Pick a real good name</title>
+          <para> You should think of a real good descriptive name for your probe. It should describe
+             exactly what it does. Leave room for future probes that do something similar, also think about
+             future extension to the probe itself.. Don't be satisfied too soon. For the rest of this small tutorial, we'll
+             assume you probe willed be called <varname>cputemp</varname> for monitoring the host CPU
+             temperature.</para>
+       </sect2>
+       <sect2 id="Design_the_database_layout">
+          <title>Design the Database Layout</title>
+          <para>Take a close look at the database layout for existing probes. Each probe at least consists of the
+             following tables:</para>
+          <itemizedlist>
+             <listitem><para>A definition table (of course). This contains the probe id, target, last status, when to turn yellow
+             or red</para></listitem>
+             <listitem><para>Table for raw output, all results are kept here</para></listitem>
+             <listitem><para>Tables for hour/day/week/month/year/5year summarisations</para></listitem>
+             <listitem><para>A history table to keep all status changes</para></listitem>
+          </itemizedlist>
+          <para> Also a probe needs to enter its status into pr_status, and its history into pr_history.</para>
+       </sect2>
+       <sect2 id="write_the_code">
+          <title>Write the code</title>
+          <para> Create a new directory named <filename>uw_cputemp</filename>, copy all files in
+             <filename>uw_template</filename> to it. Look into
+             those files, do a search and replace all occurrences of <varname>uw_template</varname> with
+             <varname>uw_cputemp</varname>. Go one
+             directory up, edit <filename>configure.in</filename>. Add a line <filename>uw_cputemp/Makefile</filename>
+              to the  <varname>AC_CONFIG_FILES</varname> section. Add <varname>uw_cputemp</varname> to the
+             <varname>PROGNAMES</varname> variable in <filename>Makefile.am</filename>. Run:
+          </para>
+          <literallayout>
+                $ ./autogen.sh
+                $ ./configure
+                $ cd uw_cputemp
+                $ make
+          </literallayout>
+          <para> No errors should show up.
+          </para>
+          <para> Now start coding in <filename>uw_cputemp/run.c</filename>, specifically in the function
+             <function>run()</function>. You should have enough examples in the other probes. Basically the
+             probe should read a list of probedefinitions from a database, execute all probes, and writes the
+             results into a spoolfile. There are utility functions for doing this in libupwatch.
+          </para>
+          <important><para>Test your code thoroughly for memory leaks and error conditions.</para></important>
+       </sect2>
+       <sect2 id="Write_the_uw_process_extension">
+          <title>Write the <varname>uw_process</varname> extension</title>
+          <para> The output of your probe is processed by <varname>uw_process</varname>. You should
+            add a new source file called <filename>process_cputemp.c</filename>, that reads the probe results
+            and writes them to the database tables. Be careful for the logic in this part. Add an entry in the
+            <varname>struct _probe_proc</varname> array in <filename>uw_process/run.c</filename>, and
+            a <function>extern int process_cputemp(char *spec, GString *remark);</function> just above it.
+          </para>
+       </sect2>
+       <sect2 id="Add_PHP_pages">
+          <title>Add PHP pages</title>
+          <para>to be done</para>
+       </sect2>
+       <sect2 id="Write_documentatrion">
+          <title>Write documentation</title>
+          <para> Note that every probe is documented briefly in the <filename>cmd_options.def</filename> file.
+             You should also document the probe in this manual. Personally I use KDE's <application>Kate</application>
+             with the <application>XML plugin</application>. Go the the <filename>doc</filename> directory.
+             Copy <filename>template-specs.xml</filename> to <filename>cputemp-specs.xml</filename>. Add a line
+             to <filename>probesspecs.xml</filename>, and an ENTITY line at the top of <filename>upwatch.xml</filename>.
+             Add <filename>cputemp-specs.xml</filename> to the <varname>XMLFILES</varname> line in
+             <filename>Makefile.am</filename>. Rerun <application>./autogen.sh</application>,
+             <application>./configure</application> in the top directory. Run <application>make</application> in
+             the doc directory.
+          </para>
+       </sect2>
+    </sect1>
+    <sect1 id="Non_standard_probes">
+    <title>Non-standard Probes</title>
+    <para>To be done</para>
+    </sect1>
 </appendix>

@@ -1,4 +1,4 @@
-PROGNAMES = uw_send uw_accept uw_httpget uw_ping uw_process uw_traceroute uw_notify
+PROGNAMES = uw_send uw_accept uw_httpget uw_ping uw_process uw_traceroute uw_notify uw_template
 SUBDIRS = doc upwatch ${PROGNAMES}
 
 EXTRA_DIST = Makefile.am.common upwatch-spec.def upwatch-spec.tpl upwatch.spec config/upwatch.conf \

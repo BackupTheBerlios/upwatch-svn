@@ -76,7 +76,7 @@ install -m 644 [+program+]/[+program+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+prog
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
 
 %files
-%doc AUTHORS COPYING ChangeLog NEWS README doc/upwatch.html doc/upwatch.txt
+%doc AUTHORS COPYING ChangeLog NEWS README doc/upwatch.html doc/upwatch.txt doc/upwatch.pdf doc/upwatch.xml
 
 %changelog
 * Mon Sep 2 2002 Ron Arts <raarts@upwatch.com>

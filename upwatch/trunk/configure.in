@@ -6,7 +6,7 @@ AM_INIT_AUTOMAKE(upwatch, 0.1)
 AC_PROG_CC
 AC_PROG_GCC_TRADITIONAL
 AC_PROG_AWK
-AC_PROG_RANLIB
+AC_PROG_LIBTOOL
 AC_PROG_LN_S
 
 ################## MYSQL
@@ -123,6 +123,7 @@ AC_CONFIG_FILES([Makefile
                  uw_process/Makefile 
                  uw_traceroute/Makefile 
                  uw_notify/Makefile 
+                 uw_template/Makefile 
                  uw_send/Makefile]
 )
 AC_OUTPUT

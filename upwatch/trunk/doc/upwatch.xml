@@ -31,8 +31,8 @@
             prove your website (or switch, or basically any other device) was available, showed the
             proper performance, or just want to know current and past CPU load, you've come to the
             right place.</para>
-        <para> UpWatch is scalable, fast, extensible, built on proven opensource tools, and is built
-            not to loose data.</para>
+        <para> UpWatch is scalable, fast, extensible, built on proven opensource tools, and tries
+            very hard not to loose data.</para>
     </preface>
     &installation;
     &configuration;

@@ -2,7 +2,11 @@
 
 <chapter id="Configuration">
     <title>Configuration</title>
-    <para>
+    <para> Most important things to configure are database access for probes. The file
+       <filename>/etc/upwatch.conf</filename> contains defaults for all probes. These
+       can be overridden in <filename>/etc/upwatch.d/probe.conf</filename>. Look
+       in the probe manual pages for details. Every long commandine option can also
+       be entered in a configuration file.
     </para>
 </chapter>
 

@@ -82,16 +82,42 @@
            > done
         </literallayout>
     </sect1>
+    <sect1 id="php_pages">
+       <title>PHP pages</title>
+       <para> The PHP pages can just be copied to any directory. There is an include directory. Copy
+          that a some location ouside the web root, and enter its location in the .htaccess file in the web root dir.
+       </para>
+    </sect1>
     <sect1 id="Security_considerations">
        <title>Securiy considerations</title>
        <para> All of upwatch can be run as a non-root user, except the probes which need root-access,
           most notable, uw_ping. You can assign each probe its own user and grant that user access rights
-          to its own database tables. The probes only read from the <varname>pr_xxx_def</varname> and 
+          to its own database tables. The probes only read from the <varname>pr_xxx_def</varname> and
           the <varname>server</varname> tables.</para>
+          <para> The PHP web user should have SELECT, UPDATE, DELETE access to all tables.
+          </para>
+          <para> <command>uw_access</command> is the program most vulnerable to crackers, as it waits
+             for incoming connections on a TCP port (1985). If possible, use <command>chroot</command> and
+             firewall rules to limit connections to
+             real probes only. Something similar holds for <command>mysql</command>.Most probes will want
+             access, and passwords can be sniffed. For real security use ssh-tunnels.
+          </para>
     </sect1>
     <sect1 id="Database">
         <title>Database</title>
-        <para> Create the database as follows:</para>
-
+        <para> Create the database as follows. We assume you have a root password set for mysql:</para>
+        <literallayout>
+           $ mysqladmin -u root --password=PASSWORD create upwatch
+           $ mysql -u root --password=PASSWORD &lt; upwatch.mysql
+        </literallayout>
+        <para> Of course you need to assign users and GRANT them access. Note that mosts probes will
+           want read access to their definition table and the server list. In many situations you can use just
+           one user for that. Give that user access with:
+        </para>
+        <literallayout>
+           $ mysql -u root --PASSWORD=PASSWORD mysql
+           mysql> GRANT SELECT ON upwatch.pr_ping_def TO user@'192.168.170.23' IDENTIFIED BY 'PASSWD'
+           mysql> GRANT SELECT ON upwatch.server TO user@'192.168.170.23' IDENTIFIED BY 'PASSWD'
+        </literallayout>
     </sect1>
 </chapter>
