@@ -374,6 +374,7 @@ static int resummarize(void)
 extern int forever;
   char *probename = strtok(OPT_ARG(SUMMARIZE), ",");
   res.stattime = atoi(strtok(NULL, ""));
+  res.name = probename;
   
 //  printf("%s: %s", probename, ctime(&res.stattime));
 

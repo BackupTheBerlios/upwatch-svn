@@ -1,4 +1,3 @@
-period = "raw";
 period = "day";
 period = "week";
 period = "month";

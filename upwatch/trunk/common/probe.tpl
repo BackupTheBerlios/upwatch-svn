@@ -63,7 +63,7 @@ ENDIF null +]NULL default '[+default+]',        -- [+descrip+][+
 ENDFOR result +]
   message text NOT NULL default '',
   PRIMARY KEY (id),
-  UNIQUE KEY probtime (stattime,probe),
+  UNIQUE KEY probstat (probe,stattime),
   KEY probe (probe)
 ) TYPE=MyISAM;
 
@@ -90,7 +90,7 @@ ENDIF null +]NULL default '[+default+]',	-- [+descrip+][+
 ENDFOR result +]
   message text NOT NULL default '',
   PRIMARY KEY (id),
-  UNIQUE KEY probtime (stattime,probe),
+  UNIQUE KEY probstat (probe,stattime),
   KEY probe (probe)
 ) TYPE=MyISAM;
 [+ ENDFOR period +]

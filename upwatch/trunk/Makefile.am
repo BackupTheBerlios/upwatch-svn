@@ -1,4 +1,4 @@
-PROBES = uw_httpget uw_ping uw_iptraf uw_sysstat uw_acceptbb uw_mysql uw_snmpget
+PROBES = uw_httpget uw_ping uw_iptraf uw_sysstat uw_acceptbb uw_mysql uw_snmpget uw_pop3
 
 # NOTE: order is important, first the probes, then uw_process, then the rest
 PROGNAMES = ${PROBES} uw_process uw_send uw_accept uw_notify uw_investigate
@@ -6,7 +6,7 @@ PROGNAMES = ${PROBES} uw_process uw_send uw_accept uw_notify uw_investigate
 export PROGNAMES
 export TOP_SRCDIR = $(top_srcdir)
 
-SUBDIRS = upwatch ${PROGNAMES} util compat doc
+SUBDIRS = upwatch st-1.4 ${PROGNAMES} util compat doc
 
 EXTRA_DIST = Makefile.am.common upwatch-spec.def upwatch-spec.tpl upwatch.spec templates \
   config/upwatch.conf config/upwatch-base.mysql config/result.dtd config/logrotate config/cron.daily \
