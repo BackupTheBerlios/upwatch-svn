@@ -37,5 +37,3 @@ slot_options.h: slot_options.def ../common/minimal_options.def
 slot.1: slot_options.def $(top_srcdir)/common/man1.tpl
 	autogen -b slot $(AGDEFINES) $(GENINCL) -T $(MAN1TPL) slot_options.def
 
-include $(top_srcdir)/Makefile.am.common
-
