@@ -64,7 +64,6 @@ int run_actual_probes(int count);
     if (result) {
       struct hostinfo **newh = calloc(mysql_num_rows(result)+1, sizeof(struct hostinfo));
       while ((row = mysql_fetch_row(result))) {
-        //if (!strstr(name, "amstel02.netland.nl")) continue;
         newh[id] = calloc(1, sizeof(struct hostinfo));
         newh[id]->id = atol(row[0]);
         newh[id]->name = strdup(row[1]);
@@ -150,10 +149,10 @@ int run_actual_probes(int count);
     //sprintf(buffer, "%s", inet_ntoa(hosts[id]->saddr.sin_addr));
     //  subtree = xmlNewChild(host, NULL, "ipaddress", buffer);
     sprintf(buffer, "%d", color);               subtree = xmlNewChild(httpget, NULL, "color", buffer);
-    sprintf(buffer, "%.3f", hosts[id]->lookup); subtree = xmlNewChild(httpget, NULL, "lookup", buffer);
-    sprintf(buffer, "%.3f", hosts[id]->connect);    subtree = xmlNewChild(httpget, NULL, "connect", buffer);
-    sprintf(buffer, "%.3f", hosts[id]->pretransfer); subtree = xmlNewChild(httpget, NULL, "pretransfer", buffer);
-    sprintf(buffer, "%.3f", hosts[id]->total); subtree = xmlNewChild(httpget, NULL, "total", buffer);
+    sprintf(buffer, "%f", hosts[id]->lookup); subtree = xmlNewChild(httpget, NULL, "lookup", buffer);
+    sprintf(buffer, "%f", hosts[id]->connect);    subtree = xmlNewChild(httpget, NULL, "connect", buffer);
+    sprintf(buffer, "%f", hosts[id]->pretransfer); subtree = xmlNewChild(httpget, NULL, "pretransfer", buffer);
+    sprintf(buffer, "%f", hosts[id]->total); subtree = xmlNewChild(httpget, NULL, "total", buffer);
     if (hosts[id]->info) {
       // remove non-ASCII characters as the xml library chokes on some
       signed char *s;
@@ -224,7 +223,11 @@ void probe(gpointer data, gpointer user_data)
   double result;
 
   if (!host) return;
-  sprintf(buffer, "http://%s%s", host->hostname, host->uri);
+  sprintf(buffer, "http://%s", host->hostname);
+  if (host->uri[0] != '/') {
+    strcat(buffer, "/");
+  }
+  strcat(buffer, host->uri);
   curl = curl_easy_init();
 
   curl_easy_setopt(curl, CURLOPT_FILE, host);
@@ -236,26 +239,26 @@ void probe(gpointer data, gpointer user_data)
   curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 10L);
   host->ret = curl_easy_perform(curl);
 
-  // Pass a pointer to a double to receive the total transaction time in seconds for the
-  // previous transfer.
-  curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &result);
-  host->total = result * 1000.0; // convert to millesecs
-
   // Pass a pointer to a double to receive the time, in seconds, it took from the start
-  //until the name resolving was completed.
+  // until the name resolving was completed.
   curl_easy_getinfo(curl, CURLINFO_NAMELOOKUP_TIME, &result);
-  host->lookup = result * 1000.0; // convert to millesecs
+  host->lookup = (float) result;
 
   // Pass a pointer to a double to receive the time, in seconds, it took from the start
   // until the connect to the remote host (or proxy) was completed.
   curl_easy_getinfo(curl, CURLINFO_CONNECT_TIME, &result);
-  host->connect = result * 1000.0; // convert to millesecs
+  host->connect = (float) result;
 
   // Pass a pointer to a double to receive the time, in seconds, it  took from the start
   // until the file transfer is just about to begin. This includes all pre-transfer com­
   // mands and negotiations that are specific to the particular protocol(s) involved.
   curl_easy_getinfo(curl, CURLINFO_PRETRANSFER_TIME, &result);
-  host->pretransfer = result * 1000.0; // convert to millesecs
+  host->pretransfer = (float) result;
+
+  // Pass a pointer to a double to receive the total transaction time in seconds for the
+  // previous transfer.
+  curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &result);
+  host->total = (float) result;
 
   if (host->info) host->info[512] = 0; // limit amount of data
 

@@ -299,11 +299,11 @@ int run(void)
     sprintf(buffer, "%s", inet_ntoa(hosts[id]->saddr.sin_addr));	
       subtree = xmlNewChild(host, NULL, "ipaddress", buffer);
     sprintf(buffer, "%d", color); 		subtree = xmlNewChild(ping, NULL, "color", buffer);
-    sprintf(buffer, "%.3f", ((float) hosts[id]->min_reply) / 1000.0);	
+    sprintf(buffer, "%f", ((float) hosts[id]->min_reply) / 1000.0);	
       subtree = xmlNewChild(ping, NULL, "min", buffer);
-    sprintf(buffer, "%.3f", ((float) (hosts[id]->total_time / (hosts[id]->num_recv==0?1:hosts[id]->num_recv))) / 1000.0);	
+    sprintf(buffer, "%f", ((float) (hosts[id]->total_time / (hosts[id]->num_recv==0?1:hosts[id]->num_recv))) / 1000.0);	
       subtree = xmlNewChild(ping, NULL, "avg", buffer);
-    sprintf(buffer, "%.3f", ((float) hosts[id]->max_reply) / 1000.0);	
+    sprintf(buffer, "%f", ((float) hosts[id]->max_reply) / 1000.0);	
       subtree = xmlNewChild(ping, NULL, "max", buffer);
     if (info[0]) subtree = xmlNewChild(ping, NULL, "info", info);
 
