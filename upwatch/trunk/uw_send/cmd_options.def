@@ -22,17 +22,6 @@ spec-files    = "%attr(0770,root,upwatch) %dir /var/spool/upwatch/uw_send/new";
 spec-files    = "%attr(0770,root,upwatch) %dir /var/spool/upwatch/uw_send/tmp";
 spec-files    = "%attr(0770,root,upwatch) /usr/sbin/uw_send";
 
-// describe commandline flags
-flag = {
-    name      = input;
-    value     = I;
-    arg_type  = string;
-    descrip   = "name of queue to read from";
-    doc       =
-'The argument is taken to be a maildir under the directory `spooldir`.
-Everything placed in this queue is transferred.';
-};
-
 flag = {
     name      = spooldir;
     value     = S;
@@ -47,25 +36,53 @@ removes any files in `tmp` that are older then 36 hours. For some more info
 about maildir see http://www.qmail.org/man/man5/maildir.html.';
 };
 
+// describe commandline flags
+flag = {
+    name      = input;
+    value     = I;
+    stack_arg;
+    arg_type  = string;
+    descrip   = "name of queue to read from";
+    doc       =
+'The argument is taken to be a maildir under the directory `spooldir`.
+Everything placed in this queue is transferred. More then one queue may
+be given, and these will be matched with corresponding 
+host/port/uwuser/uwpasswd arguments, so the second queue given will be
+uploaded to the second host given etcetera. Special behaviour in case
+of overriding values: set hostname to `none` to delete an earlier
+defined input queue.';
+};
+
+flag = {
+    name      = threads;
+    value     = t;
+    stack_arg;
+    arg_type  = string;
+    descrip   = "number of threads per queue";
+    doc       =
+'Number of threads for each queue. Setting to one is probably best.';
+};
+
 flag = {
     must-set;
     name      = host;
     value     = h;        /* flag style option character */
+    stack_arg;
     arg_type  = string;   /* option argument indication  */
-    max       = NOLIMIT;  /* occurrence limit (none)     */
     descrip   = "Host to send data to";
     doc       =
 'This option denotes the internet hostname where the queue files should be uploaded.
 By default it connects to port 1985, but this can be changed using the --port option.
-This hostname should be DNS resolvable of course, but an IP address may be specified';
+This hostname should be DNS resolvable of course, but an IP address may be specified.
+Setting hostname to none results in deleting an earlier defined input queue definition';
 };
 
 flag = {
     must-set;
     name      = port;
     value     = h;        /* flag style option character */
+    stack_arg;
     arg_type  = number;   /* option argument indication  */
-    max       = NOLIMIT;  /* occurrence limit (none)     */
     descrip   = "port to connect to";
 };
 
@@ -73,8 +90,8 @@ flag = {
     must-set;
     name      = uwuser;
     value     = U;        /* flag style option character */
+    stack_arg;
     arg_type  = string;   /* option argument indication  */
-    max       = NOLIMIT;  /* occurrence limit (none)     */
     descrip   = "Upwatch username";
 };
 
@@ -82,8 +99,8 @@ flag = {
     must-set;
     name      = uwpasswd;
     value     = P;        /* flag style option character */
+    stack_arg;
     arg_type  = string;   /* option argument indication  */
-    max       = NOLIMIT;  /* occurrence limit (none)     */
     descrip   = "UpWatch password";
 };
 
