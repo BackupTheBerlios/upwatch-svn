@@ -31,6 +31,8 @@ int init(void)
   return(1);
 }
 
+int fatal = 0; // back down from processing current batch if fatal error encountered
+
 int run(void)
 {
   int count = 0;
@@ -40,7 +42,7 @@ int run(void)
 
   sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), OPT_ARG(INPUT));
   dir = g_dir_open (path, 0, NULL);
-  while ((filename = g_dir_read_name(dir)) != NULL) {
+  while ((filename = g_dir_read_name(dir)) != NULL && !fatal) {
     char buffer[PATH_MAX];
 
     sprintf(buffer, "%s/%s", path, filename);
@@ -50,11 +52,12 @@ int run(void)
       thread_count++;
     }
     while (thread_count) {
-      st_usleep(10000); /* 10 ms */
+      st_usleep(100000); /* 100 ms */
     }
     count++;
   }
   g_dir_close(dir);
+  fatal = 0;
   return(count);
 }
 
@@ -71,6 +74,7 @@ void *push(void *data)
     LOG(LOG_NOTICE, "can't resolve %s: %s", OPT_ARG(HOST), hstrerror(h_errno));
     free(filename);
     thread_count--;
+    fatal = 1;
     return NULL;
   } 
 
@@ -84,6 +88,7 @@ void *push(void *data)
     LOG(LOG_WARNING, "socket: %m");
     free(filename);
     thread_count--;
+    fatal = 1;
     return NULL;
   }
   uw_setproctitle("connecting to %s:%d", OPT_ARG(HOST), OPT_VALUE_PORT);
@@ -91,6 +96,7 @@ void *push(void *data)
     LOG(LOG_NOTICE, "st_netfd_open_socket: %m", strerror(errno));
     free(filename);
     thread_count--;
+    fatal = 1;
     return NULL;
   } 
 
@@ -99,6 +105,7 @@ void *push(void *data)
     st_netfd_close(rmt_nfd);
     free(filename);
     thread_count--;
+    fatal = 1;
     return NULL;
   }
 
