@@ -1,5 +1,5 @@
 PROGNAMES = uw_send uw_accept uw_httpget uw_ping uw_process uw_traceroute uw_notify uw_acceptbb uw_investigate
-SUBDIRS = doc upwatch ${PROGNAMES}
+SUBDIRS = doc upwatch libpcap-possiblymodified ${PROGNAMES}
 
 EXTRA_DIST = Makefile.am.common upwatch-spec.def upwatch-spec.tpl upwatch.spec upwatch.mysql templates \
   config/upwatch.conf config/upwatch-base.mysql config/result.dtd config/logrotate config/cron.daily \

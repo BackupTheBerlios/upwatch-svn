@@ -13,7 +13,8 @@
         <title>Requirements</title>
         <sect2 id="Run-time_requirements">
             <title>Run-time requirements</title>
-            <para> Run time requirements differ per probe. Look in the corresponding .def file
+            <para>First ensure that the time/date on all hosts is correctly set. </para>
+            <para>Run time requirements differ per probe. Look in the corresponding .def file
                 (or in the spec file for the probe, here's a list of everything we expect on a
                 machine running all probes, and the database (I'll also list the version we use ourselves):</para>
             <itemizedlist>

@@ -44,28 +44,14 @@ AC_SUBST(MYSQL_CFLAGS)
 CFLAGS="$CFLAGS $MYSQL_CFLAGS"
 
 ################## PCAP
-# path to pcap:
-AC_ARG_WITH(pcap-libs,
-    [  --with-pcap-libs=<path>            prefix of pcap libraries. Default /usr/lib],
-    [PCAP_LIB_PREFIX=$with_pcap_libs],
-    [PCAP_LIB_PREFIX=/usr/lib]
-)
+libpcapdir=libpcap-possiblymodified
+AC_SUBST(libpcapdir)
+LIBPCAP_LIBS="-L../libpcap-possiblymodified -lpcap"
+LIBPCAP_CFLAGS="-I../libpcap-possiblymodified"
+AC_SUBST(LIBPCAP_LIBS)
+AC_SUBST(LIBPCAP_CFLAGS)
 
-# path to pcap includes
-AC_ARG_WITH(pcap-include,
-    [  --with-pcap-include=<path>         prefix of pcap headers. Default /usr/include/pcap],
-    [PCAP_INC_PREFIX=$with_pcap_include],
-    [PCAP_INC_PREFIX=/usr/include/pcap]
-)
-
-AC_SUBST(PCAP_LIB_PREFIX)
-AC_SUBST(PCAP_INC_PREFIX)
-PCAP_LIBS="-L${PCAP_LIB_PREFIX} -lpcap"
-PCAP_CFLAGS="-I${PCAP_INC_PREFIX}"
-AC_SUBST(PCAP_LIBS)
-AC_SUBST(PCAP_CFLAGS)
-
-CFLAGS="$CFLAGS $PCAP_CFLAGS"
+CFLAGS="$CFLAGS $LIBPCAP_CFLAGS"
 
 ################## LIBNET
 # libnet
@@ -131,13 +117,11 @@ AC_CHECK_LIB([curl], [curl_easy_init],
   [LIBCURL_LIBS=-lcurl], [AC_MSG_ERROR([Sorry, we need -lcurl to continue])])
 AC_SUBST(LIBCURL_LIBS)
 
-AC_CHECK_LIB([pcap], [pcap_close], 
-  [LIBPCAP_LIBS=-lpcap], [AC_MSG_ERROR([Sorry, we need -lpcap to continue])])
-AC_SUBST(LIBPCAP_LIBS)
-
 AC_CHECK_LIB([gdbm], [gdbm_close], 
   [LIBGDBM_LIBS=-lgdbm], [AC_MSG_ERROR([Sorry, we need -lgdbm to continue])])
 AC_SUBST(LIBGDBM_LIBS)
+
+AC_CONFIG_SUBDIRS($libpcapdir)
 
 # Checks for header files.
 AC_HEADER_STDC
@@ -157,6 +141,7 @@ AC_TYPE_SIGNAL
 AC_FUNC_STAT
 AC_FUNC_STRFTIME
 AC_CHECK_FUNCS([alarm atexit gethostbyname gethostname gettimeofday inet_ntoa memset putenv select socket strdup strerror strncasecmp strrchr strstr tzset])
+
 
 AM_CONFIG_HEADER(config.h)
 
