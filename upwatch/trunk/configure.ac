@@ -389,14 +389,14 @@ AC_SUBST(LIBXML2_CFLAGS)
 AC_SUBST(LIBXML2_LIBS)
 
 # STATE THREADS
-AC_CHECK_LIB(st, st_init, HAS_ST=yes, HAS_ST=no)
-if test ${HAS_ST} = yes ; then
-  LIBSTLIBS=-lst
-else
-  AC_MSG_ERROR([Sorry, we really need libst to continue])
-fi
-AC_SUBST(LIBST_CFLAGS)
-AC_SUBST(LIBST_LIBS)
+#AC_CHECK_LIB(st, st_init, HAS_ST=yes, HAS_ST=no)
+#if test ${HAS_ST} = yes ; then
+#  LIBSTLIBS=-lst
+#else
+#  AC_MSG_ERROR([Sorry, we really need libst to continue])
+#fi
+#AC_SUBST(LIBST_CFLAGS)
+#AC_SUBST(LIBST_LIBS)
 
 # THREADS
 AC_CHECK_LIB(pthread, pthread_create, HAS_PTHREADS=yes, HAS_PTHREADS=no)
