@@ -162,7 +162,7 @@ static void *get_def(module *probe, void *probe_res)
     result = my_query(probe->db, 0,
                       "select sum(in_total), sum(out_total), max(color), avg(yellow), avg(red), "
                       "       max(stattime) "
-                      "from   pr_iptraf_raw use index(probtime) "
+                      "from   pr_iptraf_raw use index(probstat) "
                       "where  probe = '%u' and stattime >= '%u' and stattime < '%u'",
                       def->probeid, slotlow, slothigh);
     if (result) {
@@ -257,7 +257,7 @@ static void summarize(module *probe, void *probe_def, void *probe_res, char *fro
   } else {
     result = my_query(probe->db, 0,
                       "select sum(in_total), sum(out_total), max(color), avg(yellow), avg(red) "
-                      "from   pr_iptraf_%s use index(probtime) "
+                      "from   pr_iptraf_%s use index(probstat) "
                       "where  probe = '%u' and stattime >= '%u' and stattime < '%u'",
                       from, def->probeid, slotlow, slothigh);
 

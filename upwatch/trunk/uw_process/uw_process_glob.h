@@ -37,13 +37,15 @@ struct probe_def{
 #include "../common/common.h"
 };
 
-#define STANDARD_MODULE_STUFF(a) PROBE_##a, #a, NULL, NULL, sizeof(struct a##_result)
+#define STANDARD_MODULE_STUFF(a) PROBE_##a, #a, NULL, NULL, sizeof(struct a##_result), 0, 0
 typedef struct _module {
   int class;
   char *module_name;
   MYSQL *db;
   GHashTable *cache;
   int res_size;
+  int count;
+  int errors;
   void (*free_def)(void *def);
   void (*free_res)(void *res);
   int (*init)(void);

@@ -181,7 +181,7 @@ static void *get_def(module *probe, void *probe_res)
     }
 
     result = my_query(probe->db, 0,
-                      "select stattime from pr_%s_raw use index(probtime) "
+                      "select stattime from pr_%s_raw use index(probstat) "
                       "where probe = '%u' order by stattime desc limit 1",
                        res->name, def->probeid);
     if (result) {
@@ -259,7 +259,7 @@ static void summarize(module *probe, void *probe_def, void *probe_res, char *fro
                     "       avg(swapin), avg(swapout), avg(blockin), avg(blockout), "
                     "       avg(swapped), avg(free), avg(buffered), avg(cached), "
                     "       avg(used), avg(systemp), max(color), avg(yellow), avg(red) " 
-                    "from   pr_sysstat_%s use index(probtime) "
+                    "from   pr_sysstat_%s use index(probstat) "
                     "where  probe = '%d' and stattime >= %d and stattime < %d",
                     from, def->probeid, slotlow, slothigh);
   

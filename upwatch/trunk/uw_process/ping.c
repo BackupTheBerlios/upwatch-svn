@@ -92,7 +92,7 @@ static void summarize(module *probe, void *probe_def, void *probe_res, char *fro
   result = my_query(probe->db, 0,
                     "select avg(lowest), avg(value), avg(highest), "
                     "       max(color), avg(yellow), avg(red) " 
-                    "from   pr_ping_%s use index(probtime) "
+                    "from   pr_ping_%s use index(probstat) "
                     "where  probe = '%d' and stattime >= %d and stattime < %d",
                     from, def->probeid, slotlow, slothigh);
   

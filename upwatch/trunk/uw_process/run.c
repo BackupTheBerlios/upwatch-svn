@@ -34,15 +34,26 @@ static void free_res(void *res)
 
 static void modules_end_run(void)
 {
-  int i;
+  int i, total = 0;
+  char buf[1024];
+
+  buf[0] = 0;
 
   for (i = 0; modules[i]; i++) {
+    char wrk[50];
     if (modules[i]->end_run) {
       modules[i]->end_run();
     }
     close_database(modules[i]->db);
     modules[i]->db = NULL;
+    if (debug && modules[i]->count) {
+      sprintf(wrk, "%s:%u ", modules[i]->module_name, modules[i]->count);
+      total += modules[i]->count;
+      modules[i]->count = 0;
+      strcat(buf, wrk);
+    }
   }
+  if (debug) LOG(LOG_DEBUG, "Processed: Total:%u (%s)", total, buf);
 }
 
 static void modules_cleanup(void)
@@ -337,6 +348,7 @@ static int handle_file(gpointer data, gpointer user_data)
           cur = cur->next;
           xmlUnlinkNode(del); // succeeded, remove this node from the XML tree
           xmlFreeNode(del);
+          modules[i]->count++;
         }
         break;
       }
@@ -521,7 +533,7 @@ static void *get_def(module *probe, struct probe_result *res)
     }
 
     result = my_query(probe->db, 0,
-                      "select stattime from pr_%s_raw use index(probtime) "
+                      "select stattime from pr_%s_raw use index(probstat) "
                       "where probe = '%u' order by stattime desc limit 1",
                        res->name, def->probeid);
     if (result) {
@@ -557,7 +569,7 @@ static struct probe_result *get_previous_record(module *probe, struct probe_def 
 
   result = my_query(probe->db, 0,
                     "select   color, stattime "
-                    "from     pr_%s_raw use index(probtime) "
+                    "from     pr_%s_raw use index(probstat) "
                     "where    probe = '%u' and stattime < '%u' "
                     "order by stattime desc limit 1", 
                     res->name, def->probeid, res->stattime);
@@ -591,7 +603,7 @@ static struct probe_result *get_following_record(module *probe, struct probe_def
 
   result = my_query(probe->db, 0,
                     "select   color, stattime "
-                    "from     pr_%s_raw use index(probtime) "
+                    "from     pr_%s_raw use index(probstat) "
                     "where    probe = '%u' and stattime < '%u' "
                     "order by stattime desc limit 1", 
                     res->name, def->probeid, res->stattime);
@@ -741,7 +753,7 @@ int have_records_later_than(module *probe, char *name, guint probeid, char *from
   int val = FALSE;
 
   result = my_query(probe->db, 0,
-                    "select id from pr_%s_%s use index(probtime) "
+                    "select id from pr_%s_%s use index(probstat) "
                     "where  probe = '%u' and stattime > '%u' limit 1",
                     name, from, probeid, slothigh);
   if (!result) return(FALSE);
@@ -901,6 +913,10 @@ static int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
           gulong not_later_then = UINT_MAX;
           gint i;
 
+          if (debug > 2) {
+            LOG(LOG_DEBUG, "stattime = %u, newest = %u for %s %u", res->stattime, def->newest,
+              res->name, res->probeid);
+          }
           for (i=0; summ_info[i].period > 0; i++) { // FOR EACH PERIOD
             cur_slot = uw_slot(summ_info[i].period, res->stattime, &slotlow, &slothigh);
             if (slothigh > not_later_then) continue; // we already know there are none later then this
