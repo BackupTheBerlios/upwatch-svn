@@ -83,7 +83,7 @@ struct deftable *read_def(MYSQL *db, char *table, int realmid, int isaggr, int *
   if (isaggr) {
     result = my_query(db, 0, "select id, domid, tblid, unix_timestamp(changed) " 
                              "from   pr_%s_def "
-                             "where  id > 1 and domid = %u "
+                             "where  id > 1 and tblid > 1 and domid = %u "
                              "order  by tblid asc", table, realmid);
   } else {
     result = my_query(db, 0, "select id, domid, tblid, unix_timestamp(changed) " 

@@ -96,7 +96,8 @@ ESAC type +][+ ENDFOR def+]
   PRIMARY KEY  (id),
   KEY server (server),
   KEY notify (notify),
-  KEY ipaddress (ipaddress)
+  KEY ipaddress (ipaddress),
+  KEY domtbl (domid, tblid)
 ) TYPE=MyISAM;
 [+
   (if (not (exist? "id"))
