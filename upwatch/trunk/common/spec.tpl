@@ -13,7 +13,7 @@ Requires: upwatch [+spec-requires+]
 
 %files [+prog-name+]
 %defattr(0660,upwatch,upwatch,0770)
-%attr(0770,root,root) /etc/rc.d/init.d/[+prog-name+]
+%attr(0770,upwatch,upwatch) /etc/rc.d/init.d/[+prog-name+]
 %config(noreplace) /etc/upwatch.conf
 %config(noreplace) /etc/upwatch.d/[+prog-name+].conf
 /usr/share/man/man1/[+prog-name+].1.gz

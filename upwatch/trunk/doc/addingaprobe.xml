@@ -8,7 +8,7 @@
           tables and queue result files, creating PHP pages, and PHP graphs, writing documentation and submitting
           these changes to CVS. It is a lot of work, how rewarding it may be. </para>
        <para> In the following overview we'll show you how to add a probe. All man-pages, spec-files, documentation
-          is automatically generated if you follow instructions below.</para>
+          will be auto-generated if you follow instructions below.</para>
     </sect1>
     <sect1 id="Adding_probe_Basic_Steps">
        <title>Basic steps for adding a probe</title>

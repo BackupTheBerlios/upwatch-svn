@@ -40,17 +40,6 @@ When a probe fails a request to notify the owner is put into this queue.';
 };
 
 flag = {
-    name      = investigate;
-    value     = V;
-    arg_type  = string;
-    arg-default = "uw_traceroute";
-    descrip   = "Queue to drop commands for the investigate process";
-    doc       =
-'The argument is taken to be a maildir under the directory `spooldir`.
-If a probe fails, a request to investigate is put into this queue.';
-};
-
-flag = {
     name      = output;
     value     = O;
     arg_type  = string;
