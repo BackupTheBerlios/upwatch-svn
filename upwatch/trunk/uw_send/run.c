@@ -98,7 +98,11 @@ int init(void)
     q->maxthreads = thr[i] ? atoi(thr[i]) : 1;
   }
   daemonize = TRUE;
-  every = EVERY_5SECS;
+  if (HAVE_OPT(ONCE)) {
+    every = ONE_SHOT;
+  } else {
+    every = EVERY_5SECS;
+  }
   st_init();
   xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
   return(1);

@@ -104,12 +104,16 @@ void getmeminfo(unsigned *memfree, unsigned *membuff, unsigned *swapused, unsign
 
 int init(void)
 {
+  if (OPT_VALUE_SERVERID == 0) {
+    fprintf(stderr, "Please set serverid first\n");
+    return 0;
+  }
   daemonize = TRUE;
   every = EVERY_MINUTE;
   xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
   getstat(cpu_use,cpu_nic,cpu_sys,cpu_idl, pgpgin,pgpgout,pswpin,pswpout, inter,ticks,ctxt);
   sleep(2); // ensure we wait until the next minute
-  return(1);
+  return 1;
 }
 
 int run(void)

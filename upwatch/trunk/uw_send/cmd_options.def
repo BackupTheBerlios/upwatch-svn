@@ -38,6 +38,15 @@ about maildir see http://www.qmail.org/man/man5/maildir.html.';
 
 // describe commandline flags
 flag = {
+    name      = once;
+    value     = 1;        /* flag style option character */
+    descrip   = "send once and then exit again";
+    doc       =
+'When you specify this flag, uw_send starts, sends all files in
+the input spool, and then exits again';
+};
+
+flag = {
     name      = input;
     value     = I;
     stack_arg;

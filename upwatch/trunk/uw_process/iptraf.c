@@ -183,12 +183,12 @@ static void *get_def(module *probe, void *probe_res)
     g_hash_table_insert(probe->cache, guintdup(*(unsigned *)&res->ipaddr), def);
   }
   if (res->color == 0) { // no color given in the result?
-    float total = res->in_total + res->out_total;
+    float largest = res->in_total > res->out_total ? res->in_total : res->out_total;
     res->color = 200;
-    if ((total*8)/60 > (def->yellow*1024)) {
+    if ((largest*8)/60 > (def->yellow*1024)) {
       res->color = STAT_YELLOW;
     }
-    if ((total*8)/60 > (def->red*1024)) {
+    if ((largest*8)/60 > (def->red*1024)) {
       res->color = STAT_RED;
     }
   }

@@ -111,9 +111,9 @@ install -m 660 [+program+]/[+program+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+prog
 %attr(0770,upwatch,upwatch) /usr/lib/upwatch
 /etc/logrotate.d/upwatch
 /etc/cron.daily/upwatch
-%dir /var/log/upwatch
+%attr(2770,upwatch,upwatch) %dir /var/log/upwatch
 %attr(2770,upwatch,upwatch) %dir /var/run/upwatch
-%dir /var/spool/upwatch
+%attr(2770,upwatch,upwatch) %dir /var/spool/upwatch
 
 %changelog
 * Fri Dec 27 2002 Ron Arts <raarts@upwatch.com>
