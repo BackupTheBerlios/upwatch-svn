@@ -124,6 +124,7 @@ extern int forever;
   G_CONST_RETURN gchar *filename;
   GDir *dir;
  
+  q->fatal = 0;
   sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), q->name);
   if (debug > 3) LOG(LOG_DEBUG, "reading queue %s", path); 
   dir = g_dir_open (path, 0, NULL);
@@ -147,7 +148,6 @@ extern int forever;
     }
   }
   g_dir_close(dir);
-  uw_setproctitle("sleeping");
   thread_count--;
   return NULL;
 }
@@ -182,6 +182,7 @@ int run(void)
     }
   }
   online = FALSE;
+  uw_setproctitle("sleeping");
   return 0;
 }
 
