@@ -219,7 +219,7 @@ void *probe(void *data)
 
   memset(&rmt, 0, sizeof(struct sockaddr_in));
   rmt.sin_family = AF_INET;
-  rmt.sin_port = htons(110);
+  rmt.sin_port = htons(143);
   rmt.sin_addr.s_addr = inet_addr(probe->ipaddress);
   if (rmt.sin_addr.s_addr == INADDR_NONE) {
     char buf[50];
