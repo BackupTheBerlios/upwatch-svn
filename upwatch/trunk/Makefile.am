@@ -126,7 +126,7 @@ install-data-local:
 	  mkdir -p ${DESTDIR}/var/run/upwatch ;\
 	fi
 
-rpm: all dist upwatch.spec
+rpm: all dist upwatch.spec 
 	SED=sed $(RPMBUILD) -ta upwatch-${VERSION}.tar.gz
 
 dist-hook:
