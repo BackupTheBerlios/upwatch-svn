@@ -337,7 +337,7 @@ static int handle_file(gpointer data, gpointer user_data)
       found = 1;
       probe_count++;
       //xmlDocFormatDump(stderr, doc, 1);
-      strftime(buf, sizeof(buf), "%F %T", gmtime(&fromdate));
+      strftime(buf, sizeof(buf), "%Y-%m-%d %T", gmtime(&fromdate));
       uw_setproctitle("%s %s@%s", buf, cur->name, fromhost);
       ret = process(modules[i], doc, cur, ns);
       if (ret == 0 || ret == -1) {
