@@ -47,6 +47,16 @@ static gint snmpget_store_raw_result(trx *t)
 //*******************************************************************
 // SUMMARIZE A TABLE INTO AN OLDER PERIOD
 //*******************************************************************
+static int snmpget_notify_mail_subject(trx *t, FILE *fp, char *servername)
+{
+  fprintf(fp, "Subject: %s: %s (%s) %s (was %s)\n", servername,
+                 t->probe->module_name, t->def->dispname, 
+                 color2string(t->res->color),
+                 color2string(t->res->prevhistcolor));
+}
+//*******************************************************************
+// SUMMARIZE A TABLE INTO AN OLDER PERIOD
+//*******************************************************************
 static void snmpget_summarize(trx *t, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint resummarize)
 {
   MYSQL_RES *result;
@@ -128,6 +138,7 @@ module snmpget_module  = {
   NO_EXIT,
   NO_FIND_DOMAIN,
   snmpget_store_raw_result,
+  NO_NOTIFY_MAIL_SUBJECT,
   snmpget_summarize
 };
 

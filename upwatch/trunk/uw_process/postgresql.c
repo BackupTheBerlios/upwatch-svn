@@ -25,6 +25,7 @@ module postgresql_module  = {
   NO_EXIT,
   NO_FIND_DOMAIN,
   ct_store_raw_result,
+  NO_NOTIFY_MAIL_SUBJECT,
   ct_summarize
 };
 

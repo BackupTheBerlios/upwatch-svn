@@ -168,6 +168,7 @@ module iptraf_module  = {
   NO_EXIT,
   NO_FIND_DOMAIN,
   iptraf_store_raw_result,
+  NO_NOTIFY_MAIL_SUBJECT,
   iptraf_summarize
 };
 

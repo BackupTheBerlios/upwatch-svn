@@ -129,9 +129,13 @@ static int do_notification(trx *t)
   }
   fprintf(fp, "From: %s <%s>\n", OPT_ARG(FROM_NAME), OPT_ARG(FROM_EMAIL));
   fprintf(fp, "To: %s\n", t->def->email);
-  fprintf(fp, "Subject: %s: %s %s (was %s)\n", servername,
-                   t->probe->module_name, color2string(t->res->color),
-                   color2string(t->res->prevhistcolor));
+  if (t->probe->notify_mail_subject) {
+    t->probe->notify_mail_subject(t, fp, servername);
+  } else {
+    fprintf(fp, "Subject: %s: %s %s (was %s)\n", servername,
+                     t->probe->module_name, color2string(t->res->color),
+                     color2string(t->res->prevhistcolor));
+  }
   fprintf(fp, "\n");
   fprintf(fp, "Geachte klant,\n\n"
               "zojuist, om %s"

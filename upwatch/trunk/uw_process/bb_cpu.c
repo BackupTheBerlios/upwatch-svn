@@ -159,6 +159,7 @@ module bb_cpu_module  = {
   NO_EXIT,
   bb_cpu_find_domain,
   bb_cpu_store_raw_result,
+  NO_NOTIFY_MAIL_SUBJECT,
   bb_cpu_summarize
 };
 

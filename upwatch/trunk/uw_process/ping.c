@@ -127,6 +127,7 @@ module ping_module  = {
   NO_EXIT,
   NO_FIND_DOMAIN,
   ping_store_raw_result,
+  NO_NOTIFY_MAIL_SUBJECT,
   ping_summarize
 };
 

@@ -19,6 +19,8 @@ struct _module {
   gint (*find_domain)(trx *t);
 #define NO_STORE_RESULTS NULL
   gint (*store_results)(trx *t);
+#define NO_NOTIFY_MAIL_SUBJECT NULL
+  gint (*notify_mail_subject)(trx *t, FILE *out, char *servername);
 #define NO_SUMMARIZE NULL
   void (*summarize)(trx *t, char *from, char *into, 
                     guint slot, guint slotlow, guint slothigh, gint ignoredupes);

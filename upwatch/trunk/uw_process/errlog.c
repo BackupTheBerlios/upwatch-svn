@@ -25,6 +25,7 @@ module errlog_module  = {
   NO_EXIT,
   NO_FIND_DOMAIN,
   NO_STORE_RESULTS,
+  NO_NOTIFY_MAIL_SUBJECT,
   NO_SUMMARIZE
 };
 

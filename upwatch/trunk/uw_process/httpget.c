@@ -131,6 +131,7 @@ module httpget_module  = {
   NO_EXIT,
   NO_FIND_DOMAIN,
   httpget_store_raw_result,
+  NO_NOTIFY_MAIL_SUBJECT,
   httpget_summarize
 };
 

@@ -155,6 +155,7 @@ module sysstat_module  = {
   NO_EXIT,
   NO_FIND_DOMAIN,
   sysstat_store_raw_result,
+  NO_NOTIFY_MAIL_SUBJECT,
   sysstat_summarize
 };
 

@@ -44,6 +44,7 @@ module bb_module  = {
   NO_EXIT,
   bb_find_domain,
   NO_STORE_RESULTS,
+  NO_NOTIFY_MAIL_SUBJECT,
   NO_SUMMARIZE
 };
 

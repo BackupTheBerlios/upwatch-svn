@@ -132,7 +132,7 @@ extern int forever;
   while (forever) {
     char *remote;
     int len;
-    char buffer[BUFSIZ];
+    char buffer[1024];
 
     cli_nfd = st_accept(srv_nfd, (struct sockaddr *)&from, &fromlen, -1);
     if (cli_nfd == NULL) {
@@ -149,8 +149,8 @@ extern int forever;
       continue;
     }
     if (debug > 3) fprintf(stderr, "< %s", buffer);
-    if (len > 1024) {
-      strcpy(&buffer[990], "\n\n... DATA TRUNCATED ...\n\n");
+    if (len > 960) {
+      strcpy(&buffer[960], "\n\n... DATA TRUNCATED ...\n\n");
     } else {
       buffer[len+1] = 0;
     }

@@ -62,6 +62,7 @@ syslog-ignore listening on IPv[0-9] interface
 syslog-ignore command channel listening on
 syslog-ignore no TTL specified
 syslog-ignore loaded serial
+syslog-ignore transfered serial
 syslog-ignore running
 syslog-ignore lame server resolving
 syslog-ignore error sending response
@@ -283,6 +284,7 @@ syslog-ignore ftpd\[[0-9]*\]: TYPE ASCII
 syslog-ignore ftpd\[[0-9]*\]: User [-0-9a-zA-Z.]* timed out after [0-9]* seconds
 syslog-ignore ftpd\[[0-9]*\]: FTP session closed
 syslog-ignore ftpd\[[0-9]*\]: lost connection to
+syslog-ignore ftpd\[[0-9]*\]: wtmp /var/log/wtmp No such file or directory
 syslog-ignore failed login from
 syslog-ignore Wget error on IDE update
 syslog-ignore virus IDEs added

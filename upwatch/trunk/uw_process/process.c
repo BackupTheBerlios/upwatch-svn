@@ -129,9 +129,9 @@ static void update_pr_status(trx *t, struct probe_result *prv)
 
   sprintf(qry, "update pr_status "
                "set    stattime = '%u', expires = '%u', hide = '%s', " 
-               "       yellow = '%f', red = '%f', contact = '%u', server = '%u'", 
+               "       contact = '%u', server = '%u'", 
                t->res->stattime, t->res->expires, t->def->hide, 
-               t->def->yellow, t->def->red, t->def->contact, t->def->server);
+               t->def->contact, t->def->server);
 
   if (t->probe->fuse) {
     if (t->res->color > prv->color || prv->color == STAT_PURPLE) {
@@ -178,10 +178,10 @@ static void insert_pr_status(trx *t)
   result = my_query(t->probe->db, 0,
                     "insert into pr_status "
                     "set    class =  '%u', probe = '%u', stattime = '%u', expires = '%u', "
-                    "       color = '%u', server = '%u', message = '%s', yellow = '%f', red = '%f', "
+                    "       color = '%u', server = '%u', message = '%s', "
                     "       contact = '%u', hide = '%s'",
-                    t->probe->class, t->def->probeid, t->res->stattime, t->res->expires, t->def->color, t->def->server, 
-                    escmsg, t->def->yellow, t->def->red, t->def->contact, t->def->hide);
+                    t->probe->class, t->def->probeid, t->res->stattime, t->res->expires, 
+                    t->def->color, t->def->server, escmsg, t->def->contact, t->def->hide);
   mysql_free_result(result);
   g_free(escmsg);
 }
