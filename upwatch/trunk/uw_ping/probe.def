@@ -7,6 +7,7 @@ probe = {
   descrip = "send ICMP echo requests";
   addbyhand = "yes";
   class = "";
+  graphgroup = "valminmax";
   graphtypes = "default";
   comment = "";
   yellow = "3";

@@ -41,6 +41,7 @@ files.
 %attr(0755,root,root) /usr/bin/ctime
 %attr(0755,root,root) /usr/bin/slot
 %attr(0755,root,root) /usr/bin/fill_probe_description.pl
+%attr(0755,root,root) /usr/bin/uw_maint.pl
 /usr/share/man/man1/ctime.1.gz
 /usr/share/man/man1/slot.1.gz
 /usr/share/man/man1/bbhimport.1.gz

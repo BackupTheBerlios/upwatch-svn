@@ -7,6 +7,7 @@ probe = {
   descrip = "Query an SNMP variable using an SNMP GET";
   addbyhand = "yes";
   class = "";
+  graphgroup = "snmpget";
   graphtypes = "default";
   comment = "";
   yellow = "3";

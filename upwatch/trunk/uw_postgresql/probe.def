@@ -7,6 +7,7 @@ probe = {
   descrip = "Do a PostgreSQL query";
   addbyhand = "yes";
   class = "";
+  graphgroup = "ct";
   graphtypes = "default";
   comment = "";
   yellow = "3";

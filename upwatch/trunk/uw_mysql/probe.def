@@ -7,6 +7,7 @@ probe = {
   descrip = "Do a MySQL query";
   addbyhand = "yes";
   class = "";
+  graphgroup = "ct";
   graphtypes = "default";
   comment = "";
   yellow = "0.3";

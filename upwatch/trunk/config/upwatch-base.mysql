@@ -8,6 +8,7 @@ CREATE TABLE probe (
   description varchar(128) NOT NULL default '',
   addbyhand enum('yes','no') NOT NULL default 'yes',
   class varchar(16) NOT NULL default '',
+  graphgroup varchar(16) NOT NULL default '',
   graphtypes varchar(255) NOT NULL default 'default',
   comment text NOT NULL,
   PRIMARY KEY  (id)

@@ -96,7 +96,7 @@ ESAC type +][+ ENDFOR def+]
   )
 +]
 INSERT into pr_[+name+]_def set id = '1', description = 'empty';
-INSERT into probe set id = '[+id+]', name = '[+name+]', description = '[+descrip+]', addbyhand = '[+addbyhand+]', class = '[+class+]', graphtypes = '[+graphtypes+]', comment = '[+comment+]';
+INSERT into probe set id = '[+id+]', name = '[+name+]', description = '[+descrip+]', addbyhand = '[+addbyhand+]', class = '[+class+]', graphgroup = '[+graphgroup+]', graphtypes = '[+graphtypes+]', comment = '[+comment+]';
 [+ IF (count "result") +]
 --
 -- Table structure for table 'pr_[+name+]_raw'

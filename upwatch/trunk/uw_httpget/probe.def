@@ -7,6 +7,7 @@ probe = {
   descrip = "Do a HTTP GET request";
   addbyhand = "yes";
   class = "";
+  graphgroup = "ncft";
   graphtypes = "default";
   comment = "";
   yellow = "1";

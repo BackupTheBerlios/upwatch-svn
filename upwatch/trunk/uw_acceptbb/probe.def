@@ -7,6 +7,7 @@ probe = {
   descrip = "Big Brother generic probe";
   addbyhand = "no";
   class = "";
+  graphgroup = "";
   graphtypes = "default";
   comment = "";
 
@@ -25,6 +26,7 @@ probe = {
   descrip = "Big Brother System probe";
   addbyhand = "no";
   class = "";
+  graphgroup = "sysstat";
   graphtypes = "cpu loadavg memory";
   comment = "";
   yellow = "3";

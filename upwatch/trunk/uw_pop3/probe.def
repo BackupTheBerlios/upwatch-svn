@@ -7,6 +7,7 @@ probe = {
   descrip = "Test a POP3 server, optionally with user/password";
   addbyhand = "yes";
   class = "";
+  graphgroup = "ct";
   graphtypes = "default";
   comment = "";
   yellow = "3";

@@ -40,15 +40,16 @@ struct probe_def {
 #include "../common/common.h"
 };
 
-#define STANDARD_MODULE_STUFF(a) PROBE_##a, #a, NULL, NULL, sizeof(struct a##_result), 0, 0
+#define STANDARD_MODULE_STUFF(a) PROBE_##a, #a, NULL, NULL, NULL, sizeof(struct a##_result), 0, 0
 typedef struct _module {
-  int class;
+  int class; 		// numberic probe class (id of record in probe table)
   char *module_name;
-  MYSQL *db;
-  GHashTable *cache;
-  int res_size;
-  int count;
-  int errors;
+  MYSQL *db;		// database handle the methods should use
+  GHashTable *cache;	// cached definition records
+  GQueue *queue;	// queued result record 
+  int res_size;		// size of a result record
+  int count;		// stats: total handles in this run
+  int errors;		// stats: total errors in this run
 #define NO_FREE_DEF NULL
   void (*free_def)(void *def);
 #define NO_FREE_RES NULL

@@ -9,3 +9,9 @@ do
 	find $i/tmp -type f -atime +7 -exec rm -f {} \;
 done
 
+# remove old data from the database
+if [ -x /usr/bin/uw_maint.pl ]
+then
+	/usr/bin/uw_maint.pl
+fi
+

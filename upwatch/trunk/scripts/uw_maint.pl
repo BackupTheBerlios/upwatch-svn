@@ -2,21 +2,38 @@
 
 =head1 NAME
 
-fill_probe_description.pl - fill descriptions for probes
+uw_maint.pl - maintenance script.
 
 =head1 SYNOPSIS
 
-fill_probe_description.pl
+uw_maint.pl [-v] [-r days] [-d days] [-w weeks] [-m months] [-y years] [-5 years]
 
 =head1 DESCRIPTION
 
-This script fills the description fields of all defined probes in the definitions
-tables, with the reverse DNS lookupname of the ipaddress. Only description fields
-which are empty or which contain the IP address are changed.
+This script deletes old data from the database. It reads the database info from /etc/upwatch.conf
 
 =head1 COMMAND LINE OPTIONS
 
-None yet.  
+-r days
+   how many days to keep raw results - default 62
+
+-d days
+   how many days to keep day results - default 62
+
+-w weeks
+   how many weeks to keep week results - default 104
+
+-m months
+   how many months to keep month results - default 24
+
+-y years
+   how many years to keep year results - default 2
+
+-5 years
+   how many years to keep 5-year results - default 10
+
+-v
+  verbose
 
 =head1 AUTHOR
 
@@ -31,7 +48,7 @@ use strict;
 use DBI;
 use Getopt::Std;
 #use LockFile::Simple;
-use vars qw/ $opt_d /;
+use vars qw/ $opt_r $opt_d $opt_w $opt_m $opt_y $opt_5 $opt_v /;
 use vars qw/ $dbtype $dbhost $dbuser $dbpasswd $dbname /;
 
 #------------------------------------------------------------
@@ -74,16 +91,6 @@ sub parse_config {
 }
 
 #------------------------------------------------------------
-# Get remote host 
-#------------------------------------------------------------
-sub findhostname {
-  my ($ip_address) = @_; 
-  my @numbers = split(/\./, $ip_address); 
-  my $ip_number = pack("C4", @numbers); 
-  return (gethostbyaddr($ip_number, 2));
-}
-
-#------------------------------------------------------------
 # Die with error
 #------------------------------------------------------------
 sub die_with_exit {
@@ -99,8 +106,13 @@ sub die_with_exit {
 # process commandline options 
 #------------------------------------------------------------
 sub process_options {
-  # -d debug
-  getopts('d');
+  $opt_r = 62;
+  $opt_d = 62;
+  $opt_w = 104;
+  $opt_m = 24;
+  $opt_y = 2;
+  $opt_5 = 10;
+  getopts('r:d:w:m:y:5:v');
 }
 
 #------------------------------------------------------------
@@ -132,39 +144,73 @@ sub main {
 
 #  &get_fill_probe_description_lock();
 
+  process_options();
   parse_config("/etc/upwatch.conf");
 
   my $db = DBI->connect("DBI:$dbtype:database=$dbname;host=$dbhost;port=3306", $dbuser, $dbpasswd ) || 
     die_with_exit(__LINE__, 1, DBI::errstr);
 
-  $cursor = $db->prepare("select name from probe where id > 1");
+  $cursor = $db->prepare("select name, graphgroup from probe where id > 1");
   $rc = $cursor->execute || die_with_exit(__LINE__, 0, $db->errstr);
   if ($cursor->rows == 0) {
     die_with_exit(__LINE__, 0, "table probe is empty?? Please fix");
   }
   my @probes = ();
   while ( $row = $cursor->fetchrow_hashref ) {
-    push (@probes, $row->{name});
+    #print $row->{name}, $row->{graphgroup}, "\n";
+    next if ($row->{graphgroup} eq "");
+    push (@probes, $row->{name}); # list of all probenames to be cleaned
   }
 
   foreach my $probename (@probes) {
-    $cursor = $db->prepare("select * from pr_${probename}_def where id > 1");
+    my $lastid;
+
+    $cursor = $db->prepare("select id from pr_${probename}_def order by id desc limit 1");
     $rc = $cursor->execute || die_with_exit(__LINE__, 0, $db->errstr);
     next if ($cursor->rows == 0);
     while ( $row = $cursor->fetchrow_hashref ) {
-      my $id = $row->{id};
-      my $description = $row->{description};
-      my $ipaddress = $row->{ipaddress};
+      $lastid = $row->{id};
+    }
+    #print "$probename $lastid\n";
 
-      if ($description eq $ipaddress || $description eq "") {
-        my $name = findhostname($ipaddress);
-        if (defined($name) && $name ne "") {
-          my $query = "update pr_${probename}_def set description = '$name' where id = '$id'";
-          print $query . "\n";
-          my $cur = $db->prepare($query);
-          $rc = $cur->execute || die_with_exit(__LINE__, 0, $db->errstr);
-        }
-      }
+    for (my $probe = 2; $probe <= $lastid; $probe++) {
+      my $q;
+
+      $q = "delete from pr_${probename}_raw where probe = $probe and " .
+           "stattime < UNIX_TIMESTAMP() - ($opt_r * 86400)";
+      if ($opt_v) { print "$q\n"; }
+      $cursor = $db->prepare($q);
+      $rc = $cursor->execute || die_with_exit(__LINE__, 0, $db->errstr);
+
+      $q = "delete from pr_${probename}_day where probe = $probe and " .
+           "stattime < UNIX_TIMESTAMP() - ($opt_d * 86400)";
+      if ($opt_v) { print "$q\n"; }
+      $cursor = $db->prepare($q);
+      $rc = $cursor->execute || die_with_exit(__LINE__, 0, $db->errstr);
+
+      $q = "delete from pr_${probename}_week where probe = $probe and " .
+           "stattime < UNIX_TIMESTAMP() - ($opt_w * 86400*7)";
+      if ($opt_v) { print "$q\n"; }
+      $cursor = $db->prepare($q);
+      $rc = $cursor->execute || die_with_exit(__LINE__, 0, $db->errstr);
+
+      $q = "delete from pr_${probename}_month where probe = $probe and " .
+           "stattime < UNIX_TIMESTAMP() - ($opt_m * 86400*7*31)";
+      if ($opt_v) { print "$q\n"; }
+      $cursor = $db->prepare($q);
+      $rc = $cursor->execute || die_with_exit(__LINE__, 0, $db->errstr);
+
+      $q = "delete from pr_${probename}_year where probe = $probe and " .
+           "stattime < UNIX_TIMESTAMP() - ($opt_y * 86400*365)";
+      if ($opt_v) { print "$q\n"; }
+      $cursor = $db->prepare($q);
+      $rc = $cursor->execute || die_with_exit(__LINE__, 0, $db->errstr);
+
+      $q = "delete from pr_${probename}_5year where probe = $probe and " .
+           "stattime < UNIX_TIMESTAMP() - ($opt_5 * 86400*365)";
+      if ($opt_v) { print "$q\n"; }
+      $cursor = $db->prepare($q);
+      $rc = $cursor->execute || die_with_exit(__LINE__, 0, $db->errstr);
     }
   }
 
