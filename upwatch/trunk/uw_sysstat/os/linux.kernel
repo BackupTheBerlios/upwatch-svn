@@ -107,7 +107,7 @@ green [LOGDATE] kernel: Detected .* processor
 green [LOGDATE] kernel: Detected PS/[NUM] Mouse Port\.
 green [LOGDATE] kernel: Detected scsi .* at scsi[NUM], channel [NUM], id [NUM], lun [NUM]
 green [LOGDATE] kernel: Detecting Adaptec I2O RAID controllers
-green [LOGDATE] kernel: device eth[NUM](\.[NUM])* (entered|left) promiscuous mode
+green [LOGDATE] kernel: device .* (entered|left) promiscuous mode
 green [LOGDATE] kernel: device-mapper: [NUM]\.[NUM]\.[NUM]-ioctl \([NUM][NUM][NUM]\) initialised: [EMAIL]
 green [LOGDATE] kernel: dev_mc_discard: multicast leakage! dmi_users=[NUM]
 green [LOGDATE] kernel: Disabled Privacy Extensions on device

@@ -10,10 +10,4 @@
 <!ELEMENT prevcolor     (#PCDATA)>
 <!ELEMENT info          (#PCDATA)>
 
-<!-- notify record -->
-<!ELEMENT notify (prevcolor,info?)>
-<!ATTLIST notify  proto NMTOKEN  #REQUIRED
-        target NMTOKEN #REQUIRED
-        date NMTOKEN
->
 

@@ -16,6 +16,12 @@ probe = {
   red = "500";
 
   attribute = {
+    name = "realm";
+    required = true;
+    descrip = "database realm for these values";
+  };
+
+  attribute = {
     name = "ipaddress";
     default = "127.0.0.1";
     descrip = "target ip address";
@@ -35,11 +41,13 @@ probe = {
 
   attribute = {
     name = "color";
+    default = "200";
     descrip = "color as this probe thinks it should be";
   };
 
   attribute = {
     name = "received";
+    default = "0";
     descrip = "date/time this result was received by the upwatch server";
   };
 

@@ -290,7 +290,7 @@ IF (not (exist? "noelement")) +]<!ELEMENT [+name+] (#PCDATA)>		<!-- [+descrip+] 
 IF optional +]?[+ENDIF+],[+ ENDFOR element +][+ FOR result +][+
 IF (not (exist? "noelement")) +][+name+],[+ ENDIF element +][+ ENDFOR +]info?,prevcolor?,notify?)>
 <!ATTLIST [+name+][+FOR attribute +]	[+name+] NMTOKEN [+
-IF default +] "[+default+]"[+ENDIF
+IF (exist? "default") +] "[+default+]"[+ENDIF
 +][+IF required+] #REQUIRED[+ENDIF required+]
 [+ ENDFOR attribute +]>
 

@@ -52,9 +52,9 @@ static gint ping_store_raw_result(trx *t)
   result = my_query(t->probe->db, 0,
                     "insert into pr_ping_raw "
                     "set    probe = '%u', yellow = '%f', red = '%f', stattime = '%u', color = '%u', "
-                    "       value = '%f', lowest = '%f', highest = '%f', message = '%s'",
+                    "       average = '%f', lowest = '%f', highest = '%f', message = '%s'",
                     def->probeid, def->yellow, def->red, res->stattime, res->color, 
-                    res->value, res->lowest, res->highest, escmsg);
+                    res->average, res->lowest, res->highest, escmsg);
   g_free(escmsg);
   if (result) mysql_free_result(result);
   if (mysql_errno(t->probe->db) == ER_DUP_ENTRY) {
@@ -82,7 +82,7 @@ static void ping_notify_mail_body_probe_def(trx *t, char *buf, size_t buflen)
   "Description", def->description,
   "# packets", def->count,
   "Lowest", res->lowest,
-  "Average", res->value,
+  "Average", res->average,
   "Highest", res->highest);
 }
 
@@ -95,14 +95,14 @@ static void ping_summarize(trx *t, char *from, char *into, guint slot, guint slo
   MYSQL_ROW row;
   struct probe_def *def = (struct probe_def *)t->def;
   float avg_yellow, avg_red;
-  float avg_value, min_lowest, max_highest; 
+  float avg_average, min_lowest, max_highest; 
   guint stattime;
   guint max_color;
 
   stattime = slotlow + ((slothigh-slotlow)/2);
 
   result = my_query(t->probe->db, 0,
-                    "select avg(lowest), avg(value), avg(highest), "
+                    "select avg(lowest), avg(average), avg(highest), "
                     "       max(color), avg(yellow), avg(red) " 
                     "from   pr_ping_%s use index(probstat) "
                     "where  probe = '%d' and stattime >= %d and stattime < %d",
@@ -129,7 +129,7 @@ static void ping_summarize(trx *t, char *from, char *into, guint slot, guint slo
   }
 
   min_lowest  = atof(row[0]);
-  avg_value   = atof(row[1]);
+  avg_average = atof(row[1]);
   max_highest = atof(row[2]);
   max_color   = atoi(row[3]);
   avg_yellow  = atof(row[4]);
@@ -146,9 +146,9 @@ static void ping_summarize(trx *t, char *from, char *into, guint slot, guint slo
 
   result = my_query(t->probe->db, 0,
                     "insert into pr_ping_%s " 
-                    "set    value = %f, lowest = %f, highest = %f, probe = %d, color = '%u', " 
+                    "set    average = %f, lowest = %f, highest = %f, probe = %d, color = '%u', " 
                     "       stattime = %d, yellow = '%f', red = '%f', slot = '%u'",
-                    into, avg_value, min_lowest, max_highest, def->probeid, 
+                    into, avg_average, min_lowest, max_highest, def->probeid, 
                     max_color, stattime, avg_yellow, avg_red, slot);
   mysql_free_result(result);
 }

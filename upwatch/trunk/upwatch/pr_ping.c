@@ -21,8 +21,12 @@ void ping_get_from_xml(trx *t)
     res->lowest = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "average")) && (t->cur->ns == t->ns)) {
+    res->average = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
+    return;
+  }
   if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "value")) && (t->cur->ns == t->ns)) {
-    res->value = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
+    res->average = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
   if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "highest")) && (t->cur->ns == t->ns)) {

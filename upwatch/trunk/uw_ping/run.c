@@ -244,7 +244,7 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   sprintf(buffer, "%f", ((float) probe->min_reply) * 0.000001);
     subtree = xmlNewChild(ping, NULL, "lowest", buffer);
   sprintf(buffer, "%f", ((float) (probe->total_time / (probe->num_recv==0?1:probe->num_recv))) * 0.000001);
-    subtree = xmlNewChild(ping, NULL, "value", buffer);
+    subtree = xmlNewChild(ping, NULL, "average", buffer);
   sprintf(buffer, "%f", ((float) probe->max_reply) * 0.000001);
     subtree = xmlNewChild(ping, NULL, "highest", buffer);
   if (probe->msg) {

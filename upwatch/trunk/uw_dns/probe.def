@@ -15,6 +15,12 @@ probe = {
   message = "Optional error message";
 
   attribute = {
+    name = "realm";
+    required = true;
+    descrip = "database realm for these values";
+  };
+
+  attribute = {
     name = "id";
     required = true;
     descrip = "id of this probe in the database";
@@ -46,6 +52,7 @@ probe = {
 
   attribute = {
     name = "received";
+    default = "0";
     descrip = "date/time this result was received by the upwatch server";
   };
 

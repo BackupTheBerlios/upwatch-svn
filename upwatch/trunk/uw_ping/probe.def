@@ -22,6 +22,13 @@ between the echo and the resulting ICMP reply packet.";
     required = true;
     descrip = "id of this probe in the database";
   };
+
+  attribute = {
+    name = "realm";
+    required = true;
+    descrip = "database realm for these values";
+  };
+
   attribute = {
     name = "ipaddress";
     default = "127.0.0.1";
@@ -46,6 +53,7 @@ between the echo and the resulting ICMP reply packet.";
 
   attribute = {
     name = "received";
+    default = "0";
     descrip = "date/time this result was received by the upwatch server";
   };
 
@@ -60,7 +68,7 @@ between the echo and the resulting ICMP reply packet.";
   };
 
   result = {
-    name = "value";
+    name = "average";
     type = "float";
     null = false;
     default = "0";

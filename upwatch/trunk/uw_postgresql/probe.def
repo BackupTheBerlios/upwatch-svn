@@ -28,6 +28,12 @@ probe = {
   };
 
   attribute = {
+    name = "realm";
+    required = true;
+    descrip = "database realm for these values";
+  };
+
+  attribute = {
     name = "date";
     required = true;
     descrip = "date/time for this result";
@@ -47,6 +53,7 @@ probe = {
 
   attribute = {
     name = "received";
+    default = "0";
     descrip = "date/time this result was received by the upwatch server";
   };
 

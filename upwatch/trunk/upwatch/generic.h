@@ -46,7 +46,7 @@ extern int init(void);
 
 #include "xml.h"
 
-#define PATH_RESULT_DTD "/usr/lib/upwatch/dtd/result.dtd"
+#define PATH_RESULT_DTD "/usr/share/upwatch/dtd/result.dtd"
 #define NAMESPACE_URL	"http://www.upwatch.com/schemas/1.0/"
 
 #include "spool.h"
