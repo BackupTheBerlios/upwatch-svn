@@ -25,7 +25,7 @@ PROBES += $(USE_LIBPCAP) $(USE_LIBNET) $(USE_LIBPQ) $(USE_LIBSNMP) \
  $(USE_LIBTDS) 
 
 # NOTE: order is important, first the probes, then uw_process, then the rest
-PROGNAMES = ${PROBES} uw_process uw_send uw_accept uw_notify 
+PROGNAMES = ${PROBES} uw_process uw_send uw_accept uw_setip uw_notify 
 
 export PROGNAMES
 export TOP_SRCDIR = $(top_srcdir)
