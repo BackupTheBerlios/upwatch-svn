@@ -321,11 +321,13 @@ static void modules_init(void)
 
   for (i = 0; modules[i]; i++) {
     if (modules[i]->init) {
-      modules[i]->init();
+      modules[i]->init(modules[i]);
     }
-    if (modules[i]->cache == NULL) {
-      modules[i]->cache = g_hash_table_new_full(g_int_hash, g_int_equal, g_free, 
-                            modules[i]->free_def ? modules[i]->free_def : free_def);
+    if (modules[i]->needs_cache) {
+      if (modules[i]->cache == NULL) {
+        modules[i]->cache = g_hash_table_new_full(g_int_hash, g_int_equal, g_free, 
+                              modules[i]->free_def ? modules[i]->free_def : free_def);
+      }
     }
     if (modules[i]->insertc == NULL) {
       modules[i]->insertc =  g_ptr_array_new();
@@ -545,6 +547,7 @@ extern int forever;
       if (HAVE_OPT(COPY) && strcmp(OPT_ARG(COPY), "none")) {
         char *name = filebase;
         spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(COPY), t.doc, &name);
+	free(name);
       }
       unlink(g_ptr_array_index(arr,i));
       break;
@@ -555,15 +558,18 @@ extern int forever;
       if (HAVE_OPT(COPY) && strcmp(OPT_ARG(COPY), "none")) {
         char *name = filebase;
         spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(COPY), t.doc, &name);
+	free(name);
       }
       if (t.failed_count) {
         char *name = filebase;
         xmlSetDocCompressMode(t.failed, OPT_VALUE_COMPRESS);
         spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(FAILURES), t.failed, &name);
+	free(name);
       }
       for (j=0; j < output_ct; j++) {
         char *name = filebase;
         spool_result(OPT_ARG(SPOOLDIR), output_pn[j], t.doc, &name);
+	free(name);
       }
       unlink(g_ptr_array_index(arr,i));
       break;

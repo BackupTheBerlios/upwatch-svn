@@ -604,6 +604,14 @@ exit_with_res:
   }
 
   // note we don't free the *t->def here, because that structure is owned by the hashtable
+  // except if the module does not use caching, we try to free it ourselves
+  if (!t->probe->needs_cache) {
+    if (t->probe->free_def) {
+      t->probe->free_def(t->def);
+    } else {
+      free(t->def);
+    }
+  }
   return err;
 }
 

@@ -18,6 +18,14 @@
 #endif
 
 //*******************************************************************
+// For probes that use no cache: disable this field
+//******************************************************************* 
+int init_no_cache(module *probe)
+{
+  probe->needs_cache = 0;
+}
+
+//*******************************************************************
 // GET THE INFO FROM THE XML FILE
 // Caller must free the pointer it returns
 //******************************************************************* 

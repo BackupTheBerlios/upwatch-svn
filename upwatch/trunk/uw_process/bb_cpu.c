@@ -146,7 +146,7 @@ module bb_cpu_module  = {
   STANDARD_MODULE_STUFF(bb_cpu),
   NO_FREE_DEF,
   NO_FREE_RES,
-  NO_INIT,
+  INIT_NO_CACHE,
   NO_START_RUN,
   NO_ACCEPT_PROBE,
   NO_XML_RESULT_NODE,

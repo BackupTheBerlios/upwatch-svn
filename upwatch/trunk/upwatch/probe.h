@@ -60,13 +60,16 @@ typedef struct transaction {
   int (*process)(struct transaction *t);
 } trx;
 
-#define STANDARD_MODULE_STUFF(a) PROBE_##a, #a, NULL, NULL, \
-  NULL, sizeof(struct a##_result), sizeof(struct a##_def), 0, 0, 0, 0, 0 
+int init_no_cache(module *probe);
+
+#define STANDARD_MODULE_STUFF(a) PROBE_##a, #a, NULL, 1, NULL, \
+  NULL, sizeof(struct a##_result), sizeof(struct a##_def), 0, 0, 0, 0, 0
 
 #define STANDARD_MODULE_STRUCT \
   int class;					/* numberic probe class (id of record in probe table) */ \
-  char *module_name; \
+  char *module_name; 				/* name of the module */ \
   MYSQL *db;					/* database handle the methods should use */ \
+  int needs_cache;				/* true if this probe caches def records */ \
   GHashTable *cache;				/* cached definition records */ \
   GPtrArray *insertc;				/* cache for doing multi value insert statements */ \
   int res_size;					/* size of a result record */ \
@@ -78,7 +81,7 @@ typedef struct transaction {
   int errors;					/* stats: total errors in this run */ \
   void (*free_def)(void *def);			/* free the probe_def record for this probe */ \
   void (*free_res)(void *res);			/* free the probe_result record for this probe */ \
-  int (*init)(void); 				/* called once at program startup */ \
+  int (*init)(module *probe); 			/* called once at program startup */ \
   void (*start_run)(module *probe);		/* called once before every run */ \
   int (*accept_probe)(trx *t, const char *name);/* module wants to process this probe? */  \
   void (*xml_result_node)(trx *t);		/* process properties of the "result" node  */ \
@@ -95,6 +98,7 @@ typedef struct transaction {
 #define NO_FREE_DEF NULL
 #define NO_FREE_RES NULL
 #define NO_INIT NULL
+#define INIT_NO_CACHE init_no_cache
 #define NO_START_RUN NULL
 #define NO_ACCEPT_PROBE NULL
 #define NO_XML_RESULT_NODE NULL

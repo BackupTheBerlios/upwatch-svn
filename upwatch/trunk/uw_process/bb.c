@@ -31,7 +31,7 @@ module bb_module  = {
   STANDARD_MODULE_STUFF(bb),
   NO_FREE_DEF,
   bb_free_res,
-  NO_INIT,
+  INIT_NO_CACHE,
   NO_START_RUN,
   NO_ACCEPT_PROBE,
   bb_xml_result_node,
