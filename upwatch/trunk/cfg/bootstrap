@@ -1,16 +1,18 @@
 #! /bin/sh
 set -x
+
 # libstatgrab
-#cd libstatgrab
-#if [ ! -f libstatgrab-configure.gnu ]
+cd libstatgrab
+#if [ ! -f libstatgrab-openbsd.patch ]
 #then
-#  cp ../patches/libstatgrab-configure.gnu .
-#  aclocal
-#  libtoolize
-#  automake --gnu --add-missing
-#  autoconf
-#fi
-#cd ..
+#  cp ../patches/libstatgrab-openbsd.patch .
+#  patch -p1 < libstatgrab-openbsd.patch
+  aclocal
+  libtoolize
+  automake --gnu --add-missing
+  autoconf
+fi
+cd ..
 
 aclocal \
 && autoheader \
