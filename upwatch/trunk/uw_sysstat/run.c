@@ -170,7 +170,7 @@ int init(void)
     int     ct  = STACKCT_OPT( SYSLOG_IGNORE );
     char**  pn = STACKLST_OPT( SYSLOG_IGNORE );
 
-    for (--ct; ct >= 0; ct--) {
+    while (ct--) {
       int err;
 
       if (!spec) {
@@ -196,7 +196,7 @@ int init(void)
     int     ct  = STACKCT_OPT( SYSLOG_RED );
     char**  pn = STACKLST_OPT( SYSLOG_RED );
 
-    for (--ct; ct >= 0; ct--) {
+    while (ct--) {
       int err;
 
       if (!spec) {

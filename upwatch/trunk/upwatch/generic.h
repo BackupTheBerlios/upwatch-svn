@@ -54,6 +54,8 @@ extern int debug;
 extern int startsec;
 extern int every;
 extern int daemonize;
+extern int forever;
+extern int runcounter;
 
 #define ONE_SHOT 0
 #define EVERY_SECOND 1

@@ -32,6 +32,11 @@ probe = {
   };
 
   attribute = {
+    name = "received";
+    descrip = "date/time this result was received by the upwatch server";
+  };
+
+  attribute = {
     name = "interval";
     default = "60";
     descrip = "time between measurements";

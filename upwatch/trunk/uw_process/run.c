@@ -40,6 +40,12 @@ static void modules_end_run(void)
       modules[i]->end_run(modules[i]);
     }
     if (modules[i]->db) {
+      MYSQL_RES *result;
+
+      result = my_query(modules[i]->db, 0, 
+                        "update probe set lastseen = UNIX_TIMESTAMP() where name = '%s'", 
+                        modules[i]->module_name);
+      if (result) mysql_free_result(result);
       close_database(modules[i]->db);
       modules[i]->db = NULL;
     }
@@ -105,25 +111,27 @@ static void modules_start_run(void)
   int i;
 
   for (i = 0; modules[i]; i++) {
-    MYSQL_RES *result;
+    if (runcounter % 50 == 1) { // the first time or every 50 runs
+      MYSQL_RES *result;
 
-    modules[i]->db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
+      modules[i]->db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
                                      OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
                                      OPT_VALUE_DBCOMPRESS);
-    if (modules[i]->db) {
-      result = my_query(modules[i]->db, 0, "select fuse from probe where id = '%d'", modules[i]->class);
-      if (result) {
-        MYSQL_ROW row;
-        row = mysql_fetch_row(result);
-        if (row) {
-          if (row[0]) modules[i]->fuse  = (strcmp(row[0], "yes") == 0) ? 1 : 0;
-        } else {
-          LOG(LOG_NOTICE, "probe record for id %u not found", modules[i]->class);
+      if (modules[i]->db) {
+        result = my_query(modules[i]->db, 0, "select fuse from probe where id = '%d'", modules[i]->class);
+        if (result) {
+          MYSQL_ROW row;
+          row = mysql_fetch_row(result);
+          if (row) {
+            if (row[0]) modules[i]->fuse  = (strcmp(row[0], "yes") == 0) ? 1 : 0;
+          } else {
+            LOG(LOG_NOTICE, "probe record for id %u not found", modules[i]->class);
+          }
+          mysql_free_result(result);
         }
-        mysql_free_result(result);
+        close_database(modules[i]->db);
+        modules[i]->db = NULL;
       }
-      close_database(modules[i]->db);
-      modules[i]->db = NULL;
     }
 
     if (modules[i]->start_run) {
@@ -204,7 +212,7 @@ int init(void)
     int     ct  = STACKCT_OPT( TRUST );
     char**  pn = STACKLST_OPT( TRUST );
 
-    for (ct--; ct; ct--) {
+    while (ct--) {
       for (i=0; modules[i]; i++) {
         if (modules[i]->accept_probe) {
           if (modules[i]->accept_probe(modules[i], pn[ct])) {
@@ -346,7 +354,7 @@ static int resummarize(void);
     char**  pn = STACKLST_OPT( INPUT );
 
     childpidcnt = ct;
-    for (ct--; ct; ct--) {
+    while (ct--) {
       if (childpid[ct] == 0) { 
         pid_t pid;
 

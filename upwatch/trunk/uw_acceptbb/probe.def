@@ -29,6 +29,11 @@ probe = {
     descrip = "when this result expires";
   };
 
+  attribute = {
+    name = "received";
+    descrip = "date/time this result was received by the upwatch server";
+  };
+
   element = {
     name = "host";
     descrip = "host where this element originated";
@@ -76,6 +81,11 @@ probe = {
     name = "expires";
     required = true;
     descrip = "when this result expires";
+  };
+
+  attribute = {
+    name = "received";
+    descrip = "date/time this result was received by the upwatch server";
   };
 
   element = {

@@ -16,12 +16,11 @@ static void do_notification(module *probe, struct probe_def *def, struct probe_r
 //*******************************************************************
 void notify(module *probe, struct probe_def *def, struct probe_result *res, struct probe_result *prv)
 {
-  unsigned int now = (unsigned int) time(NULL);
   int color = res->color;
 //  int prevwasblue;
 //  int expiretime = res->expires - res->stattime;
 
-  if (now > res->expires) color = STAT_BLUE;
+  if (res->received > res->expires) color = STAT_BLUE;
 
   if (debug > 3) fprintf(stderr, "%s %u %s (was %s). ", probe->module_name, def->probeid, 
                   color2string(res->color), color2string(prv->color));
@@ -53,10 +52,6 @@ void notify(module *probe, struct probe_def *def, struct probe_result *res, stru
     if (def->email[0] == 0) {
       if (debug > 3) fprintf(stderr, "No email address\n");
       break; // nowhere to email to
-    }
-    if (res->stattime - def->changed < (def->redmins * 60)) {
-        if (debug > 3) fprintf(stderr, "Not BLUE long enough\n");
-      break; // NOT YET
     }
     do_notification(probe, def, res, prv);
     break;

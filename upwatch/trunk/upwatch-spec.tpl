@@ -3,7 +3,7 @@ Summary: UpWatch - A High performance monitoring framwork
 Vendor: http://www.upwatch.com
 Name: upwatch
 Version: [+ version +]
-Release: 0
+Release: 1
 Source: http://www.upwatch.com/%{name}-%{version}.tar.gz
 Packager: Ron Arts <raarts@upwatch.com>
 Copyright: Proprietary - Redistribution Prohibited
@@ -62,7 +62,7 @@ install -m 700 config/cron.daily $RPM_BUILD_ROOT/etc/cron.daily/upwatch
 %endif
 
 # remove files we don't want to package
-for unpackaged in /usr/bin/saidar /usr/bin/statgrab /usr/bin/statgrab-make-mrtg-config /usr/bin/statgrab-make-mrtg-index /usr/include/statgrab.h /usr/lib/libstatgrab.a /usr/lib/libstatgrab.la /usr/lib/libstatgrab.so.1.1.0 /usr/lib/pkgconfig/libstatgrab.pc
+for unpackaged in /usr/bin/tnot /usr/bin/saidar /usr/bin/statgrab /usr/bin/statgrab-make-mrtg-config /usr/bin/statgrab-make-mrtg-index /usr/include/statgrab.h /usr/lib/libstatgrab.a /usr/lib/libstatgrab.la /usr/lib/libstatgrab.so.1.1.0 /usr/lib/pkgconfig/libstatgrab.pc
 do
   rm -f $RPM_BUILD_ROOT$unpackaged
 done

@@ -19,6 +19,7 @@ PROBE_EMPTY = 1,
   char *hostname; \
   char *ipaddress; \
   guint expires; \
+  guint received; \
   guint interval; \
   char *message; 
 

@@ -16,10 +16,14 @@
 #include "dmalloc.h"
 #endif
 
+// publicly accessible vars
 int debug;
 int startsec;
 int forever=30;
 char *progname;
+int every = ONE_SHOT;
+int daemonize = TRUE;
+int runcounter;
 
 void termination_handler (int signum)
 {
@@ -42,9 +46,6 @@ void exit_function(void)
     LOG(LOG_NOTICE, "exit");
   }
 }
-
-int every = ONE_SHOT;
-int daemonize = TRUE;
 
 /****************************
  main
@@ -119,7 +120,6 @@ int main( int argc, char** argv, char **envp )
   if (debug < 3 && daemonize) daemon(0, 0);
   do {
     struct timeval start;
-    int runcounter=0;
     int i, now;
     time_t now_t;
     struct tm *gmt;

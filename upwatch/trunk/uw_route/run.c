@@ -38,7 +38,7 @@ int init(void)
     int     ct  = STACKCT_OPT( ROUTE );
     char**  pn = STACKLST_OPT( ROUTE );
 
-    for (ct--; ct; ct--) {
+    while (ct--) {
       char probe[256], queue[256];
 
       int cnt = sscanf(pn[ct], "%s %s", probe, queue);
@@ -104,7 +104,7 @@ extern int forever;
   // now we have a sorted list of files 
   // 
   for (i=0; i < arr->len && forever; i++) {
-    if (debug > 3) { fprintf(stderr, "%u: %s: ", i, (char *)g_ptr_array_index(arr,i)); }
+    if (debug > 3) { fprintf(stderr, "%u: %s\n", i, (char *)g_ptr_array_index(arr,i)); }
     uw_setproctitle("processing %s", g_ptr_array_index(arr,i));
     handle_file(g_ptr_array_index(arr,i), NULL); // extract probe results and queue them
     count++;
@@ -116,7 +116,14 @@ extern int forever;
 int run(void)
 {
   char path[PATH_MAX];
-  if (debug > 3) { LOG(LOG_DEBUG, "run()"); }
+  if (debug > 3) { 
+    int i;
+
+    LOG(LOG_DEBUG, "run()"); 
+    for (i = 0; route[i].name; i++) {
+      fprintf(stderr, "%s -> %s\n", route[i].name, route[i].queue);
+    }
+  }
 
   sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), OPT_ARG(INPUT));
   uw_setproctitle("listing %s", path);
@@ -135,6 +142,7 @@ static int handle_file(gpointer data, gpointer user_data)
   int failures=0;
   struct stat st;
   int filesize;
+  time_t filetime;
   int i;
 
   if (debug) { LOG(LOG_DEBUG, "Processing %s", filename); }
@@ -146,6 +154,7 @@ static int handle_file(gpointer data, gpointer user_data)
     return 0;
   }
   filesize = (int) st.st_size;
+  filetime = st.st_mtime;
   if (filesize == 0) {
     LOG(LOG_WARNING, "%s: size 0, removed", filename);
     unlink(filename);
@@ -218,6 +227,7 @@ static int handle_file(gpointer data, gpointer user_data)
     }
     for (i = 0; route[i].name; i++) {
       xmlNodePtr node, new;
+      char buffer[20];
 
       if (strcmp(cur->name, route[i].name)) {
         continue;
@@ -237,6 +247,8 @@ static int handle_file(gpointer data, gpointer user_data)
       xmlUnlinkNode(node);
       new = xmlCopyNode(node, 1);
       xmlFreeNode(node);
+      sprintf(buffer, "%u", (int) filetime);
+      xmlSetProp(new, "received", buffer); 
       xmlAddChild(xmlDocGetRootElement(route[i].doc), new);
       //xmlDocFormatDump(stderr, route[i].doc, TRUE);
       break;

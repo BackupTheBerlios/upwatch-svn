@@ -56,6 +56,7 @@ static void *extract_info_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur,
   res->probeid = xmlGetPropInt(cur, (const xmlChar *) "id");
   res->stattime = xmlGetPropUnsigned(cur, (const xmlChar *) "date");
   res->expires = xmlGetPropUnsigned(cur, (const xmlChar *) "expires");
+  res->received = xmlGetPropUnsigned(cur, (const xmlChar *) "received");
   res->interval = xmlGetPropUnsigned(cur, (const xmlChar *) "interval");
   if (res->interval == 0) res->interval = 60;
   res->ipaddress = xmlGetProp(cur, (const xmlChar *) "ipaddress");
@@ -400,13 +401,24 @@ static void create_pr_hist(module *probe, struct probe_def *def, struct probe_re
     escmsg = strdup("");
   }
 
+  if (res->received > res->expires) {
+    result = my_query(probe->db, 0,
+                      "insert into pr_hist "
+                      "set    server = '%u', class = '%u', probe = '%u', stattime = '%u', "
+                      "       prv_color = '%d', color = '%d', message = '%s', contact = '%u', "
+                      "       hide = '%s'",
+                      def->server, probe->class, def->probeid, res->expires,
+                      prv->color, STAT_BLUE, escmsg, def->contact, def->hide);
+    mysql_free_result(result);
+  }
   result = my_query(probe->db, 0,
                     "insert into pr_hist "
                     "set    server = '%u', class = '%u', probe = '%u', stattime = '%u', "
                     "       prv_color = '%d', color = '%d', message = '%s', contact = '%u', "
                     "       hide = '%s'",
                     def->server, probe->class, def->probeid, res->stattime,
-                    prv->color, res->color, escmsg, def->contact, def->hide);
+                    (res->received > res->expires) ? STAT_BLUE : prv->color, 
+                    res->color, escmsg, def->contact, def->hide);
   mysql_free_result(result);
   g_free(escmsg);
 }
@@ -610,7 +622,7 @@ int process(module *probe, trx *t)
   }
 
   // IF COLOR DIFFERS FROM PRECEDING RAW RECORD
-  if (t->res->color != prv->color) {
+  if (t->res->color != prv->color || t->res->received > t->res->expires) {
     struct probe_result *nxt;
 
     if (debug > 3) fprintf(stderr, "COLOR DIFFERS FROM PRECEDING RAW RECORD - CREATE PR_HIST\n");
