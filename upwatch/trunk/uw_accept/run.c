@@ -151,6 +151,11 @@ static int uw_password_ok(char *user, char *passwd)
 
 int init(void)
 {
+  if (!HAVE_OPT(OUTPUT)) {
+    LOG(LOG_ERR, "missing output option");
+    return 0;
+  }
+
   spooldir_strlen = strlen(OPT_ARG(SPOOLDIR))+1;
   daemonize = TRUE;
   every = ONE_SHOT;

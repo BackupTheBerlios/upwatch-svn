@@ -144,6 +144,10 @@ extern int forever;
 
 int init(void)
 {
+  if (!HAVE_OPT(OUTPUT)) {
+    LOG(LOG_ERR, "missing output option");
+    return 0;
+  }
   if (HAVE_OPT(EXTIGNORE)) {
     int     ct  = STACKCT_OPT(EXTIGNORE);
     char**  pn = STACKLST_OPT(EXTIGNORE);

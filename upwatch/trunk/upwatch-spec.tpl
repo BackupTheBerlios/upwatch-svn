@@ -8,7 +8,7 @@ Source: http://www.upwatch.com/%{name}-%{version}.tar.gz
 Packager: Ron Arts <raarts@upwatch.com>
 Copyright: GPL
 Group: Application/Monitoring
-BuildRoot: %{_tmppath}/%{name}-%{version}-root
+BuildRoot: %{_tmppath}/%{name}-%{version}-root-%(id -u -n)
 BuildRequires: gzip glib2-devel autogen libxslt lynx readline-devel
 Requires: libxml2 >= 2.4.19 glib2
 [+ FOR clientprog +]# [+clientprog+] requirements:

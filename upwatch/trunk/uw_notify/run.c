@@ -169,6 +169,10 @@ int init(void)
 {
   struct sigaction new_action;
 
+  if (!HAVE_OPT(OUTPUT)) {
+    LOG(LOG_ERR, "missing output option");
+    return 0;
+  }
   daemonize = TRUE;
   if (HAVE_OPT(RUN_QUEUE)) {
     every = ONE_SHOT;

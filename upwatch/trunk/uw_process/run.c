@@ -37,6 +37,25 @@ void update_last_seen(module *probe)
   if (result) mysql_free_result(result);
 }
 
+int realm_exists(char *realm)
+{
+  int i;
+
+  if (!dblist) {
+    return FALSE;
+  }
+  if (realm == NULL || realm[0] == 0) {
+    if (dblist[0].user[0] == '\0') return FALSE;
+    return TRUE;
+  }
+  for (i=0; i < dblist_cnt; i++) {
+    if (strcmp(dblist[i].realm, realm) == 0) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
 MYSQL *open_realm(char *realm)
 {
   int i;
@@ -60,6 +79,7 @@ MYSQL *open_realm(char *realm)
       return(dblist[i].mysql);
     }
   }
+  LOG(LOG_ERR, "could not find realm %s", realm);
   return(NULL);
 }
 

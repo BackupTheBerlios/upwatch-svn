@@ -51,6 +51,10 @@ gboolean return_seen(gpointer key, gpointer value, gpointer user_data)
 
 int init(void)
 {
+  if (!HAVE_OPT(OUTPUT)) {
+    LOG(LOG_ERR, "missing output option");
+    return 0;
+  }
   daemonize = TRUE;
   every = EVERY_MINUTE;
   startsec = OPT_VALUE_BEGIN;

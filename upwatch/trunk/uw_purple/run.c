@@ -18,6 +18,10 @@ struct dbspec {
 
 int init(void)
 {
+  if (!HAVE_OPT(OUTPUT)) {
+    LOG(LOG_ERR, "missing output option");
+    return 0;
+  }
   daemonize = TRUE;
   every = EVERY_MINUTE;
   xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);

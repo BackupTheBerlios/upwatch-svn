@@ -206,6 +206,10 @@ int init(void)
   int i, idx;
   FILE *in;
 
+  if (!HAVE_OPT(OUTPUT)) {
+    LOG(LOG_ERR, "missing output option");
+    return 0;
+  }
   if (OPT_VALUE_SERVERID == 0) {
     fprintf(stderr, "Please set serverid first\n");
     return 0;

@@ -62,6 +62,7 @@ struct dbspec {
 extern struct dbspec *dblist;
 extern int dblist_cnt;
 
+int realm_exists(char *realm);
 MYSQL *open_realm(char *realm);
 int realm_server_by_name(char *realm, char *name);
 char *realm_server_by_id(char *realm, int id);

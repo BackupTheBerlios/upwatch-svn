@@ -395,6 +395,10 @@ int process(trx *t)
   struct probe_result *prv=NULL;
   int err = 1; /* default ok */
 
+  if (!realm_exists(t->res->realm)) {
+    return -1;
+  }
+
   if (t->res->realm && t->res->realm[0]) {
     t->probe->db = open_realm(t->res->realm);
   } else {

@@ -78,6 +78,11 @@ int init(void)
 {
   struct protoent *proto;
 
+  if (!HAVE_OPT(OUTPUT)) {
+    LOG(LOG_ERR, "missing output option");
+    return 0;
+  }
+
   daemonize = TRUE;
   every = EVERY_MINUTE;
   startsec = OPT_VALUE_BEGIN;

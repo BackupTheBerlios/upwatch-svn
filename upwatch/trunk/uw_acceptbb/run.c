@@ -32,6 +32,11 @@ static char *chop(char *s, int i)
 
 int init(void)
 {
+  if (!HAVE_OPT(OUTPUT)) {
+    LOG(LOG_ERR, "missing output option");
+    return 0;
+  }
+
   daemonize = TRUE;
   every = ONE_SHOT;
   st_init();

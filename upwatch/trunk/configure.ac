@@ -133,6 +133,7 @@ AC_EXEEXT
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_AWK
+AC_SYS_LARGEFILE
 export SED=sed
 
 AC_PATH_PROG([ID], [id], [/usr/bin/id], [/usr/xpg4/bin:$PATH])
