@@ -65,13 +65,13 @@ void my_transaction(char *what)
 MYSQL_RES *my_query(char *fmt, ...)
 {
   MYSQL_RES *result;
-  char qry[BUFSIZ];
+  char qry[65535];
   va_list arg;
 
   if (!mysql) return(NULL);
 
   va_start(arg, fmt);
-  vsnprintf(qry, BUFSIZ, fmt, arg);
+  vsnprintf(qry, sizeof(qry), fmt, arg);
   va_end(arg);
   if (debug > 3) printf("%s\n", qry);
 

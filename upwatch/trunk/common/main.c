@@ -118,6 +118,7 @@ static void every_minute(void)
       gettimeofday(&end, NULL);
       LOG(LOG_DEBUG, "run %d: processed %d items in %f seconds", runcounter, ret, ((float)timeval_diff(&end, &start))/1000000.0);
     }     
+    sleep(1); // just in case the above run() function lasts less then a second
   }
   return;
 }

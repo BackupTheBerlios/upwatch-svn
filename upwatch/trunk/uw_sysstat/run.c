@@ -108,7 +108,7 @@ int init(void)
   every = EVERY_MINUTE;
   xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
   getstat(cpu_use,cpu_nic,cpu_sys,cpu_idl, pgpgin,pgpgout,pswpin,pswpout, inter,ticks,ctxt);
-  sleep(1);
+  sleep(2); // ensure we wait until the next minute
   return(1);
 }
 
@@ -154,9 +154,15 @@ int run(void)
     system("top -b -n 1 > /tmp/.uw_sysstat.tmp");
     in = fopen("/tmp/.uw_sysstat.tmp", "r");
     if (in) {
+      char *s;
+
       fread(info, sizeof(info)-1, 1, in); 
       info[sizeof(info)-1] = 0;
       fclose(in);
+
+      for (s = info; *s; s++) { // clean up strange characters
+        if (*s < 0) *s = ' ';
+      }
     }
     unlink("tmp/.uw_sysstat.tmp");
   }
