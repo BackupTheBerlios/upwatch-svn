@@ -458,7 +458,6 @@ int logregex_refresh(char *path)
 int logregex_rmatchline(char *type, char *line)
 {
   struct typespec *ts;
-  ts = g_hash_table_lookup(types, type);
   regmatch_t mt;
   regex_t spec;
   int i, j;
@@ -466,6 +465,7 @@ int logregex_rmatchline(char *type, char *line)
   char buffer[4096];
   char *out = buffer;
 
+  ts = g_hash_table_lookup(types, type);
   if (!ts) return 0;
 
   for (j=0; j < ts->rmacros->len; j++) {

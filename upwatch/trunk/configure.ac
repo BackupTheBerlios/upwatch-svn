@@ -7,7 +7,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.60 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.61 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -79,9 +79,9 @@ case $host in
     ;;
 esac
 
-AM_CONDITIONAL([LINUX], test x$linux = xtrue)
-AM_CONDITIONAL([SOLARIS], test x$solaris = xtrue)
-AM_CONDITIONAL([CYGWIN], test x$cygwin = xtrue)
+AM_CONDITIONAL(LINUX, test x$linux = xtrue)
+AM_CONDITIONAL(SOLARIS, test x$solaris = xtrue)
+AM_CONDITIONAL(CYGWIN, test x$cygwin = xtrue)
 
 # ----------------------------------------------------------------------
 # check for various programs used during the build.
@@ -549,7 +549,8 @@ AC_CONFIG_FILES([uw_postgresql/Makefile])
 AC_CONFIG_FILES([uw_iptraf/Makefile])
 
 cp patches/libstatgrab-configure.gnu libstatgrab/configure.gnu
-AC_CONFIG_SUBDIRS(libstatgrab)
+( cd libstatgrab ; ./configure ; cd .. )
+
 ( cd xmbmon203 ; ./configure ; cd .. )
 
 AC_OUTPUT
