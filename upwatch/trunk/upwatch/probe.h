@@ -117,6 +117,7 @@ int accept_result(trx *t);
 void *get_def(trx *t, int create);
 void *get_def_by_servid(trx *t, int create);
 int handle_result_file(gpointer data, gpointer user_data);
+void delete_pr_status(trx *t, int id);
 
 void ct_get_from_xml(trx *t);
 

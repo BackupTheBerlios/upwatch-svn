@@ -118,6 +118,7 @@ int check_log(GString *string, int idx, int *color)
   char buffer[8192];
   int firstmatch = TRUE;
   int logcolor = STAT_GREEN;
+  int lines = 0;
 
   in = fopen(errlogspec[idx].path, "r");
   if (!in) {
@@ -149,7 +150,7 @@ int check_log(GString *string, int idx, int *color)
         g_string_append(string, buf2);
         firstmatch = FALSE;
       }
-      g_string_append(string, buffer);
+      if (++lines < 50) g_string_append(string, buffer);
     }
     if (color > logcolor) logcolor = color;
   }

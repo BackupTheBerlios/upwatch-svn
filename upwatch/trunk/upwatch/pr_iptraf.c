@@ -81,6 +81,7 @@ void *iptraf_get_def(trx *t, int create)
     } else {
       LOG(LOG_NOTICE, "%s:%u@%s: iptraf def %u not found", res->realm, res->stattime, t->fromhost, res->probeid);
       mysql_free_result(result);
+      delete_pr_status(t, res->probeid);
       return(NULL);
     }
     mysql_free_result(result);

@@ -1,4 +1,4 @@
-green [LOGDATE] uw_[WORD][PID] db\.c\([NUM]\): Too many connections
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [WORD]: purpled [NUM] probes
 green [LOGDATE] uw_[WORD][PID] last message repeated [NUM] times
 green [LOGDATE] uw_[WORD][PID] logregex\.c\([NUM]\): loading [PATH]
 green [LOGDATE] uw_[WORD][PID] logregex\.c\([NUM]\): reloading [PATH]
@@ -36,6 +36,5 @@ green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): user [WORD], pwd [WORD] not foun
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [WORD]: purpled [WORD] [NUM]
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): writing results
 green [LOGDATE] uw_[WORD][PID] spool\.c\([NUM]\): spooled to [PATH]
-green [LOGDATE] uw_[WORD][PID] spool\.c\([NUM]\): spooled to [PATH][HOSTNAME][NUM]
 red [LOGDATE] uw_[WORD][PID] db\.c\([NUM]\): Too many connections
 red [LOGDATE] uw_[WORD][PID] notify\.c\([NUM]\): UPWATCH: probe mysqlstats is lagging in processing

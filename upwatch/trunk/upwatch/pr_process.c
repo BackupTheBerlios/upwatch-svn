@@ -146,6 +146,16 @@ int accept_result(trx *t)
   return 1; // ok
 }
 
+void delete_pr_status(trx *t, int id)
+{
+  MYSQL_RES *result;
+
+  result = my_query(t->probe->db, 0,
+           "delete from pr_status where class = '%u' and probe = '%u'",
+           t->probe->class, id);
+  mysql_free_result(result);
+}
+
 //*******************************************************************
 // retrieve the definitions + status
 // get it from the cache. if there but too old: delete
@@ -199,11 +209,13 @@ void *get_def(trx *t, int create)
       if (!create) {
         LOG(LOG_NOTICE, "%s:%u@%s: pr_%s_def id %u not found - skipped",
                          res->realm, res->stattime, t->fromhost, res->name, res->probeid);
+        delete_pr_status(t, res->probeid);
         return(NULL);
       }
       if (res->server == 0) {
         LOG(LOG_NOTICE, "%s:%u@%s: pr_%s_def id %u not found trusted but we have no serverid - skipped",
                          res->realm, res->stattime, t->fromhost, res->name, res->probeid);
+        delete_pr_status(t, res->probeid);
         return(NULL);
       }
       // at this point, we have a probe result, but we can't find the _def record

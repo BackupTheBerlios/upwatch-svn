@@ -127,7 +127,7 @@ static int uw_password_ok(char *user, char *passwd)
     }
     result = mysql_store_result(mysql);
     if (!result || mysql_num_rows(result) < 1) {
-      LOG(LOG_NOTICE, "user %s, pwd %s not found", user, passwd);
+      // LOG(LOG_NOTICE, "user %s, pwd %s not found", user, passwd);
       close_database(mysql);
       return(FALSE);
     }

@@ -347,12 +347,13 @@ static void logregex_add_file(char *fullname, struct typespec *ts, char *file)
 
 // refresh the data for a specific filetype (for example syslog)
 // 
-void logregex_refresh_type(char *path, char *type)
+void logregex_refresh_type(char *base, char *type)
 {
   struct typespec *ts;
   GDir *dir;
   GError *error=NULL;
   G_CONST_RETURN gchar *filename;
+  char path[PATH_MAX];
 
   if (types == NULL) {
     types = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, free_typespec);
@@ -367,6 +368,7 @@ void logregex_refresh_type(char *path, char *type)
     g_hash_table_insert(types, strdup(type), ts);
   }
 
+  sprintf(path, "%s/%s", base, type);
   logregex_refresh_macros(ts, path); // refresh the macros first
   logregex_refresh_rmacros(ts, path); // and the reverse macros
   dir = g_dir_open (path, 0, &error);
