@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+# cronjob for upwatch
+# delete files in any /tmp directory that are older then 7 days
+
+cd /var/spool/upwatch
+for i in *
+do
+	find $i/tmp -type f -atime +7 -exec rm -f {} \;
+done
+
