@@ -490,24 +490,21 @@ int slot_is_complete(module *probe, char *name, guint probeid, int i, guint slot
  * -1 in case of malformed input, never try again
  * -2 in case of a fatal error, just skip this batch
  */
-int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
+int process(module *probe, trx *t)
 {
   int seen_before=0, must_update_def=0;
   struct probe_def *def=NULL;
-  struct probe_result *res=NULL, *prv=NULL;
+  struct probe_result *prv=NULL;
   int err = 1; /* default ok */
 
-  res = extract_info_from_xml(probe, doc, cur, ns); // EXTRACT INFO FROM XML NODE
-  if (!res) return -1; 
-
   if (probe->fix_result) {
-    probe->fix_result(probe, res); // do some final calculations on the result
+    probe->fix_result(probe, t->res); // do some final calculations on the result
   }
 
   if (probe->get_def) {
-    def = probe->get_def(probe, res); // RETRIEVE PROBE DEFINITION RECORD FROM DATABASE
+    def = probe->get_def(probe, t->res); // RETRIEVE PROBE DEFINITION RECORD FROM DATABASE
   } else {
-    def = get_def(probe, res);
+    def = get_def(probe, t->res);
   }
   if (!def) {  // Oops, def record not found. Skip this probe
     err = -1; /* malformed input FIXME should make distinction between db errors and def not found */
@@ -515,7 +512,7 @@ int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
   }
 
   if (probe->store_results) {
-    int ret = probe->store_results(probe, def, res, &seen_before); // STORE RAW RESULTS
+    int ret = probe->store_results(probe, def, t->res, &seen_before); // STORE RAW RESULTS
     if (!ret) { /* error return? */
       err = -2; /* database fatal error - try again later */
       goto exit_with_res;
@@ -524,16 +521,16 @@ int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
     seen_before = FALSE;
   }
 
-  if (res->stattime > def->newest) { // IF CURRENT RAW RECORD IS THE MOST RECENT 
+  if (t->res->stattime > def->newest) { // IF CURRENT RAW RECORD IS THE MOST RECENT 
     prv = g_malloc0(sizeof(struct probe_result));
     prv->color = def->color;  // USE PREVIOUS COLOR FROM DEF RECORD
     prv->stattime = def->newest;
   } else {
-    prv = get_previous_record(probe, def, res); // RETRIEVE PRECEDING RAW RECORD FROM DATABASE
+    prv = get_previous_record(probe, def, t->res); // RETRIEVE PRECEDING RAW RECORD FROM DATABASE
   }
 
   if (def->newest == 0) { // IF THIS IS THE FIRST RESULT EVER FOR THIS PROBE
-    insert_pr_status(probe, def, res);
+    insert_pr_status(probe, def, t->res);
     must_update_def = TRUE;
     goto finish;
   }
@@ -541,29 +538,29 @@ int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
     goto finish;
   }
   // IF COLOR DIFFERS FROM PRECEDING RAW RECORD
-  if (res->color != prv->color) {
+  if (t->res->color != prv->color) {
     struct probe_result *nxt;
-    create_pr_hist(probe, def, res, prv); // CREATE PR_HIST
-    nxt = get_following_record(probe, def, res); // RETRIEVE FOLLOWING RAW RECORD
+    create_pr_hist(probe, def, t->res, prv); // CREATE PR_HIST
+    nxt = get_following_record(probe, def, t->res); // RETRIEVE FOLLOWING RAW RECORD
     if (nxt && nxt->color) { // IF FOUND
-      if (nxt->color == res->color) {  // IF COLOR OF FOLLOWING IS THE SAME AS CURRENT
+      if (nxt->color == t->res->color) {  // IF COLOR OF FOLLOWING IS THE SAME AS CURRENT
         delete_history(probe, def, nxt); // DELETE POSSIBLE HISTORY RECORDS FOR FOLLOWING RECORD
       }
       g_free(nxt);
     }
-    if (res->stattime > def->newest) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED
-      update_pr_status(probe, def, res);  // UPDATE PR_STATUS
-      update_server_color(probe, def, res); // UPDATE SERVER COLOR
+    if (t->res->stattime > def->newest) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED
+      update_pr_status(probe, def, t->res);  // UPDATE PR_STATUS
+      update_server_color(probe, def, t->res); // UPDATE SERVER COLOR
       must_update_def = TRUE;
     }
   } else {
-    if (res->stattime > def->newest) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED
-      update_pr_status(probe, def, res);  // UPDATE PR_STATUS (not for the color, but for the expiry time)
+    if (t->res->stattime > def->newest) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED
+      update_pr_status(probe, def, t->res);  // UPDATE PR_STATUS (not for the color, but for the expiry time)
       must_update_def = TRUE;
     }
   }
   if (probe->summarize) { // if we have a summarisation function
-    if (res->stattime > def->newest) { // IF CURRENT RAW RECORD IS THE MOST RECENT
+    if (t->res->stattime > def->newest) { // IF CURRENT RAW RECORD IS THE MOST RECENT
       guint cur_slot, prev_slot;
       gulong slotlow, slothigh;
       gulong dummy_low, dummy_high;
@@ -571,14 +568,14 @@ int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
 
       for (i=0; summ_info[i].period != -1; i++) { // FOR EACH PERIOD
         prev_slot = uw_slot(summ_info[i].period, prv->stattime, &slotlow, &slothigh);
-        cur_slot = uw_slot(summ_info[i].period, res->stattime, &dummy_low, &dummy_high);
+        cur_slot = uw_slot(summ_info[i].period, t->res->stattime, &dummy_low, &dummy_high);
         if (cur_slot != prev_slot) { // IF WE ENTERED A NEW SLOT, SUMMARIZE PREVIOUS SLOT
-          //if (strcmp(res->name, "sysstat") == 0) {
+          //if (strcmp(t->res->name, "sysstat") == 0) {
           //  LOG(LOG_DEBUG, "cur(%u for %u) != prv(%u for %u), summarizing %s from %u to %u",
-          //                 cur_slot, res->stattime, prev_slot, prv->stattime,
+          //                 cur_slot, t->res->stattime, prev_slot, prv->stattime,
           //                 summ_info[i].from, slotlow, slothigh);
           //}
-          probe->summarize(probe, def, res, summ_info[i].from, summ_info[i].to, 
+          probe->summarize(probe, def, t->res, summ_info[i].from, summ_info[i].to, 
                            cur_slot, slotlow, slothigh, 0);
         }
       }
@@ -589,16 +586,16 @@ int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
       gint i;
 
       if (debug > 2) {
-        LOG(LOG_DEBUG, "stattime = %u, newest = %u for %s %u", res->stattime, def->newest,
-          res->name, res->probeid);
+        LOG(LOG_DEBUG, "stattime = %u, newest = %u for %s %u", t->res->stattime, def->newest,
+          t->res->name, t->res->probeid);
       }
       for (i=0; summ_info[i].period != -1; i++) { // FOR EACH PERIOD
-        cur_slot = uw_slot(summ_info[i].period, res->stattime, &slotlow, &slothigh);
+        cur_slot = uw_slot(summ_info[i].period, t->res->stattime, &slotlow, &slothigh);
         if (slothigh > not_later_then) continue; // we already know there are none later then this
         // IF THIS SLOT IS COMPLETE
-        if (slot_is_complete(probe, res->name, def->probeid, i, slotlow, slothigh)) {
+        if (slot_is_complete(probe, t->res->name, def->probeid, i, slotlow, slothigh)) {
           // RE-SUMMARIZE CURRENT SLOT
-          probe->summarize(probe, def, res, summ_info[i].from, summ_info[i].to, 
+          probe->summarize(probe, def, t->res, summ_info[i].from, summ_info[i].to, 
                            cur_slot, slotlow, slothigh, 0);
         } else {
           not_later_then = slothigh;
@@ -608,22 +605,22 @@ int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
   }
 finish:
   if (must_update_def) {
-    def->newest = res->stattime;
-    def->color = res->color;
+    def->newest = t->res->stattime;
+    def->color = t->res->color;
   }
   g_free(prv);
 
 exit_with_res:
   if (probe->end_probe) {
-    probe->end_probe(probe, def, res);
+    probe->end_probe(probe, def, t->res);
   }
 
   // free the result block
-  if (res) {
+  if (t->res) {
     if (probe->free_res) {
-      probe->free_res(res); // the probe specific part...
+      probe->free_res(t->res); // the probe specific part...
     }
-    free_res(res); // .. and the generic part
+    free_res(t->res); // .. and the generic part
   }
 
   // note we don't free the *def here, because that structure is owned by the hashtable

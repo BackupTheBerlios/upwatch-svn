@@ -19,7 +19,7 @@
 #endif
 
 static int handle_file(gpointer data, gpointer user_data);
-extern  int process(module *module, xmlDocPtr, xmlNodePtr, xmlNsPtr);
+extern  int process(module *module, trx *t);
 extern struct summ_spec summ_info[]; 
 
 struct resfile {
@@ -96,6 +96,9 @@ static void modules_cleanup(void)
     if (modules[i]->cache) {
       g_hash_table_destroy(modules[i]->cache);
     }
+    if (modules[i]->queue) {
+      g_queue_free(modules[i]->queue);
+    }
   }
 }
 
@@ -124,6 +127,9 @@ static void modules_init(void)
     if (modules[i]->cache == NULL) {
       modules[i]->cache = g_hash_table_new_full(g_int_hash, g_int_equal, g_free, 
                             modules[i]->free_def ? modules[i]->free_def : g_free);
+    }
+    if (modules[i]->queue == NULL) {
+      modules[i]->queue = g_queue_new();
     }
   }
 }
@@ -225,6 +231,7 @@ static int resummarize(void);
     return(resummarize()); // --summarize
   }
   sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), OPT_ARG(INPUT));
+  uw_setproctitle("listing %s", path);
   dir = g_dir_open (path, 0, &error);
   if (dir == NULL) {
     LOG(LOG_NOTICE, "g_dir_open: %s", error);
@@ -246,6 +253,9 @@ static int resummarize(void);
   }
   g_ptr_array_sort(arr, mystrcmp);
 
+  // now we have a sorted list of files 
+  // walk the list, and add resfile descriptions for files we aren't processing yet
+  // 
   for (i=0; i < arr->len && forever; i++) {
     struct resfile *rf;
     int j, found = 0;
@@ -263,22 +273,115 @@ static int resummarize(void);
     }
     rf = g_malloc0(sizeof(struct resfile));
     rf->filename = g_ptr_array_index(arr,i);
-    g_ptr_array_add(resfile_arr, rf);
+    uw_setproctitle("added %s", rf->filename);
+    g_ptr_array_add(resfile_arr, rf); // not processing yet, add it
     count++;
   }
   g_ptr_array_free(arr, TRUE);
 
+  // now we refreshed the resfile list, read all files and extract probe results from them
+  // they will be placed in the result-specific queue
+  //
   modules_start_run();
-  for (i=0; i < resfile_arr->len; i++) {
+  for (i=0; i < resfile_arr->len && i < 100 && forever; i++) {
     struct resfile *rf;
 
     rf = g_ptr_array_index(resfile_arr, i);
+    uw_setproctitle("reading %s", rf->filename);
     handle_file(rf, NULL);
   } 
+
+  // Now we have the queues updated, process all results
+  for (i = 0; modules[i]; i++) {
+    trx *t;
+
+    while ((t = g_queue_pop_head(modules[i]->queue)) != NULL && forever) {
+      char buf[20];
+
+      strftime(buf, sizeof(buf), "%Y-%m-%d %T", gmtime(&t->rf->fromdate));
+      uw_setproctitle("%s %s@%s", buf, t->res->name, t->rf->fromhost);
+      process(modules[i], t);
+      resfile_decr(t->rf);
+      g_free(t);
+    }
+  }
   modules_end_run();
+  if (debug) LOG(LOG_DEBUG, "%d file entries", resfile_arr->len);
 
   return(count);
 }
+
+//*******************************************************************
+// GET THE INFO FROM THE XML FILE
+// Caller must free the pointer it returns
+//******************************************************************* 
+static void *extract_info_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
+{
+  struct probe_result *res;
+
+  res = g_malloc0(probe->res_size);
+  if (res == NULL) {
+    return(NULL);
+  }
+
+  res->name = strdup(cur->name);
+
+  res->server = xmlGetPropInt(cur, (const xmlChar *) "server");
+  res->probeid = xmlGetPropInt(cur, (const xmlChar *) "id");
+  res->stattime = xmlGetPropUnsigned(cur, (const xmlChar *) "date");
+  res->expires = xmlGetPropUnsigned(cur, (const xmlChar *) "expires");
+  res->ipaddress = xmlGetProp(cur, (const xmlChar *) "ipaddress");
+
+  if (probe->xml_result_node) {
+    probe->xml_result_node(probe, doc, cur, ns, res);
+  }
+
+  for (cur = cur->xmlChildrenNode; cur != NULL; cur = cur->next) {
+    char *p;
+
+    if (xmlIsBlankNode(cur)) continue;
+    if ((!xmlStrcmp(cur->name, (const xmlChar *) "color")) && (cur->ns == ns)) {
+      res->color = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+      continue;
+    }
+    if ((!xmlStrcmp(cur->name, (const xmlChar *) "info")) && (cur->ns == ns)) {
+      p = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+      if (p) { 
+        res->message = strdup(p); 
+        xmlFree(p);
+      }
+      continue;
+    }
+    if ((!xmlStrcmp(cur->name, (const xmlChar *) "host")) && (cur->ns == ns)) {
+      xmlNodePtr hname;
+
+      for (hname = cur->xmlChildrenNode; hname != NULL; hname = hname->next) {
+        if (xmlIsBlankNode(hname)) continue;
+        if ((!xmlStrcmp(hname->name, (const xmlChar *) "hostname")) && (hname->ns == ns)) {
+          p = xmlNodeListGetString(doc, hname->xmlChildrenNode, 1);
+          if (p) {
+            res->hostname = strdup(p);
+            xmlFree(p);
+          }
+          continue;
+        }
+        if ((!xmlStrcmp(hname->name, (const xmlChar *) "ipaddress")) && (hname->ns == ns)) {
+          p = xmlNodeListGetString(doc, hname->xmlChildrenNode, 1);
+          if (p) {
+            res->ipaddress = strdup(p);
+            xmlFree(p);
+          }
+          continue;
+        }
+      }
+    }
+    if (probe->get_from_xml) {
+      probe->get_from_xml(probe, doc, cur, ns, res);
+    }
+  }
+  return(res);
+}
+
 
 /*
  * Reads a results file
@@ -293,7 +396,7 @@ static int handle_file(gpointer data, gpointer user_data)
   int failures=0;
   struct stat st;
   int filesize;
-  int i, fatal = FALSE;
+  int i;
 
   if (debug) LOG(LOG_DEBUG, "Processing %s", rf->filename);
 
@@ -319,7 +422,6 @@ static int handle_file(gpointer data, gpointer user_data)
     resfile_remove(rf, TRUE);
     return 0;
   }
-
   if (HAVE_OPT(COPY) && strcmp(OPT_ARG(COPY), "none")) {
     spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(COPY), doc, NULL);
   }
@@ -376,6 +478,8 @@ static int handle_file(gpointer data, gpointer user_data)
     for (i = 0; modules[i]; i++) {
       int ret;
       char buf[20];
+      trx *t;
+      xmlNodePtr del = cur;
 
       if (modules[i]->accept_probe) {
         if (!modules[i]->accept_probe(modules[i], cur->name)) continue;
@@ -389,23 +493,13 @@ static int handle_file(gpointer data, gpointer user_data)
       }
       found = 1;
       resfile_incr(rf);
-      //xmlDocFormatDump(stderr, doc, 1);
-      strftime(buf, sizeof(buf), "%Y-%m-%d %T", gmtime(&rf->fromdate));
-      uw_setproctitle("%s %s@%s", buf, cur->name, rf->fromhost);
-      ret = process(modules[i], doc, cur, ns);
-      if (ret == 0 || ret == -1) {
-        failures++;
-        cur = cur->next;
-      } else if (ret == -2) {
-        fatal = TRUE;
-        break;
-      } else {
-        xmlNodePtr del = cur;
-        cur = cur->next;
-        xmlUnlinkNode(del); // succeeded, remove this node from the XML tree
-        xmlFreeNode(del);
-        modules[i]->count++;
-      }
+      t = (trx *)g_malloc0(sizeof(trx));
+      t->rf = rf;
+      t->res = extract_info_from_xml(modules[i], doc, cur, ns);
+      g_queue_push_tail(modules[i]->queue, t);
+      cur = cur->next;
+      xmlUnlinkNode(del); // succeeded, remove this node from the XML tree
+      xmlFreeNode(del);
       break;
     }
     if (!found) {
@@ -413,18 +507,12 @@ static int handle_file(gpointer data, gpointer user_data)
       failures++;
       cur = cur->next;
     }
-    if (fatal) break;
   }
   if (failures) {
     xmlSaveFormatFile(OPT_ARG(FAILURES), doc, 1);
   }
   xmlFreeDoc(doc);
-  if (!fatal) {
-    if (debug > 1) LOG(LOG_DEBUG, "Processed %d probes", rf->count);
-    if (debug > 1) LOG(LOG_DEBUG, "unlink(%s)", rf->filename);
-    resfile_remove(rf, TRUE);
-  }
-  return fatal;
+  return 0;
 }
 
 static int resummarize(void)

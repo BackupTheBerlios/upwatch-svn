@@ -89,13 +89,11 @@ struct summ_spec {
 }; 
 
 typedef struct transaction {
-  module *probe;	// point to the module processing this transaction
-  xmlDocPtr doc; 	// the Xml doc structure
-  xmlNodePtr cur;	// current node in the Xml doc
-  xmlNsPtr ns;		// current namespace
-  void *def;		// probe definition data
-  void *loc;		// local data ptr
-  void *res;		// probe result pointer
+  module *probe;		// point to the module processing this transaction
+  struct resfile *rf;   	// points to results file description
+  void *def;			// probe definition data
+  void *loc;			// local data ptr
+  struct probe_result *res;	// probe result pointer
 } trx;
 
 /* generic functions */
