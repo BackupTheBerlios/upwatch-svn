@@ -63,13 +63,15 @@ int main (int argc, char *argv[])
         //fprintf(stderr, %s: not a regular file\n", buffer);
         continue;
       }
-      if (stat(buffer, &st)) {
-        perror(buffer);
-        continue;
+      if (!OPT_VALUE_NO_STAT) {
+        if (stat(buffer, &st)) {
+          perror(buffer);
+          continue;
+        }
+        if (oldest > st.st_mtime) oldest = st.st_mtime;
+        if (newest < st.st_mtime) newest = st.st_mtime;
       }
       qcount++;
-      if (oldest > st.st_mtime) oldest = st.st_mtime;
-      if (newest < st.st_mtime) newest = st.st_mtime;
     }
     g_dir_close(qdir);
     printf("%-15s ", filename);

@@ -10,7 +10,7 @@
 
 void mod_ic_add(module *probe, const char *table, const char *str)
 {
-  if (probe->insertc->len >= 20) {
+  if (probe->insertc->len >= OPT_VALUE_MULTI_VALUE_CACHE_SIZE) {
     mod_ic_flush(probe, table);
   }
   g_ptr_array_add(probe->insertc, (void *)str);

@@ -1,7 +1,12 @@
 - notify library functions
 - tool to autodetect services to check on the network
 - uw_snmp, snmp trap catcher
-- iptraf total for interfaces
-- uw_ftp/uw_https/uw_pop3/uw_imap etc
+- uw_ftp/uw_https etc
 - uw_diskfree
 - 
+
+Adapt specfile for multiple distributions. This may be useful:
+
+http://groups.yahoo.com/group/rpm-list/message/19658?source=1
+
+

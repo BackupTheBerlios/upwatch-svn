@@ -28,24 +28,24 @@ endif
 # server (uw_process, uw_accept, uw_acceptbb, uw_setip)
 CLIENTPROG = uw_send uw_sysstat
 
-CONFARGS = --enable-client
-
 if ENABLE_SERVER
 # order is important here: uw_process should be last
 SERVERPROG = uw_acceptbb uw_accept uw_setip uw_notify uw_process compat doc
-CONFARGS += --enable-server
+ENABLE_SERVER = --enable-server
 endif
 
 if ENABLE_MONITORS
 MONITORPROG = uw_httpget uw_ping uw_mysql uw_pop3 uw_imap \
  ${UW_IPTRAF} ${UW_POSTGRESQL} ${UW_SNMPGET} ${UW_MSSQL}
-CONFARGS += --enable-monitor
+ENABLE_MONITOR = --enable-monitor
 endif
 
 if ENABLE_IPTRAF
 EXTRAPROG = ${UW_IPTRAF}
-CONFARGS += --enable-extra
+ENABLE_EXTRA = --enable-extra
 endif
+
+CONFARGS = --enable-client $(ENABLE_SERVER) $(ENABLE_MONITOR) $(ENABLE_EXTRA)
 
 # order is important: SERVERPROG should be last
 PROGNAMES = ${CLIENTPROG} ${MONITORPROG} ${EXTRAPROG} ${SERVERPROG}

@@ -141,6 +141,17 @@ one long statement. You loose some reliability in this case because the
 process can crash with some pending values still in memory';
 };
 
+flag = {
+    name      = multi_value_cache_size;
+    arg_type  = number;
+    arg-default = 20;
+    arg-range = '10->1000';
+    descrip   = "How many insert to combine into one";
+    doc       =
+'How many insert queries should be combined into one. Only
+valid when multi_value_inserts is set.';
+};
+
 flag = { 
     name      = separate; 
     arg_type  = string;
