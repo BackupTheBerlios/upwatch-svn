@@ -16,6 +16,26 @@ static void iptraf_end_run(module *probe)
   mod_ic_flush(probe, "pr_iptraf_raw");
 }
 
+// this hook abused for setting the query string find-server-by-ip
+int iptraf_accept_result(trx *t)
+{
+  int i;
+
+  query_server_by_ip = NULL;
+
+  if (t->res->domain == NULL) {
+    query_server_by_ip = dblist[1].srvrbyip;
+    return 1;
+  }
+
+  for (i=0; i < dblist_cnt; i++) {
+    if (strcmp(t->res->domain, dblist[i].domain)) continue;
+    query_server_by_ip = dblist[i].srvrbyip;
+    break;
+  }
+  return 1;
+}
+
 //*******************************************************************
 // STORE RAW RESULTS
 //*******************************************************************
@@ -140,7 +160,7 @@ module iptraf_module  = {
   NO_ACCEPT_PROBE,
   iptraf_xml_result_node,
   iptraf_get_from_xml,
-  NO_ACCEPT_RESULT,
+  iptraf_accept_result,
   iptraf_get_def,
   iptraf_adjust_result,
   NO_END_RESULT,
