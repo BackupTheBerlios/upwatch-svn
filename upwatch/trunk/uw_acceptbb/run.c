@@ -250,7 +250,7 @@ void add_to_xml_document(char *hostname, char *probename, char *colorstr, struct
   }
 }
 
-void runbb(char *cmd)
+void runbb(char *req)
 {
  /*
   * IF THE REQUEST STARTS WITH "page" THEN CALL THE PAGING SCRIPT
@@ -268,6 +268,8 @@ void runbb(char *cmd)
   * OTHERWISE IGNORE IT (FOR SAFETY SAKE)
   */
 
+  char *cmd = req;
+
   /* If received an agent message, skip that keyword */
   if (strncmp(cmd, "bbagent ", 8) == 0) {
     cmd += 8;
@@ -276,6 +278,7 @@ void runbb(char *cmd)
   if (strncmp(cmd, "status", 6) == 0) {
     char *hostname;
     char *probename;
+    char *datestring;
     char *color;
     struct tm probedate;
     char *message;
@@ -291,7 +294,7 @@ void runbb(char *cmd)
     }
     while (*cmd && *cmd == ' ') cmd++;
     if (!*cmd) {
-      LOG(LOG_NOTICE, "Illegal status message format, dot not found");
+      LOG(LOG_NOTICE, "Illegal status message format, dot not found: %s", req);
       return;
     }
     //  status ntserver5,domain,nl.disk green Mon Oct 07 14:37:54 RDT 2002 [ntserver5.domain.nl]
@@ -305,7 +308,7 @@ void runbb(char *cmd)
     // isolate hostname
     p = strchr(cmd, '.');
     if (!p) {
-      LOG(LOG_NOTICE, "Illegal status message format, dot not found");
+      LOG(LOG_NOTICE, "Illegal status message format, dot not found: %s", req);
       return;
     }
     *p = 0;
@@ -316,7 +319,7 @@ void runbb(char *cmd)
     // isolate probe
     p = strchr(cmd, ' ');
     if (!p) {
-      LOG(LOG_NOTICE, "Illegal status message format, probename not found");
+      LOG(LOG_NOTICE, "Illegal status message format, probename not found: %s", req);
       return;
     }
     *p = 0;
@@ -326,7 +329,7 @@ void runbb(char *cmd)
     // isolate color
     p = strchr(cmd, ' ');
     if (!p) {
-      LOG(LOG_NOTICE, "Illegal status message format, color not found");
+      LOG(LOG_NOTICE, "Illegal status message format, color not found: %s", req);
       return;
     }
     *p = 0;
@@ -335,20 +338,24 @@ void runbb(char *cmd)
     while (*cmd == ' ') cmd++; // skip leading spaces
 
     // isolate date/time
-    LOG(LOG_NOTICE, "datestring: %s", cmd); 
+    datestring = cmd;
+    LOG(LOG_DEBUG, "datestring: %s", datestring); 
     // Mon Oct 07 14:37:54 RDT 2002
-    message = strptime(cmd, "%a %b %d %T ", &probedate);
+    message = strptime(datestring, "%a %b %d %T ", &probedate);
     if (!message) {
-      LOG(LOG_NOTICE, "Illegal status message format, illegal time format");
+      LOG(LOG_NOTICE, "Illegal status message format, illegal time format: %s", datestring);
       return;
     }
     message = strptime(message+4, "%Y", &probedate); // lose the timezone info - it's unusable
+    *message++ = 0;
 
-    //fprintf(stderr, message);
+    LOG(LOG_INFO, "%s [%s] %s %s", datestring, hostname, probename, color);
     add_to_xml_document(hostname, probename, color, &probedate, message);
     LOG(LOG_DEBUG, "host: %s, probe: %s, color: %s, msg: %s, date: %s", 
 		    hostname, probename, color, message, asctime(&probedate));
   } else {
-    LOG(LOG_NOTICE, "unknown message: %s", cmd);
+    if (strlen(cmd) > 5) {
+      LOG(LOG_DEBUG, "unknown message: %s", cmd);
+    }
   }
 }
