@@ -2,9 +2,8 @@
 
 include $(top_srcdir)/Makefile.am.libs
 
-sbin_PROGRAMS = $(program)
 man_MANS = $(program).1
-EXTRA_DIST +=  $(program).1 $(program).conf
+EXTRA_DIST +=  $(program).1
 MAIN_O = main.o
 DB_O = db.o
 
