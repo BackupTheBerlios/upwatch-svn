@@ -53,7 +53,7 @@ static int uw_password_ok(char *user, char *passwd)
       int id;
 
       id = atoi(row[0]);
-      if (debug) LOG(LOG_DEBUG, "user %s, pwd %s resulted in id %d", user, passwd, id);
+      if (debug>1) LOG(LOG_DEBUG, "user %s, pwd %s resulted in id %d", user, passwd, id);
     }
     mysql_free_result(result);
     close_database();

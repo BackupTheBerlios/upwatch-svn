@@ -186,7 +186,7 @@ static int handle_file(gpointer data, gpointer user_data)
     cur = cur->next;
   }
   if (cur == 0) {
-    LOG(LOG_NOTICE, "%s: wrong type, empty file'", filename);
+    LOG(LOG_NOTICE, "%s: wrong type, empty file", filename);
     xmlFreeDoc(doc);
     unlink(filename);
     return 0;
@@ -276,8 +276,8 @@ static void *get_def(module *probe, struct probe_result *res)
         if (row[0]) def->server = atoi(row[0]);
         if (row[1]) def->color  = atoi(row[1]);
         if (row[2]) def->newest = atoi(row[2]);
-        if (row[3]) def->yellow = atoi(row[3]);
-        if (row[4]) def->red    = atoi(row[4]);
+        if (row[3]) def->yellow = atof(row[3]);
+        if (row[4]) def->red    = atof(row[4]);
       } else {
         LOG(LOG_NOTICE, "pr_status record for %s id %u not found", probe->name, def->probeid);
       }
@@ -294,8 +294,8 @@ static void *get_def(module *probe, struct probe_result *res)
         row = mysql_fetch_row(result);
         if (row) {
           if (row[0]) def->server   = atoi(row[0]);
-          if (row[1]) def->yellow   = atoi(row[1]);
-          if (row[2]) def->red      = atoi(row[2]);
+          if (row[1]) def->yellow   = atof(row[1]);
+          if (row[2]) def->red      = atof(row[2]);
         }
         mysql_free_result(result);
       }
@@ -398,15 +398,17 @@ static void update_pr_status(int class, struct probe_def *def, struct probe_resu
 
   result = my_query("update pr_status "
                     "set    stattime = '%u', expires = '%u', color = '%d', " 
-                    "       message = '%s', yellow = '%d', red = '%d' "
+                    "       message = '%s', yellow = '%f', red = '%f' "
                     "where  probe = '%u' and class = '%u'",
-                    res->stattime, res->expires, res->color, escmsg, def->yellow, def->red, def->probeid, class);
+                    res->stattime, res->expires, res->color, 
+                    escmsg, def->yellow, def->red, def->probeid, class);
   mysql_free_result(result);
   if (mysql_affected_rows(mysql) == 0) { // nothing was actually updated, it was probably already there
-    LOG(LOG_NOTICE, "update_pr_status failed, inserting new record (class=%u, probe=%u)", class, def->probeid);
+    LOG(LOG_NOTICE, "update_pr_status failed, inserting new record (class=%u, probe=%u)", 
+                    class, def->probeid);
     result = my_query("insert into pr_status "
                       "set    class =  '%u', probe = '%u', stattime = '%u', expires = '%u', "
-                      "       server = '%u', color = '%u', message = '%s', yellow = '%d', red = '%d'",
+                      "       server = '%u', color = '%u', message = '%s', yellow = '%f', red = '%f'",
                       class, def->probeid, res->stattime, res->expires, def->server, res->color, 
                       escmsg, def->yellow, def->red);
     mysql_free_result(result);
@@ -429,7 +431,7 @@ static void insert_pr_status(int class, struct probe_def *def, struct probe_resu
 
   result = my_query("insert into pr_status "
                     "set    class =  '%u', probe = '%u', stattime = '%u', expires = '%u', "
-                    "       color = '%u', server = '%u', message = '%s', yellow = '%d', red = '%d'",
+                    "       color = '%u', server = '%u', message = '%s', yellow = '%f', red = '%f'",
                     class, def->probeid, res->stattime, res->expires, def->color, res->server, 
                     escmsg, def->yellow, def->red);
   mysql_free_result(result);
@@ -437,7 +439,7 @@ static void insert_pr_status(int class, struct probe_def *def, struct probe_resu
     LOG(LOG_NOTICE, "insert_pr_status failed, updating current record (class=%u, probe=%u)", class, def->probeid);
     result = my_query("update pr_status "
                       "set    stattime = '%u', expires = '%u', color = '%d', "
-                      "       message = '%s', yellow = '%d', red = '%d' "
+                      "       message = '%s', yellow = '%f', red = '%f' "
                       "where  probe = '%u' and class = '%u'",
                       res->stattime, res->expires, res->color, escmsg, def->yellow, def->red, def->probeid, class);
     mysql_free_result(result);

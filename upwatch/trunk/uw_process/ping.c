@@ -107,16 +107,23 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
   struct ping_result *res = (struct ping_result *)probe_res;
   struct probe_def *def = (struct probe_def *)probe_def;
   int already_there = TRUE;
-    
+  char *escmsg = strdup("");
+
+  if (res->message) {
+    escmsg = g_malloc(strlen(res->message) * 2 + 1);
+    mysql_real_escape_string(mysql, escmsg, res->message, strlen(res->message)) ;
+  }
+
   result = my_query("insert into pr_ping_raw "
                     "set    probe = '%u', yellow = '%f', red = '%f', stattime = '%u', color = '%u', "
                     "       value = '%f', lowest = '%f', highest = '%f', message = '%s'",
                     def->probeid, def->yellow, def->red, res->stattime, res->color, 
-                    res->value, res->lowest, res->highest, res->message ? res->message : "");
+                    res->value, res->lowest, res->highest, escmsg);
   mysql_free_result(result);
   if (mysql_affected_rows(mysql) > 0) { // something was actually inserted
     already_there = FALSE;
   }
+  g_free(escmsg);
   return(already_there); // the record was already in the database
 }
 

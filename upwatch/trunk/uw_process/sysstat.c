@@ -197,6 +197,13 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
   struct sysstat_result *res = (struct sysstat_result *)probe_res;
   struct probe_def *def = (struct probe_def *)probe_def;
   int already_there = TRUE;
+  char *escmsg = strdup("");
+
+  if (res->message) {
+    escmsg = g_malloc(strlen(res->message) * 2 + 1);
+    mysql_real_escape_string(mysql, escmsg, res->message, strlen(res->message)) ;
+  }
+
     
   result = my_query("insert into pr_sysstat_raw "
                     "set    probe = '%u', yellow = '%f', red = '%f', stattime = '%u', color = '%u', "
@@ -208,11 +215,12 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
                     res->loadavg,   res->user, res->system, res->idle,
                     res->swapin, res->swapout, res->blockin, res->blockout,
                     res->swapped, res->free, res->buffered, res->cached,
-                    res->used, res->systemp, res->message ? res->message : "");
+                    res->used, res->systemp, escmsg);
   mysql_free_result(result);
   if (mysql_affected_rows(mysql) > 0) { // something was actually inserted
     already_there = FALSE;
   }
+  g_free(escmsg);
   return(already_there); // the record was already in the database
 }
 
