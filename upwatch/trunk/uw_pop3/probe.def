@@ -4,7 +4,7 @@ AutoGen Definitions pop3;
 probe = {
   name = "pop3";
   id = 8;
-  descrip = "Test a POP3 server, optionally with user/password and # of emails";
+  descrip = "Test a POP3 server, optionally with user/password";
   addbyhand = "yes";
   class = "";
   graphtypes = "default";
