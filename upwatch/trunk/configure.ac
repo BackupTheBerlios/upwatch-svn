@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.14 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.15 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -175,6 +175,10 @@ AC_CHECK_LIB([tds], [tds_alloc_login],
   [LIBTDS_LIBS=-ltds], [AC_MSG_ERROR([Sorry, we need -ltds to continue])])
 AC_SUBST(LIBTDS_LIBS)
 
+AC_CHECK_LIB([pq], [PQclear],
+  [LIBPQ_LIBS=-lpq], [AC_MSG_ERROR([Sorry, we need -lpq to continue])])
+AC_SUBST(LIBPQ_LIBS)
+
 #LIBOPTS_LDADD=-lopts
 #AC_SUBST(LIBOPTS_LDADD)
 
@@ -217,6 +221,7 @@ AC_CONFIG_FILES([Makefile
                  uw_send/Makefile
                  uw_sysstat/Makefile
                  uw_mysql/Makefile
+                 uw_postgresql/Makefile
                  uw_pop3/Makefile
                  uw_snmpget/Makefile
                  uw_mssql/Makefile
