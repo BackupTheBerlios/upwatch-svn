@@ -214,8 +214,11 @@ void write_results(void)
   int ct  = STACKCT_OPT(OUTPUT);
   char **output = STACKLST_OPT(OUTPUT);
   int i;
+  xmlDocPtr doc;
 
-  xmlDocPtr doc = UpwatchXmlDoc("result");
+  doc = UpwatchXmlDoc("result");
+  xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
+
   g_hash_table_foreach(cache, write_probe, doc);
   for (i=0; i < ct; i++) {
     spool_result(OPT_ARG(SPOOLDIR), output[i], doc, NULL);

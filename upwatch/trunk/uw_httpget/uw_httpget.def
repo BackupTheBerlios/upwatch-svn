@@ -21,6 +21,19 @@ spec-files = `echo "%attr(0770,root,upwatch)" $sbindir/uw_httpget`;
 
 // describe commandline flags
 flag = {
+    name      = compress;
+    value     = C;
+    arg_type  = number;
+    arg-default = 9;
+    arg-range = '0->9';
+    descrip   = "XML compression factor";
+    doc       =
+'The generated resultfile, will normally be compressed to save datatraffic costs.
+The compression can be set between 0 no (compression) and 9 (highest compression).
+Decompression is automatic';
+};
+
+flag = {
     name      = expires;
     arg_default  = 5;  /* option argument indication  */
     arg_type  = number;   /* option argument indication  */

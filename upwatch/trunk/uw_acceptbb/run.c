@@ -202,7 +202,10 @@ void add_to_xml_document(char *hostname, char *probename, char *colorstr, struct
   int color = STAT_GREEN;
   struct hostent *hp;
 
-  if (doc == NULL) doc = UpwatchXmlDoc("result");
+  if (doc == NULL) {
+    doc = UpwatchXmlDoc("result");
+    xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
+  }
   if (!strcmp(colorstr, "red")) {
     color = STAT_RED;
   } else if (!strcmp(colorstr, "green")) {

@@ -61,12 +61,21 @@ $(program).1: cmd_options.def $(top_srcdir)/common/man1.tpl
 
 $(program).redhat: cmd_options.def $(CMDDEF)
 	autogen -b $(program) $(AGDEFINES) $(GENINCL) -T $(INITTPL) cmd_options.def
+	chmod +x $(program).redhat
+	chmod +x $(program).suse
+	chmod +x $(program).solaris
 
 $(program).suse: cmd_options.def $(CMDDEF)
 	autogen -b $(program) $(AGDEFINES) $(GENINCL) -T $(INITTPL) cmd_options.def
+	chmod +x $(program).redhat
+	chmod +x $(program).suse
+	chmod +x $(program).solaris
 
 $(program).solaris: cmd_options.def $(CMDDEF)
 	autogen -b $(program) $(AGDEFINES) $(GENINCL) -T $(INITTPL) cmd_options.def
+	chmod +x $(program).redhat
+	chmod +x $(program).suse
+	chmod +x $(program).solaris
 
 $(program).spec-requires: cmd_options.def $(CMDDEF) $(SPECTPL)
 	autogen -b $(program) $(AGDEFINES) $(GENINCL) -T $(SPECTPL) cmd_options.def

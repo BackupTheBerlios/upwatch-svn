@@ -45,6 +45,8 @@ void writeXMLresult(struct ipnetw *ipnets, int count_ipnets)
   int i;
 
   doc = UpwatchXmlDoc("result");
+  xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
+
   now = time(NULL);
 
   for (net = ipnets, i = count_ipnets; i && net; i--, net++) {

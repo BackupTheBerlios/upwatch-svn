@@ -258,7 +258,10 @@ int run(void)
   now = time(NULL);
   uw_setproctitle("writing results");
   doc = UpwatchXmlDoc("result"); 
+  xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
+
   red = UpwatchXmlDoc("result"); 
+  xmlSetDocCompressMode(red, OPT_VALUE_COMPRESS);
   for (id=0; hosts[id]; id++) {
     xmlDocPtr cur = doc;
     xmlNodePtr subtree, ping;
