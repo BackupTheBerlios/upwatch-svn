@@ -6,3 +6,5 @@ aclocal
 autoheader
 autoconf
 automake --copy --add-missing
+./configure --enable-debug
+
