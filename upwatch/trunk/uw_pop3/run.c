@@ -102,7 +102,7 @@ void refresh_database(MYSQL *mysql)
                 "       pr_pop3_def.password, "
                 "       pr_pop3_def.yellow,  pr_pop3_def.red "
                 "FROM   pr_pop3_def "
-                "WHERE  pr_pop3_def.id > 1 and pr_pop3_def.disabled <> 'yes'"
+                "WHERE  pr_pop3_def.id > 1 and pr_pop3_def.disable <> 'yes'"
                 "       and pr_pop3_def.pgroup = '%d'",
                 (unsigned)OPT_VALUE_GROUPID);
 

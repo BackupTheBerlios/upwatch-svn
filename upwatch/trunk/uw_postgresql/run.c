@@ -98,7 +98,7 @@ void refresh_database(MYSQL *mysql)
                 "       pr_postgresql_def.query, "
                 "       pr_postgresql_def.yellow,  pr_postgresql_def.red "
                 "FROM   pr_postgresql_def "
-                "WHERE  pr_postgresql_def.id > 1 and pr_postgresql_def.disabled <> 'yes'"
+                "WHERE  pr_postgresql_def.id > 1 and pr_postgresql_def.disable <> 'yes'"
                 "       and pr_postgresql_def.pgroup = '%d'",
                 (unsigned)OPT_VALUE_GROUPID);
 

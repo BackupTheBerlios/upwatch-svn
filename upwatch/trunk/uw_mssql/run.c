@@ -97,7 +97,7 @@ void refresh_database(MYSQL *mysql)
                 "       pr_mssql_def.query, "
                 "       pr_mssql_def.yellow,  pr_mssql_def.red "
                 "FROM   pr_mssql_def "
-                "WHERE  pr_mssql_def.id > 1 and pr_mssql_def.disabled <> 'yes'"
+                "WHERE  pr_mssql_def.id > 1 and pr_mssql_def.disable <> 'yes'"
                 "       and pr_mssql_def.pgroup = '%d'",
                 (unsigned)OPT_VALUE_GROUPID);
 
@@ -154,7 +154,7 @@ void add_probe(gpointer key, gpointer value, gpointer user_data)
 void run_actual_probes(void)
 {
   GThreadPool *gtpool = NULL;
-  GError *gerror;
+  GError *gerror = NULL;
 
   gtpool = g_thread_pool_new(probe, NULL, 10, TRUE, &gerror);
 

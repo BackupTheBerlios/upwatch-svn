@@ -171,7 +171,7 @@ int run(void)
                  "       pr_ping_def.red, pr_ping_def.ipaddress as ip, "
                  "       pr_ping_def.freq "
                  "FROM   pr_ping_def "
-                 "WHERE  pr_ping_def.id > 1 and pr_ping_def.disabled <> 'yes'"
+                 "WHERE  pr_ping_def.id > 1 and pr_ping_def.disable <> 'yes'"
                  "       and pr_ping_def.pgroup = '%d'",
                 (unsigned)OPT_VALUE_GROUPID);
 

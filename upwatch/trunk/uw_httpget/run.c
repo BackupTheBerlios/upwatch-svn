@@ -104,7 +104,7 @@ void refresh_database(MYSQL *mysql)
                 "       pr_httpget_def.hostname, "
                 "       pr_httpget_def.yellow,  pr_httpget_def.red "
                 "FROM   pr_httpget_def "
-                "WHERE  pr_httpget_def.id > 1 and pr_httpget_def.disabled <> 'yes'"
+                "WHERE  pr_httpget_def.id > 1 and pr_httpget_def.disable <> 'yes'"
                 "       and pr_httpget_def.pgroup = '%u'",
                 (unsigned) OPT_VALUE_GROUPID);
 
