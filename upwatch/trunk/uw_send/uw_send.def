@@ -89,6 +89,8 @@ flag = {
     stack_arg;
     arg_type  = string;   /* option argument indication  */
     descrip   = "port to connect to";
+    doc       = 
+'Portnumber on the host to connect to, where to upload queue files';
 };
 
 flag = {
@@ -97,6 +99,8 @@ flag = {
     stack_arg;
     arg_type  = string;   /* option argument indication  */
     descrip   = "Upwatch username";
+    doc       = 
+'Username for the host to connect to, where to upload queue files';
 };
 
 flag = {
@@ -105,6 +109,8 @@ flag = {
     stack_arg;
     arg_type  = string;   /* option argument indication  */
     descrip   = "UpWatch password";
+    doc       = 
+'Password for the host to connect to, where to upload queue files';
 };
 
 #include generic_options.def
