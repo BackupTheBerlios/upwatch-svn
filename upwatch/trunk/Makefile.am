@@ -58,7 +58,7 @@ ChangeLog: force-changelog
 	cfg/cvs2cl.pl -U AUTHORS -b -T --hide-filenames
 	rm -f force-changelog
 
-CLEANFILES = upwatch.mysql upwatch.spec
+CLEANFILES = upwatch.mysql upwatch.spec upwatch-*.tar.gz
 
 rpm: dist
 	$(RPMBUILD) -ta upwatch-${VERSION}.tar.gz

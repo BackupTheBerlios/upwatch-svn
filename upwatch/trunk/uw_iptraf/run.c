@@ -86,8 +86,8 @@ extern int forever;
     int     ct  = STACKCT_OPT( NETWORK );
     char**  pn = STACKLST_OPT( NETWORK );
 
-    for (i=0; i < OPT_VALUE_INTERVAL; i++) { // wait some minutes
-      sleep(1);
+    for (i=0; i < OPT_VALUE_INTERVAL; i++) { // wait some seconds
+      sleep(60);
       if (!forever)  {
         return(NULL);
       }
