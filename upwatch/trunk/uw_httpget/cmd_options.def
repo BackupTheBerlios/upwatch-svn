@@ -2,7 +2,7 @@ AutoGen Definitions options;
 export        = "#define progOptions uw_httpgetOptions";
 prog-name     = uw_httpget;
 prog-title    = "Upwatch parallel probe daemon";
-version       = "0.3";
+version       = `cat ../VERSION`;
 homerc        = "/etc/upwatch.conf";
 homerc        = "/etc/upwatch.d/uw_httpget.conf";
 homerc        = "$HOME/.upwatchrc";

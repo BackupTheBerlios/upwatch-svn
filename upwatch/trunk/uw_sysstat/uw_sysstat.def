@@ -2,7 +2,7 @@ AutoGen Definitions options;
 export        = "#define progOptions uw_sysstatOptions";
 prog-name     = uw_sysstat;
 prog-title    = "Upwatch probe daemon";
-version       = "0.3";
+version       = `cat ../VERSION`;
 homerc        = "/etc/upwatch.conf";
 homerc        = "/etc/upwatch.d/uw_sysstat.conf";
 homerc        = "$HOME/.upwatchrc";

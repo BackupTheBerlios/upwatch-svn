@@ -2,7 +2,7 @@ AutoGen Definitions options;
 export        = "#define progOptions slotOptions";
 prog-name     = slot;
 prog-title    = "prints out slotnumbers for given time values";
-version       = "0.3";
+version       = `cat ../VERSION`;
 detail        = 
 'Upwatch keeps statistics by day, by week, by month, year and 5 year
 periods. Each period is divided in 100 `slots`. This utility prints

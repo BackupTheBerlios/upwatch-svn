@@ -2,7 +2,7 @@ AutoGen Definitions options;
 export        = "#define progOptions uw_pingOptions";
 prog-name     = uw_ping;
 prog-title    = "Upwatch parallel ping daemon";
-version       = "0.3";
+version       = `cat ../VERSION`;
 homerc        = "/etc/upwatch.conf";
 homerc        = "/etc/upwatch.d/uw_ping.conf";
 homerc        = "$HOME/.upwatchrc";

@@ -2,7 +2,7 @@ AutoGen Definitions options;
 export        = "#define progOptions ctimeOptions";
 prog-name     = ctime;
 prog-title    = "commandline version of the ctime function call";
-version       = "0.3";
+version       = `cat ../VERSION`;
 detail        = 
 'ctime acts just like ctime(). Give it a the number of seconds
 since 1 jan 1970, and it prints out the time';

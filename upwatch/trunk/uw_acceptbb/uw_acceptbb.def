@@ -2,7 +2,7 @@ AutoGen Definitions options;
 export        = "#define progOptions uw_acceptbbOptions";
 prog-name     = uw_acceptbb;
 prog-title    = "Upwatch daemon for accepting reports from Big Brother clients";
-version       = "0.3";
+version       = `cat ../VERSION`;
 homerc        = "/etc/upwatch.conf";
 homerc        = "/etc/upwatch.d/uw_acceptbb.conf";
 homerc        = "$HOME/.upwatchrc";

@@ -2,7 +2,7 @@ AutoGen Definitions options;
 export        = "#define progOptions uw_sendOptions";
 prog-name     = uw_send;
 prog-title    = "Upwatch parallel probe daemon";
-version       = "0.3";
+version       = `cat ../VERSION`;
 homerc        = "/etc/upwatch.conf";
 homerc        = "/etc/upwatch.d/uw_send.conf";
 homerc        = "$HOME/.upwatchrc";

@@ -1,5 +1,6 @@
 AutoGen Definitions upwatch-spec;
 
+version = `cat VERSION`;
 #shell 
 for i in uw_*
 do

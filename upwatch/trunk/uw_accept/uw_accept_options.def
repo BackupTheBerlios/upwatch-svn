@@ -2,7 +2,7 @@ AutoGen Definitions options;
 export        = "#define progOptions uw_acceptOptions";
 prog-name     = uw_accept;
 prog-title    = "Upwatch daemon for accepting reports";
-version       = "0.3";
+version       = `cat ../VERSION`;
 homerc        = "/etc/upwatch.conf";
 homerc        = "/etc/upwatch.d/uw_accept.conf";
 homerc        = "$HOME/.upwatchrc";

@@ -1,14 +1,14 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(upwatch, 0.3, bugs@upwatch.com)
+AC_INIT(upwatch, 0.4, bugs@upwatch.com)
 AC_CONFIG_SRCDIR(upwatch/spool.c)
-VERSION=0.3
+VERSION=`cat VERSION`
 PACKAGE=upwatch
 AC_CONFIG_AUX_DIR(cfg)
 AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.3 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.4 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
