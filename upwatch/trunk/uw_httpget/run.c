@@ -49,13 +49,15 @@ int run_actual_probes(int count);
   while (open_database() == 0) {
     MYSQL_RES *result;
     MYSQL_ROW row;
+    char qry[1024];
 
-    char *qry = // no real http probes yet
-      "SELECT pr_httpget_def.id, server.name, pr_httpget_def.hostname, " 
-      "       pr_httpget_def.uri, " 
-      "       pr_httpget_def.yellowtime,  pr_httpget_def.redtime "
-      "FROM   pr_httpget_def, server "
-      "WHERE  pr_httpget_def.server = server.id ";
+    sprintf(qry,  "SELECT pr_httpget_def.id, %s.%s, pr_httpget_def.hostname, " 
+                  "       pr_httpget_def.uri, " 
+                  "       pr_httpget_def.yellowtime,  pr_httpget_def.redtime "
+                  "FROM   pr_httpget_def, server "
+                  "WHERE  pr_httpget_def.server = %s.%s ", 
+            OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_NAME_FIELD),
+            OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_ID_FIELD));
 
     if (mysql_query(mysql, qry)) {
       LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql)); // if we can't read info from the database, use cached info

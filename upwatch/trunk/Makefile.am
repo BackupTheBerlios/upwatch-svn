@@ -17,5 +17,5 @@ upwatch.mysql: config/upwatch-base.mysql uw_*/uw_*.mysql
 	cat $+ > upwatch.mysql
 
 rpm: dist
-	rpm -ta upwatch-0.1.tar.gz
+	rpm -ta upwatch-0.2.tar.gz
 

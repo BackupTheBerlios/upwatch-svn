@@ -159,7 +159,10 @@ int process_ping(xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
     max_color = row[0] ? atoi(row[0]) : STAT_GREEN;
     mysql_free_result(result);
 
-    result = my_query("update server set color = '%d' where id = '%d'", max_color, server);
+    result = my_query("update %s set %s = '%d' where %s = '%d'",        
+                      OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_COLOR_FIELD), max_color,
+                      OPT_ARG(SERVER_TABLE_ID_FIELD), server);
+
     mysql_free_result(result);
   }
 

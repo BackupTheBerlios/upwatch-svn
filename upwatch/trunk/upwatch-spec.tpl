@@ -3,8 +3,8 @@
 Summary: UpWatch - The Best monitoring framework
 Vendor: http://www.upwatch.com
 Name: upwatch
-Version: 0.1
-Release: 3
+Version: 0.2
+Release: 1
 Source: http://www.upwatch.com/%{name}-%{version}.tar.gz
 Packager: Ron Arts <raarts@upwatch.com>
 Copyright: Proprietary
@@ -95,7 +95,7 @@ install -m 660 [+program+]/[+program+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+prog
 
 %files
 %defattr(0660,root,upwatch,0770)
-%attr(0644,root,root) %doc AUTHORS COPYING ChangeLog NEWS README doc/upwatch.html doc/upwatch.txt doc/upwatch.pdf doc/upwatch.xml
+%attr(0644,root,root) %doc AUTHORS COPYING ChangeLog NEWS README upwatch.mysql doc/upwatch.html doc/upwatch.txt doc/upwatch.pdf doc/upwatch.xml
 %attr(0755,root,root) /etc/rc.d/init.d/upwatch
 %attr(0770,upwatch,upwatch) /usr/lib/upwatch
 /etc/logrotate.d/upwatch

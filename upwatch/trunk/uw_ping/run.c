@@ -158,12 +158,15 @@ int run(void)
   while (open_database() == 0) {
     MYSQL_RES *result;
     MYSQL_ROW row;
-    char *qry = 
-      "SELECT pr_ping_def.id, pr_ping_def.count, pr_ping_def.yellowmiss, " 
-      "       pr_ping_def.redmiss, server.name, pr_ping_def.ipaddress as ip, "
-      "       pr_ping_def.freq "
-      "FROM   pr_ping_def, server "
-      "WHERE  pr_ping_def.server = server.id ";
+    char qry[256]; 
+
+    sprintf(qry, "SELECT pr_ping_def.id, pr_ping_def.count, pr_ping_def.yellowmiss, " 
+                 "       pr_ping_def.redmiss, %s.%s, pr_ping_def.ipaddress as ip, "
+                 "       pr_ping_def.freq "
+                 "FROM   pr_ping_def, server "
+                 "WHERE  pr_ping_def.server = %s.%s ", 
+            OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_NAME_FIELD),
+            OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_ID_FIELD));
 
     if (mysql_query(mysql, qry)) {
       LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql));

@@ -157,4 +157,25 @@ flag = {
     descrip   = "Database password";
 };
 
+flag = {
+    name      = server_table_name;
+    arg_type  = string;
+    arg-default = "server";
+    descrip   = "Name of the servertable in the database";
+};
+
+flag = { 
+    name      = server_table_id_field; 
+    arg_type  = string;
+    arg-default = "id";
+    descrip   = "Name of the id-field in the servertable";
+};
+
+flag = {
+    name      = server_table_name_field;
+    arg_type  = string;
+    arg-default = "name";
+    descrip   = "Name of the name-field in the servertable";
+};
+
 
