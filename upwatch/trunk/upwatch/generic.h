@@ -56,5 +56,24 @@ extern int daemonize;
 #define PROBE_PING 1
 #define PROBE_HTTPGET 2
 #define PROBE_IPTRAF 3
-#define PROBE_SYSSTAT 3
+#define PROBE_SYSSTAT 4
+#define PROBE_BB_CPU 5
+#define PROBE_BB_DISK 6
+#define PROBE_BB_BGP 7
+#define PROBE_BB_CONN 8
+#define PROBE_BB_DHCP 9
+#define PROBE_BB_DNS 10
+#define PROBE_BB_FTP 11
+#define PROBE_BB_HTTP 12
+#define PROBE_BB_HYLAFAX 13
+#define PROBE_BB_ISMTP 14
+#define PROBE_BB_MSGS 15
+#define PROBE_BB_MYSQL 16
+#define PROBE_BB_POP3 17
+#define PROBE_BB_PROCS 18
+#define PROBE_BB_RADIUS 19
+#define PROBE_BB_SMTP 20
+#define PROBE_BB_SQUID 21
+#define PROBE_BB_SVCS 22
+
 

@@ -86,19 +86,19 @@ static void *extract_info_from_xml_node(xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr 
       load += 5;
       if (win) {
         char *p_perc;
+        int totalmem;
         
         res->user = atoi(load);  // compute system load
         res->idle = 100 - res->user;
         win += 13;               // compute memory use
-        res->used = atoi(win) * 1024 * 1024;
+        totalmem = atoi(win) * 1024 * 1024;
         p_perc = strchr(win, '(');
         if (p_perc) {
-          int totalmem;
           int percentage = atoi(++p_perc);
            
-          totalmem = (res->used / (percentage ? percentage : 1)) * 100;
-          res->free = totalmem - res->used;
+          res->used = (totalmem / 100) * (percentage ? percentage : 1);
         }
+        res->free = totalmem - res->used;
       } else {
         res->loadavg = atof(load) / 100.0;
       }
@@ -114,9 +114,10 @@ static void *extract_info_from_xml_node(xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr 
 // in case of mysql-has-gone-away type errors, we keep on running, 
 // it will be caught later-on.
 //*******************************************************************
-static void *get_def(module *probe, struct bb_cpu_result *res)
+static void *get_def(module *probe, void *probe_res)
 {
   struct bb_cpu_result *def;
+  struct bb_cpu_result *res = (struct bb_cpu_result *)probe_res;
   MYSQL_RES *result;
   MYSQL_ROW row;
   time_t now = time(NULL);

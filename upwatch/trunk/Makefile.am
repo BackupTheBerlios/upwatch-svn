@@ -13,7 +13,7 @@ BUILT_SOURCES = upwatch.mysql
 upwatch.spec: upwatch-spec.def upwatch-spec.tpl uw_*/*.spec-generic uw_*/*.spec-install
 	autogen -b upwatch upwatch-spec.def
 
-upwatch.mysql: config/upwatch-base.mysql uw_*/uw_*.mysql
+upwatch.mysql: config/upwatch-base.mysql uw_*/uw_*.mysql compat/bb/*.mysql
 	cat $+ > upwatch.mysql
 
 rpm: dist

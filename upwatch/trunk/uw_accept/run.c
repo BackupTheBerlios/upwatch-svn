@@ -296,11 +296,11 @@ int ob_client_func (GConn* conn, GConnStatus status,
 
     case GNET_CONN_STATUS_WRITE:
       {
+        g_free(buffer); // free the buffer alloc'ed for conn_write
         if (cs->state == STATE_EXIT) {
           if (debug) {
             LOG(LOG_DEBUG, "%s closed connection", gnet_inetaddr_get_canonical_name(conn->inetaddr));
           }
-          g_free (buffer);
           if (cs->buffer) g_free (cs->buffer);
           free(cs);
           gnet_conn_delete (conn, TRUE);

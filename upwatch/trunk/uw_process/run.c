@@ -597,34 +597,36 @@ static int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
           must_update_def = TRUE;
         }
       }
-      if (res->stattime > def->stattime) { // IF CURRENT RAW RECORD IS THE MOST RECENT
-        guint cur_slot, prev_slot;
-        gulong slotlow, slothigh;
-        gulong dummy_low, dummy_high;
-        gint i;
+      if (probe->summarize) { // if we have a summarisation function
+        if (res->stattime > def->stattime) { // IF CURRENT RAW RECORD IS THE MOST RECENT
+          guint cur_slot, prev_slot;
+          gulong slotlow, slothigh;
+          gulong dummy_low, dummy_high;
+          gint i;
 
-        for (i=0; summ_info[i].period > 0; i++) { // FOR EACH PERIOD
-          prev_slot = uw_slot(summ_info[i].period, prv->stattime, &slotlow, &slothigh);
-          cur_slot = uw_slot(summ_info[i].period, res->stattime, &dummy_low, &dummy_high);
-          if (cur_slot != prev_slot) { // IF WE ENTERED A NEW SLOT, SUMMARIZE PREVIOUS SLOT
-            probe->summarize(def, res, summ_info[i].from, summ_info[i].to, slotlow, slothigh);
+          for (i=0; summ_info[i].period > 0; i++) { // FOR EACH PERIOD
+            prev_slot = uw_slot(summ_info[i].period, prv->stattime, &slotlow, &slothigh);
+            cur_slot = uw_slot(summ_info[i].period, res->stattime, &dummy_low, &dummy_high);
+            if (cur_slot != prev_slot) { // IF WE ENTERED A NEW SLOT, SUMMARIZE PREVIOUS SLOT
+              probe->summarize(def, res, summ_info[i].from, summ_info[i].to, slotlow, slothigh);
+            }
           }
-        }
-      } else {
-        guint cur_slot;
-        gulong slotlow, slothigh;
-        gulong not_later_then = UINT_MAX;
-        gint i;
+        } else {
+          guint cur_slot;
+          gulong slotlow, slothigh;
+          gulong not_later_then = UINT_MAX;
+          gint i;
 
-        for (i=0; summ_info[i].period > 0; i++) { // FOR EACH PERIOD
-          cur_slot = uw_slot(summ_info[i].period, res->stattime, &slotlow, &slothigh);
-          if (slothigh > not_later_then) continue; // we already know there are no records later then this
-          // IF THE LAST RECORD FOR THIS SLOT HAS BEEN SEEN
-          if (have_records_later_than(probe->name, def->probeid, summ_info[i].from, slothigh)) { 
-            // RE-SUMMARIZE CURRENT SLOT
-            probe->summarize(def, res, summ_info[i].from, summ_info[i].to, slotlow, slothigh);
-          } else {
-            not_later_then = slothigh;
+          for (i=0; summ_info[i].period > 0; i++) { // FOR EACH PERIOD
+            cur_slot = uw_slot(summ_info[i].period, res->stattime, &slotlow, &slothigh);
+            if (slothigh > not_later_then) continue; // we already know there are no records later then this
+            // IF THE LAST RECORD FOR THIS SLOT HAS BEEN SEEN
+            if (have_records_later_than(probe->name, def->probeid, summ_info[i].from, slothigh)) { 
+              // RE-SUMMARIZE CURRENT SLOT
+              probe->summarize(def, res, summ_info[i].from, summ_info[i].to, slotlow, slothigh);
+            } else {
+              not_later_then = slothigh;
+            }
           }
         }
       }

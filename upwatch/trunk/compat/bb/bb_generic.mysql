@@ -1,0 +1,241 @@
+--
+-- Table structure for table 'pr_bb_disk_def'
+--
+
+CREATE TABLE pr_bb_disk_def (
+  id int unsigned NOT NULL auto_increment,
+  server int unsigned NOT NULL default '1',
+  notify int unsigned NOT NULL default '1',
+  ipaddress varchar(80) NOT NULL default '',
+  description text NOT NULL default '',
+  yellow smallint unsigned NOT NULL default '70',
+  red smallint unsigned NOT NULL default '90',
+  PRIMARY KEY  (id),
+  KEY server (server),
+  KEY notify (notify),
+  KEY ipaddress (ipaddress)
+) TYPE=MyISAM;
+
+CREATE TABLE pr_bb_bgp_def (
+  id int unsigned NOT NULL auto_increment,
+  server int unsigned NOT NULL default '1',
+  notify int unsigned NOT NULL default '1',
+  ipaddress varchar(80) NOT NULL default '',
+  description text NOT NULL default '',
+  yellow smallint unsigned NOT NULL default '70',
+  red smallint unsigned NOT NULL default '90',
+  PRIMARY KEY  (id),
+  KEY server (server),
+  KEY notify (notify),
+  KEY ipaddress (ipaddress)
+) TYPE=MyISAM;
+
+CREATE TABLE pr_bb_conn_def (
+  id int unsigned NOT NULL auto_increment,
+  server int unsigned NOT NULL default '1',
+  notify int unsigned NOT NULL default '1',
+  ipaddress varchar(80) NOT NULL default '',
+  description text NOT NULL default '',
+  yellow smallint unsigned NOT NULL default '70',
+  red smallint unsigned NOT NULL default '90',
+  PRIMARY KEY  (id),
+  KEY server (server),
+  KEY notify (notify),
+  KEY ipaddress (ipaddress)
+) TYPE=MyISAM;
+
+CREATE TABLE pr_bb_dhcp_def (
+  id int unsigned NOT NULL auto_increment,
+  server int unsigned NOT NULL default '1',
+  notify int unsigned NOT NULL default '1',
+  ipaddress varchar(80) NOT NULL default '',
+  description text NOT NULL default '',
+  yellow smallint unsigned NOT NULL default '70',
+  red smallint unsigned NOT NULL default '90',
+  PRIMARY KEY  (id),
+  KEY server (server),
+  KEY notify (notify),
+  KEY ipaddress (ipaddress)
+) TYPE=MyISAM;
+
+CREATE TABLE pr_bb_dns_def (
+  id int unsigned NOT NULL auto_increment,
+  server int unsigned NOT NULL default '1',
+  notify int unsigned NOT NULL default '1',
+  ipaddress varchar(80) NOT NULL default '',
+  description text NOT NULL default '',
+  yellow smallint unsigned NOT NULL default '70',
+  red smallint unsigned NOT NULL default '90',
+  PRIMARY KEY  (id),
+  KEY server (server),
+  KEY notify (notify),
+  KEY ipaddress (ipaddress)
+) TYPE=MyISAM;
+
+CREATE TABLE pr_bb_ftp_def (
+  id int unsigned NOT NULL auto_increment,
+  server int unsigned NOT NULL default '1',
+  notify int unsigned NOT NULL default '1',
+  ipaddress varchar(80) NOT NULL default '',
+  description text NOT NULL default '',
+  yellow smallint unsigned NOT NULL default '70',
+  red smallint unsigned NOT NULL default '90',
+  PRIMARY KEY  (id),
+  KEY server (server),
+  KEY notify (notify),
+  KEY ipaddress (ipaddress)
+) TYPE=MyISAM;
+
+CREATE TABLE pr_bb_http_def (
+  id int unsigned NOT NULL auto_increment,
+  server int unsigned NOT NULL default '1',
+  notify int unsigned NOT NULL default '1',
+  ipaddress varchar(80) NOT NULL default '',
+  description text NOT NULL default '',
+  yellow smallint unsigned NOT NULL default '70',
+  red smallint unsigned NOT NULL default '90',
+  PRIMARY KEY  (id),
+  KEY server (server),
+  KEY notify (notify),
+  KEY ipaddress (ipaddress)
+) TYPE=MyISAM;
+
+CREATE TABLE pr_bb_hylafax_def (
+  id int unsigned NOT NULL auto_increment,
+  server int unsigned NOT NULL default '1',
+  notify int unsigned NOT NULL default '1',
+  ipaddress varchar(80) NOT NULL default '',
+  description text NOT NULL default '',
+  yellow smallint unsigned NOT NULL default '70',
+  red smallint unsigned NOT NULL default '90',
+  PRIMARY KEY  (id),
+  KEY server (server),
+  KEY notify (notify),
+  KEY ipaddress (ipaddress)
+) TYPE=MyISAM;
+
+CREATE TABLE pr_bb_istmp_def (
+  id int unsigned NOT NULL auto_increment,
+  server int unsigned NOT NULL default '1',
+  notify int unsigned NOT NULL default '1',
+  ipaddress varchar(80) NOT NULL default '',
+  description text NOT NULL default '',
+  yellow smallint unsigned NOT NULL default '70',
+  red smallint unsigned NOT NULL default '90',
+  PRIMARY KEY  (id),
+  KEY server (server),
+  KEY notify (notify),
+  KEY ipaddress (ipaddress)
+) TYPE=MyISAM;
+
+CREATE TABLE pr_bb_msgs_def (
+  id int unsigned NOT NULL auto_increment,
+  server int unsigned NOT NULL default '1',
+  notify int unsigned NOT NULL default '1',
+  ipaddress varchar(80) NOT NULL default '',
+  description text NOT NULL default '',
+  yellow smallint unsigned NOT NULL default '70',
+  red smallint unsigned NOT NULL default '90',
+  PRIMARY KEY  (id),
+  KEY server (server),
+  KEY notify (notify),
+  KEY ipaddress (ipaddress)
+) TYPE=MyISAM;
+
+CREATE TABLE pr_bb_mysql_def (
+  id int unsigned NOT NULL auto_increment,
+  server int unsigned NOT NULL default '1',
+  notify int unsigned NOT NULL default '1',
+  ipaddress varchar(80) NOT NULL default '',
+  description text NOT NULL default '',
+  yellow smallint unsigned NOT NULL default '70',
+  red smallint unsigned NOT NULL default '90',
+  PRIMARY KEY  (id),
+  KEY server (server),
+  KEY notify (notify),
+  KEY ipaddress (ipaddress)
+) TYPE=MyISAM;
+
+CREATE TABLE pr_bb_pop3_def (
+  id int unsigned NOT NULL auto_increment,
+  server int unsigned NOT NULL default '1',
+  notify int unsigned NOT NULL default '1',
+  ipaddress varchar(80) NOT NULL default '',
+  description text NOT NULL default '',
+  yellow smallint unsigned NOT NULL default '70',
+  red smallint unsigned NOT NULL default '90',
+  PRIMARY KEY  (id),
+  KEY server (server),
+  KEY notify (notify),
+  KEY ipaddress (ipaddress)
+) TYPE=MyISAM;
+
+CREATE TABLE pr_bb_procs_def (
+  id int unsigned NOT NULL auto_increment,
+  server int unsigned NOT NULL default '1',
+  notify int unsigned NOT NULL default '1',
+  ipaddress varchar(80) NOT NULL default '',
+  description text NOT NULL default '',
+  yellow smallint unsigned NOT NULL default '70',
+  red smallint unsigned NOT NULL default '90',
+  PRIMARY KEY  (id),
+  KEY server (server),
+  KEY notify (notify),
+  KEY ipaddress (ipaddress)
+) TYPE=MyISAM;
+
+CREATE TABLE pr_bb_radius_def (
+  id int unsigned NOT NULL auto_increment,
+  server int unsigned NOT NULL default '1',
+  notify int unsigned NOT NULL default '1',
+  ipaddress varchar(80) NOT NULL default '',
+  description text NOT NULL default '',
+  yellow smallint unsigned NOT NULL default '70',
+  red smallint unsigned NOT NULL default '90',
+  PRIMARY KEY  (id),
+  KEY server (server),
+  KEY notify (notify),
+  KEY ipaddress (ipaddress)
+) TYPE=MyISAM;
+
+CREATE TABLE pr_bb_smtp_def (
+  id int unsigned NOT NULL auto_increment,
+  server int unsigned NOT NULL default '1',
+  notify int unsigned NOT NULL default '1',
+  ipaddress varchar(80) NOT NULL default '',
+  description text NOT NULL default '',
+  yellow smallint unsigned NOT NULL default '70',
+  red smallint unsigned NOT NULL default '90',
+  PRIMARY KEY  (id),
+  KEY server (server),
+  KEY notify (notify),
+  KEY ipaddress (ipaddress)
+) TYPE=MyISAM;
+
+CREATE TABLE pr_bb_squid_def (
+  id int unsigned NOT NULL auto_increment,
+  server int unsigned NOT NULL default '1',
+  notify int unsigned NOT NULL default '1',
+  ipaddress varchar(80) NOT NULL default '',
+  description text NOT NULL default '',
+  yellow smallint unsigned NOT NULL default '70',
+  red smallint unsigned NOT NULL default '90',
+  PRIMARY KEY  (id),
+  KEY server (server),
+  KEY notify (notify),
+  KEY ipaddress (ipaddress)
+) TYPE=MyISAM;
+
+CREATE TABLE pr_bb_svcs_def (
+  id int unsigned NOT NULL auto_increment,
+  server int unsigned NOT NULL default '1',
+  notify int unsigned NOT NULL default '1',
+  ipaddress varchar(80) NOT NULL default '',
+  description text NOT NULL default '',
+  yellow smallint unsigned NOT NULL default '70',
+  red smallint unsigned NOT NULL default '90',
+  PRIMARY KEY  (id),
+  KEY server (server),
+  KEY notify (notify),
+  KEY ipaddress (ipaddress)
+) TYPE=MyISAM;
