@@ -282,9 +282,10 @@ Chapter 3. Configuration
    You  can  easily  add  a  directory  of  youw  own, containing regular
    expressions  for  you  own  logfiles. In fact upwatch includes a handy
    utility chklog to help you create regular expression lists. Here is an
-   example  how  to  do  it. Suppose you plan to scan the logfile for the
-   imaginary    'timtim'    navigational    system.    It    resides   in
-   /var/log/timtim.log.
+   example how to do it.
+
+   Suppose  you  plan  to  scan  the  logfile  for the imaginary 'timtim'
+   navigational system. It resides in /var/log/timtim.log.
      * First create the directory:
                 # cd /etc/upwatch.d/uw_sysstat.d
                 # mkdir timtim

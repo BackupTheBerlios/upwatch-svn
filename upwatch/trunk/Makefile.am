@@ -80,9 +80,10 @@ EXTRA_DIST = Makefile.am.common Makefile.am.libs Makefile.am.path VERSION libtoo
   ${SERVER_DIST} \
   install-sh config.sub mkinstalldirs depcomp cfg/cvs2cl.pl
 
-upwatch.spec: upwatch-spec.def upwatch-spec.tpl common/spec.tpl \
+upwatch.spec: force upwatch-spec.def upwatch-spec.tpl common/spec.tpl \
   uw_*/*.spec-files uw_*/*.spec-requires  uw_*/*.spec-buildrequires
 	autogen -b upwatch -Dconfargs="$(CONFARGS)" upwatch-spec.def
+	rm -f force
 
 upwatch-base.mysql: config/upwatch-base.mysql uw_*/probe.def_mysql
 	cat $+ > upwatch-base.mysql
@@ -90,12 +91,12 @@ upwatch-base.mysql: config/upwatch-base.mysql uw_*/probe.def_mysql
 upwatch-full.mysql: config/upwatch-base.mysql config/upwatch-full.mysql uw_*/probe.def_mysql uw_*/probe.raw_mysql
 	cat $+ > upwatch-full.mysql
 
-force-changelog:
-	touch force-changelog
+force:
+	touch force
 
-ChangeLog: force-changelog
+ChangeLog: force
 	cfg/cvs2cl.pl -U AUTHORS -b -T --hide-filenames
-	rm -f force-changelog
+	rm -f force
 
 CLEANFILES = upwatch.mysql upwatch.spec upwatch-*.tar.gz
 
@@ -118,7 +119,7 @@ install-data-local:
 	  mkdir -p ${DESTDIR}/var/run/upwatch ;\
 	fi
 
-rpm: all dist
+rpm: all dist upwatch.spec
 	$(RPMBUILD) -ta upwatch-${VERSION}.tar.gz
 
 dist-hook:

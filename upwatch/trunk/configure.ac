@@ -7,7 +7,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.68 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.69 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -609,7 +609,6 @@ then
 AC_CONFIG_FILES([uw_iptraf/Makefile])
 fi
 
-cp patches/libstatgrab-configure.gnu libstatgrab/configure.gnu
 ( cd libstatgrab ; ./configure --disable-manpages --disable-examples \
   --disable-statgrab --disable-saidar --disable-shared --disable-deprecated ; cd .. )
 

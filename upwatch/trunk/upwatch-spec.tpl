@@ -3,7 +3,7 @@ Summary: UpWatch - A High performance monitoring framwork
 Vendor: http://www.upwatch.com
 Name: upwatch
 Version: [+ version +]
-Release: 5
+Release: 0
 Source: http://www.upwatch.com/%{name}-%{version}.tar.gz
 Packager: Ron Arts <raarts@upwatch.com>
 Copyright: GPL
@@ -114,8 +114,8 @@ if [ "$1" -eq "0" ]; then
 
 %files
 %defattr(0660,root,upwatch,0770)
-/usr/share/doc/%{name}-%{version}
-#%doc doc/upwatch.txt doc/upwatch.html doc/upwatch.pdf
+%doc AUTHORS ChangeLog COPYING INSTALL README NEWS TODO VERSION
+%doc doc/upwatch.txt doc/upwatch.html doc/upwatch.pdf
 %attr(0770,upwatch,upwatch) %dir /etc/upwatch.d
 %attr(0770,upwatch,upwatch) %dir /usr/share/upwatch
 %attr(0770,upwatch,upwatch) %dir /usr/share/upwatch/init
@@ -256,6 +256,8 @@ if [ "$1" -eq "0" ]; then
 %defattr(0660,root,upwatch,0770)
 %attr(0755,root,root) /usr/bin/bbhimport
 %attr(0755,root,root) /usr/bin/uw_maint.pl
+%doc doc/program-guide.txt doc/program-guide.html doc/program-guide.pdf
+%doc doc/admin-guide.txt doc/admin-guide.html doc/admin-guide.pdf
 /usr/share/man/man1/bbhimport.1.gz
 %attr(0755,root,root) /usr/bin/fill_probe_description.pl
 [+ FOR serverprog +][+ include (string-append (get "serverprog") "/" (get "serverprog") ".spec-files") ;+]
