@@ -19,10 +19,12 @@ void free_probe(void *probe)
 {
   struct probedef *r = (struct probedef *)probe;
 
+  if (r->ipaddress) g_free(r->ipaddress);
   if (r->dbname) g_free(r->dbname);
   if (r->dbuser) g_free(r->dbuser);
   if (r->dbpasswd) g_free(r->dbpasswd);
   if (r->query) g_free(r->query);
+  if (r->msg) g_free(r->msg);
   g_free(r);
 }
 
@@ -88,15 +90,13 @@ void refresh_database(MYSQL *mysql)
   MYSQL_ROW row;
   char qry[1024];
 
-  sprintf(qry,  "SELECT pr_postgresql_def.id, %s.%s, "
+  sprintf(qry,  "SELECT pr_postgresql_def.id, "
                 "       pr_postgresql_def.ipaddress, pr_postgresql_def.dbname, "
                 "       pr_postgresql_def.dbuser, pr_postgresql_def.dbpasswd,"
                 "       pr_postgresql_def.query, "
                 "       pr_postgresql_def.yellow,  pr_postgresql_def.red "
-                "FROM   pr_postgresql_def, server "
-                "WHERE  pr_postgresql_def.server = %s.%s and pr_postgresql_def.id > 1",
-          OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_NAME_FIELD),
-          OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_ID_FIELD));
+                "FROM   pr_postgresql_def "
+                "WHERE  pr_postgresql_def.id > 1");
 
   result = my_query(mysql, 1, qry);
   if (!result) {
@@ -116,17 +116,17 @@ void refresh_database(MYSQL *mysql)
     }
 
     if (probe->ipaddress) g_free(probe->ipaddress);
-    probe->ipaddress = strdup(row[2]);
+    probe->ipaddress = strdup(row[1]);
     if (probe->dbname) g_free(probe->dbname);
-    probe->dbname = strdup(row[3]);
+    probe->dbname = strdup(row[2]);
     if (probe->dbuser) g_free(probe->dbuser);
-    probe->dbuser = strdup(row[4]);
+    probe->dbuser = strdup(row[3]);
     if (probe->dbpasswd) g_free(probe->dbpasswd);
-    probe->dbpasswd = strdup(row[5]);
+    probe->dbpasswd = strdup(row[4]);
     if (probe->query) g_free(probe->query);
-    probe->query = strdup(row[6]);
-    probe->yellow = atof(row[7]);
-    probe->red = atof(row[8]);
+    probe->query = strdup(row[5]);
+    probe->yellow = atof(row[6]);
+    probe->red = atof(row[7]);
     if (probe->msg) g_free(probe->msg);
     probe->msg = NULL;
     probe->seen = 1;
