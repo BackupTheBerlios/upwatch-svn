@@ -121,7 +121,7 @@ static void every_minute(void)
 /****************************
  main
  ***************************/
-int main( int argc, char** argv )
+int main( int argc, char** argv, char **envp )
 {
   int ret=0;
   int arg_ct;
@@ -132,6 +132,7 @@ int main( int argc, char** argv )
   } else {
     progname = argv[0];
   }
+  fprintf(stderr, "%s\n", progname);
 
   umask(002); // all created files must be group-writable
   arg_ct = optionProcess( &progOptions, argc, argv );

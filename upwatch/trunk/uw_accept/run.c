@@ -312,7 +312,7 @@ int ob_client_func (GConn* conn, GConnStatus status,
     case GNET_CONN_STATUS_ERROR:
       {
         if (cs->state == STATE_DATA || cs->state == STATE_ERROR) {
-          spool_close(cs->sp_info, FALSE);
+          if (cs->sp_info) spool_close(cs->sp_info, FALSE);
           if (debug) {
             LOG(LOG_DEBUG, "%s unexpected end of input", gnet_inetaddr_get_canonical_name(conn->inetaddr));
           }
@@ -321,8 +321,8 @@ int ob_client_func (GConn* conn, GConnStatus status,
             LOG(LOG_DEBUG, "%s unexpected close", gnet_inetaddr_get_canonical_name(conn->inetaddr));
           }
         }
-        if (buffer) g_free (buffer);
-        free(conn->user_data);
+        if (cs->buffer) g_free (cs->buffer);
+        free(cs);
         gnet_conn_delete (conn, TRUE);
         break;
       }

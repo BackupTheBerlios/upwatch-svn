@@ -22,6 +22,8 @@ extern int init(void);
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
+#include "setproctitle.h"
+
 #include "xml.h"
 
 #define PATH_RESULT_DTD "/usr/lib/upwatch/dtd/result.dtd"
