@@ -15,7 +15,7 @@ performs SNMP GET queries on each host. This happens in parallel,
 so uw_snmpget can process thousands of hosts in a very short period.';
 
 // this section is for the generated specfile
-spec-requires = "mysql glib2 /usr/lib/libsnmp.so";
+spec-requires = "mysql-client glib2";
 spec-files = "%attr(0770,root,upwatch) /usr/sbin/uw_snmpget";
 
 // describe commandline flags

@@ -46,7 +46,6 @@ CREATE TABLE pr_status (
   server int unsigned NOT NULL default '1',
   yellow float NOT NULL default '0',
   red float NOT NULL default '0',
-  newest int unsigned NOT NULL default '0',
   stattime int unsigned NOT NULL default '0',
   expires int unsigned NOT NULL default '0',
   color smallint unsigned NOT NULL default '200',
