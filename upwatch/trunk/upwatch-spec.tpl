@@ -10,7 +10,7 @@ Packager: Ron Arts <raarts@upwatch.com>
 Copyright: Proprietary
 Group: Application/Monitoring
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
-BuildRequires: gzip glib2-devel gnet-devel mysql-devel curl-devel autogen libxslt kdelibs lynx
+BuildRequires: gzip glib2-devel gnet-devel mysql-devel curl-devel autogen libxslt docbook-style-xsl lynx
 
 %define strip_binaries 1
 %define gzip_man 1

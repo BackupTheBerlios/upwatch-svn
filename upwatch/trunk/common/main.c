@@ -182,8 +182,8 @@ static void wait_to_start(void)
   int now = cur_second();
   
   if (debug > 2) { 
-    fprintf(stderr, "waiting 1 second..\n");
-    sleep(1);
+    fprintf(stderr, "waiting 3 seconds..\n");
+    sleep(3);
     return;
   }
   if (now > startsec) {

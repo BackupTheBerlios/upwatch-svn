@@ -25,6 +25,18 @@ flag = {
 };
 
 flag = {
+    name      = authquery;
+    value     = A;
+    arg_type  = string;
+    arg_default = "select id from contact where username = '%.16s' and password = '%.8s'";
+    descrip   = "SQL query to use for authenticating connections";
+    doc       =
+'Every connection to uw_accept should login first with user/pass combination
+(just like POP3). This query will be issued after that, and it should return
+exactly one row for authentication to succeed.';
+};
+
+flag = {
     name      = output;
     value     = O;
     arg_type  = string;
