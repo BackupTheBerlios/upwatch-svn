@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<chapter id="About_UpWatch">
+    <title>About UpWatch</title>
+    <sect1 id="Upwatch_History">
+    <title>History</title>
+    <para>UpWatch is born from the loins of Netland Internet Services BV, Amsterdam, 
+    The Netherlands. We are a hosting company which started in 1993 (when even Bill Gates knew
+    nothing of the internet). We started doing managed hosting in 1995, and that's when
+    we found out about monitoring. The hard way.</para>
+    <para>It became clear that customers can easily bring down their own server on impossible
+    moments, and that it doesn't look very good if you both find out about that the monday 
+    after. So we started doing SLA's and limit customer rights on their own server.</para>
+    <para>Initially we used Big Brother (bb4.com) for monitoring. This is an outstanding
+    and useful package, and we have been using it for many years. But it has a few downsides.
+    One is scalability. It does not scale well to hundreds of hosts. Also it has a
+    geek-like look, we felt we couldn't give the URL to our customers. Third problem
+    was integration with our backoffice.</para>
+    <para>At the same time yours truly was thinking about setting up a commercial
+    service for monitoring servers remotely. All this culminated into UpWatch. So lets get 
+    straight to the ..</para>
+    </sect1>
+    <sect1 id="Upwatch_features">
+    <title>Features</title>
+    <para>This is the full list of upwatch features:</para>
+    <itemizedlist>
+    <listitem><para>Scalable: designed for monitoring tens of thousands of hosts</para></listitem>
+    <listitem><para>Resilient: autorestarts after database failures, forgiving for operator errors</para></listitem>
+    <listitem><para>SuSE, RedHat and Fedora RPM's generated from sourcetree for easy installation</para></listitem>
+    <listitem><para>Extensive and complete documentation, partly generated from source</para></listitem>
+    <listitem><para>Multi-tenanting: multiple companies can run monitoring services for network
+    of multiple client-companies using the same backend+probe serverpark</para></listitem>
+    <listitem><para>OS support: clients available for Linux, Windows, FreeBSD, Solaris, server runs on
+    linux or freeBSD, remote monitoring is linux only.</para></listitem>
+    <listitem><para>Monitoring results are in XML, and can be pre- and postprocessed</para></listitem>
+    <listitem><para>Secure: run as ordinary user, developed with security in mind</para></listitem>
+    <listitem><para>Compatible with all Big Brother clients, imports bb-hosts file</para></listitem>
+    <listitem><para>GUI is multi-language enabled (uses gettext)</para></listitem>
+    <listitem><para>GUI has mobile client support</para></listitem>
+    <listitem><para>Generates realtime graphs from the database</para></listitem>
+    <listitem><para>Notifications by email or SMS.</para></listitem>
+    <listitem><para>Clients for: HTTP GET, IMAP, MSSQL, MySQL, PING, POP3, PostgreSQL, SMTP, 
+    SNMP GET, TCP connect (any port)</para></listitem>
+    <listitem><para>Local client detects: CPU load, loadavg, swap use, I/O use, memory use, and
+    where supported hardware info like CPU temperature, fan speed and Power voltages. Also you can
+    set it up to scan any logfile using regular expressions you supply.</para></listitem>
+    <listitem><para>Fully opensource: GUI built on Apache/PHP, Backend on C/Perl, 
+    Database is MySQL. Uses GNU configure.</para></listitem>
+    </itemizedlist>
+    </sect1>
+</chapter>

@@ -2,11 +2,14 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD Docbook XML V4.1.2//EN" 
                       "/usr/share/sgml/docbook/xml-dtd-4.1.2-1.0-14/docbookx.dtd" [
 <!ENTITY about SYSTEM "about.xml">
+<!ENTITY installation SYSTEM "installation.xml">
+<!ENTITY configuration SYSTEM "configuration.xml">
+<!ENTITY administration SYSTEM "administration.xml">
 ]>
 
 <book id="upwatch" lang="en" status="draft">
     <bookinfo>
-        <title>Upwatch User Guide</title>
+        <title>Upwatch Administration Guide</title>
         <author>
             <firstname>Ron</firstname>
             <surname>Arts</surname>
@@ -26,6 +29,9 @@
 
     </preface>
     &about;
+    &installation;
+    &configuration;
+    &administration;
     <index>
     </index>
 </book>

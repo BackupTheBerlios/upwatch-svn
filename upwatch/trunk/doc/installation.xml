@@ -80,8 +80,8 @@
         <para> Before you install the software decide on the architecture. If you know in
             advance you'll have to monitor thousands of hosts, or the probes will exhaust your
             machine otherwise, you may have to split your installation across several machines.
-            There may be more reasons to do that. Consult <link linkend="Scaling_up">Scaling
-            up</link> and <link linkend="How_it_all_works">How it all works</link>
+            There may be more reasons to do that. Consult 'Scaling up' and 'How it all works' in the
+            Programmers Guide.
         </para>
         <para> For simplicity we assume you run everything on the same host. Type the following
            command as root:

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<appendix id="Adding_a_probe">
+<chapter id="Adding_a_probe">
     <title>Adding a probe</title>
     <sect1 id="So_you_want_to_add_a_probe">
        <title>So you want to add a probe?</title>
@@ -116,4 +116,4 @@
     <title>Non-standard Probes</title>
     <para>To be done</para>
     </sect1>
-</appendix>
+</chapter>
