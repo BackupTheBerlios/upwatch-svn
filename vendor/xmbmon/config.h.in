@@ -1,0 +1,20 @@
+
+/* LOGGING facility */
+#ifdef LOGGING
+
+/* log file name */
+#define LOGFILE "/var/log/mbmon.log"
+
+/* seconds between log entries */
+#define LOGINTERVAL 300
+
+/* maximum entries in log file */
+#define LOGENTRIES 1024
+
+#endif	/* LOGGING */
+
+/* Define if you have the `getutent' function. */
+#undef HAVE_GETUTENT
+
+/* checking SMBus IOCTL (FreeBSD only) */
+#undef HAVE_SMBUS

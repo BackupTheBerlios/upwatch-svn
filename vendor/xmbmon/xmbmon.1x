@@ -1,0 +1,110 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH xmbmon 1x "November 10, 2003" XFree86
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+xmbmon \- X MotherBoard Monitor
+.SH SYNOPSIS
+.B xmbmon
+.RI [ options ]
+.PP
+This manual page documents briefly the
+.B xmbmon
+command.
+This manual page was written for the Debian distribution
+because the original program does not have a manual page.
+.PP
+.\" TeX users may be more comfortable with the \fB<whatever>\fP and
+.\" \fI<whatever>\fP escape sequences to invode bold face and italics, 
+.\" respectively.
+Recent motherboards have functionalities to monitor the CPU
+temperatures and the frequency of CPU cooling fans etc.  Although
+some programs utilizing these hardware monitoring facilities have been
+developed for the Microsoft Windows platforms, no programs seem to
+exist for PC-UNIX and the X Windows System platforms.
+.PP
+\fBxmbmon\fR displays the three temperatures and a core voltage
+as simple curves.
+
+.SH OPTIONS
+.TP
+.B \-h
+Show summary of options.
+.TP
+.B \-g
+Geometry (Toolkit option), default is "100x140".
+.TP
+.B \-count
+Counts in an interval, default is "4".
+.TP
+.B \-sec
+Seconds of an interval, default is "20".
+.TP
+.B \-wsec
+Total seconds shown, default is "1080" (18 min).
+.TP
+.B \-tmin
+Min. temperature, default is "10" (Celcius).
+.TP
+.B \-tmax
+Max. temperature, default is "50" (Celcius).
+.TP
+.B \-vmin
+Min. voltage, default is "1.8" (volts).
+.TP
+.B \-vmax
+Max. voltage, default is "2.2" (volts).
+.TP
+.B \-tick
+Ticks in ordinate, default is 3.
+.TP
+.B \-cltmb, \-cltcpu, \-cltcs, \-clvc
+Temp 1-3 +  VCore colors, defaults are "blue", "red", "cyan", "green".
+.TP
+.B \-cmtmb, \-cmtcpu, \-cmtcs
+Comments of Temp 1-3, defaults are "MB", "CPU", "chip". Not shown if set to "NOTEMP".
+.TP
+.B \-cmvc
+Comment of Vcore, default is "Vc".
+.TP
+.B \-fahrn
+Display Temperature in Fahrenheit, can be "True" or "False", default is "False".
+.TP
+.B \-label, \-labelfont, \-labelcolor
+For showing label. No label if null-string.
+.TP
+.B \-method
+Chips access method (V|S|I|A). See mbmon(1).
+.TP
+.B \-probe chip
+For probing monitor chips, where chip=winbond|wl784|via686|it87|gl52|lm85|lm80|lm90|lm75.
+.TP
+.B \-TyanTigerMP
+For Tyan Tiger MP motherboard.
+.TP
+.B \-debug
+.TP
+To show debug information.
+
+.SH EXEMPLE
+xmbmon -tmin 25 -tmax 60 -vmin 1.65 -vmax 1.75
+
+.SH SEE ALSO
+.B mbmon(1).
+
+.SH AUTHOR
+This manual page was written by Nicolas Rueff <n.rueff@tuxfamily.org>,
+for the Debian project (but may be used by others).

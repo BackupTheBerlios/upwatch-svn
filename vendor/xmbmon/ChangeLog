@@ -1,0 +1,126 @@
+------------------------------------------------------------------
+(ver. 2.04 ---> ver. 2.05)
+
+ * Bugs for detecting ALi chipset fixed.
+
+ * Further smoothing for plotting curves in xmbmon.
+
+ * SMBus accesses of VIA VT8237 and Intel ICH6 are supported.
+
+ * Problem related to select() system call fixed (by Tsuneyuki Sakano).
+
+ * The part of IO port read/write is unified into an gas in-line
+  assembler code (so, gcc with x86-gas is assumed!); a contribution
+  by John Wehle (john@feith.com).
+
+ * Changes to work on Solaris for x86 platform and others for
+  cleaning up the codes, contributed by John Wehle (john@feith.com).
+
+ * Others: Fixing small bugs.
+------------------------------------------------------------------
+(ver. 2.03 ---> ver. 2.04)
+
+ * The modified BSD license is set from this version.
+
+ * Logging facility in the daemon mode is included (but unabled
+  in default, contribution by David Quattlebaum <sasdrq@sas.com>).
+
+ * 2nd order IIR low pass filter smoothing method is included for
+  plotting graphs in xmbmon (contribution by Takayuki Hosoda).
+
+ * Manual files are provided by Nicolas Rueff <n.rueff@tuxfamily.org>.
+
+ * Winbond W83791D, W83627THF chips are supported.
+
+ * Initialization of ADM9240 chip for some Intel motherboards
+  (by Alex Vasylenko). 
+
+ * SMBus access of ALI1533/1543 chipset (Aladdin IV, V)
+  is supported.
+   
+ * ISA access of 2nd and 3rd temperatures for Winbond chips fails
+  in most of motherboard.  Due to this problem, fraction of these
+  temperatures is always 0.5.  This "bug" is fixed now.
+  
+ * Others: Fixing small bugs.
+------------------------------------------------------------------
+(ver. 2.02 ---> ver. 2.03)
+
+ * Genesys Logic GL512SM and GL520SM sensors are supported.
+
+ * Intel ICH5 SMBus access supported.
+
+ * LM85, Analog Devices ADM1024/1025/1027/ADT7463,
+  and SMSC EMC6D10X sensors are supported.
+
+ * Analog Devices ADM1020/1021/1023 temperature sensors are supported.
+
+ * A log standing bug from version 2.00 in the treatment of
+  fan-divisor for the IT87xxF sensor chip is fixed.
+
+ * Others: Fixing small bugs,  clean-up the code.
+------------------------------------------------------------------
+(ver. 2.01 ---> ver. 2.02)
+
+ * NetBSD/OpenBSD support is added (by a contribution of a patch
+  given by Stephan Eisvogel). "./configure; make" just works.
+
+ * The AMD8111 and NVidia nForce2 SMBus access is supported
+  (by information from Alex van Kaam).
+
+ * National Semiconductor LM90 temperature sensor is supported.
+
+ * Winbond W83L784R, W83L785R, W83L785TS-S sensors are supported.
+
+ * The case of two sensor chips are supported
+   (see section 4 How to use for details).
+------------------------------------------------------------------
+(ver. 2.00 ---> ver. 2.01)
+
+ * "mbmon" can be executed as a daemon program (contributed patch
+  by Jean-Marc Zucconi).  This make it possible to get output of
+  "mbmon" over network by executing telnet command
+  (see section 4 How to use).
+
+ * Improved treatment of ASUS ASB100 ("Bach") sensor chip (by
+  information from Alex van Kaam).  The temperature of an internal
+  Athlon XP diode is obtained (as a 2nd temp.) in ASUS motherboard
+  of A7V333/A7V8X.
+
+ * ASUS Mozart-2 sensor chip is supported (by information from
+  Alex van Kaam).
+
+ * Fixed the issue that "xmbmon" cannot read NFS mounted ~/.Xauthority
+  file (contributed patch by Kazushi NAKAMURA).
+------------------------------------------------------------------
+(ver. 2.00)
+
+ * Few more hardware monitor chips are supported; National
+  Semiconductor LM75, LM80 (by Shin-ichi Nagamura), and ASUS
+  ASB100 Bach.
+
+ * Few more SMBus interface chipsets are supported; AMD7xx,
+  NVidia nForce, and ALi MAGiK1/AladdinPro.
+
+ * More powerful automatic detection of supported hardware monitor
+  chips is provided, and one can specify a chip name for probing it.
+
+ * Special Treatment for Tyan's Tiger MP/MPX motherboard is supported.
+
+ * Further variety of output of the "mbmon" program is supported for
+  purpose of utilizing its output for more fancy graphic programs rather
+  than the "xmbmon", like MRTG or rrdtool.  This time output for rrdtool
+  and convenient perl script is provided (by Shin-ichi Nagamura).
+
+ * One can specify the device file number X (/dev/smbX) for users who
+  has more than two devices on SMBus with FreeBSD SMBus device driver
+  (This is only for FreeBSD, not for Linux).
+
+ * The whole program has been almost completely rewritten to make it
+  easier for supporting new hardware monitor chips and/or new SMBus
+  interfaces (see 00READEtech.txt).
+
+ * The output values of negative voltages are changed partly, so they 
+  may not coincide with those of the previous version.
+
+ * Others: Fixing small bugs.
