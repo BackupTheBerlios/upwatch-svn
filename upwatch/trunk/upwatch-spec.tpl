@@ -30,7 +30,7 @@ like the database schema.
 %package utils
 Summary: UpWatch - utilities and supporting files
 Group: Application/Monitoring
-Requires: upwatch libxml2 >= 2.4.19 mysql-client glib2 
+Requires: upwatch libxml2 >= 2.4.19 mysql glib2 
 
 %description utils
 This package contains utilities, maintenance scripts and other
