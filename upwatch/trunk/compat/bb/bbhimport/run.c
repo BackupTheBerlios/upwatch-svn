@@ -102,6 +102,7 @@ void process(MYSQL *mysql, char *ip, char *hostname, char *args)
       printf("ALREADY THERE: ping %s %s\n", ip, hostname);
     }
   }
+
   if ((p = strstr(args, "http://")) != NULL) {
     char HostName[256];
     char URI[2048];
@@ -139,6 +140,29 @@ void process(MYSQL *mysql, char *ip, char *hostname, char *args)
                "hostname = '%s', uri = '%s'", serverid, ip, hostname, HostName, URI);
     } else {
       printf("ALREADY THERE: httpget %s %s http://%s%s\n", ip, hostname, HostName, URI);
+    }
+  }
+
+  if ((p = strstr(args, "pop-3")) != NULL || (p = strstr(args, "pop3")) != NULL) {
+    int rows;
+
+    result = my_query(mysql, 0,
+                      "select id from pr_pop3_def where server = '%d' and ipaddress = '%s'",
+                      serverid, ip);
+    if (!result) {
+      printf("internal error. Stop.\n");
+      exit(1);
+    }
+    rows = mysql_num_rows(result);
+    mysql_free_result(result);
+
+    if (rows == 0) { 
+      printf("INSERT pop-3 %s %s\n", ip, hostname);
+      my_query(mysql, 0,
+               "insert into pr_pop3_def set server = '%d', ipaddress = '%s', description = '%s'",
+               serverid, ip, hostname);
+    } else {
+      printf("ALREADY THERE: pop3 %s %s \n", ip, hostname);
     }
   }
 }
