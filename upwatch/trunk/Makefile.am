@@ -36,7 +36,7 @@ PROGNAMES = ${CLIENTPROG} ${MONITORPROG} ${EXTRAPROG} ${SERVERPROG}
 export PROGNAMES MONITORPROG CLIENTPROG SERVERPROG EXTRAPROG
 export TOP_SRCDIR = $(top_srcdir)
 
-SUBDIRS = upwatch st-1.4 ${PROGNAMES} util scripts compat doc
+SUBDIRS = upwatch st-1.4 libstatgrab-0.6 ${PROGNAMES} util scripts compat doc
 DIST_SUBDIRS = ${SUBDIRS}
 
 EXTRA_DIST = Makefile.am.common Makefile.am.libs VERSION libtool ChangeLog \

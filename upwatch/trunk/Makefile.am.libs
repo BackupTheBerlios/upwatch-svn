@@ -1,5 +1,9 @@
 # included from Makefile.am in every program subdirectory
 
 LIBUPWATCH = $(top_srcdir)/upwatch/libupwatch.a @LIBXML2_LIBS@
+
 LIBST = $(top_srcdir)/st-1.4/libst.a
 INCL_ST = $(top_srcdir)/st-1.4
+
+LIBSTATGRAB = $(top_srcdir)/libstatgrab-0.6/src/libstatgrab/.libs/libstatgrab.a
+INCL_STATGRAB = $(top_srcdir)/libstatgrab-0.6/src/libstatgrab/

@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.28 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.29 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -89,6 +89,19 @@ AC_ARG_WITH(mysql-libs,
     [MYSQL_LIB_PREFIX=$with_mysql_libs],
     [MYSQL_LIB_PREFIX=/usr/lib/mysql]
 )
+AC_SUBST(MYSQL_LIB_PREFIX)
+
+for libpath in /usr/lib/mysql $MYSQL_LIB_PREFIX /usr/local/lib/mysql
+do
+  if test -f $libpath/libmysqlclient.so
+  then
+    MYSQL_LIBS="-L${libpath} -lmysqlclient"
+  fi
+done
+if test -z "$MYSQL_LIBS"
+then
+  AC_MSG_ERROR([Cannot find MySQL libraries, tell me where they are with --with-mysql-libs=])
+fi
 
 # path to mysql includes
 AC_ARG_WITH(mysql-include,
@@ -96,17 +109,22 @@ AC_ARG_WITH(mysql-include,
     [MYSQL_INC_PREFIX=$with_mysql_include],
     [MYSQL_INC_PREFIX=/usr/include/mysql]
 )
-
-AC_SUBST(MYSQL_LIB_PREFIX)
 AC_SUBST(MYSQL_INC_PREFIX)
-MYSQL_LIBS="-L${MYSQL_LIB_PREFIX} -lmysqlclient"
-MYSQL_CFLAGS="-I${MYSQL_INC_PREFIX}"
-AC_SUBST(MYSQL_LIBS)
-AC_SUBST(MYSQL_CFLAGS)
-if test ! -f "$MYSQL_INC_PREFIX/mysql.h"
+
+for incpath in /usr/include/mysql $MYSQL_LIB_PREFIX /usr/local/include/mysql
+do
+  if test -f $incpath/mysql.h
+  then
+    MYSQL_CFLAGS="-I${incpath}"
+  fi
+done
+if test -z "$MYSQL_CFLAGS"
 then
-  AC_MSG_ERROR([Cannot find $MYSQL_INC_PREFIX/mysql.h])
+  AC_MSG_ERROR([Cannot find MySQL include files, tell me where they are with --with-mysql-include=])
 fi
+
+AC_SUBST(MYSQL_CFLAGS)
+AC_SUBST(MYSQL_LIBS)
 
 ################## PCAP
 # path to pcap:
@@ -348,4 +366,5 @@ AC_CONFIG_FILES([Makefile
                  compat/sometests/Makefile
                  compat/sometests/setproctitle/Makefile])
 
+AC_CONFIG_SUBDIRS(libstatgrab-0.6)
 AC_OUTPUT
