@@ -105,7 +105,8 @@ patch_sudoers() {
 
 if [ -f /etc/redhat-release ]
 then
-  patch_sudoers "/sbin/service ";
+  RCPREF="/sbin/service "
+  patch_sudoers "$RCPREF"
   DISTR=redhat
   ln -sf /usr/share/upwatch/init/upwatch.$DISTR /etc/init.d/upwatch
 [+ FOR clientprog +]  ln -sf /usr/share/upwatch/init/[+clientprog+].$DISTR /etc/init.d/[+clientprog+]
@@ -113,7 +114,8 @@ then
 
 if [ -f /etc/SuSE-release ]
 then
-  patch_sudoers "/sbin/rc";
+  RCPREF=""/sbin/rc";
+  patch_sudoers "$RCPREF";
   DISTR=suse
   ln -sf /usr/share/upwatch/init/upwatch.$DISTR /etc/init.d/upwatch
 [+ FOR clientprog +]  ln -sf /usr/share/upwatch/init/[+clientprog+].$DISTR /etc/init.d/[+clientprog+]
@@ -121,14 +123,20 @@ then
 [+ FOR clientprog +]  ln -sf ../../etc/init.d/[+clientprog+] rc[+clientprog+]
 [+ ENDFOR +]  popd
 fi
-for i in `service upwatch status | grep running | cut -d' ' -f1`
+for i in `$(RCPREF)upwatch status | grep running | cut -d' ' -f1`
 do
   /etc/init.d/$i restart
 done
 if [ -x /sbin/chkconfig ]; then
+  /sbin/chkconfig --add upwatch 2>/dev/null || true
 [+ FOR clientprog +]  /sbin/chkconfig --add [+clientprog+] 2>/dev/null || true
 [+ ENDFOR +]fi
 
+# indicate in the logfile we have installed
+LOGMSG=`date +"%b %e %T" rpm[$$]: installed %{name}-%{version}-%{release}`
+echo "$LOGMSG" >> /var/log/upwatch/messages
+chown upwatch:upwatch /var/log/upwatch/messages
+chmod 664 /var/log/upwatch/messages
 
 %preun
 if [ "$1" = 0 ] ; then
