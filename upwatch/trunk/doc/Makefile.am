@@ -1,8 +1,16 @@
 include $(top_srcdir)/Makefile.am.path
 
-doc_DATA = upwatch.html upwatch.txt upwatch.pdf \
+nodist_doc_DATA = upwatch.html upwatch.txt upwatch.pdf \
  admin-guide.html admin-guide.txt admin-guide.pdf \
- program-guide.html program-guide.txt program-guide.pdf 
+ program-guide.html program-guide.txt program-guide.pdf
+
+if ENABLE_SERVER
+DIST_DOC = upwatch.html upwatch.txt upwatch.pdf \
+ admin-guide.html admin-guide.txt admin-guide.pdf \
+ program-guide.html program-guide.txt program-guide.pdf
+else
+DIST_DOC = upwatch.html upwatch.txt upwatch.pdf 
+endif
 
 UPWATCH_SOURCE = upwatch.xml client-about.xml client-install.xml client-configuration.xml
 
@@ -14,7 +22,11 @@ PROGRAM_SOURCE = program-guide.xml addingaprobe.xml \
 
 XMLSOURCE = ${UPWATCH_SOURCE} ${ADMIN_SOURCE} ${PROGRAM_SOURCE}
 
-EXTRA_DIST = ${XMLSOURCE} upwatch.xsl jadetex.cfg style.dsl style.xsl style.css
+if ENABLE_SERVER
+EXTRA_DIST = ${XMLSOURCE} ${DIST_DOC} upwatch.xsl jadetex.cfg style.dsl style.xsl style.css
+else
+EXTRA_DIST = ${DIST_DOC} 
+endif
 
 upwatch.html: ${UPWATCH_SOURCE}
 	xmllint --valid --noout upwatch.xml

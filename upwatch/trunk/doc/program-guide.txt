@@ -1593,7 +1593,7 @@ B.3.1. httpget result record layout
 
 B.3.2. httpget database layout
 
-   Table httpget  definition  record  layout. httpget  definition  record
+   Table  httpget  definition  record  layout.  httpget definition record
    layout
 
    Field
@@ -3882,7 +3882,7 @@ B.10.1. postgresql result record layout
 
 B.10.2. postgresql database layout
 
-   Table postgresql   definition   record  layout. postgresql  definition
+   Table  postgresql  definition  record  layout.  postgresql  definition
    record layout
 
    Field
@@ -4511,7 +4511,7 @@ B.12.1. snmpget result record layout
 
 B.12.2. snmpget database layout
 
-   Table snmpget  definition  record  layout. snmpget  definition  record
+   Table  snmpget  definition  record  layout.  snmpget definition record
    layout
 
    Field
@@ -4959,7 +4959,7 @@ B.13.1. sysstat result record layout
 
 B.13.2. sysstat database layout
 
-   Table sysstat  definition  record  layout. sysstat  definition  record
+   Table  sysstat  definition  record  layout.  sysstat definition record
    layout
 
    Field
@@ -6134,7 +6134,7 @@ B.16.1. diskfree result record layout
 
 B.16.2. diskfree database layout
 
-   Table diskfree  definition  record  layout. diskfree definition record
+   Table  diskfree  definition  record layout. diskfree definition record
    layout
 
    Field
@@ -6409,7 +6409,7 @@ B.17.1. tcpconnect result record layout
 
 B.17.2. tcpconnect database layout
 
-   Table tcpconnect   definition   record  layout. tcpconnect  definition
+   Table  tcpconnect  definition  record  layout.  tcpconnect  definition
    record layout
 
    Field

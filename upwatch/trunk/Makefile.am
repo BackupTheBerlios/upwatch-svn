@@ -43,7 +43,6 @@ endif
 
 if ENABLE_MONITORS
 MONITORPROG = ${MONITORLIST}
- ${UW_POSTGRESQL} ${UW_SNMPGET} ${UW_MSSQL}
 ENABLE_MONITOR = --enable-monitors
 endif
 
@@ -72,13 +71,13 @@ DIST_SUBDIRS = ${SUBDIRS} doc
 doc_DATA = AUTHORS COPYING ChangeLog NEWS README upwatch-base.mysql upwatch-full.mysql
 
 if ENABLE_SERVER
-SERVER_DIST = probes.enum doc/upwatch.html doc/upwatch.pdf doc/upwatch.txt
+SERVER_DIST = probes.enum 
 endif
 
 EXTRA_DIST = Makefile.am.common Makefile.am.libs Makefile.am.path VERSION libtool ChangeLog \
   upwatch-spec.def upwatch-spec.tpl upwatch.spec templates \
   patches/libpcap-linux-timeout.patch \
-  ${SERVER_DIST} doc/Makefile.in \
+  ${SERVER_DIST} \
   install-sh config.sub mkinstalldirs depcomp cfg/cvs2cl.pl
 
 upwatch.spec: upwatch-spec.def upwatch-spec.tpl common/spec.tpl \
@@ -128,15 +127,11 @@ if !ENABLE_SERVER
 	for i in ${SERVERLIST} ; do \
 	  rm -rf "$(distdir)/$$i" ; \
 	done
-	rm -f $(distdir)/doc/program-guide.*
-	rm -f $(distdir)/doc/admin-guide.*
 endif
 if !ENABLE_MONITORS
 	for i in ${MONITORLIST} ; do \
 	  rm -rf "$(distdir)/$$i" ; \
 	done
-	rm -f $(distdir)/doc/program-guide.*
-	rm -f $(distdir)/doc/admin-guide.*
 endif
 if !ENABLE_IPTRAF
 	for i in ${EXTRALIST} ; do \
@@ -145,3 +140,5 @@ if !ENABLE_IPTRAF
 endif
 
 
+#	rm -f $(distdir)/doc/program-guide.*
+#	rm -f $(distdir)/doc/admin-guide.*
