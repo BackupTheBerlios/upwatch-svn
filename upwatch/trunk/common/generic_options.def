@@ -29,6 +29,7 @@ messages to the system log using syslogd using facility LOG_DAEMON';
 
 flag = {
     name      = stderr;
+    settable;
     value     = e;
     arg_type  = bool;
     arg-default = 1;

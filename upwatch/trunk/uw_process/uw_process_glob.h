@@ -52,7 +52,7 @@ typedef struct _module {
   int  (*fix_result)(struct _module *probe, void *res);
   void *(*get_def)(struct _module *probe, void *res);
   gint (*store_results)(struct _module *probe, void *def, void *res);
-  void (*summarize)(void *def, void *res, char *from, char *into, guint slotlow, guint slothigh);
+  void (*summarize)(void *def, void *res, char *from, char *into, guint slot, guint slotlow, guint slothigh);
 } module;
 
 extern module *modules[];

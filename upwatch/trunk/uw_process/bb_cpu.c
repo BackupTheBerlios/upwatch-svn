@@ -190,11 +190,11 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
 //*******************************************************************
 // SUMMARIZE A TABLE INTO AN OLDER PERIOD
 //*******************************************************************
-static void summarize(void *probe_def, void *probe_res, char *from, char *into, guint slotlow, guint slothigh)
+static void summarize(void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh)
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
-  struct bb_cpu_result *def = (struct bb_cpu_result *)probe_def;
+  struct probe_def *def = (struct probe_def *)probe_def;
   float avg_yellow, avg_red;
   gfloat avg_loadavg;
   guint avg_user, avg_system, avg_idle, avg_swapin, avg_swapout, avg_blockin;
@@ -212,6 +212,13 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
                     "where  probe = '%d' and stattime >= %d and stattime < %d",
                     from, def->probeid, slotlow, slothigh);
   
+  if (!result) return;
+  if (mysql_num_rows(result) == 0) { // no records found
+    LOG(LOG_WARNING, "nothing to summarize from %s for probe %u %u %u",
+                       from, def->probeid, slotlow, slothigh);
+    return;
+  }
+
   row = mysql_fetch_row(result);
   if (!row) {
     mysql_free_result(result);
@@ -219,7 +226,8 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
     return;
   }
   if (row[0] == NULL) {
-    LOG(LOG_WARNING, "Internal error: nothing to summarize %s: %d %d", into, slotlow, slothigh);
+    LOG(LOG_WARNING, "nothing to summarize from %s for probe %u %u %u", 
+                       from, def->probeid, slotlow, slothigh);
     return;
   }
 
@@ -246,13 +254,13 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
                     "       swapin = '%u', swapout = '%u', blockin = '%u', blockout = '%u', "
                     "       swapped = '%u', free = '%u', buffered = '%u', cached = '%u', "
                     "       used = '%u', probe = %d, color = '%u', stattime = %d, "
-                    "       yellow = '%f', red = '%f'",
+                    "       yellow = '%f', red = '%f', slot = '%u'",
                     into, 
                     avg_loadavg, avg_user, avg_system, avg_idle, 
                     avg_swapin, avg_swapout, avg_blockin, avg_blockout, 
                     avg_swapped, avg_free, avg_buffered, avg_cached, 
                     avg_used, def->probeid, max_color, stattime,
-                    avg_yellow, avg_red);
+                    avg_yellow, avg_red, slot);
   mysql_free_result(result);
 }
 

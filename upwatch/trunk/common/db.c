@@ -62,6 +62,8 @@ void my_transaction(char *what)
   mysql_query(mysql, what);
 }
 
+int ignore_dup_entries = 0; // if true don't log dup entry errors. Reset every time.
+
 MYSQL_RES *my_query(char *fmt, ...)
 {
   MYSQL_RES *result;
@@ -76,7 +78,16 @@ MYSQL_RES *my_query(char *fmt, ...)
   if (debug > 3) LOG(LOG_DEBUG, qry);
 
   if (mysql_query(mysql, qry)) {
-    LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql));
+    switch (mysql_errno(mysql)) {
+    case ER_DUP_ENTRY:
+      if (ignore_dup_entries) {
+        ignore_dup_entries = 0;
+        break;
+      }
+    default:
+      LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql));
+      break;
+    }
     return(NULL);
   }
   result = mysql_store_result(mysql);

@@ -68,11 +68,11 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
 //*******************************************************************
 // SUMMARIZE A TABLE INTO AN OLDER PERIOD
 //*******************************************************************
-static void summarize(void *probe_def, void *probe_res, char *from, char *into, guint slotlow, guint slothigh)
+static void summarize(void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh)
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
-  struct snmpget_result *def = (struct snmpget_result *)probe_def;
+  struct probe_def *def = (struct probe_def *)probe_def;
   float avg_yellow, avg_red;
   float avg_value;
   guint stattime;
@@ -86,6 +86,13 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
                     "where  probe = '%d' and stattime >= %d and stattime < %d",
                     from, def->probeid, slotlow, slothigh);
 
+  if (!result) return;
+  if (mysql_num_rows(result) == 0) { // no records found
+    LOG(LOG_WARNING, "nothing to summarize from %s for probe %u %u %u",
+                       from, def->probeid, slotlow, slothigh);
+    return;
+  }
+
   row = mysql_fetch_row(result);
   if (!row) {
     mysql_free_result(result);
@@ -93,7 +100,8 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
     return;
   }
   if (row[0] == NULL) {
-    LOG(LOG_WARNING, "Internal error: nothing to summarize %s: %d %d", into, slotlow, slothigh);
+    LOG(LOG_WARNING, "nothing to summarize from %s for probe %u %u %u", 
+                       from, def->probeid, slotlow, slothigh);
     return;
   }
 
@@ -105,9 +113,10 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
 
   result = my_query("insert into pr_snmpget_%s "
                     "set    value = '%f', "
-                    "       probe = %d, color = '%u', stattime = %d, yellow = '%f', red = '%f'",
+                    "       probe = %d, color = '%u', stattime = %d, "
+                    "       yellow = '%f', red = '%f', slot = '%u'",
                     into, avg_value, def->probeid, 
-                    max_color, stattime, avg_yellow, avg_red);
+                    max_color, stattime, avg_yellow, avg_red, slot);
 
   mysql_free_result(result);
 }

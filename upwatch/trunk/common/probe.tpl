@@ -42,6 +42,31 @@ ENDFOR def +]
 INSERT into pr_[+name+]_def set id = '1', description = 'empty';
 INSERT into probe set id = '[+id+]', name = '[+name+]', description = '[+descrip+]', addbyhand = '[+addbyhand+]', class = '[+class+]', graphtypes = '[+graphtypes+]', comment = '[+comment+]';
 [+ IF (count "result") +]
+--
+-- Table structure for table 'pr_[+name+]_raw'
+--
+
+CREATE TABLE pr_[+name+]_raw (
+  id bigint unsigned NOT NULL auto_increment,   -- unique id for result
+  probe int unsigned NOT NULL default '1',      -- probe identifier
+  yellow float NOT NULL default '[+yellow+]',   -- value for yellow alert
+  red float NOT NULL default '[+red+]',         -- value for red alert
+  stattime int unsigned NOT NULL default '0',   -- time when result was generated
+  color smallint unsigned NOT NULL default '200', -- color value [+
+FOR result +]
+  [+name+] [+type+][+
+IF length +]([+length+])[+
+ENDIF +] [+
+IF null +][+
+ELSE +]NOT [+
+ENDIF null +]NULL default '[+default+]',        -- [+descrip+][+
+ENDFOR result +]
+  message text NOT NULL default '',
+  PRIMARY KEY (id),
+  UNIQUE KEY probtime (stattime,probe),
+  KEY probe (probe)
+) TYPE=MyISAM;
+
 [+ FOR period +]
 --
 -- Table structure for table 'pr_[+name+]_[+period+]'
@@ -65,7 +90,7 @@ ENDIF null +]NULL default '[+default+]',	-- [+descrip+][+
 ENDFOR result +]
   message text NOT NULL default '',
   PRIMARY KEY (id),
-  UNIQUE KEY probtime (stattime,probe),
+  UNIQUE KEY probtime (stattime,slot,probe),
   KEY probe (probe)
 ) TYPE=MyISAM;
 [+ ENDFOR period +]

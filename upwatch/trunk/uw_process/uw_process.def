@@ -103,5 +103,18 @@ This query will be issued to find the numeric server id in the database. You can
 up to five `%s` sequences in the query, they will be replaced with the servername.';
 };
 
+flag = { 
+    name      = summarize; 
+    arg_type  = string;
+    arg_name  = "probe,ctime"; 
+    descrip   = "Re-summarize a named probe, starting at a given time";
+    doc       =
+'Occasionally you may want to recreate all or some summarized data for a probe.
+In this case determine the calendar time when to start, and specify it together
+with the probename. For example `uw_process --summarize ping,1041679172`  will 
+read all data from the pr_ping_raw table starting at Sat Jan  4 12:19:37 CET 2003
+and re-summarize it.  Use with -d3 if you want it to run in the foreground.';
+};
+
 #include dbase_options.def
 #include generic_options.def

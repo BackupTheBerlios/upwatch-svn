@@ -48,14 +48,14 @@ int init(void)
   int i;
 
   daemonize = TRUE;
-  if (HAVE_OPT(RUN_QUEUE)) {
+  if (HAVE_OPT(RUN_QUEUE) || HAVE_OPT(SUMMARIZE)) {
     every = ONE_SHOT;
   } else {
     every = EVERY_5SECS;
   }
 
   // check trust option strings
-  {
+  if (HAVE_OPT(TRUST)) {
     int i, found=0;
     int     ct  = STACKCT_OPT( TRUST );
     char**  pn = STACKLST_OPT( TRUST );
@@ -75,7 +75,7 @@ int init(void)
       } 
     }
   }
-  g_thread_init(NULL);
+  //g_thread_init(NULL);
   xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
   atexit(cleanup);
   for (i = 0; modules[i]; i++) {
@@ -132,8 +132,13 @@ int run(void)
   int files = 0;
   int got_fatal = 0;
 extern int forever;
+static int resummarize(void);
 
   if (debug > 3) LOG(LOG_DEBUG, "run()");
+
+  if (HAVE_OPT(SUMMARIZE)) {
+    return(resummarize()); // --summarize
+  }
   sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), OPT_ARG(INPUT));
   dir = g_dir_open (path, 0, &error);
   if (dir == NULL) {
@@ -838,7 +843,7 @@ static int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
               //                 cur_slot, res->stattime, prev_slot, prv->stattime,
               //                 summ_info[i].from, slotlow, slothigh);
               //}
-              probe->summarize(def, res, summ_info[i].from, summ_info[i].to, slotlow, slothigh);
+              probe->summarize(def, res, summ_info[i].from, summ_info[i].to, cur_slot, slotlow, slothigh);
             }
           }
         } else {
@@ -853,7 +858,7 @@ static int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
             // IF THE LAST RECORD FOR THIS SLOT HAS BEEN SEEN
             if (have_records_later_than(res->name, def->probeid, summ_info[i].from, slothigh)) { 
               // RE-SUMMARIZE CURRENT SLOT
-              probe->summarize(def, res, summ_info[i].from, summ_info[i].to, slotlow, slothigh);
+              probe->summarize(def, res, summ_info[i].from, summ_info[i].to, cur_slot, slotlow, slothigh);
             } else {
               not_later_then = slothigh;
             }
@@ -880,3 +885,86 @@ static int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
   return 1;
 }
 
+static int resummarize(void)
+{
+  gint idx, found;
+  struct probe_def def;
+  struct probe_result res;
+  char *probename = strtok(OPT_ARG(SUMMARIZE), ",");
+  res.stattime = atoi(strtok(NULL, ""));
+  MYSQL_RES *result;
+  MYSQL_ROW row;
+extern int forever;
+  
+//  printf("%s: %s", probename, ctime(&res.stattime));
+
+  memset(&def, 0, sizeof(def));
+  memset(&res, 0, sizeof(res));
+  for (found = 0, idx = 0; modules[idx]; idx++) {
+    if (modules[idx]->accept_probe(probename)) {
+      found = 1;
+      break;
+    }
+  }
+  if (!found) {
+    char buf[256];
+
+    sprintf(buf, "unknown probe %s", probename);
+    fprintf(stderr, "%s\n", buf);
+    LOG(LOG_NOTICE, buf);
+    return(0);
+  }
+  if (open_database() != 0) {
+    fprintf(stderr, "Cannot open database\n");
+    return(0);
+  }
+  found = 0;
+  result = my_query("select id, server from pr_%s_def where id > 1", probename);
+  if (result == NULL) return(0);
+  while ((row = mysql_fetch_row(result)) && forever) {
+    MYSQL_RES *presult;
+    MYSQL_ROW prow;
+
+    def.probeid = atoi(row[0]);
+    def.server = atoi(row[1]);
+    //printf("%u server %u\n", def.probeid, def.server);
+
+    presult = my_query("select stattime from pr_%s_raw where probe = '%u'", probename, def.probeid);
+    if (presult == NULL) continue;
+    while ((prow = mysql_fetch_row(presult)) && forever) {
+      guint cur_slot, prev_slot;
+      gulong dummy_low, dummy_high;
+      gulong slotlow, slothigh;
+      int i;
+
+      res.stattime = atoi(prow[0]);
+      if (def.newest == 0) def.newest = res.stattime;
+      found++;
+
+      //printf("stattime = %u, prev = %u\n", res.stattime, def.newest);
+
+      for (i=0; summ_info[i].period > 0; i++) { // FOR EACH PERIOD
+        prev_slot = uw_slot(summ_info[i].period, def.newest, &slotlow, &slothigh);
+        cur_slot = uw_slot(summ_info[i].period, res.stattime, &dummy_low, &dummy_high);
+
+        if (cur_slot != prev_slot) {
+extern int ignore_dup_entries;
+
+          ignore_dup_entries = 1;
+          modules[idx]->summarize(&def, &res, summ_info[i].from, summ_info[i].to, cur_slot, slotlow, slothigh);
+          //printf("\ncurslot=%u, prev=%u\n", cur_slot, prev_slot);
+        }
+      }
+
+      def.newest = res.stattime;
+      if (found %500 == 0) {
+        if (debug > 2) fprintf(stderr, "%8u records processed\r", found);
+      }
+    }
+    mysql_free_result(presult);
+
+  }
+  mysql_free_result(result);
+  close_database();
+  return(found);
+}
