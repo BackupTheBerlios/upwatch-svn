@@ -217,7 +217,7 @@ static int handle_file(gpointer data, gpointer user_data)
       continue;
     }
     for (i = 0; route[i].name; i++) {
-      xmlNodePtr del = cur;
+      xmlNodePtr new;
 
       if (strcmp(cur->name, route[i].name)) {
         continue;
@@ -232,10 +232,14 @@ static int handle_file(gpointer data, gpointer user_data)
         route[i].doc = UpwatchXmlDoc("result");
         xmlSetDocCompressMode(route[i].doc, OPT_VALUE_COMPRESS);
       }
-      cur = cur->next;
-      xmlUnlinkNode(del); // succeeded, remove this node from the XML tree
-      xmlAddChild(route[i].doc->children, del); // add to new document
+      new = xmlCopyNode(cur, 1);
+      if (route[i].doc->children == NULL) {
+        xmlAddChild((xmlNodePtr)route[i].doc, new);
+      } else {
+        xmlAddNextSibling(route[i].doc->children, new);
+      }
       //xmlDocFormatDump(stderr, route[i].doc, TRUE);
+      cur = cur->next;
       break;
     }
     if (!found) {

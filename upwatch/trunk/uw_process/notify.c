@@ -173,6 +173,7 @@ static void do_notification(module *probe, struct probe_def *def, struct probe_r
 
   message = smtp_add_message (session);
   smtp_set_reverse_path (message, OPT_ARG(FROM_EMAIL));
+  smtp_set_header (message, "Date", &res->stattime);
   smtp_add_recipient (message, def->email);
 
   fp = tmpfile();
