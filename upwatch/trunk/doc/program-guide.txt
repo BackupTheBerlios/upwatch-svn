@@ -3,7 +3,7 @@ Upwatch Programmers Guide
 
 Ron Arts
 
-   Copyright © 2002-2004 UpWatch BV, The Netherlands
+   Copyright Â© 2002-2004 UpWatch BV, The Netherlands
      _________________________________________________________________
 
    Table of Contents
@@ -77,8 +77,8 @@ Ron Arts
               B.4.1. imap result record layout
               B.4.2. imap database layout
 
-        B.5. iptraf - Incoming and outgoing traffic to an IP adddress,
-                network or interface
+        B.5. iptraf - Incoming and outgoing traffic to an IP adddress, network
+                or interface
 
               B.5.1. iptraf result record layout
               B.5.2. iptraf database layout
@@ -118,14 +118,12 @@ Ron Arts
               B.12.1. snmpget result record layout
               B.12.2. snmpget database layout
 
-        B.13. sysstat - System information like load average, CPU/MEM
-                usage etc
+        B.13. sysstat - System information like load average, CPU/MEM usage etc
 
               B.13.1. sysstat result record layout
               B.13.2. sysstat database layout
 
-        B.14. hwstat - Hardware information like CPU temperature, fan
-                speed
+        B.14. hwstat - Hardware information like CPU temperature, fan speed
 
               B.14.1. hwstat result record layout
               B.14.2. hwstat database layout
@@ -187,9 +185,7 @@ Ron Arts
    pop3 result record layout. pop3 result record layout
    postgresql attributes. postgresql attributes
    postgresql elements. postgresql elements
-   postgresql definition record layout. postgresql definition record
-          layout
-
+   postgresql definition record layout. postgresql definition record layout
    postgresql result record layout. postgresql result record layout
    smtp attributes. smtp attributes
    smtp elements. smtp elements
@@ -217,19 +213,16 @@ Ron Arts
    diskfree result record layout. diskfree result record layout
    tcpconnect attributes. tcpconnect attributes
    tcpconnect elements. tcpconnect elements
-   tcpconnect definition record layout. tcpconnect definition record
-          layout
-
+   tcpconnect definition record layout. tcpconnect definition record layout
    tcpconnect result record layout. tcpconnect result record layout
 
 Preface
 
-   People,  especially  managers,  like  to  have  facts and figures when
-   taking  decisions,  either  because a lot of money may be involved, or
-   their  job (or both). If you want to prove your website (or switch, or
-   basically   any   other  device)  was  available,  showed  the  proper
-   performance,  or  just  want to know current and past CPU load, you've
-   come to the right place.
+   People, especially managers, like to have facts and figures when taking
+   decisions, either because a lot of money may be involved, or their job (or
+   both). If you want to prove your website (or switch, or basically any other
+   device) was available, showed the proper performance, or just want to know
+   current and past CPU load, you've come to the right place.
 
 Chapter 1. About UpWatch
 
@@ -240,43 +233,40 @@ Chapter 1. About UpWatch
 
 1.1. History
 
-   UpWatch  is  born  from  the  loins  of  Netland Internet Services BV,
-   Amsterdam,  The Netherlands. We are a hosting company which started in
-   1993  (when  even Bill Gates knew nothing of the internet). We started
-   doing  managed  hosting  in  1995,  and that's when we found out about
-   monitoring. The hard way.
+   UpWatch is born from the loins of Netland Internet Services BV, Amsterdam,
+   The Netherlands. We are a hosting company which started in 1993 (when even
+   Bill Gates knew nothing of the internet). We started doing managed hosting
+   in 1995, and that's when we found out about monitoring. The hard way.
 
-   It  became clear that customers can easily bring down their own server
-   on  impossible moments, and that it doesn't look very good if you both
-   find  out  about  that the monday after. So we started doing SLA's and
-   limit customer rights on their own server.
+   It became clear that customers can easily bring down their own server on
+   impossible moments, and that it doesn't look very good if you both find out
+   about that the monday after. So we started doing SLA's and limit customer
+   rights on their own server.
 
    Initially  we  used  Big  Brother (bb4.com) for monitoring. This is an
-   outstanding  and  useful  package,  and we have been using it for many
-   years.  But  it  has  a few downsides. One is scalability. It does not
-   scale well to hundreds of hosts. Also it has a geek-like look, we felt
-   we  couldn't  give  the  URL  to  our  customers.  Third  problem  was
-   integration with our backoffice.
+   outstanding and useful package, and we have been using it for many years.
+   But it has a few downsides. One is scalability. It does not scale well to
+   hundreds of hosts. Also it has a geek-like look, we felt we couldn't give
+   the URL to our customers. Third problem was integration with our backoffice.
 
-   At  the  same  time  yours  truly  was  thinking  about  setting  up a
-   commercial   service   for   monitoring  servers  remotely.  All  this
-   culminated into UpWatch. So lets get straight to the ..
+   At the same time yours truly was thinking about setting up a commercial
+   service for monitoring servers remotely. All this culminated into UpWatch.
+   So lets get straight to the ..
 
 1.2. Features
 
    This is the full list of upwatch features:
      * Scalable: designed for monitoring tens of thousands of hosts
-     * Resilient:  autorestarts  after  database  failures, forgiving for
-       operator errors
+     * Resilient: autorestarts after database failures, forgiving for operator
+       errors
      * SuSE,  RedHat  and Fedora RPM's generated from sourcetree for easy
        installation
      * Extensive and complete documentation, partly generated from source
-     * Multi-tenanting:  multiple  companies  can run monitoring services
-       for   network   of   multiple   client-companies  using  the  same
-       backend+probe serverpark
-     * OS   support:  clients  available  for  Linux,  Windows,  FreeBSD,
-       Solaris,  server  runs  on  linux or freeBSD, remote monitoring is
-       linux only.
+     * Multi-tenanting: multiple companies can run monitoring services for
+       network  of multiple client-companies using the same backend+probe
+       serverpark
+     * OS support: clients available for Linux, Windows, FreeBSD, Solaris,
+       server runs on linux or freeBSD, remote monitoring is linux only.
      * Monitoring results are in XML, and can be pre- and postprocessed
      * Secure: run as ordinary user, developed with security in mind
      * Compatible with all Big Brother clients, imports bb-hosts file
@@ -284,14 +274,14 @@ Chapter 1. About UpWatch
      * GUI has mobile client support
      * Generates realtime graphs from the database
      * Notifications by email or SMS.
-     * Clients for: HTTP GET, IMAP, MSSQL, MySQL, PING, POP3, PostgreSQL,
-       SMTP, SNMP GET, TCP connect (any port)
-     * Local client detects: CPU load, loadavg, swap use, I/O use, memory
-       use,  and  where supported hardware info like CPU temperature, fan
-       speed  and  Power  voltages.  Also  you  can set it up to scan any
-       logfile using regular expressions you supply.
-     * Fully  opensource:  GUI  built  on  Apache/PHP, Backend on C/Perl,
-       Database is MySQL. Uses GNU configure.
+     * Clients for: HTTP GET, IMAP, MSSQL, MySQL, PING, POP3, PostgreSQL, SMTP,
+       SNMP GET, TCP connect (any port)
+     * Local client detects: CPU load, loadavg, swap use, I/O use, memory use,
+       and where supported hardware info like CPU temperature, fan speed and
+       Power voltages. Also you can set it up to scan any logfile using regular
+       expressions you supply.
+     * Fully opensource: GUI built on Apache/PHP, Backend on C/Perl, Database
+       is MySQL. Uses GNU configure.
 
 Chapter 2. How it all works
 
@@ -315,12 +305,11 @@ Chapter 2. How it all works
 
 2.1. General Overview
 
-   The  system  primary  function  is to fill lots of database tables, to
-   offer  views  on those tables, and to page operators in case things go
-   wrong.  To  enable  this upwatch consists of a MySQL database, lots of
-   probe  daemons  (one  daemon per probe, usually one probe per daemon),
-   some  supporting  daemons, a PHP website, and other software, like SMS
-   and mail interfaces.
+   The system primary function is to fill lots of database tables, to offer
+   views on those tables, and to page operators in case things go wrong. To
+   enable this upwatch consists of a MySQL database, lots of probe daemons (one
+   daemon per probe, usually one probe per daemon), some supporting daemons, a
+   PHP website, and other software, like SMS and mail interfaces.
 
    The software can be divided into four parts:
      * upwatch client - runs on a machine
@@ -330,57 +319,55 @@ Chapter 2. How it all works
 
 2.1.1. The Upwatch client
 
-   The   client   consists  of  two  programs:  uw_sysstat  and  uw_send.
-   uw_sysstat  every minute collects information like CPU load, disk I/O,
-   swapping  activity  and  so  on,  and  writes it to an XML file in the
-   spooldirectory.  This  directory  is  checked every 5 seconds, and all
-   files  appearing  there are sent by uw_send to the central repository.
-   uw_send  has  a  commandline  option  (--once) to let it be started by
-   cronjobs, or for example when an ISDN connection has become online.
+   The client consists of two programs: uw_sysstat and uw_send. uw_sysstat
+   every minute collects information like CPU load, disk I/O, swapping activity
+   and  so  on,  and writes it to an XML file in the spooldirectory. This
+   directory is checked every 5 seconds, and all files appearing there are sent
+   by uw_send to the central repository. uw_send has a commandline option
+   (--once) to let it be started by cronjobs, or for example when an ISDN
+   connection has become online.
 
 2.1.2. The Upwatch server
 
-   The  server  consists  of  three  programs:  uw_accept,  uw_setip  and
-   uw_process.  The  monitoring  results  are  accept  by uw_accept which
-   listen  on port 1985 (configurable), and drop the XML results into the
-   uw_process spool directory, where it is picked up, and stored into the
-   database   by   uw_process.   For   compatibility   with  Big  Brother
-   (www.bb4.com)  clients,  there is an uw_acceptbb daemon, which listens
-   on the Big Brother port (1984), and converts Big Brother messages into
-   upwatch  XML files (Note: all bb clients are assumed to be in the same
-   timezone.  Converting  charactermode  datestamps back to epoch time is
-   unsupported,  because timezone names are not unique). Lastly, uw_setip
-   listens to messages from the uw_tellip script, which should be started
-   by clients whenever their IP address changes.
+   The server consists of three programs: uw_accept, uw_setip and uw_process.
+   The monitoring results are accept by uw_accept which listen on port 1985
+   (configurable),  and  drop  the  XML results into the uw_process spool
+   directory,  where  it  is  picked  up, and stored into the database by
+   uw_process. For compatibility with Big Brother (www.bb4.com) clients, there
+   is an uw_acceptbb daemon, which listens on the Big Brother port (1984), and
+   converts Big Brother messages into upwatch XML files (Note: all bb clients
+   are assumed to be in the same timezone. Converting charactermode datestamps
+   back to epoch time is unsupported, because timezone names are not unique).
+   Lastly, uw_setip listens to messages from the uw_tellip script, which should
+   be started by clients whenever their IP address changes.
 
 2.1.3. The Upwatch monitors
 
-   The  monitors  are daemons that run on some central monitoring server,
-   and  run checks on servers remotely, such as POP3, HTTP, SNMP or other
-   services. Alll their results are sent by uw_send, as usual.
+   The monitors are daemons that run on some central monitoring server, and run
+   checks on servers remotely, such as POP3, HTTP, SNMP or other services. Alll
+   their results are sent by uw_send, as usual.
 
 2.1.4. Special programs
 
-   Their  are  special  programs that don't fall into any other category,
-   for  example  uw_iptraf.  This is a daemon that should run on a border
-   gateway router, and that measures IP traffic on a per-IP basis.
+   Their are special programs that don't fall into any other category, for
+   example uw_iptraf. This is a daemon that should run on a border gateway
+   router, and that measures IP traffic on a per-IP basis.
 
 2.2. A Detailed Description
 
 2.2.1. Database Layout
 
-   Things  start  at  the  database.  For  every  probe  it  contains the
-   following tables:
+   Things start at the database. For every probe it contains the following
+   tables:
      * Definition table
      * Raw results table
-     * Tables  for  compressed  results  per day, week, month, year and 5
-       year
+     * Tables for compressed results per day, week, month, year and 5 year
      * A table with an overview of state changes
 
-   The  definition  table  contains,  of  course,  the definition of this
-   particular probe, this is of course probe specific but at a minimum it
-   contains  usually  contains  the target ip address. We'll see what the
-   other tables are for later on.
+   The definition table contains, of course, the definition of this particular
+   probe, this is of course probe specific but at a minimum it contains usually
+   contains the target ip address. We'll see what the other tables are for
+   later on.
 
 2.2.2. What a probe does
 
@@ -389,119 +376,112 @@ Chapter 2. How it all works
      * Probes without database access the measure remote servers
      * Probes without database access thatg measure localhost
 
-   Every  probe  performs  a  repetative  task:  measuring  some specific
-   function  on a specific host. So first step is to know what to measure
-   and  on which host. For this it reads from the probe definition table,
-   or  from  its  configfile  if it does not depend on database access It
-   creates  a  local  -  in  memory - copy of that table just in case the
-   database  becomes unreachable for a period of time. It routinely walks
-   this  list and performs its task. The result are written in XML format
-   to  a  queue  which is specified in the probe configuration (note: all
-   queues  normally  reside  in /var/spool/upwatch). After that the probe
-   just waits for the next round.
+   Every probe performs a repetative task: measuring some specific function on
+   a specific host. So first step is to know what to measure and on which host.
+   For this it reads from the probe definition table, or from its configfile if
+   it does not depend on database access It creates a local - in memory - copy
+   of that table just in case the database becomes unreachable for a period of
+   time. It routinely walks this list and performs its task. The result are
+   written  in  XML  format  to  a  queue which is specified in the probe
+   configuration (note: all queues normally reside in /var/spool/upwatch).
+   After that the probe just waits for the next round.
 
-   Many  probes  have to do a lot of work. They are programmed to do this
-   as efficient as possible. For example: the uw_ping probe is coded as a
-   tight  loop  around  a  single  select  statement.  This  is  the most
-   efficient  way  (as far as I know) to ping thousands of hosts in, say,
-   20  seconds.  Other  probes use pools of threads (like httpget) or are
-   build using the State Threads library.
+   Many probes have to do a lot of work. They are programmed to do this as
+   efficient as possible. For example: the uw_ping probe is coded as a tight
+   loop around a single select statement. This is the most efficient way (as
+   far as I know) to ping thousands of hosts in, say, 20 seconds. Other probes
+   use pools of threads (like httpget) or are build using the State Threads
+   library.
 
 2.2.3. What happens to the probe results?
 
-   First,   all   results  with  status  non-green  are  handed  over  to
-   uw_examine, which tries to find out why the probe failed, and attaches
-   a  report  to  the  probe.  After this the results are put in the same
-   queue  as  every  other  probe: uw_notify. uw_notify reads the result,
-   looks  at  the  probe status, and at previous statuses, and decides if
-   someone  should be notified by sms, email, or if it should be put into
-   a high-priority queue.
+   First, all results with status non-green are handed over to uw_examine,
+   which tries to find out why the probe failed, and attaches a report to the
+   probe. After this the results are put in the same queue as every other
+   probe: uw_notify. uw_notify reads the result, looks at the probe status, and
+   at previous statuses, and decides if someone should be notified by sms,
+   email, or if it should be put into a high-priority queue.
 
-   The  outgoing  queue may be either the uw_process queue, or an uw_send
-   queue,  which  is emptied by the uw_send process which sends all files
-   to a remote queue on another host (received and queued by uw_accept).
+   The outgoing queue may be either the uw_process queue, or an uw_send queue,
+   which is emptied by the uw_send process which sends all files to a remote
+   queue on another host (received and queued by uw_accept).
 
-   uw_examine  can do some additional tests like traceroute to the target
-   host.  It  attaches  this  report to the probe result, and in its turn
-   puts everything in an uw_process or uw_send queue.
+   uw_examine can do some additional tests like traceroute to the target host.
+   It attaches this report to the probe result, and in its turn puts everything
+   in an uw_process or uw_send queue.
 
 2.2.4. uw_process: storing results in the database
 
-   When  the probe results arrive in the uw_process queue it is picked up
-   by  the  workhorse  of the lot, uw_process. It fills the result tables
-   for the probes.
+   When the probe results arrive in the uw_process queue it is picked up by the
+   workhorse of the lot, uw_process. It fills the result tables for the probes.
 
    The raw results table contains just that, raw probe results.
 
-   Raw  results  are  compressed  into period tables in the following way
-   (using  week  as  an  example):  a  week  is  divided  into  100 equal
-   timeslots.  For computing the plot values for a slot the process reads
-   all  values  from the day table in the same timeslot. These values are
-   averaged  and  put in the week table. The same process happens for the
-   month  and  year tables. This way we ensure that we never have to read
-   more  then  100  database  records to produce a graph for a day, week,
-   month, year or 5-year period.
+   Raw results are compressed into period tables in the following way (using
+   week  as  an example): a week is divided into 100 equal timeslots. For
+   computing the plot values for a slot the process reads all values from the
+   day table in the same timeslot. These values are averaged and put in the
+   week table. The same process happens for the month and year tables. This way
+   we ensure that we never have to read more then 100 database records to
+   produce a graph for a day, week, month, year or 5-year period.
 
    Status  changes are logged in a 'current status' table and in a status
-   history  (pr_hist).  These  two  accomodate  for easy retrieval by the
-   webpages.
+   history (pr_hist). These two accomodate for easy retrieval by the webpages.
 
    The pseudo-code below shows an example of how uw_process takes a probe
-   result and puts this result in the database. as an example I'll take a
-   pop3 result (class = 5, and our example probe has id 25)
+   result and puts this result in the database. as an example I'll take a pop3
+   result (class = 5, and our example probe has id 25)
 
             IF PROBEDEFINITION NOT IN THE CACHE OR IT'S TOO OLD
-               select server, color, stattime, yellow, red from pr_status
-    where  class = '8' and probe = '25'"
+               select server, color, stattime, yellow, red from pr_status where
+     class = '8' and probe = '25'"
                IF NOT FOUND IN STATUS FILE
-                  select server, yellow, red  from   pr_pop3_def where  i
-   d = '25'
+                  select server, yellow, red  from   pr_pop3_def where  id = '2
+   5'
                   IF NOT FOUND IN DEFINITION TABLE
                      SKIP THIS PROBE
-                     probes without id (because they don't have database
-   access) may be added here
+                     probes without id (because they don't have database access
+   ) may be added here
                   ENDIF not in definition table
                ENDIF not in status file
                GET MOST RECENT PROBE RESULT TIME:
-               select stattime from pr_pop3_raw use index(probstat) where
-    probe = '25' order by stattime desc limit 1
+               select stattime from pr_pop3_raw use index(probstat) where probe
+    = '25' order by stattime desc limit 1
             ENDIF not in cache
             STORE RESULT:
-            insert into pr_pop3_raw set probe = '25', yellow = '1', red =
-    '2', stattime = 'xxxxx', color = 'xx',
+            insert into pr_pop3_raw set probe = '25', yellow = '1', red = '2',
+   stattime = 'xxxxx', color = 'xx',
               connect = '1', total = '2', message = 'none'
             IF CURRENT PROBE IS NEWER THEN ANY WE'VE SEEN SO FAR
                copy previous record stattime from def record
             ELSE
-               select   color, stattime from pr_pop3_raw use index(probst
-   at) where probe = '25' and stattime < 'xxxx'
+               select   color, stattime from pr_pop3_raw use index(probstat) wh
+   ere probe = '25' and stattime < 'xxxx'
                order by stattime desc limit 1
             ENDIF
             IF THIS IS THE FIRST RESULT EVER SEEN FOR THIS PROBE
-               insert into pr_status set class = '8', probe = '25', statt
-   ime = 'xxx', expires = 'xxx', color = '200',
+               insert into pr_status set class = '8', probe = '25', stattime =
+   'xxx', expires = 'xxx', color = '200',
                   server = '2', message = 'none', yellow = '1', red = '2'
             ELSE IF WE HAVE NOT SEEN THIS PROBE BEFORE
                IF THE COLOR DIFFERS FROM THE PREVIOUS RECORD
                   CREATE HISTORY RECORD:
-                  insert into pr_hist set server = '2', class = '8', prob
-   e = '25', stattime = 'xxx', prv_color = '500', color = '200', message
-   = 'none'
+                  insert into pr_hist set server = '2', class = '8', probe = '2
+   5', stattime = 'xxx', prv_color = '500', color = '200', message = 'none'
                   RETRIEVE FOLLOWING RECORD:
-                  select color, stattime from pr_pop3_raw use index(probs
-   tat) where probe = '25' and stattime < 'xxxx'
+                  select color, stattime from pr_pop3_raw use index(probstat) w
+   here probe = '25' and stattime < 'xxxx'
                   order by stattime desc limit 1
-                  IF FOUND AND HAS THE SAME COLOR DELETE ANY HISTORY RECO
-   RDS:
-                     delete from pr_hist where stattime = 'xxxx' and prob
-   e = '25' and class = '8'
-             delete from pr_status where stattime = 'xxx' and probe = '25
-   ' and class = '8'
+                  IF FOUND AND HAS THE SAME COLOR DELETE ANY HISTORY RECORDS:
+                     delete from pr_hist where stattime = 'xxxx' and probe = '2
+   5' and class = '8'
+             delete from pr_status where stattime = 'xxx' and probe = '25' and
+   class = '8'
                   ENDIF following found and has same color
-                  IF CURRENT RECORD IS THE NEWEST UPDATE STATUS AND SERVE
-   R STATUS
-                     update pr_status set stattime = 'xxx', expires = 'xx
-   xy', color = '200', message = 'none', yellow = '1', red = '2'
+                  IF CURRENT RECORD IS THE NEWEST UPDATE STATUS AND SERVER STAT
+   US
+                     update pr_status set stattime = 'xxx', expires = 'xxxy', c
+   olor = '200', message = 'none', yellow = '1', red = '2'
                      where probe = '25' and class = '8'
                      update server set color = '20' where id = '2'
                   ENDIF newest
@@ -510,12 +490,12 @@ Chapter 2. How it all works
                   FOR EACH PERIOD
                      IF WE ENTERED A SLOT TIMESLOT IN THE PERIOD
                         SUMMARIZE:
-                        select avg(connect), avg(total), max(color), avg(
-   yellow), avg(red) from pr_pop3_day use index(probstat)
-                        where probe = '25' and stattime >= slotlow and st
-   attime < slothigh
-                        insert into pr_pop3_week set connect = '1', total
-    = '2', probe = 25, color = '200', stattime = slot,
+                        select avg(connect), avg(total), max(color), avg(yellow
+   ), avg(red) from pr_pop3_day use index(probstat)
+                        where probe = '25' and stattime >= slotlow and stattime
+    < slothigh
+                        insert into pr_pop3_week set connect = '1', total = '2'
+   , probe = 25, color = '200', stattime = slot,
                            yellow = '1', red = '2', slot = '34'
                      ENDIF
                   ENDFOR
@@ -523,12 +503,12 @@ Chapter 2. How it all works
                  FOR EACH PERIOD
                    IF THE FIRST RECORD FOR THE NEXT SLOT HAS BEEN SEEN
                       RE-SUMMARIZE CURRENT SLOT
-                      select avg(connect), avg(total), max(color), avg(ye
-   llow), avg(red) from pr_pop3_day use index(probstat)
-                      where probe = '25' and stattime >= slotlow and stat
-   time < slothigh
-                      insert into pr_pop3_week set connect = '1', total =
-    '2', probe = 25, color = '200', stattime = slot, yellow = '1',
+                      select avg(connect), avg(total), max(color), avg(yellow),
+    avg(red) from pr_pop3_day use index(probstat)
+                      where probe = '25' and stattime >= slotlow and stattime <
+    slothigh
+                      insert into pr_pop3_week set connect = '1', total = '2',
+   probe = 25, color = '200', stattime = slot, yellow = '1',
                          red = '2', slot = '34'
                    ENDIF
                ENDIF
@@ -536,21 +516,21 @@ Chapter 2. How it all works
 
 2.3. Scaling up
 
-   Various  parts  of the system may need more resources. Luckily Upwatch
-   is  designed  to  scale  up  considerably.  Of  course it cannot scale
-   infinately.  The  last  bottleneck  will  probably  be  the  database.
-   Although MySQL is known for its speed, even that has its limits.
+   Various parts of the system may need more resources. Luckily Upwatch is
+   designed to scale up considerably. Of course it cannot scale infinately. The
+   last bottleneck will probably be the database. Although MySQL is known for
+   its speed, even that has its limits.
 
-   The   probes   may  be  scaled  up,  sometimes  by  giving  them  more
-   filehandles, later by moving them to another host
+   The probes may be scaled up, sometimes by giving them more filehandles,
+   later by moving them to another host
 
    The website may be scaled up by spreading it out across several hosts
 
-   The  database  may  be  scaled  up by putting it on separate hardware,
-   using faster CPU and more spindles (disks), and ultimately using MySQL
-   mirrorring  to divide reading and writing across separate machines, or
-   spreading  out the tables across multtiple machines. MySQL has lots of
-   info on increasing performance..
+   The database may be scaled up by putting it on separate hardware, using
+   faster CPU and more spindles (disks), and ultimately using MySQL mirrorring
+   to divide reading and writing across separate machines, or spreading out the
+   tables across multtiple machines. MySQL has lots of info on increasing
+   performance..
 
 Chapter 3. Adding a probe
 
@@ -571,50 +551,47 @@ Chapter 3. Adding a probe
 
 3.1. So you want to add a probe?
 
-   Are  you really sure? Adding a probe involves writing C code, creating
-   and  designing  database  tables  and queue result files, creating PHP
-   pages,  and  PHP  graphs,  writing  documentation and submitting these
-   changes to CVS. It is a lot of work, how rewarding it may be.
+   Are you really sure? Adding a probe involves writing C code, creating and
+   designing database tables and queue result files, creating PHP pages, and
+   PHP graphs, writing documentation and submitting these changes to CVS. It is
+   a lot of work, how rewarding it may be.
 
-   In  the  following  overview  we'll  show  you how to add a probe. All
-   man-pages,  spec-files,  documentation  will  be auto-generated if you
-   follow instructions below.
+   In the following overview we'll show you how to add a probe. All man-pages,
+   spec-files, documentation will be auto-generated if you follow instructions
+   below.
 
 3.2. Basic steps for adding a probe
 
 3.2.1. Think carefully before you start
 
-   You  should  not  think  lightly  of adding a probe. Think things over
-   before  you start. Isn't there a probe available you can use? Or maybe
-   you  can  get away with extending an existing one? If not, perhaps you
-   can copy and modify one?
+   You should not think lightly of adding a probe. Think things over before you
+   start. Isn't there a probe available you can use? Or maybe you can get away
+   with extending an existing one? If not, perhaps you can copy and modify one?
 
-   If  not, you're in for the rewarding process of adding a new probe. Go
-   to the next step.
+   If not, you're in for the rewarding process of adding a new probe. Go to the
+   next step.
 
 3.2.2. Pick a real good name
 
-   You  should  think  of a real good descriptive name for your probe. It
-   should  describe  exactly  what  it does. Leave room for future probes
-   that  do  something  similar, also think about future extension to the
-   probe itself.. Don't be satisfied too soon. For the rest of this small
-   tutorial,  we'll  assume  you  probe  willed  be  called  cputemp  for
-   monitoring  the  host CPU temperature (which in fact already exists as
-   part of the sysstat probe).
+   You should think of a real good descriptive name for your probe. It should
+   describe  exactly  what  it does. Leave room for future probes that do
+   something similar, also think about future extension to the probe itself..
+   Don't be satisfied too soon. For the rest of this small tutorial, we'll
+   assume  you probe willed be called cputemp for monitoring the host CPU
+   temperature (which in fact already exists as part of the sysstat probe).
 
 3.2.3. Design the Database Fields
 
-   Also a probe needs to enter its status into pr_status, and its history
-   into  pr_history  and  you  should add code for this in the uw_process
-   part..
+   Also a probe needs to enter its status into pr_status, and its history into
+   pr_history and you should add code for this in the uw_process part..
 
 3.2.4. Write the code
 
-   Create   a   new   directory  named  uw_cputemp,  copy  all  files  in
-   templates/probe  to it. Look into those files, do a search and replace
-   all  occurrences  of  template with cputemp. Go one directory up, edit
-   configure.in.  Add  a  line uw_cputemp/Makefile to the AC_CONFIG_FILES
-   section. Add uw_cputemp to the PROGNAMES variable in Makefile.am. Run:
+   Create a new directory named uw_cputemp, copy all files in templates/probe
+   to it. Look into those files, do a search and replace all occurrences of
+   template with cputemp. Go one directory up, edit configure.in. Add a line
+   uw_cputemp/Makefile to the AC_CONFIG_FILES section. Add uw_cputemp to the
+   PROGNAMES variable in Makefile.am. Run:
 
                    $ ./autogen.sh
                    $ ./configure
@@ -624,11 +601,11 @@ Chapter 3. Adding a probe
 
    No errors should show up.
 
-   Now  start  coding  in  uw_cputemp/run.c, specifically in the function
-   run().  You should have enough examples in the other probes. Basically
-   the  probe  should  read  a  list of probedefinitions from a database,
-   execute all probes, and writes the results into a spoolfile. There are
-   utility functions for doing this in libupwatch.
+   Now start coding in uw_cputemp/run.c, specifically in the function run().
+   You should have enough examples in the other probes. Basically the probe
+   should read a list of probedefinitions from a database, execute all probes,
+   and writes the results into a spoolfile. There are utility functions for
+   doing this in libupwatch.
 
 Important
 
@@ -636,21 +613,19 @@ Important
 
 3.2.5. Write the uw_process extension
 
-   The  output of your probe is processed by uw_process. You should add a
-   new source file called process_cputemp.c, that reads the probe results
-   and  writes  them  to the database tables. Be careful for the logic in
-   this   part.   Add  an  entry  in  the  struct  _probe_proc  array  in
-   uw_process/run.c, and a extern int process_cputemp(char *spec, GString
-   *remark); just above it.
+   The output of your probe is processed by uw_process. You should add a new
+   source file called process_cputemp.c, that reads the probe results and
+   writes them to the database tables. Be careful for the logic in this part.
+   Add an entry in the struct _probe_proc array in uw_process/run.c, and a
+   extern int process_cputemp(char *spec, GString *remark); just above it.
 
 3.2.6. Add PHP pages_to_CMS
 
      * Copy  all  *.php  files  from templates/php-cms to the en/database
        directory. Rename every *template* file to *cputemp*.
-     * Copy the pr_template_def.rec file to
-       /home/cms/home/cms/www/php/cms.  Do  the  usual  replace, and take
-       care  this def file reflects the layout of pr_cputemp_def table in
-       the database.
+     * Copy the pr_template_def.rec file to /home/cms/home/cms/www/php/cms. Do
+       the usual replace, and take care this def file reflects the layout of
+       pr_cputemp_def table in the database.
      * Go to www/php/cms/custforms.php. Find the line which says START OF
        PROBES. Add an entry to the $f_probes array.
      * Copy a section of another probe. Adapt as needed.
@@ -661,14 +636,13 @@ Important
 
 3.2.7. Write documentation
 
-   Note  that  every  probe  is documented briefly in the cmd_options.def
-   file.  You should also document the probe in this manual. Personally I
-   use  KDE's  Kate  with  the XML plugin. Go the the doc directory. Copy
-   template-specs.xml    to    cputemp-specs.xml.    Add    a   line   to
-   probesspecs.xml,  and  an  ENTITY  line at the top of upwatch.xml. Add
-   cputemp-specs.xml   to   the   XMLFILES  line  in  Makefile.am.  Rerun
-   ./autogen.sh,  ./configure  in  the top directory. Run make in the doc
-   directory.
+   Note that every probe is documented briefly in the cmd_options.def file. You
+   should also document the probe in this manual. Personally I use KDE's Kate
+   with the XML plugin. Go the the doc directory. Copy template-specs.xml to
+   cputemp-specs.xml. Add a line to probesspecs.xml, and an ENTITY line at the
+   top  of  upwatch.xml.  Add  cputemp-specs.xml  to the XMLFILES line in
+   Makefile.am. Rerun ./autogen.sh, ./configure in the top directory. Run make
+   in the doc directory.
 
 3.3. Non-standard Probes
 
@@ -686,10 +660,9 @@ Appendix A. Interfaces and file layouts
 
 A.1. Probe result file
 
-   Every  probe  result  is written in XML format into a queue file. This
-   file  will  be  picked  up  by the process emptying the queue, usually
-   uw_send,  or  uw_process.  The  file  must have a specific name, and a
-   specific layout.
+   Every probe result is written in XML format into a queue file. This file
+   will be picked up by the process emptying the queue, usually uw_send, or
+   uw_process. The file must have a specific name, and a specific layout.
 
 A.1.1. Probe file name
 
@@ -708,9 +681,8 @@ A.1.2. Generic probe file layout
 
 A.1.3. uw_accept protocol
 
-   The  protocol  used  by  uw_accept  is  almost  exactly  like the POP3
-   protocol. login with USER and PASS, then enter DATA filesize and start
-   uploading
+   The protocol used by uw_accept is almost exactly like the POP3 protocol.
+   login with USER and PASS, then enter DATA filesize and start uploading
 
 Appendix B. Probe specifications
 
@@ -736,8 +708,8 @@ Appendix B. Probe specifications
         B.4.1. imap result record layout
         B.4.2. imap database layout
 
-   B.5. iptraf - Incoming and outgoing traffic to an IP adddress, network
-          or interface
+   B.5. iptraf - Incoming and outgoing traffic to an IP adddress, network or
+          interface
 
         B.5.1. iptraf result record layout
         B.5.2. iptraf database layout
@@ -777,8 +749,7 @@ Appendix B. Probe specifications
         B.12.1. snmpget result record layout
         B.12.2. snmpget database layout
 
-   B.13. sysstat - System information like load average, CPU/MEM usage
-          etc
+   B.13. sysstat - System information like load average, CPU/MEM usage etc
 
         B.13.1. sysstat result record layout
         B.13.2. sysstat database layout
@@ -808,136 +779,34 @@ B.1. bb - Big Brother generic probe
 B.1.1. bb result record layout
 
    Table bb attributes. bb attributes
-
-   Name
-
-   Type
-
-   Required
-
-   Default
-
-   Description
-
-   host
-
-   NMTOKEN
-
-   NO
-
-   host where this element originated
+   Name Type    Required Default Description
+   host NMTOKEN NO               host where this element originated
 
    Table bb elements. bb elements
-
-   Name
-
-   Optional
-
-   Description
-
-   ipaddress
-
-   NO
-
-   target ip address
-
-   date
-
-   NO
-
-   date/time for this result
-
-   expires
-
-   NO
-
-   when this result expires
-
-   color
-
-   NO
-
-   color as this probe thinks it should be
-
-   received
-
-   NO
-
-   date/time this result was received by the upwatch server
+   Name      Optional Description
+   ipaddress NO       target ip address
+   date      NO       date/time for this result
+   expires   NO       when this result expires
+   color     NO       color as this probe thinks it should be
+   received  NO       date/time this result was received by the upwatch server
 
 B.1.2. bb database layout
 
    Table bb definition record layout. bb definition record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   int
-
-   PRI
-
-   auto_increment
-
-   probe unique numerical id
-
-   pgroup
-
-   int unsigned
-
-   NO
-
-   2
-
-   group id
-
-   server
-
-   int
-
-   NO
-
-   1
-
-   server id
-
-   contact
-
-   int unsigned
-
-   YES
-
-   1
-
-   user field: pointer to contact database
-
-   notify
-
-   int unsigned
-
-   YES
-
-   1
-
-   notifier id
-
-   ipaddress
+                     Field Type Key Default Extra Description
+                  id int PRI auto_increment probe unique numerical id
+                  pgroup int unsigned NO 2 group id
+                  server int NO 1 server id
+               contact int unsigned YES 1 user field: pointer to contact
+      database
+                  notify int unsigned YES 1 notifier id
+      ipaddress
 
    varchar(15)
 
    YES
 
-                                          target ipaddress
+   target ipaddress
 
    description
 
@@ -945,7 +814,7 @@ B.1.2. bb database layout
 
    NO
 
-                                          description
+   description
 
    freq
 
@@ -963,7 +832,7 @@ B.1.2. bb database layout
 
    NO
 
-                                          value for yellow alert
+   value for yellow alert
 
    red
 
@@ -971,7 +840,7 @@ B.1.2. bb database layout
 
    NO
 
-                                          value for red alert
+   value for red alert
 
    disable
 
@@ -999,67 +868,15 @@ B.1.2. bb database layout
 
    NO
 
-                                          Big Brother name of this probe
+   Big Brother name of this probe
 
    Table bb result record layout. bb result record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   bigint unsigned
-
-   PRI
-
-   auto_increment
-
-   unique id for result
-
-   probe
-
-   int unsigned
-
-   YES
-
-   1
-
-   probe identifier
-
-   yellow
-
-   float
-
-   NO
-
-                                 value for yellow alert
-
-   red
-
-   float
-
-   NO
-
-                                 value for red alert
-
-   stattime
-
-   int unsigned
-
-   YES
-
-   0
-
-   time when result was generated
+                     Field Type Key Default Extra Description
+                  id bigint unsigned PRI auto_increment unique id for result
+                  probe int unsigned YES 1 probe identifier
+               yellow float NO value for yellow alert
+               red float NO value for red alert
+                  stattime int unsigned YES 0 time when result was generated
 
    color
 
@@ -1076,208 +893,43 @@ B.2. bb_cpu - Big Brother System probe
 B.2.1. bb_cpu result record layout
 
    Table bb_cpu attributes. bb_cpu attributes
-
-   Name
-
-   Type
-
-   Required
-
-   Default
-
-   Description
-
-   host
-
-   NMTOKEN
-
-   NO
-
-   host where this element originated
-
-   loadavg
-
-   NMTOKEN
-
-   NO
-
-   Load average as computed by upwatch
-
-   user
-
-   NMTOKEN
-
-   NO
-
-   CPU user time
-
-   system
-
-   NMTOKEN
-
-   NO
-
-   CPU system time
-
-   idle
-
-   NMTOKEN
-
-   NO
-
-   CPU idle time
-
-   swapped
-
-   NMTOKEN
-
-   NO
-
-   Amount of blocks written to swap device
-
-   free
-
-   NMTOKEN
-
-   NO
-
-   Free memory
-
-   buffered
-
-   NMTOKEN
-
-   NO
-
-   Amount of memory used for OS buffers
-
-   cached
-
-   NMTOKEN
-
-   NO
-
-   Amount of memory used for disk buffers
-
-   used
-
-   NMTOKEN
-
-   NO
-
-   Amount of memory used by processes
+   Name     Type    Required Default Description
+   host     NMTOKEN NO               host where this element originated
+   loadavg  NMTOKEN NO               Load average as computed by upwatch
+   user     NMTOKEN NO               CPU user time
+   system   NMTOKEN NO               CPU system time
+   idle     NMTOKEN NO               CPU idle time
+   swapped  NMTOKEN NO               Amount of blocks written to swap device
+   free     NMTOKEN NO               Free memory
+   buffered NMTOKEN NO               Amount of memory used for OS buffers
+   cached   NMTOKEN NO               Amount of memory used for disk buffers
+   used     NMTOKEN NO               Amount of memory used by processes
 
    Table bb_cpu elements. bb_cpu elements
-
-   Name
-
-   Optional
-
-   Description
-
-   ipaddress
-
-   NO
-
-   target ip address
-
-   date
-
-   NO
-
-   date/time for this result
-
-   expires
-
-   NO
-
-   when this result expires
-
-   color
-
-   NO
-
-   color as this probe thinks it should be
-
-   received
-
-   NO
-
-   date/time this result was received by the upwatch server
+   Name      Optional Description
+   ipaddress NO       target ip address
+   date      NO       date/time for this result
+   expires   NO       when this result expires
+   color     NO       color as this probe thinks it should be
+   received  NO       date/time this result was received by the upwatch server
 
 B.2.2. bb_cpu database layout
 
    Table bb_cpu definition record layout. bb_cpu definition record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   int
-
-   PRI
-
-   auto_increment
-
-   probe unique numerical id
-
-   pgroup
-
-   int unsigned
-
-   NO
-
-   2
-
-   group id
-
-   server
-
-   int
-
-   NO
-
-   1
-
-   server id
-
-   contact
-
-   int unsigned
-
-   YES
-
-   1
-
-   user field: pointer to contact database
-
-   notify
-
-   int unsigned
-
-   YES
-
-   1
-
-   notifier id
-
-   ipaddress
+                     Field Type Key Default Extra Description
+                  id int PRI auto_increment probe unique numerical id
+                  pgroup int unsigned NO 2 group id
+                  server int NO 1 server id
+               contact int unsigned YES 1 user field: pointer to contact
+      database
+                  notify int unsigned YES 1 notifier id
+      ipaddress
 
    varchar(15)
 
    YES
 
-                                          target ipaddress
+   target ipaddress
 
    description
 
@@ -1285,7 +937,7 @@ B.2.2. bb_cpu database layout
 
    NO
 
-                                          description
+   description
 
    freq
 
@@ -1338,68 +990,12 @@ B.2.2. bb_cpu database layout
    hide probe results from viewing
 
    Table bb_cpu result record layout. bb_cpu result record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   bigint unsigned
-
-   PRI
-
-   auto_increment
-
-   unique id for result
-
-   probe
-
-   int unsigned
-
-   YES
-
-   1
-
-   probe identifier
-
-   yellow
-
-   float
-
-   NO
-
-   3
-
-   value for yellow alert
-
-   red
-
-   float
-
-   NO
-
-   5
-
-   value for red alert
-
-   stattime
-
-   int unsigned
-
-   YES
-
-   0
-
-   time when result was generated
+                     Field Type Key Default Extra Description
+                  id bigint unsigned PRI auto_increment unique id for result
+                  probe int unsigned YES 1 probe identifier
+                  yellow float NO 3 value for yellow alert
+                  red float NO 5 value for red alert
+                  stattime int unsigned YES 0 time when result was generated
 
    color
 
@@ -1506,173 +1102,39 @@ B.3. httpget - Do a HTTP GET request
 B.3.1. httpget result record layout
 
    Table httpget attributes. httpget attributes
-
-   Name
-
-   Type
-
-   Required
-
-   Default
-
-   Description
-
-   lookup
-
-   NMTOKEN
-
-   NO
-
-   time needed for DNS lookup
-
-   connect
-
-   NMTOKEN
-
-   NO
-
-   time for connection to complete
-
-   pretransfer
-
-   NMTOKEN
-
-   NO
-
-   time for any pre-transfer actions
-
-   total
-
-   NMTOKEN
-
-   NO
-
-   total time needed
+   Name        Type    Required Default Description
+   lookup      NMTOKEN NO               time needed for DNS lookup
+   connect     NMTOKEN NO               time for connection to complete
+   pretransfer NMTOKEN NO               time for any pre-transfer actions
+   total       NMTOKEN NO               total time needed
 
    Table httpget elements. httpget elements
-
-   Name
-
-   Optional
-
-   Description
-
-   id
-
-   NO
-
-   id of this probe in the database
-
-   realm
-
-   NO
-
-   database realm for these values
-
-   ipaddress
-
-   NO
-
-   target ip address
-
-   date
-
-   NO
-
-   date/time for this result
-
-   expires
-
-   NO
-
-   when this result expires
-
-   color
-
-   NO
-
-   color as this probe thinks it should be
-
-   received
-
-   NO
-
-   date/time this result was received by the upwatch server
+   Name      Optional Description
+   id        NO       id of this probe in the database
+   realm     NO       database realm for these values
+   ipaddress NO       target ip address
+   date      NO       date/time for this result
+   expires   NO       when this result expires
+   color     NO       color as this probe thinks it should be
+   received  NO       date/time this result was received by the upwatch server
 
 B.3.2. httpget database layout
 
-   Table  httpget  definition  record  layout.  httpget definition record
-   layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   int
-
-   PRI
-
-   auto_increment
-
-   probe unique numerical id
-
-   pgroup
-
-   int unsigned
-
-   NO
-
-   2
-
-   group id
-
-   server
-
-   int
-
-   NO
-
-   1
-
-   server id
-
-   contact
-
-   int unsigned
-
-   YES
-
-   1
-
-   user field: pointer to contact database
-
-   notify
-
-   int unsigned
-
-   YES
-
-   1
-
-   notifier id
-
-   ipaddress
+   Table httpget definition record layout. httpget definition record layout
+                     Field Type Key Default Extra Description
+                  id int PRI auto_increment probe unique numerical id
+                  pgroup int unsigned NO 2 group id
+                  server int NO 1 server id
+               contact int unsigned YES 1 user field: pointer to contact
+      database
+                  notify int unsigned YES 1 notifier id
+      ipaddress
 
    varchar(15)
 
    YES
 
-                                          target ipaddress
+   target ipaddress
 
    description
 
@@ -1680,7 +1142,7 @@ B.3.2. httpget database layout
 
    NO
 
-                                          description
+   description
 
    freq
 
@@ -1738,7 +1200,7 @@ B.3.2. httpget database layout
 
    NO
 
-                                          Hostname for the HTTP request
+   Hostname for the HTTP request
 
    port
 
@@ -1756,71 +1218,15 @@ B.3.2. httpget database layout
 
    NO
 
-                                          URI part
+   URI part
 
    Table httpget result record layout. httpget result record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   bigint unsigned
-
-   PRI
-
-   auto_increment
-
-   unique id for result
-
-   probe
-
-   int unsigned
-
-   YES
-
-   1
-
-   probe identifier
-
-   yellow
-
-   float
-
-   NO
-
-   1
-
-   value for yellow alert
-
-   red
-
-   float
-
-   NO
-
-   3
-
-   value for red alert
-
-   stattime
-
-   int unsigned
-
-   YES
-
-   0
-
-   time when result was generated
+                     Field Type Key Default Extra Description
+                  id bigint unsigned PRI auto_increment unique id for result
+                  probe int unsigned YES 1 probe identifier
+                  yellow float NO 1 value for yellow alert
+                  red float NO 3 value for red alert
+                  stattime int unsigned YES 0 time when result was generated
 
    color
 
@@ -1877,156 +1283,37 @@ B.4. imap - Test a IMAP server, optionally with user/password
 B.4.1. imap result record layout
 
    Table imap attributes. imap attributes
-
-   Name
-
-   Type
-
-   Required
-
-   Default
-
-   Description
-
-   connect
-
-   NMTOKEN
-
-   NO
-
-   time for connection to complete
-
-   total
-
-   NMTOKEN
-
-   NO
-
-   total time needed
+   Name    Type    Required Default Description
+   connect NMTOKEN NO               time for connection to complete
+   total   NMTOKEN NO               total time needed
 
    Table imap elements. imap elements
-
-   Name
-
-   Optional
-
-   Description
-
-   id
-
-   NO
-
-   id of this probe in the database
-
-   realm
-
-   NO
-
-   database realm for these values
-
-   ipaddress
-
-   NO
-
-   target ip address
-
-   date
-
-   NO
-
-   date/time for this result
-
-   expires
-
-   NO
-
-   when this result expires
-
-   color
-
-   NO
-
-   color as this probe thinks it should be
-
-   received
-
-   NO
-
-   date/time this result was received by the upwatch server
+   Name      Optional Description
+   id        NO       id of this probe in the database
+   realm     NO       database realm for these values
+   ipaddress NO       target ip address
+   date      NO       date/time for this result
+   expires   NO       when this result expires
+   color     NO       color as this probe thinks it should be
+   received  NO       date/time this result was received by the upwatch server
 
 B.4.2. imap database layout
 
    Table imap definition record layout. imap definition record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   int
-
-   PRI
-
-   auto_increment
-
-   probe unique numerical id
-
-   pgroup
-
-   int unsigned
-
-   NO
-
-   2
-
-   group id
-
-   server
-
-   int
-
-   NO
-
-   1
-
-   server id
-
-   contact
-
-   int unsigned
-
-   YES
-
-   1
-
-   user field: pointer to contact database
-
-   notify
-
-   int unsigned
-
-   YES
-
-   1
-
-   notifier id
-
-   ipaddress
+                     Field Type Key Default Extra Description
+                  id int PRI auto_increment probe unique numerical id
+                  pgroup int unsigned NO 2 group id
+                  server int NO 1 server id
+               contact int unsigned YES 1 user field: pointer to contact
+      database
+                  notify int unsigned YES 1 notifier id
+      ipaddress
 
    varchar(15)
 
    YES
 
-                                          target ipaddress
+   target ipaddress
 
    description
 
@@ -2034,7 +1321,7 @@ B.4.2. imap database layout
 
    NO
 
-                                          description
+   description
 
    freq
 
@@ -2092,7 +1379,7 @@ B.4.2. imap database layout
 
    NO
 
-                                          Username
+   Username
 
    password
 
@@ -2100,71 +1387,15 @@ B.4.2. imap database layout
 
    NO
 
-                                          Password
+   Password
 
    Table imap result record layout. imap result record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   bigint unsigned
-
-   PRI
-
-   auto_increment
-
-   unique id for result
-
-   probe
-
-   int unsigned
-
-   YES
-
-   1
-
-   probe identifier
-
-   yellow
-
-   float
-
-   NO
-
-   3
-
-   value for yellow alert
-
-   red
-
-   float
-
-   NO
-
-   5
-
-   value for red alert
-
-   stattime
-
-   int unsigned
-
-   YES
-
-   0
-
-   time when result was generated
+                     Field Type Key Default Extra Description
+                  id bigint unsigned PRI auto_increment unique id for result
+                  probe int unsigned YES 1 probe identifier
+                  yellow float NO 3 value for yellow alert
+                  red float NO 5 value for red alert
+                  stattime int unsigned YES 0 time when result was generated
 
    color
 
@@ -2202,156 +1433,37 @@ interface
 B.5.1. iptraf result record layout
 
    Table iptraf attributes. iptraf attributes
-
-   Name
-
-   Type
-
-   Required
-
-   Default
-
-   Description
-
-   incoming
-
-   NMTOKEN
-
-   NO
-
-   total incoming bytes
-
-   outgoing
-
-   NMTOKEN
-
-   NO
-
-   total outgoing bytes
+   Name     Type    Required Default Description
+   incoming NMTOKEN NO               total incoming bytes
+   outgoing NMTOKEN NO               total outgoing bytes
 
    Table iptraf elements. iptraf elements
-
-   Name
-
-   Optional
-
-   Description
-
-   realm
-
-   NO
-
-   database realm for these values
-
-   ipaddress
-
-   NO
-
-   target ip address
-
-   date
-
-   NO
-
-   date/time for this result
-
-   expires
-
-   NO
-
-   when this result expires
-
-   color
-
-   NO
-
-   color as this probe thinks it should be
-
-   received
-
-   NO
-
-   date/time this result was received by the upwatch server
-
-   interval
-
-   NO
-
-   time between measurements
+   Name      Optional Description
+   realm     NO       database realm for these values
+   ipaddress NO       target ip address
+   date      NO       date/time for this result
+   expires   NO       when this result expires
+   color     NO       color as this probe thinks it should be
+   received  NO       date/time this result was received by the upwatch server
+   interval  NO       time between measurements
 
 B.5.2. iptraf database layout
 
    Table iptraf definition record layout. iptraf definition record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   int
-
-   PRI
-
-   auto_increment
-
-   probe unique numerical id
-
-   pgroup
-
-   int unsigned
-
-   NO
-
-   2
-
-   group id
-
-   server
-
-   int
-
-   NO
-
-   1
-
-   server id
-
-   contact
-
-   int unsigned
-
-   YES
-
-   1
-
-   user field: pointer to contact database
-
-   notify
-
-   int unsigned
-
-   YES
-
-   1
-
-   notifier id
-
-   ipaddress
+                     Field Type Key Default Extra Description
+                  id int PRI auto_increment probe unique numerical id
+                  pgroup int unsigned NO 2 group id
+                  server int NO 1 server id
+               contact int unsigned YES 1 user field: pointer to contact
+      database
+                  notify int unsigned YES 1 notifier id
+      ipaddress
 
    varchar(15)
 
    YES
 
-                                          target ipaddress
+   target ipaddress
 
    description
 
@@ -2359,7 +1471,7 @@ B.5.2. iptraf database layout
 
    NO
 
-                                          description
+   description
 
    freq
 
@@ -2412,68 +1524,12 @@ B.5.2. iptraf database layout
    hide probe results from viewing
 
    Table iptraf result record layout. iptraf result record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   bigint unsigned
-
-   PRI
-
-   auto_increment
-
-   unique id for result
-
-   probe
-
-   int unsigned
-
-   YES
-
-   1
-
-   probe identifier
-
-   yellow
-
-   float
-
-   NO
-
-   300
-
-   value for yellow alert
-
-   red
-
-   float
-
-   NO
-
-   500
-
-   value for red alert
-
-   stattime
-
-   int unsigned
-
-   YES
-
-   0
-
-   time when result was generated
+                     Field Type Key Default Extra Description
+                  id bigint unsigned PRI auto_increment unique id for result
+                  probe int unsigned YES 1 probe identifier
+                  yellow float NO 300 value for yellow alert
+                  red float NO 500 value for red alert
+                  stattime int unsigned YES 0 time when result was generated
 
    color
 
@@ -2510,150 +1566,31 @@ B.6. mssql - Do a Microsoft SQL Server query
 B.6.1. mssql result record layout
 
    Table mssql attributes. mssql attributes
-
-   Name
-
-   Type
-
-   Required
-
-   Default
-
-   Description
-
-   connect
-
-   NMTOKEN
-
-   NO
-
-   time for connection to complete
-
-   total
-
-   NMTOKEN
-
-   NO
-
-   total time needed
+   Name    Type    Required Default Description
+   connect NMTOKEN NO               time for connection to complete
+   total   NMTOKEN NO               total time needed
 
    Table mssql elements. mssql elements
-
-   Name
-
-   Optional
-
-   Description
-
-   id
-
-   NO
-
-   id of this probe in the database
-
-   realm
-
-   NO
-
-   database realm for these values
-
-   ipaddress
-
-   NO
-
-   target ip address
-
-   date
-
-   NO
-
-   date/time for this result
-
-   expires
-
-   NO
-
-   when this result expires
-
-   color
-
-   NO
-
-   color as this probe thinks it should be
-
-   received
-
-   NO
-
-   date/time this result was received by the upwatch server
+   Name      Optional Description
+   id        NO       id of this probe in the database
+   realm     NO       database realm for these values
+   ipaddress NO       target ip address
+   date      NO       date/time for this result
+   expires   NO       when this result expires
+   color     NO       color as this probe thinks it should be
+   received  NO       date/time this result was received by the upwatch server
 
 B.6.2. mssql database layout
 
    Table mssql definition record layout. mssql definition record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   int
-
-   PRI
-
-   auto_increment
-
-   probe unique numerical id
-
-   pgroup
-
-   int unsigned
-
-   NO
-
-   2
-
-   group id
-
-   server
-
-   int
-
-   NO
-
-   1
-
-   server id
-
-   contact
-
-   int unsigned
-
-   YES
-
-   1
-
-   user field: pointer to contact database
-
-   notify
-
-   int unsigned
-
-   YES
-
-   1
-
-   notifier id
-
-   ipaddress
+                     Field Type Key Default Extra Description
+                  id int PRI auto_increment probe unique numerical id
+                  pgroup int unsigned NO 2 group id
+                  server int NO 1 server id
+               contact int unsigned YES 1 user field: pointer to contact
+      database
+                  notify int unsigned YES 1 notifier id
+      ipaddress
 
    varchar(15)
 
@@ -2752,68 +1689,12 @@ B.6.2. mssql database layout
    Query to perform. This should return at least 1 row
 
    Table mssql result record layout. mssql result record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   bigint unsigned
-
-   PRI
-
-   auto_increment
-
-   unique id for result
-
-   probe
-
-   int unsigned
-
-   YES
-
-   1
-
-   probe identifier
-
-   yellow
-
-   float
-
-   NO
-
-   0.5
-
-   value for yellow alert
-
-   red
-
-   float
-
-   NO
-
-   0.8
-
-   value for red alert
-
-   stattime
-
-   int unsigned
-
-   YES
-
-   0
-
-   time when result was generated
+                     Field Type Key Default Extra Description
+                  id bigint unsigned PRI auto_increment unique id for result
+                  probe int unsigned YES 1 probe identifier
+                  yellow float NO 0.5 value for yellow alert
+                  red float NO 0.8 value for red alert
+                  stattime int unsigned YES 0 time when result was generated
 
    color
 
@@ -2850,150 +1731,31 @@ B.7. mysql - Do a MySQL query
 B.7.1. mysql result record layout
 
    Table mysql attributes. mysql attributes
-
-   Name
-
-   Type
-
-   Required
-
-   Default
-
-   Description
-
-   connect
-
-   NMTOKEN
-
-   NO
-
-   time for connection to complete
-
-   total
-
-   NMTOKEN
-
-   NO
-
-   total time needed
+   Name    Type    Required Default Description
+   connect NMTOKEN NO               time for connection to complete
+   total   NMTOKEN NO               total time needed
 
    Table mysql elements. mysql elements
-
-   Name
-
-   Optional
-
-   Description
-
-   id
-
-   NO
-
-   id of this probe in the database
-
-   realm
-
-   NO
-
-   database realm for these values
-
-   ipaddress
-
-   NO
-
-   target ip address
-
-   date
-
-   NO
-
-   date/time for this result
-
-   expires
-
-   NO
-
-   when this result expires
-
-   color
-
-   NO
-
-   color as this probe thinks it should be
-
-   received
-
-   NO
-
-   date/time this result was received by the upwatch server
+   Name      Optional Description
+   id        NO       id of this probe in the database
+   realm     NO       database realm for these values
+   ipaddress NO       target ip address
+   date      NO       date/time for this result
+   expires   NO       when this result expires
+   color     NO       color as this probe thinks it should be
+   received  NO       date/time this result was received by the upwatch server
 
 B.7.2. mysql database layout
 
    Table mysql definition record layout. mysql definition record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   int
-
-   PRI
-
-   auto_increment
-
-   probe unique numerical id
-
-   pgroup
-
-   int unsigned
-
-   NO
-
-   2
-
-   group id
-
-   server
-
-   int
-
-   NO
-
-   1
-
-   server id
-
-   contact
-
-   int unsigned
-
-   YES
-
-   1
-
-   user field: pointer to contact database
-
-   notify
-
-   int unsigned
-
-   YES
-
-   1
-
-   notifier id
-
-   ipaddress
+                     Field Type Key Default Extra Description
+                  id int PRI auto_increment probe unique numerical id
+                  pgroup int unsigned NO 2 group id
+                  server int NO 1 server id
+               contact int unsigned YES 1 user field: pointer to contact
+      database
+                  notify int unsigned YES 1 notifier id
+      ipaddress
 
    varchar(15)
 
@@ -3092,68 +1854,12 @@ B.7.2. mysql database layout
    Query to perform. This should return at least 1 row
 
    Table mysql result record layout. mysql result record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   bigint unsigned
-
-   PRI
-
-   auto_increment
-
-   unique id for result
-
-   probe
-
-   int unsigned
-
-   YES
-
-   1
-
-   probe identifier
-
-   yellow
-
-   float
-
-   NO
-
-   0.3
-
-   value for yellow alert
-
-   red
-
-   float
-
-   NO
-
-   0.5
-
-   value for red alert
-
-   stattime
-
-   int unsigned
-
-   YES
-
-   0
-
-   time when result was generated
+                     Field Type Key Default Extra Description
+                  id bigint unsigned PRI auto_increment unique id for result
+                  probe int unsigned YES 1 probe identifier
+                  yellow float NO 0.3 value for yellow alert
+                  red float NO 0.5 value for red alert
+                  stattime int unsigned YES 0 time when result was generated
 
    color
 
@@ -3187,170 +1893,44 @@ B.7.2. mysql database layout
 
 B.8. ping - send ICMP echo requests
 
-   Five  ICMP  echo  requests  are  sent.  For  each  request the time is
-   measured between the echo and the resulting ICMP reply packet.
+   Five ICMP echo requests are sent. For each request the time is measured
+   between the echo and the resulting ICMP reply packet.
 
 B.8.1. ping result record layout
 
    Table ping attributes. ping attributes
-
-   Name
-
-   Type
-
-   Required
-
-   Default
-
-   Description
-
-   average
-
-   NMTOKEN
-
-   NO
-
-   Average turn-around time
-
-   lowest
-
-   NMTOKEN
-
-   NO
-
-   lowest turn-around time
-
-   highest
-
-   NMTOKEN
-
-   NO
-
-   highest turn-around time
+   Name    Type    Required Default Description
+   average NMTOKEN NO               Average turn-around time
+   lowest  NMTOKEN NO               lowest turn-around time
+   highest NMTOKEN NO               highest turn-around time
 
    Table ping elements. ping elements
-
-   Name
-
-   Optional
-
-   Description
-
-   id
-
-   NO
-
-   id of this probe in the database
-
-   realm
-
-   NO
-
-   database realm for these values
-
-   ipaddress
-
-   NO
-
-   target ip address
-
-   date
-
-   NO
-
-   date/time for this result
-
-   expires
-
-   NO
-
-   when this result expires
-
-   color
-
-   NO
-
-   color as this probe thinks it should be
-
-   received
-
-   NO
-
-   date/time this result was received by the upwatch server
+   Name      Optional Description
+   id        NO       id of this probe in the database
+   realm     NO       database realm for these values
+   ipaddress NO       target ip address
+   date      NO       date/time for this result
+   expires   NO       when this result expires
+   color     NO       color as this probe thinks it should be
+   received  NO       date/time this result was received by the upwatch server
 
 B.8.2. ping database layout
 
    Table ping definition record layout. ping definition record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   int
-
-   PRI
-
-   auto_increment
-
-   probe unique numerical id
-
-   pgroup
-
-   int unsigned
-
-   NO
-
-   2
-
-   group id
-
-   server
-
-   int
-
-   NO
-
-   1
-
-   server id
-
-   contact
-
-   int unsigned
-
-   YES
-
-   1
-
-   user field: pointer to contact database
-
-   notify
-
-   int unsigned
-
-   YES
-
-   1
-
-   notifier id
-
-   ipaddress
+                     Field Type Key Default Extra Description
+                  id int PRI auto_increment probe unique numerical id
+                  pgroup int unsigned NO 2 group id
+                  server int NO 1 server id
+               contact int unsigned YES 1 user field: pointer to contact
+      database
+                  notify int unsigned YES 1 notifier id
+      ipaddress
 
    varchar(15)
 
    YES
 
-                                          target ipaddress
+   target ipaddress
 
    description
 
@@ -3358,7 +1938,7 @@ B.8.2. ping database layout
 
    NO
 
-                                          description
+   description
 
    freq
 
@@ -3421,68 +2001,12 @@ B.8.2. ping database layout
    Number of ping packets to send
 
    Table ping result record layout. ping result record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   bigint unsigned
-
-   PRI
-
-   auto_increment
-
-   unique id for result
-
-   probe
-
-   int unsigned
-
-   YES
-
-   1
-
-   probe identifier
-
-   yellow
-
-   float
-
-   NO
-
-   3
-
-   value for yellow alert
-
-   red
-
-   float
-
-   NO
-
-   5
-
-   value for red alert
-
-   stattime
-
-   int unsigned
-
-   YES
-
-   0
-
-   time when result was generated
+                     Field Type Key Default Extra Description
+                  id bigint unsigned PRI auto_increment unique id for result
+                  probe int unsigned YES 1 probe identifier
+                  yellow float NO 3 value for yellow alert
+                  red float NO 5 value for red alert
+                  stattime int unsigned YES 0 time when result was generated
 
    color
 
@@ -3529,156 +2053,37 @@ B.9. pop3 - Test a POP3 server, optionally with user/password
 B.9.1. pop3 result record layout
 
    Table pop3 attributes. pop3 attributes
-
-   Name
-
-   Type
-
-   Required
-
-   Default
-
-   Description
-
-   connect
-
-   NMTOKEN
-
-   NO
-
-   time for connection to complete
-
-   total
-
-   NMTOKEN
-
-   NO
-
-   total time needed
+   Name    Type    Required Default Description
+   connect NMTOKEN NO               time for connection to complete
+   total   NMTOKEN NO               total time needed
 
    Table pop3 elements. pop3 elements
-
-   Name
-
-   Optional
-
-   Description
-
-   id
-
-   NO
-
-   id of this probe in the database
-
-   realm
-
-   NO
-
-   database realm for these values
-
-   ipaddress
-
-   NO
-
-   target ip address
-
-   date
-
-   NO
-
-   date/time for this result
-
-   expires
-
-   NO
-
-   when this result expires
-
-   color
-
-   NO
-
-   color as this probe thinks it should be
-
-   received
-
-   NO
-
-   date/time this result was received by the upwatch server
+   Name      Optional Description
+   id        NO       id of this probe in the database
+   realm     NO       database realm for these values
+   ipaddress NO       target ip address
+   date      NO       date/time for this result
+   expires   NO       when this result expires
+   color     NO       color as this probe thinks it should be
+   received  NO       date/time this result was received by the upwatch server
 
 B.9.2. pop3 database layout
 
    Table pop3 definition record layout. pop3 definition record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   int
-
-   PRI
-
-   auto_increment
-
-   probe unique numerical id
-
-   pgroup
-
-   int unsigned
-
-   NO
-
-   2
-
-   group id
-
-   server
-
-   int
-
-   NO
-
-   1
-
-   server id
-
-   contact
-
-   int unsigned
-
-   YES
-
-   1
-
-   user field: pointer to contact database
-
-   notify
-
-   int unsigned
-
-   YES
-
-   1
-
-   notifier id
-
-   ipaddress
+                     Field Type Key Default Extra Description
+                  id int PRI auto_increment probe unique numerical id
+                  pgroup int unsigned NO 2 group id
+                  server int NO 1 server id
+               contact int unsigned YES 1 user field: pointer to contact
+      database
+                  notify int unsigned YES 1 notifier id
+      ipaddress
 
    varchar(15)
 
    YES
 
-                                          target ipaddress
+   target ipaddress
 
    description
 
@@ -3686,7 +2091,7 @@ B.9.2. pop3 database layout
 
    NO
 
-                                          description
+   description
 
    freq
 
@@ -3744,7 +2149,7 @@ B.9.2. pop3 database layout
 
    NO
 
-                                          Username
+   Username
 
    password
 
@@ -3752,71 +2157,15 @@ B.9.2. pop3 database layout
 
    NO
 
-                                          Password
+   Password
 
    Table pop3 result record layout. pop3 result record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   bigint unsigned
-
-   PRI
-
-   auto_increment
-
-   unique id for result
-
-   probe
-
-   int unsigned
-
-   YES
-
-   1
-
-   probe identifier
-
-   yellow
-
-   float
-
-   NO
-
-   3
-
-   value for yellow alert
-
-   red
-
-   float
-
-   NO
-
-   5
-
-   value for red alert
-
-   stattime
-
-   int unsigned
-
-   YES
-
-   0
-
-   time when result was generated
+                     Field Type Key Default Extra Description
+                  id bigint unsigned PRI auto_increment unique id for result
+                  probe int unsigned YES 1 probe identifier
+                  yellow float NO 3 value for yellow alert
+                  red float NO 5 value for red alert
+                  stattime int unsigned YES 0 time when result was generated
 
    color
 
@@ -3853,151 +2202,32 @@ B.10. postgresql - Do a PostgreSQL query
 B.10.1. postgresql result record layout
 
    Table postgresql attributes. postgresql attributes
-
-   Name
-
-   Type
-
-   Required
-
-   Default
-
-   Description
-
-   connect
-
-   NMTOKEN
-
-   NO
-
-   time for connection to complete
-
-   total
-
-   NMTOKEN
-
-   NO
-
-   total time needed
+   Name    Type    Required Default Description
+   connect NMTOKEN NO               time for connection to complete
+   total   NMTOKEN NO               total time needed
 
    Table postgresql elements. postgresql elements
-
-   Name
-
-   Optional
-
-   Description
-
-   id
-
-   NO
-
-   id of this probe in the database
-
-   ipaddress
-
-   NO
-
-   target ip address
-
-   realm
-
-   NO
-
-   database realm for these values
-
-   date
-
-   NO
-
-   date/time for this result
-
-   expires
-
-   NO
-
-   when this result expires
-
-   color
-
-   NO
-
-   color as this probe thinks it should be
-
-   received
-
-   NO
-
-   date/time this result was received by the upwatch server
+   Name      Optional Description
+   id        NO       id of this probe in the database
+   ipaddress NO       target ip address
+   realm     NO       database realm for these values
+   date      NO       date/time for this result
+   expires   NO       when this result expires
+   color     NO       color as this probe thinks it should be
+   received  NO       date/time this result was received by the upwatch server
 
 B.10.2. postgresql database layout
 
-   Table  postgresql  definition  record  layout.  postgresql  definition
-   record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   int
-
-   PRI
-
-   auto_increment
-
-   probe unique numerical id
-
-   pgroup
-
-   int unsigned
-
-   NO
-
-   2
-
-   group id
-
-   server
-
-   int
-
-   NO
-
-   1
-
-   server id
-
-   contact
-
-   int unsigned
-
-   YES
-
-   1
-
-   user field: pointer to contact database
-
-   notify
-
-   int unsigned
-
-   YES
-
-   1
-
-   notifier id
-
-   ipaddress
+   Table postgresql definition record layout. postgresql definition record
+   layout
+                     Field Type Key Default Extra Description
+                  id int PRI auto_increment probe unique numerical id
+                  pgroup int unsigned NO 2 group id
+                  server int NO 1 server id
+               contact int unsigned YES 1 user field: pointer to contact
+      database
+                  notify int unsigned YES 1 notifier id
+      ipaddress
 
    varchar(15)
 
@@ -4096,68 +2326,12 @@ B.10.2. postgresql database layout
    Query to perform. This should return at least 1 row
 
    Table postgresql result record layout. postgresql result record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   bigint unsigned
-
-   PRI
-
-   auto_increment
-
-   unique id for result
-
-   probe
-
-   int unsigned
-
-   YES
-
-   1
-
-   probe identifier
-
-   yellow
-
-   float
-
-   NO
-
-   3
-
-   value for yellow alert
-
-   red
-
-   float
-
-   NO
-
-   5
-
-   value for red alert
-
-   stattime
-
-   int unsigned
-
-   YES
-
-   0
-
-   time when result was generated
+                     Field Type Key Default Extra Description
+                  id bigint unsigned PRI auto_increment unique id for result
+                  probe int unsigned YES 1 probe identifier
+                  yellow float NO 3 value for yellow alert
+                  red float NO 5 value for red alert
+                  stattime int unsigned YES 0 time when result was generated
 
    color
 
@@ -4194,156 +2368,37 @@ B.11. smtp - Test an SMTP server
 B.11.1. smtp result record layout
 
    Table smtp attributes. smtp attributes
-
-   Name
-
-   Type
-
-   Required
-
-   Default
-
-   Description
-
-   connect
-
-   NMTOKEN
-
-   NO
-
-   time for connection to complete
-
-   total
-
-   NMTOKEN
-
-   NO
-
-   total time needed
+   Name    Type    Required Default Description
+   connect NMTOKEN NO               time for connection to complete
+   total   NMTOKEN NO               total time needed
 
    Table smtp elements. smtp elements
-
-   Name
-
-   Optional
-
-   Description
-
-   id
-
-   NO
-
-   id of this probe in the database
-
-   realm
-
-   NO
-
-   database realm for these values
-
-   ipaddress
-
-   NO
-
-   target ip address
-
-   date
-
-   NO
-
-   date/time for this result
-
-   expires
-
-   NO
-
-   when this result expires
-
-   color
-
-   NO
-
-   color as this probe thinks it should be
-
-   received
-
-   NO
-
-   date/time this result was received by the upwatch server
+   Name      Optional Description
+   id        NO       id of this probe in the database
+   realm     NO       database realm for these values
+   ipaddress NO       target ip address
+   date      NO       date/time for this result
+   expires   NO       when this result expires
+   color     NO       color as this probe thinks it should be
+   received  NO       date/time this result was received by the upwatch server
 
 B.11.2. smtp database layout
 
    Table smtp definition record layout. smtp definition record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   int
-
-   PRI
-
-   auto_increment
-
-   probe unique numerical id
-
-   pgroup
-
-   int unsigned
-
-   NO
-
-   2
-
-   group id
-
-   server
-
-   int
-
-   NO
-
-   1
-
-   server id
-
-   contact
-
-   int unsigned
-
-   YES
-
-   1
-
-   user field: pointer to contact database
-
-   notify
-
-   int unsigned
-
-   YES
-
-   1
-
-   notifier id
-
-   ipaddress
+                     Field Type Key Default Extra Description
+                  id int PRI auto_increment probe unique numerical id
+                  pgroup int unsigned NO 2 group id
+                  server int NO 1 server id
+               contact int unsigned YES 1 user field: pointer to contact
+      database
+                  notify int unsigned YES 1 notifier id
+      ipaddress
 
    varchar(15)
 
    YES
 
-                                          target ipaddress
+   target ipaddress
 
    description
 
@@ -4351,7 +2406,7 @@ B.11.2. smtp database layout
 
    NO
 
-                                          description
+   description
 
    freq
 
@@ -4404,68 +2459,12 @@ B.11.2. smtp database layout
    hide probe results from viewing
 
    Table smtp result record layout. smtp result record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   bigint unsigned
-
-   PRI
-
-   auto_increment
-
-   unique id for result
-
-   probe
-
-   int unsigned
-
-   YES
-
-   1
-
-   probe identifier
-
-   yellow
-
-   float
-
-   NO
-
-   3
-
-   value for yellow alert
-
-   red
-
-   float
-
-   NO
-
-   5
-
-   value for red alert
-
-   stattime
-
-   int unsigned
-
-   YES
-
-   0
-
-   time when result was generated
+                     Field Type Key Default Extra Description
+                  id bigint unsigned PRI auto_increment unique id for result
+                  probe int unsigned YES 1 probe identifier
+                  yellow float NO 3 value for yellow alert
+                  red float NO 5 value for red alert
+                  stattime int unsigned YES 0 time when result was generated
 
    color
 
@@ -4502,149 +2501,36 @@ B.12. snmpget - Query an SNMP variable using an SNMP GET
 B.12.1. snmpget result record layout
 
    Table snmpget attributes. snmpget attributes
-
-   Name
-
-   Type
-
-   Required
-
-   Default
-
-   Description
-
-   value
-
-   NMTOKEN
-
-   NO
-
-   Value of OID queried
+   Name  Type    Required Default Description
+   value NMTOKEN NO               Value of OID queried
 
    Table snmpget elements. snmpget elements
-
-   Name
-
-   Optional
-
-   Description
-
-   id
-
-   NO
-
-   id of this probe in the database
-
-   realm
-
-   NO
-
-   database realm for these values
-
-   ipaddress
-
-   NO
-
-   target ip address
-
-   date
-
-   NO
-
-   date/time for this result
-
-   expires
-
-   NO
-
-   when this result expires
-
-   color
-
-   NO
-
-   color as this probe thinks it should be
-
-   received
-
-   NO
-
-   date/time this result was received by the upwatch server
+   Name      Optional Description
+   id        NO       id of this probe in the database
+   realm     NO       database realm for these values
+   ipaddress NO       target ip address
+   date      NO       date/time for this result
+   expires   NO       when this result expires
+   color     NO       color as this probe thinks it should be
+   received  NO       date/time this result was received by the upwatch server
 
 B.12.2. snmpget database layout
 
-   Table  snmpget  definition  record  layout.  snmpget definition record
-   layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   int
-
-   PRI
-
-   auto_increment
-
-   probe unique numerical id
-
-   pgroup
-
-   int unsigned
-
-   NO
-
-   2
-
-   group id
-
-   server
-
-   int
-
-   NO
-
-   1
-
-   server id
-
-   contact
-
-   int unsigned
-
-   YES
-
-   1
-
-   user field: pointer to contact database
-
-   notify
-
-   int unsigned
-
-   YES
-
-   1
-
-   notifier id
-
-   ipaddress
+   Table snmpget definition record layout. snmpget definition record layout
+                     Field Type Key Default Extra Description
+                  id int PRI auto_increment probe unique numerical id
+                  pgroup int unsigned NO 2 group id
+                  server int NO 1 server id
+               contact int unsigned YES 1 user field: pointer to contact
+      database
+                  notify int unsigned YES 1 notifier id
+      ipaddress
 
    varchar(15)
 
    YES
 
-                                               target ipaddress
+   target ipaddress
 
    description
 
@@ -4652,7 +2538,7 @@ B.12.2. snmpget database layout
 
    NO
 
-                                               description
+   description
 
    freq
 
@@ -4720,7 +2606,7 @@ B.12.2. snmpget database layout
 
    NO
 
-                                               Object ID
+   Object ID
 
    dispname
 
@@ -4728,7 +2614,7 @@ B.12.2. snmpget database layout
 
    NO
 
-                                               Display Name
+   Display Name
 
    dispunit
 
@@ -4736,7 +2622,7 @@ B.12.2. snmpget database layout
 
    NO
 
-                                               Display Unit
+   Display Unit
 
    multiplier
 
@@ -4758,68 +2644,12 @@ B.12.2. snmpget database layout
    plot absolute or relative values
 
    Table snmpget result record layout. snmpget result record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   bigint unsigned
-
-   PRI
-
-   auto_increment
-
-   unique id for result
-
-   probe
-
-   int unsigned
-
-   YES
-
-   1
-
-   probe identifier
-
-   yellow
-
-   float
-
-   NO
-
-   3
-
-   value for yellow alert
-
-   red
-
-   float
-
-   NO
-
-   5
-
-   value for red alert
-
-   stattime
-
-   int unsigned
-
-   YES
-
-   0
-
-   time when result was generated
+                     Field Type Key Default Extra Description
+                  id bigint unsigned PRI auto_increment unique id for result
+                  probe int unsigned YES 1 probe identifier
+                  yellow float NO 3 value for yellow alert
+                  red float NO 5 value for red alert
+                  stattime int unsigned YES 0 time when result was generated
 
    color
 
@@ -4846,259 +2676,50 @@ B.13. sysstat - System information like load average, CPU/MEM usage etc
 B.13.1. sysstat result record layout
 
    Table sysstat attributes. sysstat attributes
-
-   Name
-
-   Type
-
-   Required
-
-   Default
-
-   Description
-
-   loadavg
-
-   NMTOKEN
-
-   NO
-
-   The load average as reported by the system
-
-   user
-
-   NMTOKEN
-
-   NO
-
-   CPU user time
-
-   system
-
-   NMTOKEN
-
-   NO
-
-   CPU system time
-
-   idle
-
-   NMTOKEN
-
-   NO
-
-   CPU idle time
-
-   swapin
-
-   NMTOKEN
-
-   NO
-
-   Amount of blocks swapped in from disk
-
-   swapout
-
-   NMTOKEN
-
-   NO
-
-   Amount of blocks swapped out to disk
-
-   blockin
-
-   NMTOKEN
-
-   NO
-
-   Amount of blocks read from block devices
-
-   blockout
-
-   NMTOKEN
-
-   NO
-
-   Amount of blocks written to block devices
-
-   swapped
-
-   NMTOKEN
-
-   NO
-
-   Amount of blocks written to swap device
-
-   free
-
-   NMTOKEN
-
-   NO
-
-   Free memory
-
-   buffered
-
-   NMTOKEN
-
-   NO
-
-   Amount of memory used for OS buffers
-
-   cached
-
-   NMTOKEN
-
-   NO
-
-   Amount of memory used for disk buffers
-
-   used
-
-   NMTOKEN
-
-   NO
-
-   Amount of memory used by processes
-
-   systemp
-
-   NMTOKEN
-
-   NO
-
-   System temperature in Celsius
+   Name     Type    Required Default Description
+   loadavg  NMTOKEN NO               The load average as reported by the system
+   user     NMTOKEN NO               CPU user time
+   system   NMTOKEN NO               CPU system time
+   idle     NMTOKEN NO               CPU idle time
+   swapin   NMTOKEN NO               Amount of blocks swapped in from disk
+   swapout  NMTOKEN NO               Amount of blocks swapped out to disk
+   blockin  NMTOKEN NO               Amount of blocks read from block devices
+   blockout NMTOKEN NO               Amount of blocks written to block devices
+   swapped  NMTOKEN NO               Amount of blocks written to swap device
+   free     NMTOKEN NO               Free memory
+   buffered NMTOKEN NO               Amount of memory used for OS buffers
+   cached   NMTOKEN NO               Amount of memory used for disk buffers
+   used     NMTOKEN NO               Amount of memory used by processes
+   systemp  NMTOKEN NO               System temperature in Celsius
 
    Table sysstat elements. sysstat elements
-
-   Name
-
-   Optional
-
-   Description
-
-   server
-
-   NO
-
-   id of this server in the database
-
-   realm
-
-   NO
-
-   database realm for these values
-
-   ipaddress
-
-   NO
-
-   target ip address
-
-   date
-
-   NO
-
-   date/time for this result
-
-   expires
-
-   NO
-
-   when this result expires
-
-   color
-
-   NO
-
-   color as this probe thinks it should be
-
-   interval
-
-   NO
-
-   time between measurements
-
-   received
-
-   NO
-
-   date/time this result was received by the upwatch server
+   Name      Optional Description
+   server    NO       id of this server in the database
+   realm     NO       database realm for these values
+   ipaddress NO       target ip address
+   date      NO       date/time for this result
+   expires   NO       when this result expires
+   color     NO       color as this probe thinks it should be
+   interval  NO       time between measurements
+   received  NO       date/time this result was received by the upwatch server
 
 B.13.2. sysstat database layout
 
-   Table  sysstat  definition  record  layout.  sysstat definition record
-   layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   int
-
-   PRI
-
-   auto_increment
-
-   probe unique numerical id
-
-   pgroup
-
-   int unsigned
-
-   NO
-
-   2
-
-   group id
-
-   server
-
-   int
-
-   NO
-
-   1
-
-   server id
-
-   contact
-
-   int unsigned
-
-   YES
-
-   1
-
-   user field: pointer to contact database
-
-   notify
-
-   int unsigned
-
-   YES
-
-   1
-
-   notifier id
-
-   ipaddress
+   Table sysstat definition record layout. sysstat definition record layout
+                     Field Type Key Default Extra Description
+                  id int PRI auto_increment probe unique numerical id
+                  pgroup int unsigned NO 2 group id
+                  server int NO 1 server id
+               contact int unsigned YES 1 user field: pointer to contact
+      database
+                  notify int unsigned YES 1 notifier id
+      ipaddress
 
    varchar(15)
 
    YES
 
-                                          target ipaddress
+   target ipaddress
 
    description
 
@@ -5106,7 +2727,7 @@ B.13.2. sysstat database layout
 
    NO
 
-                                          description
+   description
 
    freq
 
@@ -5159,68 +2780,12 @@ B.13.2. sysstat database layout
    hide probe results from viewing
 
    Table sysstat result record layout. sysstat result record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   bigint unsigned
-
-   PRI
-
-   auto_increment
-
-   unique id for result
-
-   probe
-
-   int unsigned
-
-   YES
-
-   1
-
-   probe identifier
-
-   yellow
-
-   float
-
-   NO
-
-   3
-
-   value for yellow alert
-
-   red
-
-   float
-
-   NO
-
-   5
-
-   value for red alert
-
-   stattime
-
-   int unsigned
-
-   YES
-
-   0
-
-   time when result was generated
+                     Field Type Key Default Extra Description
+                  id bigint unsigned PRI auto_increment unique id for result
+                  probe int unsigned YES 1 probe identifier
+                  yellow float NO 3 value for yellow alert
+                  red float NO 5 value for red alert
+                  stattime int unsigned YES 0 time when result was generated
 
    color
 
@@ -5377,250 +2942,49 @@ B.14. hwstat - Hardware information like CPU temperature, fan speed
 B.14.1. hwstat result record layout
 
    Table hwstat attributes. hwstat attributes
-
-   Name
-
-   Type
-
-   Required
-
-   Default
-
-   Description
-
-   temp1
-
-   NMTOKEN
-
-   NO
-
-   First temperature sensor - usually CPU temp
-
-   temp2
-
-   NMTOKEN
-
-   NO
-
-   Second temperature sensor - usually motherboard
-
-   temp3
-
-   NMTOKEN
-
-   NO
-
-   Third temperature sensor - usually enclosure
-
-   rot1
-
-   NMTOKEN
-
-   NO
-
-   First fan rotation speed - usually CPU fan
-
-   rot2
-
-   NMTOKEN
-
-   NO
-
-   Second fan rotation speed
-
-   rot3
-
-   NMTOKEN
-
-   NO
-
-   Third fan rotation speed
-
-   vc0
-
-   NMTOKEN
-
-   NO
-
-   CPU core voltage #1
-
-   vc1
-
-   NMTOKEN
-
-   NO
-
-   CPU core voltage #2
-
-   v33
-
-   NMTOKEN
-
-   NO
-
-   Voltage of 3.3V line
-
-   v50p
-
-   NMTOKEN
-
-   NO
-
-   Voltage of 5V line
-
-   v12p
-
-   NMTOKEN
-
-   NO
-
-   Voltage of 12V line
-
-   v12n
-
-   NMTOKEN
-
-   NO
-
-   Voltage of -12V line
-
-   v50n
-
-   NMTOKEN
-
-   NO
-
-   Voltage of -5V line
+ Name  Type    Required Default Description
+ temp1 NMTOKEN NO               First temperature sensor - usually CPU temp
+ temp2 NMTOKEN NO               Second temperature sensor - usually motherboard
+ temp3 NMTOKEN NO               Third temperature sensor - usually enclosure
+ rot1  NMTOKEN NO               First fan rotation speed - usually CPU fan
+ rot2  NMTOKEN NO               Second fan rotation speed
+ rot3  NMTOKEN NO               Third fan rotation speed
+ vc0   NMTOKEN NO               CPU core voltage #1
+ vc1   NMTOKEN NO               CPU core voltage #2
+ v33   NMTOKEN NO               Voltage of 3.3V line
+ v50p  NMTOKEN NO               Voltage of 5V line
+ v12p  NMTOKEN NO               Voltage of 12V line
+ v12n  NMTOKEN NO               Voltage of -12V line
+ v50n  NMTOKEN NO               Voltage of -5V line
 
    Table hwstat elements. hwstat elements
-
-   Name
-
-   Optional
-
-   Description
-
-   server
-
-   NO
-
-   id of this server in the database
-
-   realm
-
-   NO
-
-   database realm for these values
-
-   ipaddress
-
-   NO
-
-   target ip address
-
-   date
-
-   NO
-
-   date/time for this result
-
-   expires
-
-   NO
-
-   when this result expires
-
-   color
-
-   NO
-
-   color as this probe thinks it should be
-
-   interval
-
-   NO
-
-   time between measurements
-
-   received
-
-   NO
-
-   date/time this result was received by the upwatch server
+   Name      Optional Description
+   server    NO       id of this server in the database
+   realm     NO       database realm for these values
+   ipaddress NO       target ip address
+   date      NO       date/time for this result
+   expires   NO       when this result expires
+   color     NO       color as this probe thinks it should be
+   interval  NO       time between measurements
+   received  NO       date/time this result was received by the upwatch server
 
 B.14.2. hwstat database layout
 
    Table hwstat definition record layout. hwstat definition record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   int
-
-   PRI
-
-   auto_increment
-
-   probe unique numerical id
-
-   pgroup
-
-   int unsigned
-
-   NO
-
-   2
-
-   group id
-
-   server
-
-   int
-
-   NO
-
-   1
-
-   server id
-
-   contact
-
-   int unsigned
-
-   YES
-
-   1
-
-   user field: pointer to contact database
-
-   notify
-
-   int unsigned
-
-   YES
-
-   1
-
-   notifier id
-
-   ipaddress
+                     Field Type Key Default Extra Description
+                  id int PRI auto_increment probe unique numerical id
+                  pgroup int unsigned NO 2 group id
+                  server int NO 1 server id
+               contact int unsigned YES 1 user field: pointer to contact
+      database
+                  notify int unsigned YES 1 notifier id
+      ipaddress
 
    varchar(15)
 
    YES
 
-                                            target ipaddress
+   target ipaddress
 
    description
 
@@ -5628,7 +2992,7 @@ B.14.2. hwstat database layout
 
    NO
 
-                                            description
+   description
 
    freq
 
@@ -5646,7 +3010,7 @@ B.14.2. hwstat database layout
 
    NO
 
-                                            value for yellow alert
+   value for yellow alert
 
    red
 
@@ -5654,7 +3018,7 @@ B.14.2. hwstat database layout
 
    NO
 
-                                            value for red alert
+   value for red alert
 
    disable
 
@@ -5767,64 +3131,12 @@ B.14.2. hwstat database layout
    Turn red when fan 1 gets slower then this
 
    Table hwstat result record layout. hwstat result record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   bigint unsigned
-
-   PRI
-
-   auto_increment
-
-   unique id for result
-
-   probe
-
-   int unsigned
-
-   YES
-
-   1
-
-   probe identifier
-
-   yellow
-
-   float
-
-   NO
-
-                                                  value for yellow alert
-
-   red
-
-   float
-
-   NO
-
-                                                  value for red alert
-
-   stattime
-
-   int unsigned
-
-   YES
-
-   0
-
-   time when result was generated
+                     Field Type Key Default Extra Description
+                  id bigint unsigned PRI auto_increment unique id for result
+                  probe int unsigned YES 1 probe identifier
+               yellow float NO value for yellow alert
+               red float NO value for red alert
+                  stattime int unsigned YES 0 time when result was generated
 
    color
 
@@ -5971,146 +3283,36 @@ B.15. errlog - System error log analysis
 B.15.1. errlog result record layout
 
    Table errlog attributes. errlog attributes
-
-   Name
-
-   Type
-
-   Required
-
-   Default
-
-   Description
+   Name Type Required Default Description
 
    Table errlog elements. errlog elements
-
-   Name
-
-   Optional
-
-   Description
-
-   server
-
-   NO
-
-   id of this server in the database
-
-   ipaddress
-
-   NO
-
-   target ip address
-
-   realm
-
-   NO
-
-   database realm for these values
-
-   date
-
-   NO
-
-   date/time for this result
-
-   expires
-
-   NO
-
-   when this result expires
-
-   color
-
-   NO
-
-   color as this probe thinks it should be
-
-   interval
-
-   NO
-
-   time between measurements
-
-   received
-
-   NO
-
-   date/time this result was received by the upwatch server
+   Name      Optional Description
+   server    NO       id of this server in the database
+   ipaddress NO       target ip address
+   realm     NO       database realm for these values
+   date      NO       date/time for this result
+   expires   NO       when this result expires
+   color     NO       color as this probe thinks it should be
+   interval  NO       time between measurements
+   received  NO       date/time this result was received by the upwatch server
 
 B.15.2. errlog database layout
 
    Table errlog definition record layout. errlog definition record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   int
-
-   PRI
-
-   auto_increment
-
-   probe unique numerical id
-
-   pgroup
-
-   int unsigned
-
-   NO
-
-   2
-
-   group id
-
-   server
-
-   int
-
-   NO
-
-   1
-
-   server id
-
-   contact
-
-   int unsigned
-
-   YES
-
-   1
-
-   user field: pointer to contact database
-
-   notify
-
-   int unsigned
-
-   YES
-
-   1
-
-   notifier id
-
-   ipaddress
+                     Field Type Key Default Extra Description
+                  id int PRI auto_increment probe unique numerical id
+                  pgroup int unsigned NO 2 group id
+                  server int NO 1 server id
+               contact int unsigned YES 1 user field: pointer to contact
+      database
+                  notify int unsigned YES 1 notifier id
+      ipaddress
 
    varchar(15)
 
    YES
 
-                                          target ipaddress
+   target ipaddress
 
    description
 
@@ -6118,7 +3320,7 @@ B.15.2. errlog database layout
 
    NO
 
-                                          description
+   description
 
    freq
 
@@ -6136,7 +3338,7 @@ B.15.2. errlog database layout
 
    NO
 
-                                          value for yellow alert
+   value for yellow alert
 
    red
 
@@ -6144,7 +3346,7 @@ B.15.2. errlog database layout
 
    NO
 
-                                          value for red alert
+   value for red alert
 
    disable
 
@@ -6167,64 +3369,12 @@ B.15.2. errlog database layout
    hide probe results from viewing
 
    Table errlog result record layout. errlog result record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   bigint unsigned
-
-   PRI
-
-   auto_increment
-
-   unique id for result
-
-   probe
-
-   int unsigned
-
-   YES
-
-   1
-
-   probe identifier
-
-   yellow
-
-   float
-
-   NO
-
-                                 value for yellow alert
-
-   red
-
-   float
-
-   NO
-
-                                 value for red alert
-
-   stattime
-
-   int unsigned
-
-   YES
-
-   0
-
-   time when result was generated
+                     Field Type Key Default Extra Description
+                  id bigint unsigned PRI auto_increment unique id for result
+                  probe int unsigned YES 1 probe identifier
+               yellow float NO value for yellow alert
+               red float NO value for red alert
+                  stattime int unsigned YES 0 time when result was generated
 
    color
 
@@ -6241,147 +3391,36 @@ B.16. diskfree - Free disk space
 B.16.1. diskfree result record layout
 
    Table diskfree attributes. diskfree attributes
-
-   Name
-
-   Type
-
-   Required
-
-   Default
-
-   Description
+   Name Type Required Default Description
 
    Table diskfree elements. diskfree elements
-
-   Name
-
-   Optional
-
-   Description
-
-   server
-
-   NO
-
-   id of this server in the database
-
-   ipaddress
-
-   NO
-
-   target ip address
-
-   realm
-
-   NO
-
-   database realm for these values
-
-   date
-
-   NO
-
-   date/time for this result
-
-   expires
-
-   NO
-
-   when this result expires
-
-   color
-
-   NO
-
-   color as this probe thinks it should be
-
-   interval
-
-   NO
-
-   time between measurements
-
-   received
-
-   NO
-
-   date/time this result was received by the upwatch server
+   Name      Optional Description
+   server    NO       id of this server in the database
+   ipaddress NO       target ip address
+   realm     NO       database realm for these values
+   date      NO       date/time for this result
+   expires   NO       when this result expires
+   color     NO       color as this probe thinks it should be
+   interval  NO       time between measurements
+   received  NO       date/time this result was received by the upwatch server
 
 B.16.2. diskfree database layout
 
-   Table  diskfree  definition  record layout. diskfree definition record
-   layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   int
-
-   PRI
-
-   auto_increment
-
-   probe unique numerical id
-
-   pgroup
-
-   int unsigned
-
-   NO
-
-   2
-
-   group id
-
-   server
-
-   int
-
-   NO
-
-   1
-
-   server id
-
-   contact
-
-   int unsigned
-
-   YES
-
-   1
-
-   user field: pointer to contact database
-
-   notify
-
-   int unsigned
-
-   YES
-
-   1
-
-   notifier id
-
-   ipaddress
+   Table diskfree definition record layout. diskfree definition record layout
+                     Field Type Key Default Extra Description
+                  id int PRI auto_increment probe unique numerical id
+                  pgroup int unsigned NO 2 group id
+                  server int NO 1 server id
+               contact int unsigned YES 1 user field: pointer to contact
+      database
+                  notify int unsigned YES 1 notifier id
+      ipaddress
 
    varchar(15)
 
    YES
 
-                                          target ipaddress
+   target ipaddress
 
    description
 
@@ -6389,7 +3428,7 @@ B.16.2. diskfree database layout
 
    NO
 
-                                          description
+   description
 
    freq
 
@@ -6407,7 +3446,7 @@ B.16.2. diskfree database layout
 
    NO
 
-                                          value for yellow alert
+   value for yellow alert
 
    red
 
@@ -6415,7 +3454,7 @@ B.16.2. diskfree database layout
 
    NO
 
-                                          value for red alert
+   value for red alert
 
    disable
 
@@ -6438,64 +3477,12 @@ B.16.2. diskfree database layout
    hide probe results from viewing
 
    Table diskfree result record layout. diskfree result record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   bigint unsigned
-
-   PRI
-
-   auto_increment
-
-   unique id for result
-
-   probe
-
-   int unsigned
-
-   YES
-
-   1
-
-   probe identifier
-
-   yellow
-
-   float
-
-   NO
-
-                                 value for yellow alert
-
-   red
-
-   float
-
-   NO
-
-                                 value for red alert
-
-   stattime
-
-   int unsigned
-
-   YES
-
-   0
-
-   time when result was generated
+                     Field Type Key Default Extra Description
+                  id bigint unsigned PRI auto_increment unique id for result
+                  probe int unsigned YES 1 probe identifier
+               yellow float NO value for yellow alert
+               red float NO value for red alert
+                  stattime int unsigned YES 0 time when result was generated
 
    color
 
@@ -6512,157 +3499,38 @@ B.17. tcpconnect - Connect to a TCP port
 B.17.1. tcpconnect result record layout
 
    Table tcpconnect attributes. tcpconnect attributes
-
-   Name
-
-   Type
-
-   Required
-
-   Default
-
-   Description
-
-   connect
-
-   NMTOKEN
-
-   NO
-
-   time for connection to complete
-
-   total
-
-   NMTOKEN
-
-   NO
-
-   total time needed
+   Name    Type    Required Default Description
+   connect NMTOKEN NO               time for connection to complete
+   total   NMTOKEN NO               total time needed
 
    Table tcpconnect elements. tcpconnect elements
-
-   Name
-
-   Optional
-
-   Description
-
-   id
-
-   NO
-
-   id of this probe in the database
-
-   realm
-
-   NO
-
-   database realm for these values
-
-   ipaddress
-
-   NO
-
-   target ip address
-
-   date
-
-   NO
-
-   date/time for this result
-
-   expires
-
-   NO
-
-   when this result expires
-
-   color
-
-   NO
-
-   color as this probe thinks it should be
-
-   received
-
-   NO
-
-   date/time this result was received by the upwatch server
+   Name      Optional Description
+   id        NO       id of this probe in the database
+   realm     NO       database realm for these values
+   ipaddress NO       target ip address
+   date      NO       date/time for this result
+   expires   NO       when this result expires
+   color     NO       color as this probe thinks it should be
+   received  NO       date/time this result was received by the upwatch server
 
 B.17.2. tcpconnect database layout
 
-   Table  tcpconnect  definition  record  layout.  tcpconnect  definition
-   record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   int
-
-   PRI
-
-   auto_increment
-
-   probe unique numerical id
-
-   pgroup
-
-   int unsigned
-
-   NO
-
-   2
-
-   group id
-
-   server
-
-   int
-
-   NO
-
-   1
-
-   server id
-
-   contact
-
-   int unsigned
-
-   YES
-
-   1
-
-   user field: pointer to contact database
-
-   notify
-
-   int unsigned
-
-   YES
-
-   1
-
-   notifier id
-
-   ipaddress
+   Table tcpconnect definition record layout. tcpconnect definition record
+   layout
+                     Field Type Key Default Extra Description
+                  id int PRI auto_increment probe unique numerical id
+                  pgroup int unsigned NO 2 group id
+                  server int NO 1 server id
+               contact int unsigned YES 1 user field: pointer to contact
+      database
+                  notify int unsigned YES 1 notifier id
+      ipaddress
 
    varchar(15)
 
    YES
 
-                                          target ipaddress
+   target ipaddress
 
    description
 
@@ -6670,7 +3538,7 @@ B.17.2. tcpconnect database layout
 
    NO
 
-                                          description
+   description
 
    freq
 
@@ -6733,68 +3601,12 @@ B.17.2. tcpconnect database layout
    port to connect to
 
    Table tcpconnect result record layout. tcpconnect result record layout
-
-   Field
-
-   Type
-
-   Key
-
-   Default
-
-   Extra
-
-   Description
-
-   id
-
-   bigint unsigned
-
-   PRI
-
-   auto_increment
-
-   unique id for result
-
-   probe
-
-   int unsigned
-
-   YES
-
-   1
-
-   probe identifier
-
-   yellow
-
-   float
-
-   NO
-
-   3
-
-   value for yellow alert
-
-   red
-
-   float
-
-   NO
-
-   5
-
-   value for red alert
-
-   stattime
-
-   int unsigned
-
-   YES
-
-   0
-
-   time when result was generated
+                     Field Type Key Default Extra Description
+                  id bigint unsigned PRI auto_increment unique id for result
+                  probe int unsigned YES 1 probe identifier
+                  yellow float NO 3 value for yellow alert
+                  red float NO 5 value for red alert
+                  stattime int unsigned YES 0 time when result was generated
 
    color
 

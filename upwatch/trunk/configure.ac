@@ -233,10 +233,14 @@ AC_SUBST(MYSQL_LIB_PREFIX)
 
 for libpath in /usr/lib/mysql $MYSQL_LIB_PREFIX /usr/local/lib/mysql /usr/lib /cygdrive/c/mysql/lib/opt
 do
-  if test -f $libpath/libmysqlclient.so -o -f $libpath/mysqlclient.lib
-  then
-    MYSQL_LIBS="-L${libpath} -lmysqlclient"
-  fi
+  for file in $libpath/libmysqlclient.so* $libpath/mysqlclient.lib
+  do
+    if test -f $file
+    then
+      MYSQL_LIBS="-L${libpath} -lmysqlclient"
+      break
+    fi
+  done
 done
 
 # path to mysql includes
@@ -440,15 +444,6 @@ fi
 AM_CONDITIONAL(HAVE_LIBCRYPTO, test $HAVE_LIBCRYPTO -eq 1)
 AC_SUBST(LIBCRYPTO_LIBS)
 
-# libesmtp
-AC_CHECK_LIB([esmtp], [smtp_create_session], [HAVE_LIBESMTP=1], [HAVE_LIBESMTP=0])
-if test $HAVE_LIBESMTP -eq 1
-then
-        LIBESMTP_LIBS=-lesmtp
-fi
-AM_CONDITIONAL(HAVE_LIBESMTP, test $HAVE_LIBESMTP -eq 1)
-AC_SUBST(LIBESMTP_LIBS)
-
 # snmp
 AC_CHECK_LIB([snmp], [snmp_errno], [HAVE_LIBSNMP=1], [HAVE_LIBSNMP=0], -lcrypto)
 if test $HAVE_LIBSNMP -eq 1
@@ -463,6 +458,20 @@ else
 fi
 AM_CONDITIONAL(HAVE_LIBSNMP, test $HAVE_LIBSNMP -eq 1)
 AC_SUBST(LIBSNMP_LIBS)
+
+if test "$enable_server" = "yes"
+then
+	# libesmtp
+	AC_CHECK_LIB([esmtp], [smtp_create_session], [HAVE_LIBESMTP=1], [HAVE_LIBESMTP=0])
+	if test $HAVE_LIBESMTP -eq 1
+	then
+	        LIBESMTP_LIBS=-lesmtp
+	else
+		AC_MSG_ERROR([You really need libesmtp to compile upwatch server])
+	fi
+	AM_CONDITIONAL(HAVE_LIBESMTP, test $HAVE_LIBESMTP -eq 1)
+	AC_SUBST(LIBESMTP_LIBS)
+fi
 
 # readline
 AC_CHECK_LIB([readline], [readline], [HAVE_LIBREADLINE=1], [HAVE_LIBREADLINE=0], -lncurses)
@@ -551,7 +560,7 @@ if test "$enable_monitors" = "yes"
 then
   if test $HAVE_LIBSNMP -eq 0
   then
-    echo "* snmp libs not found, no SNMP support"
+    echo "* snmp libs (or openssl libs) not found, no SNMP support"
   fi
 
   if test $HAVE_LIBTDS -eq 0

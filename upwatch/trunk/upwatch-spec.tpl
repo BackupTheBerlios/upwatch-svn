@@ -193,7 +193,7 @@ if [ "$1" -eq "0" ]; then
 %package monitor
 Summary: UpWatch - programs for a monitoring station
 Group: Application/Monitoring
-Copyright: Proprietary - Redistribution Prohibited
+Copyright: GPL
 Requires: upwatch
 [+ FOR monitorprog +]# [+monitorprog+] requirements:
 [+ include (string-append (get "monitorprog") "/" (get "monitorprog") ".spec-requires") ;+]
@@ -253,7 +253,7 @@ if [ "$1" -eq "0" ]; then
 %package server
 Summary: UpWatch - server programs
 Group: Application/Monitoring
-Copyright: Proprietary - Redistribution Prohibited
+Copyright: GPL
 Requires: upwatch 
 [+ FOR serverprog +]# [+serverprog+] requirements:
 [+ include (string-append (get "serverprog") "/" (get "serverprog") ".spec-requires") ;+]
@@ -320,7 +320,7 @@ fi
 %package [+ extraprog +]
 Summary: UpWatch - monitor IP traffic
 Group: Application/Monitoring
-Copyright: Proprietary - Redistribution Prohibited
+Copyright: GPL
 Requires: upwatch libxml2 >= 2.4.19 libpcap glib2 >= 2.0.4
 
 %description [+ extraprog +]

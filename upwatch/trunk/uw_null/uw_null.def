@@ -80,5 +80,5 @@ This is useful is you want to run uw_null under cron or for debugging.';
 
 #include dbase_options.def
 #include generic_options.def
-#include license_proprietary.def
+#include license_gpl.def
 

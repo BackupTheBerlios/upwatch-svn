@@ -1,6 +1,6 @@
 AutoGen Definitions mysql;
 #include probe_generic.def
-#include license_proprietary.def
+#include license_gpl.def
 
 probe = {
   name = "snmpget";

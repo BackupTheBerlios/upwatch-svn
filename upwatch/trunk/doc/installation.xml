@@ -4,11 +4,7 @@
     <title>Installation</title>
     <sect1 id="Getting_upwatch">
         <title>Getting upwatch</title>
-        <para> Currently, the UpWatch server and monitoring software are not released, and 
-        are not allowed to be distributed. The only way to get it, is through written 
-        permission of UpWatch BV.</para>
-        <para> If you aquired that, you will either receive access to CVS, or will receive a
-            tar.gz file, or .RPM's.</para>
+        <para>The Upwatch software is released under the GPL on 26 Jan 2005.  </para>
 	 <para>Building and installing upwatch is not for the faint of heart. It uses lots of external
           libraries which may or may not be available on your platform. I myself use Redhat 8/9
           for development, and test compilation on RH7, Fedora Core 1/2, SuSE8.2, Solaris, 
