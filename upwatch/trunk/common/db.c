@@ -14,11 +14,28 @@ MYSQL *mysql;
  database functions. 
  NOTE: Don't use with multithreaded programs!
  ***************************/
+void close_database(void)
+{
+  if (mysql) {
+    //my_transaction("rollback");
+    mysql_close(mysql);
+    free(mysql);
+    mysql = NULL;
+  }
+}
+
 int open_database(void)
 {
   char *dbhost, *dbuser, *dbpasswd, *dbname;
 
-  if (mysql) return(0); // already open
+  if (mysql) {
+    if (mysql_ping(mysql) != 0) {
+      LOG(LOG_ERR, "%s", mysql_error(mysql));
+      close_database();
+      return(1);
+    }
+    return(0); // already open
+  }
   if ((mysql = (MYSQL *)malloc(sizeof(MYSQL))) == NULL) {
     LOG(LOG_ERR, "malloc: %m");
     return(1);
@@ -37,16 +54,6 @@ int open_database(void)
     return(1);
   }
   return(0);
-}
-
-void close_database(void)
-{
-  if (mysql) {
-    //my_transaction("rollback");
-    mysql_close(mysql);
-    free(mysql);
-    mysql = NULL;
-  }
 }
 
 void my_transaction(char *what)
@@ -73,6 +80,9 @@ MYSQL_RES *my_query(char *fmt, ...)
     return(NULL);
   }
   result = mysql_store_result(mysql);
+  if (mysql_errno(mysql)) {
+    LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql));
+  }
   return(result);
 }
 

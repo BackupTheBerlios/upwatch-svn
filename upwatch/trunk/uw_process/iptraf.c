@@ -102,41 +102,51 @@ static void *get_def(module *probe, void *probe_res)
     result = my_query("select server, color, stattime, raw "
                       "from   pr_status "
                       "where  class = '%d' and probe = '%d'", probe->class, def->probeid);
-    if (!result) {
-      LOG(LOG_NOTICE, "pr_status record for %s id %u not found", probe->name, def->probeid);
-      return(def);
-    }
-    row = mysql_fetch_row(result);
-    if (!row) {
+    if (result) {
+      row = mysql_fetch_row(result);
+      if (row) {
+        def->server   = atoi(row[0]);
+        def->color    = atoi(row[1]);
+        def->stattime = atoi(row[2]); // just in case the next query fails
+        def->raw      = strtoull(row[3], NULL, 10);
+      }
       mysql_free_result(result);
+    } else {
       LOG(LOG_NOTICE, "pr_status record for %s id %u not found", probe->name, def->probeid);
-      return(def);
     }
-    def->server   = atoi(row[0]);
-    def->color    = atoi(row[1]);
-    def->stattime = atoi(row[2]); // just in case the next query fails
-    def->raw      = strtoull(row[3], NULL, 10);
-    mysql_free_result(result);
+
+    if (!def->server) {
+      // couldn't find pr_status record? Will be created later,
+      // but get the server from the def record for now
+      result = my_query("select server "
+                        "from   pr_%s_def "
+                        "where  id = '%u'", probe->name, def->probeid);
+      if (result) {
+        row = mysql_fetch_row(result);
+        if (row) def->server   = atoi(row[0]);
+        mysql_free_result(result);
+      }
+    }
 
     uw_slot(SLOT_DAY, res->stattime, &slotlow, &slothigh);
     result = my_query("select sum(in_total), sum(out_total), max(color), max(stattime), max(id) "
                       "from   pr_iptraf_raw use index(probtime) "
                       "where  probe = '%u' and stattime >= '%u' and stattime < '%u'",
                       def->probeid, slotlow, slothigh);
-    if (!result) {
-      return(def);
-    }
-    row = mysql_fetch_row(result);
-    if (!row) {
+    if (result) {
+      row = mysql_fetch_row(result);
+      if (row) {
+        if (row[0]) def->slotday_in_total = atoi(row[0]);
+        if (row[1]) def->slotday_out_total = atoi(row[1]);
+        if (row[2]) def->slotday_max_color = atoi(row[2]);
+        if (row[3]) def->stattime = atoi(row[3]);
+        if (row[4]) def->raw      = strtoull(row[4], NULL, 10);
+      }
       mysql_free_result(result);
-      return(def);
+    } else {
+      LOG(LOG_NOTICE, "raw record for %s id %u not found between %u and %u", 
+                      probe->name, def->probeid, slotlow, slothigh);
     }
-    if (row[0]) def->slotday_in_total = atoi(row[0]);
-    if (row[1]) def->slotday_out_total = atoi(row[1]);
-    if (row[2]) def->slotday_max_color = atoi(row[2]);
-    if (row[3]) def->stattime = atoi(row[3]);
-    if (row[4]) def->raw      = strtoull(row[4], NULL, 10);
-    mysql_free_result(result);
 
     g_hash_table_insert(probe->cache, guintdup(*(unsigned *)&res->ipaddr), def);
   }

@@ -18,7 +18,7 @@
 #include "dmalloc.h"
 #endif
 
-static void handle_file(gpointer data, gpointer user_data);
+static int handle_file(gpointer data, gpointer user_data);
 static int process(module *module, xmlDocPtr, xmlNodePtr, xmlNsPtr);
 
 static void cleanup(void)
@@ -64,6 +64,7 @@ int run(void)
   GPtrArray *arr = g_ptr_array_new();
   int i;
   int files = 0;
+  int got_fatal = 0;
 extern int forever;
 
   if (debug > 3) LOG(LOG_DEBUG, "run()");
@@ -87,7 +88,9 @@ extern int forever;
 
   for (i=0; i < arr->len && forever; i++) {
     //printf("%s\n", g_ptr_array_index(arr,i));
-    handle_file(g_ptr_array_index(arr,i), NULL);
+    if (!got_fatal) {
+      got_fatal = handle_file(g_ptr_array_index(arr,i), NULL);
+    }
     free(g_ptr_array_index(arr,i));
     count++;
   }
@@ -97,7 +100,7 @@ extern int forever;
   return(count);
 }
 
-static void handle_file(gpointer data, gpointer user_data)
+static int handle_file(gpointer data, gpointer user_data)
 {
   char *filename = (char *)data;
   xmlDocPtr doc; 
@@ -107,25 +110,25 @@ static void handle_file(gpointer data, gpointer user_data)
   int probe_count = 0;
   struct stat st;
   int filesize;
-  int i;
+  int i, fatal = FALSE;
 
   if (debug) LOG(LOG_DEBUG, "Processing %s", filename);
 
   if (stat(filename, &st)) {
     LOG(LOG_WARNING, "%s: %m", filename);
-    return;
+    return 0;
   }
   filesize = (int) st.st_size;
   if (filesize == 0) {
     unlink(filename);
     LOG(LOG_WARNING, "%s: size 0, removed", filename);
-    return;
+    return 0;
   }
 
   doc = xmlParseFile(filename);
   if (doc == NULL) {
     LOG(LOG_NOTICE, "%s: %m", filename);
-    return;
+    return 0;
   }
 
   if (HAVE_OPT(COPY) && strcmp(OPT_ARG(COPY), "none")) {
@@ -137,20 +140,20 @@ static void handle_file(gpointer data, gpointer user_data)
     LOG(LOG_NOTICE, "%s: empty document", filename);
     xmlFreeDoc(doc);
     unlink(filename);
-    return;
+    return 0;
   }
   ns = xmlSearchNsByHref(doc, cur, (const xmlChar *) NAMESPACE_URL);
   if (ns == NULL) {
     LOG(LOG_NOTICE, "%s: wrong type, result namespace not found", filename);
     xmlFreeDoc(doc);
     unlink(filename);
-    return;
+    return 0;
   }
   if (xmlStrcmp(cur->name, (const xmlChar *) "result")) {
     LOG(LOG_NOTICE, "%s: wrong type, root node is not 'result'", filename);
     xmlFreeDoc(doc);
     unlink(filename);
-    return;
+    return 0;
   }
   /*
    * Now, walk the tree.
@@ -164,7 +167,7 @@ static void handle_file(gpointer data, gpointer user_data)
     LOG(LOG_NOTICE, "%s: wrong type, empty file'", filename);
     xmlFreeDoc(doc);
     unlink(filename);
-    return;
+    return 0;
   }
   /* Second level is a list of probes, but be laxist */
   for (failures = 0; cur != NULL;) {
@@ -174,6 +177,8 @@ static void handle_file(gpointer data, gpointer user_data)
     }
     for (found = 0, i = 0; modules[i]; i++) {
       if (!xmlStrcmp(cur->name, (const xmlChar *) modules[i]->name)) {
+        int ret;
+
 	if (cur->ns != ns) {
           LOG(LOG_ERR, "method found, but namespace incorrect on %s", cur->name);
 	  continue;
@@ -181,9 +186,13 @@ static void handle_file(gpointer data, gpointer user_data)
         found = 1;
         probe_count++;
         //xmlDocFormatDump(stderr, doc, 1);
-        if (process(modules[i], doc, cur, ns) == 0) {
+        ret = process(modules[i], doc, cur, ns);
+        if (ret == 0) {
           failures++;
           cur = cur->next;
+        } else if (ret == -1) {
+          fatal = TRUE;
+          break;
         } else {
           xmlNodePtr del = cur;
           cur = cur->next;
@@ -197,21 +206,26 @@ static void handle_file(gpointer data, gpointer user_data)
       LOG(LOG_ERR, "can't find method: %s", cur->name);
       failures++;
     }
+    if (fatal) break;
   }
   if (failures) {
     xmlSaveFormatFile(OPT_ARG(FAILURES), doc, 1);
   }
   //xmlDocFormatDump(stderr, doc, 1);
   xmlFreeDoc(doc);
-  if (debug > 1) LOG(LOG_DEBUG, "Processed %d probes", probe_count);
-  if (debug > 1) LOG(LOG_DEBUG, "unlink(%s)", filename);
-  unlink(filename);
-  return;
+  if (!fatal) {
+    if (debug > 1) LOG(LOG_DEBUG, "Processed %d probes", probe_count);
+    if (debug > 1) LOG(LOG_DEBUG, "unlink(%s)", filename);
+    unlink(filename);
+  }
+  return fatal;
 }
 
 //*******************************************************************
 // retrieve the definitions + status
 // get it from the cache. if there but too old: delete
+// in case of mysql-has-gone-away type errors, we keep on running, 
+// it will be caught later-on.
 //*******************************************************************
 static void *get_def(module *probe, struct probe_result *res)
 {
@@ -234,27 +248,43 @@ static void *get_def(module *probe, struct probe_result *res)
     result = my_query("select server, color, stattime, raw "
                       "from   pr_status "
                       "where  class = '%u' and probe = '%u'", probe->class, def->probeid);
-    if (!result) return(NULL);
-    row = mysql_fetch_row(result);
-    if (!row) {
+    if (result) {
+      row = mysql_fetch_row(result);
+      if (row) {
+        if (row[0]) def->server   = atoi(row[0]);
+        if (row[1]) def->color    = atoi(row[1]);
+        if (row[2]) def->stattime = atoi(row[2]);
+        if (row[3]) def->raw      = strtoull(row[3], NULL, 10);
+      } else {
+        LOG(LOG_NOTICE, "pr_status record for %s id %u not found", probe->name, def->probeid);
+      }
       mysql_free_result(result);
-      return(NULL);
     }
-    def->server   = atoi(row[0]);
-    def->color    = atoi(row[1]);
-    def->stattime = atoi(row[2]);
-    def->raw      = strtoull(row[3], NULL, 10);
-    mysql_free_result(result);
+
+    if (!def->server) { 
+      // couldn't find pr_status record? Will be created later, 
+      // but get the server from the def record for now
+      result = my_query("select server "
+                        "from   pr_%s_def "
+                        "where  id = '%u'", probe->name, def->probeid);
+      if (result) {
+        row = mysql_fetch_row(result);
+        if (row && row[0]) def->server   = atoi(row[0]);
+        mysql_free_result(result);
+      }
+    }
 
     result = my_query("select id, stattime from pr_%s_raw use index(probtime) "
                       "where probe = '%u' order by stattime desc limit 1",
                        probe->name, def->probeid);
-    if (!result) return(def);
-    if (mysql_num_rows(result) > 0) {
-      if (row[0]) def->raw      = strtoull(row[0], NULL, 10);
-      if (row[1]) def->stattime = atoi(row[1]);
+    if (result) {
+      row = mysql_fetch_row(result);
+      if (row && mysql_num_rows(result) > 0) {
+        if (row[0]) def->raw      = strtoull(row[0], NULL, 10);
+        if (row[1]) def->stattime = atoi(row[1]);
+      }
+      mysql_free_result(result);
     }
-    mysql_free_result(result);
 
     g_hash_table_insert(probe->cache, guintdup(def->probeid), def);
   }
@@ -395,11 +425,11 @@ static void delete_history(int class, struct probe_result *def, struct probe_res
 
   result = my_query("delete from pr_hist "
                     "where stattime = '%u' and probe = '%u' and class = '%d'",
-                    class, def->probeid, nxt->stattime);
+                    nxt->stattime, def->probeid, class);
   mysql_free_result(result);
   result = my_query("delete from pr_status "
                     "where stattime = '%u' and probe = '%u' and class = '%d'",
-                    class, def->probeid, nxt->stattime);
+                    nxt->stattime, def->probeid, class);
   mysql_free_result(result);
 }
 
@@ -497,7 +527,7 @@ static int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
   struct probe_result *res=NULL, *prv=NULL;
 
   if (open_database() != 0) {
-    return FALSE;
+    return -1; // fatal error
   }
 
   if (!probe->cache) {
