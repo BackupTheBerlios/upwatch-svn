@@ -13,6 +13,10 @@ struct mysql_result {
   STANDARD_PROBE_RESULT;
 #include "../uw_mysql/probe.res_h"
 };
+struct mysql_def {
+  STANDARD_PROBE_DEF;
+#include "../common/common.h"
+};
 
 module mysql_module  = {
   STANDARD_MODULE_STUFF(mysql),

@@ -13,6 +13,8 @@ CREATE TABLE pr_[+name+]_def (
   server int unsigned NOT NULL default '1', 	-- server id
   contact int unsigned NOT NULL default '1',	-- user field: pointer to contact database
   notify int unsigned NOT NULL default '1',	-- notifier id
+  email varchar(64) NOT NULL default '',	-- address to send warning email to
+  redmins int unsigned NOT NULL default '1',	-- after this many minutes of red light
   disable enum('yes', 'no') not null default 'no', -- disable this probe
   hide enum('yes', 'no') not null default 'no', -- hide probe results from viewing
   ipaddress varchar(15) NOT NULL default '',	-- target ipaddress 

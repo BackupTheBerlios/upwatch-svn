@@ -37,6 +37,27 @@ void free_res(void *res)
   g_free(r);
 }
 
+char *query_server_by_id(module *probe, int id)
+{
+  MYSQL_RES *result;
+  MYSQL_ROW row;
+static char name[256];
+
+  result = my_query(probe->db, 0,
+                    OPT_ARG(QUERY_SERVER_BY_ID), id, id, id, id, id);
+  if (!result) return("");
+  row = mysql_fetch_row(result);
+  if (row && row[0]) {
+    strcpy(name, row[0]);
+  } else {
+    LOG(LOG_NOTICE, "name for server %u not found", id);
+    mysql_free_result(result);
+    return("");
+  }
+  mysql_free_result(result);
+  return(name);
+}
+
 //*******************************************************************
 // GET THE INFO FROM THE XML FILE
 // Caller must free the pointer it returns
@@ -130,18 +151,20 @@ static void *get_def(module *probe, struct probe_result *res)
   }
   // if not there retrieve from database and insert in hash
   if (def == NULL) {
-    def = g_malloc0(sizeof(struct probe_result));
+    def = g_malloc0(probe->def_size);
     def->stamp    = time(NULL);
     strcpy(def->hide, "no");
 
     result = my_query(probe->db, 0,
-                      "select color "
+                      "select color, changed, notified "
                       "from   pr_status "
                       "where  class = '%u' and probe = '%u'", probe->class, res->probeid);
     if (result) {
       row = mysql_fetch_row(result);
       if (row) {
-        if (row[0]) def->color  = atoi(row[0]);
+        if (row[0]) def->color   = atoi(row[0]);
+        if (row[1]) def->changed = atoi(row[1]);
+        strcpy(def->notified, row[2] ? row[2] : "no");
       } else {
         LOG(LOG_NOTICE, "pr_status record for %s id %u not found", res->name, res->probeid);
       }
@@ -151,7 +174,7 @@ static void *get_def(module *probe, struct probe_result *res)
     // Get the server, contact and yellow/red info from the def record. Note the yellow/red may 
     // have been changed by the user so need to be transported into the data files
     result = my_query(probe->db, 0,
-                      "select server, yellow, red, contact, hide "
+                      "select server, yellow, red, contact, hide, email, redmins "
                       "from   pr_%s_def "
                       "where  id = '%u'", res->name, res->probeid);
     if (!result) return(NULL);
@@ -183,7 +206,7 @@ static void *get_def(module *probe, struct probe_result *res)
                          res->name, res->probeid, mysql_error(probe->db));
       }
       result = my_query(probe->db, 0,
-                        "select server, yellow, red, contact, hide "
+                        "select server, yellow, red, contact, hide, email, redmins "
                         "from   pr_%s_def "
                         "where  id = '%u'", res->name, res->probeid);
       if (!result) return(NULL);
@@ -195,6 +218,8 @@ static void *get_def(module *probe, struct probe_result *res)
       if (row[2]) def->red      = atof(row[2]);
       if (row[3]) def->contact  = atof(row[3]);
       strcpy(def->hide, row[4] ? row[4] : "no");
+      strcpy(def->email, row[5] ? row[5] : "");
+      if (row[6]) def->redmins = atoi(row[6]);
     }
     mysql_free_result(result);
 
@@ -302,11 +327,20 @@ static void update_pr_status(module *probe, struct probe_def *def, struct probe_
     escmsg = strdup("");
   }
 
-  if (probe->fuse && (res->color < prv->color)) {
-    // if this probe acts like a fuse, don't update if new color is less then old color
-    sprintf(color, "color = '%u'", prv->color);
+  if (probe->fuse) {
+    if (res->color < prv->color) {
+    // if this probe acts like a fuse, only update if new color is higher then old color
+      sprintf(color, "color = '%u', changed = '%u'", prv->color, res->stattime);
+      def->changed = res->stattime;
+    } else {
+    }
   } else {
-    sprintf(color, "color = '%u'", res->color);
+    if (res->color != prv->color) {
+      sprintf(color, "color = '%u', changed = '%u'", res->color, res->stattime);
+      def->changed = res->stattime;
+    } else {
+      sprintf(color, "color = '%u'", res->color);
+    }
   }
 
   result = my_query(probe->db, 0,
@@ -351,9 +385,9 @@ static void insert_pr_status(module *probe, struct probe_def *def, struct probe_
                     "insert into pr_status "
                     "set    class =  '%u', probe = '%u', stattime = '%u', expires = '%u', "
                     "       color = '%u', server = '%u', message = '%s', yellow = '%f', red = '%f', "
-                    "       contact = '%u', hide = '%s'",
+                    "       contact = '%u', hide = '%s', changed = '%u'",
                     probe->class, def->probeid, res->stattime, res->expires, def->color, def->server, 
-                    escmsg, def->yellow, def->red, def->contact, def->hide);
+                    escmsg, def->yellow, def->red, def->contact, def->hide, res->stattime);
   mysql_free_result(result);
   if (mysql_affected_rows(probe->db) == 0 || (mysql_errno(probe->db) == ER_DUP_ENTRY)) { 
     // nothing was actually inserted, it was probably already there
@@ -361,10 +395,10 @@ static void insert_pr_status(module *probe, struct probe_def *def, struct probe_
                     res->name, res->stattime, def->probeid, mysql_error(probe->db));
     result = my_query(probe->db, 0,
                       "update pr_status "
-                      "set    stattime = '%u', expires = '%u', color = '%d', hide = '%s', "
+                      "set    stattime = '%u', expires = '%u', color = '%d', hide = '%s', changed = '%u', "
                       "       message = '%s', yellow = '%f', red = '%f', contact = '%u', server = '%u' "
                       "where  probe = '%u' and class = '%u'",
-                      res->stattime, res->expires, res->color, def->hide, escmsg, 
+                      res->stattime, res->expires, res->color, def->hide, res->stattime, escmsg, 
                       def->yellow, def->red, def->contact, def->server, def->probeid, probe->class);
     mysql_free_result(result);
   }
@@ -539,23 +573,29 @@ int process(module *probe, trx *t)
   struct probe_result *prv=NULL;
   int err = 1; /* default ok */
 
+  if (debug > 3) fprintf(stderr, "fix_result\n");
   if (probe->fix_result) {
     probe->fix_result(probe, t->res); // do some final calculations on the result
   }
 
+  if (debug > 3) fprintf(stderr, "get_def\n");
   if (probe->get_def) {
+    if (debug > 3) fprintf(stderr, "RETRIEVE PROBE DEFINITION RECORD FROM DATABASE\n");
     def = probe->get_def(probe, t->res); // RETRIEVE PROBE DEFINITION RECORD FROM DATABASE
   } else {
     def = get_def(probe, t->res);
   }
   if (!def) {  // Oops, def record not found. Skip this probe
+    if (debug > 3) fprintf(stderr, "def NOT found\n");
     err = -1; /* malformed input FIXME should make distinction between db errors and def not found */
     goto exit_with_res;
   }
 
+  if (debug > 3) fprintf(stderr, "STORE RAW RESULTS\n");
   if (probe->store_results) {
     int ret = probe->store_results(probe, def, t->res, &seen_before); // STORE RAW RESULTS
     if (!ret) { /* error return? */
+      if (debug > 3) fprintf(stderr, "error in store_results\n");
       err = -2; /* database fatal error - try again later */
       goto exit_with_res;
     }
@@ -564,14 +604,17 @@ int process(module *probe, trx *t)
   }
 
   if (t->res->stattime > def->newest) { // IF CURRENT RAW RECORD IS THE MOST RECENT 
+    if (debug > 3) fprintf(stderr, "CURRENT RAW RECORD IS THE MOST RECENT\n");
     prv = g_malloc0(sizeof(struct probe_result));
     prv->color = def->color;  // USE PREVIOUS COLOR FROM DEF RECORD
     prv->stattime = def->newest;
   } else {
+    if (debug > 3) fprintf(stderr, "RETRIEVE PRECEDING RAW RECORD FROM DATABASE\n");
     prv = get_previous_record(probe, def, t->res); // RETRIEVE PRECEDING RAW RECORD FROM DATABASE
   }
 
   if (def->newest == 0) { // IF THIS IS THE FIRST RESULT EVER FOR THIS PROBE
+    if (debug > 3) fprintf(stderr, "THIS IS THE FIRST RESULT EVER FOR THIS PROBE\n");
     insert_pr_status(probe, def, t->res);
     must_update_def = TRUE;
     goto finish;
@@ -579,24 +622,39 @@ int process(module *probe, trx *t)
   if (seen_before) {
     goto finish;
   }
+
+  // notify if needed
+#if 0
+  notify(probe, def, t->res, prv);
+#endif
+
   // IF COLOR DIFFERS FROM PRECEDING RAW RECORD
   if (t->res->color != prv->color) {
     struct probe_result *nxt;
+
+    if (debug > 3) fprintf(stderr, "COLOR DIFFERS FROM PRECEDING RAW RECORD - CREATE PR_HIST\n");
     create_pr_hist(probe, def, t->res, prv); // CREATE PR_HIST
+    if (debug > 3) fprintf(stderr, "RETRIEVE FOLLOWING RAW RECORD\n");
     nxt = get_following_record(probe, def, t->res); // RETRIEVE FOLLOWING RAW RECORD
     if (nxt && nxt->color) { // IF FOUND
+      if (debug > 3) fprintf(stderr, "FOLLOWING RECORD IS FOUND\n");
       if (nxt->color == t->res->color) {  // IF COLOR OF FOLLOWING IS THE SAME AS CURRENT
+        if (debug > 3) fprintf(stderr, "SAME COLOR: DELETE POSSIBLE HISTORY RECORDS\n");
         delete_history(probe, def, nxt); // DELETE POSSIBLE HISTORY RECORDS FOR FOLLOWING RECORD
       }
       g_free(nxt);
     }
     if (t->res->stattime > def->newest) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED
+      if (debug > 3) fprintf(stderr, "THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED - UPDATE PR_STATUS\n");
       update_pr_status(probe, def, t->res, prv);    // UPDATE PR_STATUS
+      if (debug > 3) fprintf(stderr, "UPDATE SERVER COLOR\n");
       update_server_color(probe, def, t->res, prv); // UPDATE SERVER COLOR
       must_update_def = TRUE;
     }
   } else {
+    if (debug > 3) fprintf(stderr, "COLOR SAME AS PRECEDING RAW RECORD\n");
     if (t->res->stattime > def->newest) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED
+      if (debug > 3) fprintf(stderr, "THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED - UPDATE PR_STATUS\n");
       update_pr_status(probe, def, t->res, prv);  // UPDATE PR_STATUS (not for the color, but for the expiry time)
       must_update_def = TRUE;
     }
@@ -608,15 +666,14 @@ int process(module *probe, trx *t)
       gulong dummy_low, dummy_high;
       gint i;
 
+      if (debug > 3) fprintf(stderr, "SUMMARIZING. CURRENT RAW RECORD IS THE MOST RECENT\n");
       for (i=0; summ_info[i].period != -1; i++) { // FOR EACH PERIOD
         prev_slot = uw_slot(summ_info[i].period, prv->stattime, &slotlow, &slothigh);
         cur_slot = uw_slot(summ_info[i].period, t->res->stattime, &dummy_low, &dummy_high);
         if (cur_slot != prev_slot) { // IF WE ENTERED A NEW SLOT, SUMMARIZE PREVIOUS SLOT
-          //if (strcmp(t->res->name, "sysstat") == 0) {
-          //  LOG(LOG_DEBUG, "cur(%u for %u) != prv(%u for %u), summarizing %s from %u to %u",
-          //                 cur_slot, t->res->stattime, prev_slot, prv->stattime,
-          //                 summ_info[i].from, slotlow, slothigh);
-          //}
+          if (debug > 3)  fprintf(stderr, "cur(%u for %u) != prv(%u for %u), summarizing %s from %lu to %lu",
+                                          cur_slot, t->res->stattime, prev_slot, prv->stattime,
+                                          summ_info[i].from, slotlow, slothigh);
           probe->summarize(probe, def, t->res, summ_info[i].from, summ_info[i].to, 
                            cur_slot, slotlow, slothigh, 0);
         }
@@ -628,6 +685,7 @@ int process(module *probe, trx *t)
       gint i;
 
       if (debug > 3) {
+        fprintf(stderr, "SUMMARIZING. CURRENT RAW RECORD IS AN OLD ONE\n");
         LOG(LOG_DEBUG, "stattime = %u, newest = %u for %s %u", t->res->stattime, def->newest,
           t->res->name, def->probeid);
       }
@@ -637,6 +695,7 @@ int process(module *probe, trx *t)
         // IF THIS SLOT IS COMPLETE
         if (slot_is_complete(probe, t->res->name, def->probeid, i, slotlow, slothigh)) {
           // RE-SUMMARIZE CURRENT SLOT
+          if (debug > 3) fprintf(stderr, "SLOT IS COMPLETE - RE-SUMMARIZE CURRENT SLOT\n");
           probe->summarize(probe, def, t->res, summ_info[i].from, summ_info[i].to, 
                            cur_slot, slotlow, slothigh, 0);
         } else {

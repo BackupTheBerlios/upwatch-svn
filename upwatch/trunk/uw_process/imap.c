@@ -13,6 +13,10 @@ struct imap_result {
   STANDARD_PROBE_RESULT;
 #include "../uw_imap/probe.res_h"
 };
+struct imap_def {
+  STANDARD_PROBE_DEF;
+#include "../common/common.h"
+};
 
 module imap_module  = {
   STANDARD_MODULE_STUFF(imap),

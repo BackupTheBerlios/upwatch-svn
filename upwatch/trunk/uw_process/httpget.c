@@ -13,6 +13,11 @@ struct httpget_result {
   STANDARD_PROBE_RESULT;
 #include "../uw_httpget/probe.res_h"
 };
+struct httpget_def {
+  STANDARD_PROBE_DEF;
+#include "../common/common.h"
+};
+
 extern module httpget_module;
 
 //*******************************************************************
@@ -108,7 +113,7 @@ static void summarize(module *probe, void *probe_def, void *probe_res, char *fro
 
   row = mysql_fetch_row(result);
   if (!row) {
-    LOG(LOG_ERR, mysql_error(probe->db));
+    LOG(LOG_ERR, (char *)mysql_error(probe->db));
     mysql_free_result(result);
     return;
   }

@@ -13,6 +13,10 @@ struct mssql_result {
   STANDARD_PROBE_RESULT;
 #include "../uw_mssql/probe.res_h"
 };
+struct mssql_def {
+  STANDARD_PROBE_DEF;
+#include "../common/common.h"
+};
 
 module mssql_module  = {
   STANDARD_MODULE_STUFF(mssql),

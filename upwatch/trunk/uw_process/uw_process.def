@@ -57,6 +57,27 @@ These transactions are kept in the filename given with here';
 };
 
 flag = {
+    name      = smtpserver;
+    arg_type  = string;
+    arg_default = "localhost:25";
+    descrip   = "Outgoing SMTP server";
+    doc       =
+'SMTP server to send email notifications to';
+};
+
+flag = {
+    name      = from-email;
+    arg_type  = string;
+    descrip   = "Email address for outgoing messages";
+};
+
+flag = {
+    name      = from-name;
+    arg_type  = string;
+    descrip   = "Email name for outgoing messages";
+};
+
+flag = {
     name      = copy;
     value     = c;
     arg_type  = string;
@@ -113,6 +134,16 @@ flag = {
 'Sometimes a probe only gives a servername, and no id (Big Brother clients do this).
 This query will be issued to find the numeric server id in the database. You can specify 
 up to five `%s` sequences in the query, they will be replaced with the servername.';
+};
+
+flag = {
+    name      = query-server-by-id;
+    arg_type  = string;
+    arg_default = "select name from server where id = '%s'";
+    descrip   = "SQL query to find the name of a server given the id";
+    doc       =
+'Specifically used for notifications, this query should find the name of a server
+given its numeric ID.';
 };
 
 flag = {

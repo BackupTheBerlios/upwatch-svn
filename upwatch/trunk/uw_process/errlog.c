@@ -12,6 +12,10 @@
 struct errlog_result {
   STANDARD_PROBE_RESULT;
 };
+struct errlog_def {
+  STANDARD_PROBE_DEF;
+#include "../common/common.h"
+};
 
 extern module errlog_module;
 
@@ -56,7 +60,7 @@ static void *get_def(module *probe, void *probe_res)
   }
   mysql_free_result(result);
 
-  def = g_malloc0(sizeof(struct probe_result));
+  def = g_malloc0(probe->def_size);
   def->stamp    = time(NULL);
   def->server   = res->server;
   strcpy(def->hide, "no");
@@ -98,14 +102,16 @@ static void *get_def(module *probe, void *probe_res)
 
   // definition found, get the pr_status
   result = my_query(probe->db, 0,
-                    "select color, stattime "
+                    "select color, stattime, changed, notified "
                     "from   pr_status "
                     "where  class = '%u' and probe = '%u'", probe->class, def->probeid);
   if (result) {
     row = mysql_fetch_row(result);
     if (row) {
-      if (row[0]) def->color  = atoi(row[0]);
-      if (row[1]) def->newest = atoi(row[1]);
+      if (row[0]) def->color   = atoi(row[0]);
+      if (row[1]) def->newest  = atoi(row[1]);
+      if (row[2]) def->changed = atoi(row[2]);
+      strcpy(def->notified, row[3] ? row[3] : "no");
     } else {
       LOG(LOG_NOTICE, "pr_status record for %s id %u (server %s) not found", 
                        res->name, def->probeid, res->hostname);

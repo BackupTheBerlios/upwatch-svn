@@ -34,7 +34,11 @@ struct probe_result {
   guint contact; \
   guint probeid; \
   guint color; \
+  guint changed; \
   guint newest; \
+  char email[65]; \
+  guint redmins; \
+  char notified[4]; \
 
 struct probe_def {
   STANDARD_PROBE_DEF;
@@ -42,7 +46,7 @@ struct probe_def {
 };
 
 #define STANDARD_MODULE_STUFF(a) PROBE_##a, #a, NULL, NULL, G_STATIC_MUTEX_INIT, \
-  NULL, NULL, sizeof(struct a##_result), 0, -1, 0, 0
+  NULL, NULL, sizeof(struct a##_result), sizeof(struct a##_def), 0, -1, 0, 0
 
 typedef struct _module {
   int class; 		// numberic probe class (id of record in probe table)
@@ -53,6 +57,7 @@ typedef struct _module {
   GQueue *queue;	// queued result record 
   GPtrArray *insertc;	// cache for doing multi value insert statements 
   int res_size;		// size of a result record
+  int def_size;		// size of a definition record
   int fuse;		// act like a fuse, i.e. once red is always red, until the user resets it.
   int sep;		// group number for separate thread
   int count;		// stats: total handles in this run
@@ -102,6 +107,10 @@ typedef struct transaction {
   void *loc;			// local data ptr
   struct probe_result *res;	// probe result pointer
 } trx;
+
+void notify(module *probe, struct probe_def *def, struct probe_result *res, struct probe_result *prv);
+char *query_server_by_id(module *probe, int id);
+
 
 void mod_ic_add(module *probe, const char *table, const char *str);
 void mod_ic_flush(module *probe, const char *table);

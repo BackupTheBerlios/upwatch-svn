@@ -69,6 +69,8 @@ CREATE TABLE pr_status (
   stattime int unsigned NOT NULL default '0',
   expires int unsigned NOT NULL default '0',
   color smallint unsigned NOT NULL default '200',
+  changed int unsigned NOT NULL default '0',
+  notified enum('yes', 'no') NOT NULL default 'no',
   message text NOT NULL,
   PRIMARY KEY  (id),
   UNIQUE KEY uprobe (class,probe),

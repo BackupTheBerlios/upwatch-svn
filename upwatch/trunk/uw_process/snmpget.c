@@ -13,6 +13,10 @@ struct snmpget_result {
   STANDARD_PROBE_RESULT;
 #include "../uw_snmpget/probe.res_h"
 };
+struct snmpget_def {
+  STANDARD_PROBE_DEF;
+#include "../common/common.h"
+};
 extern module snmpget_module;
 
 //*******************************************************************

@@ -13,6 +13,10 @@ struct sysstat_result {
   STANDARD_PROBE_RESULT;
 #include "../uw_sysstat/probe.res_h"
 };
+struct sysstat_def {
+  STANDARD_PROBE_DEF;
+#include "../common/common.h"
+};
 
 extern module sysstat_module;
 
@@ -106,7 +110,7 @@ static void *get_def(module *probe, void *probe_res)
   }
   // if not there retrieve from database and insert in hash
   if (def == NULL) {
-    def = g_malloc0(sizeof(struct probe_result));
+    def = g_malloc0(probe->def_size);
     def->stamp = time(NULL);
     strcpy(def->hide, "no");
     def->server = res->server;
@@ -153,13 +157,15 @@ static void *get_def(module *probe, void *probe_res)
     mysql_free_result(result);
 
     result = my_query(probe->db, 0,
-                      "select color "
+                      "select color, changed, notified "
                       "from   pr_status "
                       "where  class = '%d' and probe = '%d'", probe->class, def->probeid);
     if (result) {
       row = mysql_fetch_row(result);
       if (row) {
-        def->color  = atoi(row[0]); 
+        def->color   = atoi(row[0]); 
+        def->changed = atoi(row[1]); 
+        strcpy(def->notified, row[2] ? row[2] : "no");
       }
       mysql_free_result(result);
     } 

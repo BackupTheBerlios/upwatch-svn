@@ -13,6 +13,10 @@ struct bb_cpu_result {
   STANDARD_PROBE_RESULT;
 #include "../uw_acceptbb/probe.res_h"
 };
+struct bb_cpu_def {
+  STANDARD_PROBE_DEF;
+#include "../common/common.h"
+};
 extern module bb_cpu_module;
 
 //*******************************************************************
@@ -99,7 +103,7 @@ static void *get_def(module *probe, void *probe_res)
   }
   // if not there retrieve from database and insert in hash
   if (def == NULL) {
-    def = g_malloc0(sizeof(struct probe_result));
+    def = g_malloc0(probe->def_size);
     def->stamp    = time(NULL);
     def->server   = res->server;
     strcpy(def->hide, "no");
@@ -139,13 +143,15 @@ static void *get_def(module *probe, void *probe_res)
     strcpy(def->hide, row[4] ? row[4] : "no");
     mysql_free_result(result);
     result = my_query(probe->db, 0, 
-                      "select color "
+                      "select color, changed, notified "
                       "from   pr_status "
                       "where  class = '%u' and probe = '%u'", probe->class, def->probeid);
     if (result) {
       row = mysql_fetch_row(result);
       if (row) {
-        if (row[0]) def->color  = atoi(row[0]);
+        if (row[0]) def->color   = atoi(row[0]);
+        if (row[1]) def->changed = atoi(row[1]);
+        strcpy(def->notified, row[2] ? row[2] : "no");
       } else {
         LOG(LOG_NOTICE, "pr_status record for %s id %u not found", res->name, def->probeid);
       }

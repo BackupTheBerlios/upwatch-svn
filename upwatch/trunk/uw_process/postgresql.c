@@ -13,6 +13,10 @@ struct postgresql_result {
   STANDARD_PROBE_RESULT;
 #include "../uw_postgresql/probe.res_h"
 };
+struct postgresql_def {
+  STANDARD_PROBE_DEF;
+#include "../common/common.h"
+};
 
 module postgresql_module  = {
   STANDARD_MODULE_STUFF(postgresql),

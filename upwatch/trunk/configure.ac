@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.44 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.45 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -372,6 +372,15 @@ fi
 AM_CONDITIONAL(HAVE_LIBCRYPTO, test $HAVE_LIBCRYPTO -eq 1)
 AC_SUBST(LIBCRYPTO_LIBS)
 
+# libesmtp
+AC_CHECK_LIB([esmtp], [smtp_create_session], [HAVE_LIBESMTP=1], [HAVE_LIBESMTP=0])
+if test $HAVE_LIBESMTP -eq 1
+then
+        LIBESMTP_LIBS=-lesmtp
+fi
+AM_CONDITIONAL(HAVE_LIBESMTP, test $HAVE_LIBESMTP -eq 1)
+AC_SUBST(LIBESMTP_LIBS)
+
 # snmp
 AC_CHECK_LIB([snmp], [snprint_value], [HAVE_LIBSNMP=1], [HAVE_LIBSNMP=0], -lcrypto)
 if test $HAVE_LIBSNMP -eq 1
@@ -428,7 +437,6 @@ AC_CHECK_TYPES([u_int32_t, uint32_t])
 # Checks for library functions.
 #LIBOPTS_CHECK
 AC_PROG_GCC_TRADITIONAL
-AC_FUNC_MALLOC
 AC_FUNC_MKTIME
 AC_TYPE_SIGNAL
 AC_FUNC_STAT

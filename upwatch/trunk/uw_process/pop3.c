@@ -13,6 +13,10 @@ struct pop3_result {
   STANDARD_PROBE_RESULT;
 #include "../uw_pop3/probe.res_h"
 };
+struct pop3_def {
+  STANDARD_PROBE_DEF;
+#include "../common/common.h"
+};
 
 module pop3_module  = {
   STANDARD_MODULE_STUFF(pop3),

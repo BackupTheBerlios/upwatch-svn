@@ -439,13 +439,12 @@ extern int forever;
                                      OPT_VALUE_DBCOMPRESS);
     if (modules[i]->db == NULL) return;
 
-
     result = my_query(modules[i]->db, 0, "select fuse from probe where id = '%d'", modules[i]->class);
     if (result) {
       MYSQL_ROW row;
       row = mysql_fetch_row(result);
       if (row) {
-        if (row[0]) modules[i]->fuse  = atoi(row[0]);
+        if (row[0]) modules[i]->fuse  = (strcmp(row[0], "yes") == 0) ? 1 : 0;
       } else {
         LOG(LOG_NOTICE, "probe record for id %u not found", modules[i]->class);
       }
@@ -465,6 +464,7 @@ extern int forever;
       g_static_mutex_unlock (&modules[i]->queue_mutex);
       if (t == NULL) break;
 
+      if (debug > 3) fprintf(stderr, "%s %s@%s", buf, t->res->name, t->rf->fromhost);
       if (buf[0] == 0 || count % 100 == 0) {
         strftime(buf, sizeof(buf), "%Y-%m-%d %T", gmtime(&t->rf->fromdate));
         uw_setproctitle("%s %s@%s", buf, t->res->name, t->rf->fromhost);

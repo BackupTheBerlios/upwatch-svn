@@ -93,7 +93,7 @@ static void *get_def(module *probe, void *probe_res)
   if (def == NULL) {    // if not there construct from database and insert in hash
     gulong slotlow, slothigh;
 
-    def = g_malloc0(sizeof(struct iptraf_def));
+    def = g_malloc0(probe->def_size);
     def->stamp = now;
     strcpy(def->hide, "no");
 
@@ -144,7 +144,7 @@ static void *get_def(module *probe, void *probe_res)
                         "where  ipaddress = '%s'", res->name, res->ipaddress);
       if (!result) return(NULL);
     }
-
+  
     row = mysql_fetch_row(result);
     if (!row) {
       mysql_free_result(result);
@@ -159,13 +159,15 @@ static void *get_def(module *probe, void *probe_res)
     mysql_free_result(result);
 
     result = my_query(probe->db, 0,
-                      "select color "
+                      "select color, changed, notified "
                       "from   pr_status "
                       "where  class = '%d' and probe = '%d'", probe->class, def->probeid);
     if (result) {
       row = mysql_fetch_row(result);
       if (row) {
-        def->color  = atoi(row[0]);
+        def->color   = atoi(row[0]);
+        def->changed = atoi(row[1]);
+        strcpy(def->notified, row[2] ? row[2] : "no");
       }
       mysql_free_result(result);
     } else {
@@ -188,7 +190,7 @@ static void *get_def(module *probe, void *probe_res)
 
     uw_slot(SLOT_DAY, res->stattime, &slotlow, &slothigh);
     result = my_query(probe->db, 0,
-                      "select sum(in), sum(out), max(color), avg(yellow), avg(red) "
+                      "select sum(incoming), sum(outgoing), max(color), avg(yellow), avg(red) "
                       "from   pr_iptraf_raw use index(probstat) "
                       "where  probe = '%u' and stattime >= '%u' and stattime < '%u'",
                       def->probeid, slotlow, slothigh);

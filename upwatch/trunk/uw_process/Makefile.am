@@ -6,6 +6,10 @@ if SOLARIS
 SOLARISLIBS = -lresolv
 endif
 
+if HAVE_LIBESMTP
+DEF_LIBESMTP = -DHAVE_LIBESMTP
+endif
+
 if HAVE_LIBPQ
 USE_LIBPQ = postgresql.c
 DEF_LIBPQ = -DHAVE_LIBPQ
@@ -27,15 +31,16 @@ conf_DATA = $(program).conf
 init_DATA = $(INITFILES)
 
 uw_process_SOURCES = run.c process.c generic_ct.c cmd_options.h cmd_options.c \
- insertcache.c uw_process.h modules.inc $(SPECFILES) $(INITFILES) \
+ insertcache.c uw_process.h modules.inc $(SPECFILES) $(INITFILES) notify.c \
  ping.c httpget.c iptraf.c sysstat.c mysql.c bb_cpu.c bb.c pop3.c $(USE_LIBPQ) \
  $(USE_LIBSNMP) $(USE_LIBTDS) imap.c errlog.c diskfree.c
 uw_process_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ \
-  $(DEF_LIBPQ) $(DEF_LIBSNMP) $(DEF_LIBTDS) # -DUSE_THREADS
+  $(DEF_LIBPQ) $(DEF_LIBSNMP) $(DEF_LIBTDS) $(DEF_LIBESMTP) # -DUSE_THREADS
 BUILT_SOURCES = cmd_options.h cmd_options.c $(SPECFILES) $(INITFILES)
 INCLUDES = -I../upwatch 
 EXTRA_DIST = cmd_options.def $(program).conf
-LDADD = $(DB_O) $(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @MYSQL_LIBS@ @LIBGLIB2_LIBS@ @LIBXML2_LIBS@ $(SOLARISLIBS)
+LDADD = $(DB_O) $(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @LIBESMTP_LIBS@ @MYSQL_LIBS@ \
+  @LIBGLIB2_LIBS@ @LIBXML2_LIBS@ $(SOLARISLIBS)
 include $(top_srcdir)/Makefile.am.common
 
 run.c: ../probes.enum
