@@ -74,13 +74,15 @@ int run(void)
     close_database(mysql);
   }
 
-  if (debug > 0) LOG(LOG_DEBUG, "running %d probes", g_hash_table_size(cache));
-  uw_setproctitle("running %d probes", g_hash_table_size(cache));
-  run_actual_probes(); /* this runs the actual probes */
+  if (g_hash_table_size(cache) > 0) {
+    if (debug > 0) LOG(LOG_DEBUG, "running %d probes", g_hash_table_size(cache));
+    uw_setproctitle("running %d probes", g_hash_table_size(cache));
+    run_actual_probes(); /* this runs the actual probes */
 
-  if (debug > 0) LOG(LOG_DEBUG, "writing results");
-  uw_setproctitle("writing results");
-  write_results();
+    if (debug > 0) LOG(LOG_DEBUG, "writing results");
+    uw_setproctitle("writing results");
+    write_results();
+  }
 
   return(g_hash_table_size(cache));
 }

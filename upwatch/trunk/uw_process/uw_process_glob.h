@@ -47,18 +47,32 @@ typedef struct _module {
   int res_size;
   int count;
   int errors;
+#define NO_FREE_DEF NULL
   void (*free_def)(void *def);
+#define NO_FREE_RES NULL
   void (*free_res)(void *res);
+#define NO_INIT NULL
   int (*init)(void);
+#define NO_START_RUN NULL
   void (*start_run)(void);
+#define NO_ACCEPT_PROBE NULL
   int (*accept_probe)(struct _module *probe, const char *name);
+#define NO_XML_RESULT_NODE NULL
   void (*xml_result_node)(struct _module *probe, xmlDocPtr, xmlNodePtr, xmlNsPtr, void *res);
+#define NO_GET_FROM_XML NULL
   void (*get_from_xml)(struct _module *probe, xmlDocPtr, xmlNodePtr, xmlNsPtr, void *res);
+#define NO_FIX_RESULT NULL
   int  (*fix_result)(struct _module *probe, void *res);
+#define NO_GET_DEF NULL
   void *(*get_def)(struct _module *probe, void *res);
+#define NO_STORE_RESULTS NULL
   gint (*store_results)(struct _module *probe, void *def, void *res, guint *seen_before);
+#define NO_SUMMARIZE NULL
   void (*summarize)(struct _module *probe, void *def, void *res, char *from, char *into, 
                     guint slot, guint slotlow, guint slothigh, gint ignoredupes);
+#define NO_END_PROBE NULL
+  void (*end_probe)(struct _module *probe, void *def, void *res);
+#define NO_END_RUN NULL
   void (*end_run)(void);
 } module;
 

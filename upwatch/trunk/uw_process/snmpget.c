@@ -132,17 +132,18 @@ static void summarize(module *probe, void *probe_def, void *probe_res, char *fro
 
 module snmpget_module  = {
   STANDARD_MODULE_STUFF(snmpget),
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
+  NO_FREE_DEF,
+  NO_FREE_RES,
+  NO_INIT,
+  NO_START_RUN,
+  NO_ACCEPT_PROBE,
+  NO_XML_RESULT_NODE,
   get_from_xml,
-  NULL,
-  NULL,
+  NO_FIX_RESULT,
+  NO_GET_DEF,
   store_raw_result,
   summarize,
-  NULL
+  NO_END_PROBE,
+  NO_END_RUN
 };
 

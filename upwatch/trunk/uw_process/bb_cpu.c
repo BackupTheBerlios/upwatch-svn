@@ -282,17 +282,18 @@ static void summarize(module *probe, void *probe_def, void *probe_res, char *fro
 
 module bb_cpu_module  = {
   STANDARD_MODULE_STUFF(bb_cpu),
-  NULL,
-  NULL,    
-  NULL,    
-  NULL,    
-  NULL,
-  NULL,    
-  NULL,
+  NO_FREE_DEF,
+  NO_FREE_RES,
+  NO_INIT,
+  NO_START_RUN,
+  NO_ACCEPT_PROBE,
+  NO_XML_RESULT_NODE,
+  NO_GET_FROM_XML,
   fix_result,    
   get_def,
   store_raw_result,
   summarize,
-  NULL
+  NO_END_PROBE,
+  NO_END_RUN
 };
 

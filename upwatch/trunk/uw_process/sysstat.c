@@ -309,17 +309,18 @@ static void summarize(module *probe, void *probe_def, void *probe_res, char *fro
 
 module sysstat_module  = {
   STANDARD_MODULE_STUFF(sysstat),
-  NULL,
-  NULL,
-  NULL,
-  NULL,
+  NO_FREE_DEF,
+  NO_FREE_RES,
+  NO_INIT,
+  NO_START_RUN,
   accept_probe,
-  NULL,
+  NO_XML_RESULT_NODE,
   get_from_xml,
-  NULL,
+  NO_FIX_RESULT,
   get_def,
   store_raw_result,
   summarize,
-  NULL
+  NO_END_PROBE,
+  NO_END_RUN
 };
 

@@ -11,7 +11,28 @@
 
 struct bb_result {
   STANDARD_PROBE_RESULT;
+  char *bbname;
 };
+
+static void free_res(void *res)
+{
+  struct bb_result *r = (struct bb_result *)res;
+
+  if (r->bbname) {
+    g_free(r->bbname);
+  }
+}
+
+//*******************************************************************
+// GET THE INFO FROM THE XML FILE
+// Caller must free the pointer it returns
+//*******************************************************************
+static void xml_result_node(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
+{
+  struct bb_result *res = (struct bb_result *)probe_res;
+
+  res->bbname = xmlGetProp(cur, (const xmlChar *) "bbname");
+}
 
 //*******************************************************************
 // Only used for debugging
@@ -60,7 +81,7 @@ static void *get_def(module *probe, void *probe_res)
   // first find the definition based on the serverid
   result = my_query(probe->db, 0,
                     "select id from pr_bb_def "
-                    "where  bbname = '%s' and server = '%u'", res->name, res->server);
+                    "where  bbname = '%s' and server = '%u'", res->bbname, res->server);
   if (!result) {
     g_free(def);
     return(NULL);
@@ -79,7 +100,8 @@ static void *get_def(module *probe, void *probe_res)
       if (row) {
         if (row[0]) def->color  = atoi(row[0]);
       } else {
-        LOG(LOG_NOTICE, "pr_status record for %s id %u (%s) not found", res->name, res->probeid, def->server);
+        LOG(LOG_NOTICE, "pr_status record for %s id %u (server %s) not found", 
+                         res->name, res->probeid, res->hostname);
       }
       mysql_free_result(result);
     } else {
@@ -90,12 +112,12 @@ static void *get_def(module *probe, void *probe_res)
     // no def record found? Create one. pr_status will be done later.
     mysql_free_result(result);
     result = my_query(probe->db, 0,
-                      "insert into pr_bb_def set server = '%u', " 
+                      "insert into pr_%s_def set server = '%u', " 
                       "       description = '%s', bbname = '%s'", 
-                       res->name, res->server, res->hostname, res->name);
+                       res->name, res->server, res->hostname, res->bbname);
     mysql_free_result(result);
     res->probeid = mysql_insert_id(probe->db);
-    LOG(LOG_NOTICE, "pr_generic_def %s created for %s, id = %u", res->name, res->hostname, res->probeid);
+    LOG(LOG_NOTICE, "pr_bb_def %s created for %s, id = %u", res->bbname, res->hostname, res->probeid);
   }
   def->probeid = res->probeid;
   def->server = res->server;
@@ -104,18 +126,25 @@ static void *get_def(module *probe, void *probe_res)
   return(def);
 }
 
+static void end_probe(module *probe, void *def, void *res)
+{
+  g_free(def);
+}
+
 module bb_module  = {
   STANDARD_MODULE_STUFF(bb),
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
+  NO_FREE_DEF,
+  free_res,
+  NO_INIT,
+  NO_START_RUN,
+  NO_ACCEPT_PROBE,
+  xml_result_node,
+  NO_GET_FROM_XML,
   fix_result,
   get_def,
-  NULL,
-  NULL,
-  NULL
+  NO_STORE_RESULTS,
+  NO_SUMMARIZE,
+  end_probe,
+  NO_END_RUN
 };
+

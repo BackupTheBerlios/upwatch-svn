@@ -242,6 +242,10 @@ int run(void)
     LOG(LOG_ERR, "no database, no cached info - bailing out");
     return 0;
   }
+  if (num_hosts == 0) {
+    return 0;
+  }
+
   uw_setproctitle("running %d probes", num_hosts);
   run_actual_probes(num_hosts); /* this runs the actual probes */
   if (debug > 0) LOG(LOG_DEBUG, "done running probes");

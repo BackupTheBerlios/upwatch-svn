@@ -78,14 +78,15 @@ int run(void)
     close_database(mysql);
   }
 
-  if (debug > 0) LOG(LOG_DEBUG, "running %d probes", g_hash_table_size(cache));
-  uw_setproctitle("running %d probes", g_hash_table_size(cache));
-  run_actual_probes(g_hash_table_size(cache)); /* this runs the actual probes */
+  if (g_hash_table_size(cache) > 0) {
+    if (debug > 0) LOG(LOG_DEBUG, "running %d probes", g_hash_table_size(cache));
+    uw_setproctitle("running %d probes", g_hash_table_size(cache));
+    run_actual_probes(g_hash_table_size(cache)); /* this runs the actual probes */
 
-  if (debug > 0) LOG(LOG_DEBUG, "writing results");
-  uw_setproctitle("writing results");
-  write_results();
-
+    if (debug > 0) LOG(LOG_DEBUG, "writing results");
+    uw_setproctitle("writing results");
+    write_results();
+  }
   return(g_hash_table_size(cache));
 }
 
@@ -267,7 +268,7 @@ void probe(gpointer data, gpointer user_data)
   curl_easy_setopt(curl, CURLOPT_NOPROGRESS, TRUE);
   curl_easy_setopt(curl, CURLOPT_TIMEOUT, 50L);
   curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 10L);
-  //host->ret = curl_easy_perform(curl);
+  curl_easy_perform(curl);
 
   // Pass a pointer to a double to receive the time, in seconds, it took from the start
   // until the name resolving was completed.

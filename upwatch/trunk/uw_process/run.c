@@ -86,7 +86,7 @@ static void modules_init(void)
     }
     if (modules[i]->cache == NULL) {
       modules[i]->cache = g_hash_table_new_full(g_int_hash, g_int_equal, g_free, 
-                            modules[i]->free_def? modules[i]->free_def : g_free);
+                            modules[i]->free_def ? modules[i]->free_def : g_free);
     }
   }
 }
@@ -306,7 +306,7 @@ static int handle_file(gpointer data, gpointer user_data)
     cur = cur->next;
   }
   if (cur == 0) {
-    LOG(LOG_NOTICE, "%s: wrong type, empty file", filename);
+    LOG(LOG_NOTICE, "%s: empty file", filename);
     if (fromhost) g_free(fromhost);
     xmlFreeDoc(doc);
     unlink(filename);

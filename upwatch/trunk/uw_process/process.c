@@ -608,6 +608,10 @@ finish:
   g_free(prv);
 
 exit_with_res:
+  if (probe->end_probe) {
+    probe->end_probe(probe, def, res);
+  }
+
   // free the result block
   if (res) {
     if (probe->free_res) {

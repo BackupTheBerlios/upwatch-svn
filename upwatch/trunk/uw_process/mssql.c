@@ -16,17 +16,18 @@ struct mssql_result {
 
 module mssql_module  = {
   STANDARD_MODULE_STUFF(mssql),
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
-  NULL,
+  NO_FREE_DEF,
+  NO_FREE_RES,
+  NO_INIT,
+  NO_START_RUN,
+  NO_ACCEPT_PROBE,
+  NO_XML_RESULT_NODE,
   ct_get_from_xml,
-  NULL,
-  NULL,
+  NO_FIX_RESULT,
+  NO_GET_DEF,
   ct_store_raw_result,
   ct_summarize,
-  NULL
+  NO_END_PROBE,
+  NO_END_RUN
 };
 
