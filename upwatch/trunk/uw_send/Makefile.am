@@ -1,6 +1,5 @@
 include $(top_srcdir)/Makefile.am.path
 
-AM_CFLAGS += -I$(INCL_ST) -DUSE_ST
 program = uw_send
 sbin_PROGRAMS = $(program)
 man_MANS = uw_send.1
@@ -9,7 +8,7 @@ init_DATA = $(INITFILES)
 
 uw_send_SOURCES = run.c uw_send.c uw_send.h uw_send.def $(SPECFILES) $(INITFILES)
 uw_send_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ $(AM_CFLAGS)
-uw_send_LDADD = uw_send_$(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) $(LIBST) @LIBGLIB2_LIBS@
+uw_send_LDADD = uw_send_$(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @LIBGLIB2_LIBS@
 
 BUILT_SOURCES = $(program:%=%.1) $(program:%=%.h) $(program:%=%.c) $(SPECFILES) $(INITFILES)
 INCLUDES = -I../upwatch

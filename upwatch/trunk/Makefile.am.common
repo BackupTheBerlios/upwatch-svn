@@ -56,6 +56,6 @@ probe.def_h probe.res_h probe.enum probe.def_mysql probe.raw_mysql probe.dtd pro
 %.spec-requires %.spec-buildrequires %.spec-files: %.def
 	autogen -b $(<:%.def=%) $(AGDEFINES) $(GENINCL) -T $(SPECTPL) $<
 
-CLEANFILES = $(program:%=%.c) $(program:%=%.h) $(program:%=%.1) Makefile.in \
+CLEANFILES = $(program:%=%.c) $(program:%=%.h) $(program:%=%.1) \
   $(PROBFILES) $(SPECFILES) $(INITFILES)
 

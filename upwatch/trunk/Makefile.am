@@ -68,7 +68,7 @@ export TOP_SRCDIR = $(top_srcdir)
 if ENABLE_SERVER
 SUBDIRS = upwatch st-1.4 ${XMBMON} libstatgrab ${PROGNAMES} compat util scripts config common
 else
-SUBDIRS = upwatch st-1.4 ${XMBMON} libstatgrab ${PROGNAMES} util config common
+SUBDIRS = upwatch ${XMBMON} libstatgrab ${PROGNAMES} util scripts config common 
 endif
 
 DIST_SUBDIRS = ${SUBDIRS} doc

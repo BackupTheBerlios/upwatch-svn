@@ -215,10 +215,18 @@ if test -f /usr/lib/libopts.a
 then
   LIBOPTS=/usr/lib/libopts.a
 fi
+if test -f /usr/lib64/libopts.a
+then
+  LIBOPTS=/usr/lib64/libopts.a
+fi
 
 if test -f /usr/local/lib/libopts.a
 then
   LIBOPTS=/usr/local/lib/libopts.a
+fi
+if test -f /usr/local/lib64/libopts.a
+then
+  LIBOPTS=/usr/local/lib64/libopts.a
 fi
 AC_SUBST(LIBOPTS)
 
@@ -380,6 +388,16 @@ fi
 AC_SUBST(LIBXML2_CFLAGS)
 AC_SUBST(LIBXML2_LIBS)
 
+# STATE THREADS
+AC_CHECK_LIB(st, st_init, HAS_ST=yes, HAS_ST=no)
+if test ${HAS_ST} = yes ; then
+  LIBSTLIBS=-lst
+else
+  AC_MSG_ERROR([Sorry, we really need libst to continue])
+fi
+AC_SUBST(LIBST_CFLAGS)
+AC_SUBST(LIBST_LIBS)
+
 # THREADS
 AC_CHECK_LIB(pthread, pthread_create, HAS_PTHREADS=yes, HAS_PTHREADS=no)
 if test ${HAS_PTHREADS} = yes ; then
@@ -470,9 +488,9 @@ then
 	else
 		AC_MSG_ERROR([You really need libesmtp to compile upwatch server])
 	fi
-	AM_CONDITIONAL(HAVE_LIBESMTP, test $HAVE_LIBESMTP -eq 1)
 	AC_SUBST(LIBESMTP_LIBS)
 fi
+AM_CONDITIONAL(HAVE_LIBESMTP, test "$HAVE_LIBESMTP" = "1")
 
 # readline
 AC_CHECK_LIB([readline], [readline], [HAVE_LIBREADLINE=1], [HAVE_LIBREADLINE=0], -lncurses)
@@ -584,13 +602,18 @@ AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([doc/Makefile])
 AC_CONFIG_FILES([config/Makefile])
 AC_CONFIG_FILES([common/Makefile])
-AC_CONFIG_FILES([st-1.4/Makefile])
 AC_CONFIG_FILES([upwatch/Makefile])
 AC_CONFIG_FILES([util/Makefile])
 AC_CONFIG_FILES([uw_send/Makefile])
 AC_CONFIG_FILES([uw_sysstat/Makefile])
 AC_CONFIG_FILES([uw_sysstat/os/Makefile])
 AC_CONFIG_FILES([uw_null/Makefile])
+AC_CONFIG_FILES([scripts/Makefile])
+
+if test "$enable_server" = "yes" -o "$enable_monitors" = "yes"
+then
+AC_CONFIG_FILES([st-1.4/Makefile])
+fi
 
 # server 
 if test "$enable_server" = "yes"
@@ -602,7 +625,6 @@ AC_CONFIG_FILES([uw_purple/Makefile])
 AC_CONFIG_FILES([uw_route/Makefile])
 AC_CONFIG_FILES([uw_process/Makefile])
 AC_CONFIG_FILES([uw_syncprobes/Makefile])
-AC_CONFIG_FILES([scripts/Makefile])
 AC_CONFIG_FILES([compat/Makefile])
 AC_CONFIG_FILES([compat/sometests/Makefile])
 AC_CONFIG_FILES([compat/sometests/setproctitle/Makefile])

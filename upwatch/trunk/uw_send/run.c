@@ -8,7 +8,21 @@
 #include <netinet/in.h>
 
 #include <generic.h>
+#ifdef USE_ST
 #include <st.h>
+#else
+int st_read(int fd, void *buf, size_t size, int timeout)
+{
+  return(read(fd, buf, size));
+}
+
+int st_write(int fd, void *buf, size_t size, int timeout)
+{
+  return(write(fd, buf, size));
+}
+#define st_netfd_fileno 
+#define st_netfd_t int
+#endif
 #include "uw_send.h"
 
 struct q_info {
@@ -150,6 +164,7 @@ static char path[PATH_MAX];
     td = g_malloc0(sizeof(struct thr_data));
     td->q = q;
     td->filename = strdup(buffer);
+#ifdef USE_ST
     if (st_thread_create(push, td, 0, 0) == NULL) { 
       LOG(LOG_WARNING, "couldn't create thread");
       st_sleep(1);
@@ -160,30 +175,43 @@ static char path[PATH_MAX];
     while (q->thread_count >= q->maxthreads) {
       st_usleep(10000); /* 10 ms */
     }
+#else
+    push(td);
+#endif
   }
   g_dir_close(dir);
+#ifdef USE_ST
   thread_count--;
+#endif
   return NULL;
 }
 
 static void create_q_threads(gpointer key, gpointer value, gpointer user_data)
 {
+#ifdef USE_ST
   if (st_thread_create(read_queue, value, 0, 0) == NULL) { 
     LOG(LOG_WARNING, "couldn't create queue thread for %s", (char *)key);
   } else {
     if (debug > 3) { LOG(LOG_DEBUG, "created new thread"); }
     thread_count++;
   }
+#else
+  read_queue(value);
+#endif
 }
 
 int run(void)
 {
+#ifdef USE_ST
   st_usleep(1); //force context switch so timers will work
+#endif
   g_hash_table_foreach(hash, create_q_threads, NULL);
+#ifdef USE_ST
   if (debug > 3) { LOG(LOG_DEBUG, "waiting for all threads to finish"); }
   while (thread_count) {
     st_usleep(10000); /* 10 ms */
   }
+#endif
   if (HAVE_OPT(HANGUPSCRIPT) && online) {
     int status;
 
@@ -246,6 +274,7 @@ void *push(void *data)
     goto quit;
   }
   uw_setproctitle("connecting to %s:%d", q->host, q->port);
+#ifdef USE_ST
   if ((rmt_nfd = st_netfd_open_socket(sock)) == NULL) {
     LOG(LOG_ERR, "st_netfd_open_socket: %m", strerror(errno));
     close(sock);
@@ -259,18 +288,33 @@ void *push(void *data)
     q->fatal = 1;
     goto quit;
   }
+#else
+  rmt_nfd = sock;
+  if (connect(rmt_nfd, (struct sockaddr *)&server, sizeof(server)) < 0) {
+    LOG(LOG_ERR, "%s:%d: %m", q->host, q->port, strerror(errno));
+    close(rmt_nfd);
+    q->fatal = 1;
+    goto quit;
+  }
+#endif
 
   if (pushto(rmt_nfd, td)) {
     LOG(LOG_INFO, "uploaded %s", td->filename); 
     unlink(td->filename);
   }
+#ifdef USE_ST
   st_netfd_close(rmt_nfd);
+#else
+  close(rmt_nfd);
+#endif
 
 quit:
   free(td->filename);
   free(td);
+#ifdef USE_ST
   q->thread_count--;
   thread_count--;
+#endif
   return NULL;
 }
 
@@ -306,7 +350,7 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
     if (errno == ETIME) { 
       LOG(LOG_WARNING, "timeout reading login request string"); 
     } else { 
-      LOG(LOG_WARNING, "st_read: %m"); 
+      LOG(LOG_WARNING, "read: %m"); 
     }
     return 0;
   }
@@ -324,7 +368,7 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
     if (errno == ETIME) { 
       LOG(LOG_WARNING, "timeout writing %s", buffer); 
     } else { 
-      LOG(LOG_WARNING, "st_write: %m"); 
+      LOG(LOG_WARNING, "write: %m"); 
     }
     return 0;
   }
@@ -336,7 +380,7 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
     if (errno == ETIME) { 
       LOG(LOG_WARNING, "timeout reading OK enter password"); 
     } else { 
-      LOG(LOG_WARNING, "st_read: %m"); 
+      LOG(LOG_WARNING, "read: %m"); 
     }
     return 0;
   }
@@ -354,7 +398,7 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
     if (errno == ETIME) { 
       LOG(LOG_WARNING, "timeout writing %s", buffer); 
     } else { 
-      LOG(LOG_WARNING, "st_write: %m"); 
+      LOG(LOG_WARNING, "write: %m"); 
     }
     return 0;
   }
@@ -366,7 +410,7 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
     if (errno == ETIME) { 
       LOG(LOG_WARNING, "timeout reading enter command"); 
     } else { 
-      LOG(LOG_WARNING, "st_read: %m"); 
+      LOG(LOG_WARNING, "read: %m"); 
     }
     return 0;
   }
@@ -384,7 +428,7 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
     if (errno == ETIME) { 
       LOG(LOG_WARNING, "timeout writing %s", buffer); 
     } else { 
-      LOG(LOG_WARNING, "st_write: %m"); 
+      LOG(LOG_WARNING, "write: %m"); 
     }
     return 0;
   }
@@ -396,7 +440,7 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
     if (errno == ETIME) { 
       LOG(LOG_WARNING, "timeout reading DATA response"); 
     } else { 
-      LOG(LOG_WARNING, "st_read: %m"); 
+      LOG(LOG_WARNING, "read: %m"); 
     }
     return 0;
   }
@@ -420,7 +464,7 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
       if (errno == ETIME) { 
         LOG(LOG_WARNING, "timeout writing %s", buffer); 
       } else { 
-        LOG(LOG_WARNING, "st_write: %m"); 
+        LOG(LOG_WARNING, "write: %m"); 
       }
       fclose(in);
       return 0;
@@ -447,7 +491,7 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
     if (errno == ETIME) { 
       LOG(LOG_WARNING, "timeout reading enter command"); 
     } else { 
-      LOG(LOG_WARNING, "st_read: %m"); 
+      LOG(LOG_WARNING, "read: %m"); 
     }
     return 0;
   }
@@ -465,7 +509,7 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
     if (errno == ETIME) { 
       LOG(LOG_WARNING, "timeout writing %s", buffer); 
     } else { 
-      LOG(LOG_WARNING, "st_write: %m"); 
+      LOG(LOG_WARNING, "write: %m"); 
     }
     return 0;
   }
@@ -477,7 +521,7 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
     if (errno == ETIME) { 
       LOG(LOG_WARNING, "timeout reading QUIT response", buffer); 
     } else { 
-      LOG(LOG_WARNING, "st_read: %m"); 
+      LOG(LOG_WARNING, "read: %m"); 
     }
     return 0;
   }
