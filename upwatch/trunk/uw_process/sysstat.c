@@ -147,9 +147,9 @@ static void *get_def(module *probe, void *probe_res)
     if (result) {
       row = mysql_fetch_row(result);
       if (row) {
-        def->server   = atoi(row[0]);
-        def->color    = atoi(row[1]); 
-        def->stattime = atoi(row[2]); // just in case the next query fails
+        def->server = atoi(row[0]);
+        def->color  = atoi(row[1]); 
+        def->newest = atoi(row[2]); // just in case the next query fails
       }
       mysql_free_result(result);
     } else {
@@ -169,6 +169,17 @@ static void *get_def(module *probe, void *probe_res)
       }
     }
 
+    result = my_query("select stattime from pr_%s_raw use index(probtime) "
+                      "where probe = '%u' order by stattime desc limit 1",
+                       probe->name, def->probeid);
+    if (result) {
+      row = mysql_fetch_row(result);
+      if (row && mysql_num_rows(result) > 0) {
+        if (row[0]) def->newest = atoi(row[0]);
+      }
+      mysql_free_result(result);
+    }
+
     g_hash_table_insert(probe->cache, guintdup(res->server), def);
   }
   return(def);
@@ -186,7 +197,7 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
   int already_there = TRUE;
     
   result = my_query("insert into pr_sysstat_raw "
-                    "set    probe = '%u', yellow = '%d', red = '%d', stattime = '%u', color = '%u', "
+                    "set    probe = '%u', yellow = '%u', red = '%u', stattime = '%u', color = '%u', "
                     "       loadavg = '%f', user = '%u', system = '%u', idle = '%u', "
                     "       swapin = '%u', swapout = '%u', blockin = '%u', blockout = '%u', "
                     "       swapped = '%u', free = '%u', buffered = '%u', cached = '%u', "
@@ -264,7 +275,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
                     "       swapin = '%u', swapout = '%u', blockin = '%u', blockout = '%u', "
                     "       swapped = '%u', free = '%u', buffered = '%u', cached = '%u', "
                     "       used = '%u', systemp = '%d', probe = %d, color = '%u', stattime = %d, "
-                    "       yellow = '%d', red = '%d'",
+                    "       yellow = '%u', red = '%u'",
                     into, 
                     avg_loadavg, avg_user, avg_system, avg_idle, 
                     avg_swapin, avg_swapout, avg_blockin, avg_blockout, 

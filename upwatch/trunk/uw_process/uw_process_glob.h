@@ -20,7 +20,7 @@ struct probe_result {
   gint  yellow; \
   gint  red; \
   guint color; \
-  guint stattime; \
+  guint newest; \
 
 struct probe_def{
   STANDARD_PROBE_DEF;

@@ -1,6 +1,7 @@
 <!ELEMENT result	((ping|httpget|iptraf|sysstat|bb_disk|bb_bgp|bb_conn|bb_cpu|bb_dhcp|bb_dns|
                           bb_ftp|bb_http|bb_hylafax|bb_ismtp|bb_msgs|bb_mysql|bb_pop3|
                           bb_procs|bb_radius|bb_smtp|bb_squid|bb_svcs)*)>
+<!ATTLIST result	fromhost #REQUIRED> 
 
 <!ELEMENT host		(hostname,ipaddress?)>
 <!ELEMENT hostname      (#PCDATA)>

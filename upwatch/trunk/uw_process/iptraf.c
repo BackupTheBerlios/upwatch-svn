@@ -105,9 +105,9 @@ static void *get_def(module *probe, void *probe_res)
     if (result) {
       row = mysql_fetch_row(result);
       if (row) {
-        def->server   = atoi(row[0]);
-        def->color    = atoi(row[1]);
-        def->stattime = atoi(row[2]); // just in case the next query fails
+        def->server = atoi(row[0]);
+        def->color  = atoi(row[1]);
+        def->newest = atoi(row[2]); // just in case the next query fails
       }
       mysql_free_result(result);
     } else {
@@ -140,7 +140,7 @@ static void *get_def(module *probe, void *probe_res)
         if (row[2]) def->slotday_max_color  = atoi(row[2]);
         if (row[3]) def->slotday_avg_yellow = atoi(row[3]);
         if (row[4]) def->slotday_avg_red    = atoi(row[4]);
-        if (row[5]) def->stattime           = atoi(row[5]);
+        if (row[5]) def->newest             = atoi(row[5]);
       }
       mysql_free_result(result);
     } else {
@@ -209,7 +209,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
 
   stattime = slotlow + ((slothigh-slotlow)/2);
 
-  if (strcmp(into, "day") == 0 && res->stattime > def->stattime) {
+  if (strcmp(into, "day") == 0 && res->stattime > def->newest) {
     in_total = def->slotday_in_total;
     out_total = def->slotday_out_total;
     max_color = def->slotday_max_color;

@@ -104,7 +104,7 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
   int already_there = TRUE;
     
   result = my_query("insert into pr_ping_raw "
-                    "set    probe = '%u', yellow = '%d', red = '%d', stattime = '%u', color = '%u', "
+                    "set    probe = '%u', yellow = '%u', red = '%u', stattime = '%u', color = '%u', "
                     "       value = '%f', lowest = '%f', highest = '%f', message = '%s'",
                     def->probeid, def->yellow, def->red, res->stattime, res->color, 
                     res->value, res->lowest, res->highest, res->message ? res->message : "");
@@ -130,8 +130,8 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
 
   stattime = slotlow + ((slothigh-slotlow)/2);
 
-  result = my_query("select avg(lowest), avg(value), " 
-                    "       avg(highest), max(color), avg(yellow), avg(red) " 
+  result = my_query("select avg(lowest), avg(value), avg(highest), "
+                    "       max(color), avg(yellow), avg(red) " 
                     "from   pr_ping_%s use index(probtime) "
                     "where  probe = '%d' and stattime >= %d and stattime < %d",
                     from, def->probeid, slotlow, slothigh);
@@ -157,7 +157,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
 
   result = my_query("insert into pr_ping_%s " 
                     "set    value = %f, lowest = %f, highest = %f, probe = %d, color = '%u', " 
-                    "       stattime = %d, yellow = '%d', red = '%d'",
+                    "       stattime = %d, yellow = '%u', red = '%u'",
                     into, avg_value, min_lowest, max_highest, def->probeid, 
                     max_color, stattime, avg_yellow, avg_red);
   mysql_free_result(result);

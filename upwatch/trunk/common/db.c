@@ -73,7 +73,7 @@ MYSQL_RES *my_query(char *fmt, ...)
   va_start(arg, fmt);
   vsnprintf(qry, sizeof(qry), fmt, arg);
   va_end(arg);
-  if (debug > 3) printf("%s\n", qry);
+  if (debug > 3) LOG(LOG_DEBUG, qry);
 
   if (mysql_query(mysql, qry)) {
     LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql));

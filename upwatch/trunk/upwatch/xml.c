@@ -1,4 +1,7 @@
 #include "generic.h"
+#include <unistd.h>
+
+
 
 #ifdef DMALLOC 
 #include "dmalloc.h"
@@ -23,12 +26,17 @@ xmlDocPtr UpwatchXmlDoc(const char *root)
   xmlDocPtr doc;
   xmlNodePtr tree;
   xmlNsPtr uwns;
+  char hostname[256];
 
   xmlKeepBlanksDefault(0);
   doc = xmlNewDoc("1.0");
   xmlCreateIntSubset(doc, root, NULL, PATH_RESULT_DTD);
 
   tree = xmlNewChild((xmlNodePtr)doc, NULL, root, NULL);
+  if (gethostname(hostname, sizeof(hostname))) {
+    strcpy(hostname, "localhost"); // we have to have something
+  }
+  xmlSetProp(tree, "fromhost", hostname);
   uwns = xmlNewNs(tree, (xmlChar*) NAMESPACE_URL, (xmlChar*) NULL);
 		    
   return doc;

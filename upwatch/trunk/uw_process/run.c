@@ -234,7 +234,6 @@ static int handle_file(gpointer data, gpointer user_data)
   if (failures) {
     xmlSaveFormatFile(OPT_ARG(FAILURES), doc, 1);
   }
-  //xmlDocFormatDump(stderr, doc, 1);
   xmlFreeDoc(doc);
   if (!fatal) {
     if (debug > 1) LOG(LOG_DEBUG, "Processed %d probes", probe_count);
@@ -274,11 +273,11 @@ static void *get_def(module *probe, struct probe_result *res)
     if (result) {
       row = mysql_fetch_row(result);
       if (row) {
-        if (row[0]) def->server   = atoi(row[0]);
-        if (row[1]) def->color    = atoi(row[1]);
-        if (row[2]) def->stattime = atoi(row[2]);
-        if (row[3]) def->yellow   = atoi(row[3]);
-        if (row[4]) def->red      = atoi(row[4]);
+        if (row[0]) def->server = atoi(row[0]);
+        if (row[1]) def->color  = atoi(row[1]);
+        if (row[2]) def->newest = atoi(row[2]);
+        if (row[3]) def->yellow = atoi(row[3]);
+        if (row[4]) def->red    = atoi(row[4]);
       } else {
         LOG(LOG_NOTICE, "pr_status record for %s id %u not found", probe->name, def->probeid);
       }
@@ -308,7 +307,7 @@ static void *get_def(module *probe, struct probe_result *res)
     if (result) {
       row = mysql_fetch_row(result);
       if (row && mysql_num_rows(result) > 0) {
-        if (row[0]) def->stattime = atoi(row[0]);
+        if (row[0]) def->newest = atoi(row[0]);
       }
       mysql_free_result(result);
     }
@@ -610,15 +609,15 @@ static int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
     seen_before = FALSE;
   }
 
-  if (res->stattime > def->stattime) { // IF CURRENT RAW RECORD IS THE MOST RECENT 
+  if (res->stattime > def->newest) { // IF CURRENT RAW RECORD IS THE MOST RECENT 
     prv = g_malloc0(sizeof(struct probe_result));
     prv->color = def->color;  // USE PREVIOUS COLOR FROM DEF RECORD
-    prv->stattime = def->stattime;
+    prv->stattime = def->newest;
   } else {
     prv = get_previous_record(probe, def, res); // RETRIEVE PRECEDING RAW RECORD FROM DATABASE
   }
 
-  if (def->stattime == 0) { // IF THIS IS THE FIRST RESULT EVER FOR THIS PROBE
+  if (def->newest == 0) { // IF THIS IS THE FIRST RESULT EVER FOR THIS PROBE
     insert_pr_status(probe->class, def, res);
     must_update_def = TRUE;
   } else {
@@ -634,18 +633,18 @@ static int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
           }
           g_free(nxt);
         }
-        if (res->stattime > def->stattime) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED
+        if (res->stattime > def->newest) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED
           update_pr_status(probe->class, def, res);  // UPDATE PR_STATUS
           update_server_color(def, res); // UPDATE SERVER COLOR
           must_update_def = TRUE;
         }
       } else {
-        if (res->stattime > def->stattime) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED
+        if (res->stattime > def->newest) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED
           must_update_def = TRUE;
         }
       }
       if (probe->summarize) { // if we have a summarisation function
-        if (res->stattime > def->stattime) { // IF CURRENT RAW RECORD IS THE MOST RECENT
+        if (res->stattime > def->newest) { // IF CURRENT RAW RECORD IS THE MOST RECENT
           guint cur_slot, prev_slot;
           gulong slotlow, slothigh;
           gulong dummy_low, dummy_high;
@@ -655,6 +654,11 @@ static int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
             prev_slot = uw_slot(summ_info[i].period, prv->stattime, &slotlow, &slothigh);
             cur_slot = uw_slot(summ_info[i].period, res->stattime, &dummy_low, &dummy_high);
             if (cur_slot != prev_slot) { // IF WE ENTERED A NEW SLOT, SUMMARIZE PREVIOUS SLOT
+              //if (strcmp(probe->name, "sysstat") == 0) {
+              //  LOG(LOG_DEBUG, "cur(%u for %u) != prv(%u for %u), summarizing %s from %u to %u",
+              //                 cur_slot, res->stattime, prev_slot, prv->stattime,
+              //                 summ_info[i].from, slotlow, slothigh);
+              //}
               probe->summarize(def, res, summ_info[i].from, summ_info[i].to, slotlow, slothigh);
             }
           }
@@ -680,7 +684,7 @@ static int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
     }
   }
   if (must_update_def) {
-    def->stattime = res->stattime;
+    def->newest = res->stattime;
     def->color = res->color;
   }
   g_free(prv);

@@ -109,8 +109,8 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
 
   stattime = slotlow + ((slothigh-slotlow)/2);
 
-  result = my_query("select avg(lookup), avg(connect), avg(pretransfer), "
-                    "       avg(total), max(color), avg(yellow), avg(red) "
+  result = my_query("select avg(lookup), avg(connect), avg(pretransfer), avg(total), "
+                    "       max(color), avg(yellow), avg(red) "
                     "from   pr_httpget_%s use index(probtime) "
                     "where  probe = '%d' and stattime >= %d and stattime < %d",
                     from, def->probeid, slotlow, slothigh);
