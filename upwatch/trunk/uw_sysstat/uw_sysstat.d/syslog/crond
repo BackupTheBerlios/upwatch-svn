@@ -1,6 +1,0 @@
-ignore [LOGDATE] crond: crond shutdown succeeded
-ignore [LOGDATE] crond: crond startup succeeded
-ignore [LOGDATE] CROND[PID]: ([USER]) CMD \(.*\) 
-ignore [LOGDATE] crond[PID]: (CRON) STARTUP (fork ok) 
-ignore [LOGDATE] CROND[PID]: ([USER]) MAIL (mailed [NUM] bytes of output but got status [NUM]xffffffff ) 
-ignore [LOGDATE] CROND[PID]: ([USER]) MAIL (mailed [NUM] bytes of output but got status [NUM] ) 

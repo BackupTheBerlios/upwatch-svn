@@ -1,4 +1,0 @@
-ignore [LOGDATE] dhcpcd[PID]: arpRelease: sendto: Network is down 
-ignore [LOGDATE] dhcpcd[PID]: dhcpRelease: sendto: Network is down 
-ignore [LOGDATE] dhcpcd[PID]: terminating on signal [NUM] 
-ignore [LOGDATE] dhcpcd[PID]: timed out waiting for a valid DHCP server response  

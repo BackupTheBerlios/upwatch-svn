@@ -1,3 +1,0 @@
-ignore [LOGDATE] telnetd[PID]: ttloop: peer died: EOF 
-ignore [LOGDATE] telnetd[PID]: ttloop:  peer died: Invalid or incomplete multibyte or wide character 
-ignore [LOGDATE] telnetd[PID]: ttloop: read: Connection reset by peer 

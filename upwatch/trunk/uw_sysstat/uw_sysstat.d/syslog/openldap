@@ -1,3 +1,0 @@
-ignore [LOGDATE] ldap: slapd shutdown failed
-ignore [LOGDATE] ldap: slapd shutdown succeeded
-ignore [LOGDATE] ldap: slapd startup succeeded

@@ -1,3 +1,0 @@
-ignore [LOGDATE] spamassassin: spamd shutdown failed
-ignore [LOGDATE] spamassassin: spamd shutdown succeeded
-ignore [LOGDATE] spamassassin: spamd startup succeeded

@@ -1,5 +1,0 @@
-ignore [LOGDATE] apmd: apmd shutdown succeeded
-ignore [LOGDATE] apmd: apmd startup succeeded
-ignore [LOGDATE] apmd[PID]: Charge: * * * (-[NUM]% unknown)
-ignore [LOGDATE] apmd[PID]: Exiting
-ignore [LOGDATE] apmd[PID]: Version [NUM].[NUM]final (APM BIOS [NUM].[NUM], Linux driver [NUM].[NUM])

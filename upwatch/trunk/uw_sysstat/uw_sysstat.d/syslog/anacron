@@ -1,8 +1,0 @@
-ignore [LOGDATE] anacron: anacron startup succeeded
-ignore [LOGDATE] anacron[PID]: Anacron [NUM].[NUM] started on [NUM]-[NUM]-[NUM]
-ignore [LOGDATE] anacron[PID]: Job `cron.[daily|weekly|monthly]' started
-ignore [LOGDATE] anacron[PID]: Job `cron.[daily|weekly|monthly]' terminated (mailing output)
-ignore [LOGDATE] anacron[PID]: Job `cron.[daily|weekly|monthly]' terminated
-ignore [LOGDATE] anacron[PID]: Normal exit ([NUM] jobs run)
-ignore [LOGDATE] anacron[PID]: Updated timestamp for job `cron.[daily|weekly|monthly]' to [NUM]-[NUM]-[NUM]
-ignore [LOGDATE] anacron[PID]: Will run job `cron.[daily|weekly|monthly]' in [NUM] min.

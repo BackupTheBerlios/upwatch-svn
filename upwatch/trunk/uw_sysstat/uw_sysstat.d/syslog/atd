@@ -1,3 +1,0 @@
-ignore [LOGDATE] atd: atd shutdown failed
-ignore [LOGDATE] atd: atd shutdown succeeded
-ignore [LOGDATE] atd: atd startup succeeded

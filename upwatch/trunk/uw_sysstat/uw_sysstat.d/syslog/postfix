@@ -1,8 +1,0 @@
-ignore [LOGDATE] postfix: 
-ignore [LOGDATE] postfix: Shutting down postfix: 
-ignore [LOGDATE] postfix: Starting postfix: 
-ignore [LOGDATE] postfix:  succeeded
-ignore [LOGDATE] postfix: 
-ignore [LOGDATE] postfix: Shutting down postfix: 
-ignore [LOGDATE] postfix: Starting postfix: 
-ignore [LOGDATE] postfix:  succeeded
