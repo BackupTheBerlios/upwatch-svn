@@ -84,7 +84,7 @@ int push(gpointer data, gpointer user_data)
     unlink(filename);
   }
   free(filename);
-  //close(sock);
+  close(sock);
   return 1;
 }
 
