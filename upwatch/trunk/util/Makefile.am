@@ -16,6 +16,7 @@ ctime_options.h: ctime_options.def ../common/minimal_options.def
 	autogen -b ctime -L /usr/share/autogen -T $(top_srcdir)/common/man1.tpl -L $(top_srcdir)/common ctime_options.def
 
 slot_SOURCES = slot.c slot_options.c slot_options.h slot_options.def
+slot_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@
 slot_LDADD = $(LIBOPTS) $(LIBUPWATCH) 
 BUILT_SOURCES += slot_options.h
 EXTRA_DIST += slot_options.def

@@ -3,14 +3,14 @@ Summary: UpWatch - A High performance monitoring framwork
 Vendor: http://www.upwatch.com
 Name: upwatch
 Version: [+ version +]
-Release: 11
+Release: 12
 Source: http://www.upwatch.com/%{name}-%{version}.tar.gz
 Packager: Ron Arts <raarts@upwatch.com>
 Copyright: Proprietary
 Group: Application/Monitoring
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 Requires: libxml2 >= 2.4.19
-BuildRequires: gzip glib2-devel gnet-devel mysql-devel curl-devel autogen libxslt docbook-style-xsl lynx libnet openssl-devel
+BuildRequires: gzip glib2-devel mysql-devel curl-devel autogen libxslt docbook-style-xsl lynx libnet openssl-devel
 
 %define strip_binaries 1
 %define gzip_man 1

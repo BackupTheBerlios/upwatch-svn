@@ -1,4 +1,4 @@
-docdir = $(prefix)/doc
+docdir = $(datadir)/doc/$(PACKAGE)-$(VERSION)
 doc_DATA = upwatch.html upwatch.txt upwatch.pdf
 
 XMLSOURCE = upwatch.xml addingaprobe.xml administration.xml configuration.xml \

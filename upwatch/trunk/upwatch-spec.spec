@@ -9,7 +9,7 @@ Packager: Ron Arts <raarts@upwatch.com>
 Copyright: Proprietary
 Group: Application/Monitoring
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
-BuildRequires: gzip glib2-devel gnet-devel mysql-devel curl-devel autogen 
+BuildRequires: gzip glib2-devel mysql-devel curl-devel autogen 
 
 %define strip_binaries 1
 %define gzip_man 1
@@ -30,7 +30,7 @@ like the database schema.
 %package uw_accept
 Summary: UpWatch - Upwatch daemon for accepting reports
 Group: Application/Monitoring
-Requires: libpcap mysql glib2 gnet >= 1.1.2 curl >= 7.9.3 autogen >= 5.3.6 libnet >= 1.0.2
+Requires: libpcap mysql glib2 curl >= 7.9.3 autogen >= 5.3.6 libnet >= 1.0.2
 
 %description uw_accept
 uw_accept listen on port 1985 for incoming upwatch reports.
@@ -48,7 +48,7 @@ and copies incoming files to a queue
 %package uw_httpget
 Summary: UpWatch - Upwatch parallel probe daemon
 Group: Application/Monitoring
-Requires: libpcap mysql glib2 gnet >= 1.1.2 curl >= 7.9.3 autogen >= 5.3.6 libnet >= 1.0.2
+Requires: libpcap mysql glib2 curl >= 7.9.3 autogen >= 5.3.6 libnet >= 1.0.2
 
 %description uw_httpget
 uw_httpget reads a list of hosts from the database, and 
@@ -66,7 +66,7 @@ so uw_httpget can process thousands of hosts in a very short period.
 %package uw_ping
 Summary: UpWatch - Upwatch parallel ping daemon
 Group: Application/Monitoring
-Requires: libpcap mysql glib2 gnet >= 1.1.2 curl >= 7.9.3 autogen >= 5.3.6 libnet >= 1.0.2
+Requires: libpcap mysql glib2 curl >= 7.9.3 autogen >= 5.3.6 libnet >= 1.0.2
 
 %description uw_ping
 uw_ping reads a list of hosts from the database, and sends ping 
@@ -84,7 +84,7 @@ process thousands of hosts in a very short period.
 %package uw_process
 Summary: UpWatch - Upwatch parallel probe daemon
 Group: Application/Monitoring
-Requires: libpcap mysql glib2 gnet >= 1.1.2 curl >= 7.9.3 autogen >= 5.3.6 libnet >= 1.0.2
+Requires: libpcap mysql glib2 curl >= 7.9.3 autogen >= 5.3.6 libnet >= 1.0.2
 
 %description uw_process
 uw_process sends all files in the queue to a central server using 
@@ -102,7 +102,7 @@ something like POP3.
 %package uw_send
 Summary: UpWatch - Upwatch parallel probe daemon
 Group: Application/Monitoring
-Requires: libpcap mysql glib2 gnet >= 1.1.2 curl >= 7.9.3 autogen >= 5.3.6 libnet >= 1.0.2
+Requires: libpcap mysql glib2 curl >= 7.9.3 autogen >= 5.3.6 libnet >= 1.0.2
 
 %description uw_send
 uw_send sends all files in the queue to a central server using 
@@ -120,7 +120,7 @@ something like POP3.
 %package uw_traceroute
 Summary: UpWatch - Upwatch problem investigator daemon
 Group: Application/Monitoring
-Requires: libpcap mysql glib2 gnet >= 1.1.2 curl >= 7.9.3 autogen >= 5.3.6 libnet >= 1.0.2
+Requires: libpcap mysql glib2 curl >= 7.9.3 autogen >= 5.3.6 libnet >= 1.0.2
 
 %description uw_traceroute
 When some probe cannot get to its destination, it hands the

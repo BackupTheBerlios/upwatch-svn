@@ -17,10 +17,10 @@ PROBDEF = $(top_srcdir)/common/probe_generic.def
 GENINCL = -L /usr/share/autogen -L $(top_srcdir)/common
 
 main.o: $(top_srcdir)/common/main.c cmd_options.def $(CMDDEF)
-	$(COMPILE) -c $(top_srcdir)/common/main.c
+	$(COMPILE) @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ -c $(top_srcdir)/common/main.c
 
 db.o: $(top_srcdir)/common/db.c cmd_options.def $(CMDDEF)
-	$(COMPILE) -c $(top_srcdir)/common/db.c
+	$(COMPILE) @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ -c $(top_srcdir)/common/db.c
 
 cmd_options.h: cmd_options.def $(CMDDEF)
 	autogen -b cmd_options $(GENINCL) cmd_options.def

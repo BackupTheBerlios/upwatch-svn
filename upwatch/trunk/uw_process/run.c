@@ -179,7 +179,7 @@ int init(void)
   if (HAVE_OPT(RUN_QUEUE) || HAVE_OPT(SUMMARIZE)) {
     every = ONE_SHOT;
   } else {
-#ifdef G_THREADS_ENABLED
+#ifdef USE_THREADS
     every = ONE_SHOT;
     g_thread_init(NULL);
 #else
@@ -332,7 +332,7 @@ static int resummarize(void);
     return(resummarize()); // --summarize
   }
 
-#ifdef G_THREADS_ENABLED
+#ifdef USE_THREADS
   {
     GError *error=NULL;
     GThread *tid;

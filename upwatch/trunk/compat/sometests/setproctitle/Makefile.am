@@ -1,6 +1,7 @@
 program = setproctitle
 bin_PROGRAMS = setproctitle
 setproctitle_SOURCES = run.c cmd_options.c cmd_options.h
+setproctitle_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@
 BUILT_SOURCES = cmd_options.h 
 INCLUDES = -I$(top_srcdir)/upwatch 
 EXTRA_DIST = cmd_options.def

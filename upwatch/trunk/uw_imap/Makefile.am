@@ -3,6 +3,7 @@ program = uw_imap
 sbin_PROGRAMS = $(program)
 uw_imap_SOURCES = run.c cmd_options.c cmd_options.h probe.def_h probe.res_h \
  $(program).spec-generic $(program).init
+uw_imap_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@
 BUILT_SOURCES = cmd_options.h probe.mysql probe.enum probe.def_h probe.res_h \
  $(program).spec-generic $(program).init $(program).spec-install
 INCLUDES = -I../upwatch  -I$(INCL_ST)

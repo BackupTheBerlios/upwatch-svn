@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.19 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.20 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -80,8 +80,6 @@ then
   AC_MSG_ERROR([Cannot find $MYSQL_INC_PREFIX/mysql.h])
 fi
 
-CFLAGS="$CFLAGS $MYSQL_CFLAGS"
-
 ################## PCAP
 # path to pcap:
 AC_ARG_WITH(pcap-libs,
@@ -99,12 +97,10 @@ AC_ARG_WITH(pcap-include,
 
 AC_SUBST(PCAP_LIB_PREFIX)
 AC_SUBST(PCAP_INC_PREFIX)
-PCAP_LIBS="-L${PCAP_LIB_PREFIX} -lpcap"
-PCAP_CFLAGS="-I${PCAP_INC_PREFIX}"
-AC_SUBST(PCAP_LIBS)
-AC_SUBST(PCAP_CFLAGS)
-
-CFLAGS="$CFLAGS $PCAP_CFLAGS"
+LIBPCAP_LIBS="-L${PCAP_LIB_PREFIX} -lpcap"
+LIBPCAP_CFLAGS="-I${PCAP_INC_PREFIX}"
+AC_SUBST(LIBPCAP_LIBS)
+AC_SUBST(LIBPCAP_CFLAGS)
 
 ################## LIBNET
 # libnet
@@ -117,7 +113,6 @@ then
 fi
 AC_SUBST(LIBNET_CFLAGS)
 AC_SUBST(LIBNET_LIBS)
-CFLAGS="$CFLAGS $LIBNET_CFLAGS"
 
 ################## GLIB2
 # glib2 - with thread libraries
@@ -129,7 +124,6 @@ then
 fi
 AC_SUBST(LIBGTHREAD2_CFLAGS)
 AC_SUBST(LIBGTHREAD2_LIBS)
-CFLAGS="$CFLAGS $LIBGTHREAD2_CFLAGS"
 
 # glib2 - without thread libraries
 LIBGLIB2_CFLAGS="`pkg-config --cflags glib-2.0`"
@@ -140,7 +134,6 @@ then
 fi
 AC_SUBST(LIBGLIB2_CFLAGS)
 AC_SUBST(LIBGLIB2_LIBS)
-CFLAGS="$CFLAGS $LIBGLIB2_CFLAGS"
 
 ################## XML2
 # libxml2 - always need XML libraries
@@ -152,7 +145,6 @@ then
 fi
 AC_SUBST(LIBXML2_CFLAGS)
 AC_SUBST(LIBXML2_LIBS)
-CFLAGS="$CFLAGS $LIBXML2_CFLAGS"
 
 AC_CHECK_LIB([pthread], [pthread_create],
   [LIBPTHREAD_LIBS=-lpthread],[AC_MSG_ERROR([Sorry, we need -lpthread to continue])] )
