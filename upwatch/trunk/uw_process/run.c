@@ -53,7 +53,7 @@ MYSQL *open_domain(char *domain)
     LOG(LOG_ERR, "open_domain but no dblist found");
     return NULL;
   }
-  if (domain == NULL) {
+  if (domain == NULL || domain[0] == 0) {
     if (dblist[0].mysql) return(dblist[0].mysql);
     dblist[0].mysql = open_database(dblist[0].host, dblist[0].port, 
                       dblist[0].db, dblist[0].user, dblist[0].password);

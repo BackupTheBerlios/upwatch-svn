@@ -21,6 +21,18 @@ spec-files = `echo "%attr(4770,root,upwatch)" $sbindir/uw_sysstat`;
 
 // describe commandline flags
 flag = {
+    name      = domain;
+    value     = D;
+    arg_type  = string;
+    descrip   = "upwatch domain where this probe belongs to";
+    doc       =
+'The upwatch backend can work with several domains. Each domain is maintained in
+a separate database, defines its own probes, and receives its own results. 
+With this option you can specify the domain where the result for this probe
+will be stored';
+};
+
+flag = {
     name      = compress;
     value     = C;
     arg_type  = number;

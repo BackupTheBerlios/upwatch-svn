@@ -338,6 +338,9 @@ extern int forever;
   now = time(NULL);
 
   sysstat = xmlNewChild(xmlDocGetRootElement(doc), NULL, "sysstat", NULL);
+  if (HAVE_OPT(DOMAIN)) {
+    xmlSetProp(sysstat, "domain", OPT_ARG(DOMAIN));
+  }
   sprintf(buffer, "%ld", OPT_VALUE_SERVERID);	xmlSetProp(sysstat, "server", buffer);
   xmlSetProp(sysstat, "ipaddress", ipaddress);
   sprintf(buffer, "%d", (int) now);		xmlSetProp(sysstat, "date", buffer);
