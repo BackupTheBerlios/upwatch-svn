@@ -65,6 +65,7 @@ int extract_info_from_xml(trx *t)
   res->color = xmlGetPropUnsigned(t->cur, (const xmlChar *) "color");
   res->received = xmlGetPropUnsigned(t->cur, (const xmlChar *) "received");
   res->ipaddress = xmlGetProp(t->cur, (const xmlChar *) "ipaddress");
+  res->domain = xmlGetProp(t->cur, (const xmlChar *) "domain");
 
   if (res->stattime > t->probe->lastseen) {
     t->probe->lastseen = res->stattime;

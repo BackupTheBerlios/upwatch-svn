@@ -22,6 +22,8 @@ struct _module {
                     guint slot, guint slotlow, guint slothigh, gint ignoredupes);
 };
 
+MYSQL *open_domain(char *domain);
+
 struct summ_spec {
   int period;   // 
   int perslot;  // # of recs per slot in the from table

@@ -24,6 +24,17 @@ static int master = 1;
 static pid_t childpid[256];
 static int childpidcnt;
 
+struct dbspec {
+  char domain[25];
+  char host[65];
+  int port;
+  char db[64];
+  char user[25];
+  char password[25];
+  MYSQL *mysql;
+} *dblist;
+int dblist_cnt;
+
 void update_last_seen(module *probe)
 {
   MYSQL_RES *result;
@@ -32,6 +43,32 @@ void update_last_seen(module *probe)
                     "update probe set lastseen = %u where id = '%u'",
                     probe->lastseen, probe->class);
   if (result) mysql_free_result(result);
+}
+
+MYSQL *open_domain(char *domain)
+{
+  int i;
+
+  if (!dblist) {
+    LOG(LOG_ERR, "open_domain but no dblist found");
+    return NULL;
+  }
+  if (domain == NULL) {
+    if (dblist[0].mysql) return(dblist[0].mysql);
+    dblist[0].mysql = open_database(dblist[0].host, dblist[0].port, 
+                      dblist[0].db, dblist[0].user, dblist[0].password);
+    return(dblist[0].mysql);
+  }
+
+  for (i=0; i < dblist_cnt; i++) {
+    if (strcmp(dblist[i].domain, domain) == 0) {
+      if (dblist[i].mysql) return(dblist[i].mysql);
+      dblist[i].mysql = open_database(dblist[i].host, dblist[i].port, 
+                        dblist[i].db, dblist[i].user, dblist[i].password);
+      return(dblist[i].mysql);
+    }
+  }
+  return(NULL);
 }
 
 static void modules_end_run(void)
@@ -43,22 +80,27 @@ static void modules_end_run(void)
 
   buf[0] = 0;
 
+  for (i=0; i < dblist_cnt; i++) {
+    if (dblist[i].mysql) {
+      close_database(dblist[i].mysql);
+    }
+  }
+  free(dblist);
+  dblist = NULL; 
+  dblist_cnt = 0;
+
   for (i = 0; modules[i]; i++) {
     char wrk[50];
     if (modules[i]->end_run) {
       modules[i]->end_run(modules[i]);
     }
-    if (modules[i]->db) {
-      if (modules[i]->resultcount) {
-        update_last_seen(modules[i]);
-        sprintf(wrk, "%s:%u ", modules[i]->module_name, modules[i]->resultcount);
-        resulttotal += modules[i]->resultcount;
-        strcat(buf, wrk);
+    if (modules[i]->resultcount) {
+      update_last_seen(modules[i]);
+      sprintf(wrk, "%s:%u ", modules[i]->module_name, modules[i]->resultcount);
+      resulttotal += modules[i]->resultcount;
+      strcat(buf, wrk);
 
-        filetotal += modules[i]->filecount;
-      }
-      close_database(modules[i]->db);
-      modules[i]->db = NULL;
+      filetotal += modules[i]->filecount;
     }
   }
   if (resulttotal) { 
@@ -89,6 +131,34 @@ extern void free_res(void *res);
 static void modules_start_run(void)
 {
   int i;
+  MYSQL *db;
+
+  db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
+                     OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
+  if (db) {
+    MYSQL_RES *result;
+    dblist = calloc(100, sizeof(struct dbspec));
+    
+    result = my_query(db, 0, "select pr_domain.name, pr_domain.host, "
+                             "       pr_domain.port, pr_domain.db, pr_domain.user, "
+                             "       pr_domain.password "
+                             "from   pr_domain "
+                             "where  pr_domain.id > 1");
+    if (result) {
+      MYSQL_ROW row;
+      while ((row = mysql_fetch_row(result)) != NULL) {
+        strcpy(dblist[dblist_cnt].domain, row[0]);
+        strcpy(dblist[dblist_cnt].host, row[1]);
+        dblist[dblist_cnt].port = atoi(row[2]);
+        strcpy(dblist[dblist_cnt].db, row[3]);
+        strcpy(dblist[dblist_cnt].user, row[4]);
+        strcpy(dblist[dblist_cnt].password, row[5]);
+        dblist_cnt++;
+      }
+      mysql_free_result(result);
+    }
+    close_database(db);
+  }
 
   for (i = 0; modules[i]; i++) {
     MYSQL_RES *result;
