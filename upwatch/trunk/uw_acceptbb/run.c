@@ -145,13 +145,14 @@ static void ob_server_func (GServer* server, GServerStatus status, struct _GConn
 int ob_client_func (GConn* conn, GConnStatus status,
                 gchar* buffer, gint length, gpointer user_data)
 {
-  int i = length-1;
 void runbb(char *req);
 
   switch (status) {
     case GNET_CONN_STATUS_READ:
       {
         if (buffer) {
+          int i = length-1;
+
           if (debug > 2) LOG(LOG_NOTICE, "GNET_CONN_STATUS_READ: %s", buffer);
 
           // remove trailing spaces. IS this really a sensible thing to do?
@@ -164,7 +165,7 @@ void runbb(char *req);
             buffer[i+1] = 0;
           }
           for(;i>=0; i--) {
-            if (buffer[i] < 0 || buffer[i] == '\r') {
+            if (buffer[i] & 0x80 || buffer[i] == '\r') {
               buffer[i] = ' ';
             }
           }
