@@ -55,27 +55,24 @@ int process_ping(xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
       <max>28.454</max>
     </ping>
 */						  
-  probe = atoi(xmlGetProp(cur, (const xmlChar *) "id"));
-  stattime = atol(xmlGetProp(cur, (const xmlChar *) "date"));
-  expires = atol(xmlGetProp(cur, (const xmlChar *) "expires"));
+  probe = xmlGetPropInt(cur, (const xmlChar *) "id");
+  stattime = xmlGetPropLong(cur, (const xmlChar *) "date");
+  expires = xmlGetPropLong(cur, (const xmlChar *) "expires");
   for (cur = cur->xmlChildrenNode; cur != NULL; cur = cur->next) {
     char *p;
     
     if (xmlIsBlankNode(cur)) continue;
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "color")) && (cur->ns == ns)) {
-      color = atoi(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1));
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "color")) && (cur->ns == ns)) {
-      color = atoi(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1));
+      color = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "min")) && (cur->ns == ns)) {
-      lowest = atof(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1));
+      lowest = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "avg")) && (cur->ns == ns)) {
-      value = atof(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1));
+      value = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "max")) && (cur->ns == ns)) {
-      highest = atof(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1));
+      highest = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "info")) && (cur->ns == ns)) {
       p = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
@@ -101,16 +98,18 @@ int process_ping(xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
     }
   }
 
+  if (open_database() != 0) { // will do nothing if already open
+    return FALSE;
+  }
+      
   result = my_query("select server, color, lasthist, stattime "
                     "from   pr_ping_def where id = %d", probe);
   if (!result) {
-    close_database();
     return(FALSE);
   }
   row = mysql_fetch_row(result);
   if (!row) {
     mysql_free_result(result);
-    close_database();
     return(FALSE);
   }
   server       = atoi(row[0]);
@@ -159,7 +158,6 @@ int process_ping(xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
     if (!row) {
       mysql_free_result(result);
       //my_transaction("rollback");
-      close_database();
       return(FALSE);
     }
     max_color = row[0] ? atoi(row[0]) : STAT_GREEN;
@@ -203,7 +201,7 @@ int process_ping(xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
   prev_slot = uw_slot(SLOT_YEAR5, prv_stattime, &slotlow, &slothigh);
   cur_slot = uw_slot(SLOT_YEAR5, stattime, &dummy_low, &dummy_high);
   if (cur_slot != prev_slot) { // new slot. summarize records with old slot index
-    summarize_ping(probe, "year", "year5", slotlow, slothigh);
+    summarize_ping(probe, "year", "5year", slotlow, slothigh);
   }
 
   result = my_query("update pr_ping_def "
@@ -242,7 +240,7 @@ static void summarize_ping(int probe, char *from, char *into, guint slotlow, gui
     return;
   }
   if (row[0] == NULL) {
-    LOG(LOG_ERR, "Internal error: nothing to summarize %s: %d %d", into, slotlow, slothigh);
+    LOG(LOG_WARNING, "Internal error: nothing to summarize %s: %d %d", into, slotlow, slothigh);
     return;
   }
 

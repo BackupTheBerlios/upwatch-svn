@@ -2,11 +2,23 @@
 
 <chapter id="Configuration">
     <title>Configuration</title>
-    <para> Most important things to configure are database access for probes. The file
-       <filename>/etc/upwatch.conf</filename> contains defaults for all probes. These
-       can be overridden in <filename>/etc/upwatch.d/probe.conf</filename>. Look
-       in the probe manual pages for details. Every long commandine option can also
-       be entered in a configuration file.
-    </para>
+    <sect1 id="Probe_configuration">
+       <title>Probe configuration</title>
+       <para>
+          Each probe first reads the general configuration file <filename>/etc/upwatch.conf</filename>
+          and then its own configurationfile in <filename>/etc/upwatch.d</filename> if it exists.
+          Normally some general things like the debug and logging level, and the database access
+          are specified in the first file, and any probe-specific setting in the second file. You can
+          override settings from the generic file in the probe-specific file.
+       </para>
+       <para> Each program has a manual page that documents options. Every long commandine option
+          can also be entered in a configuration file.
+       </para>
+    </sect1>
+    <sect1 id="Database_configuration">
+       <title>Database configuration</title>
+       <para>
+       </para>
+   </sect1>
 </chapter>
 

@@ -14,7 +14,7 @@
 
 <!ELEMENT lookup      	(#PCDATA)>
 <!ELEMENT connect      	(#PCDATA)>
-<!ELEMENT firstbyte    	(#PCDATA)>
+<!ELEMENT pretransfer   (#PCDATA)>
 <!ELEMENT total		(#PCDATA)>
 
 <!ELEMENT ping		(host,color,min,avg,max,info?)>

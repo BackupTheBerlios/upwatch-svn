@@ -9,7 +9,7 @@
 #include <generic.h>
 #include "cmd_options.h"
 
-void push(gpointer data, gpointer user_data);
+int push(gpointer data, gpointer user_data);
 int pushto(int sock, char *filename);
 
 int init(void)
@@ -27,20 +27,22 @@ int run(void)
   G_CONST_RETURN gchar *filename;
   GDir *dir;
 
-  sprintf(path, "%s/%s/new", OPT_ARG(INPUT), OPT_ARG(SPOOLDIR));
+  sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), OPT_ARG(INPUT));
   dir = g_dir_open (path, 0, NULL);
   while ((filename = g_dir_read_name(dir)) != NULL) {
     char buffer[PATH_MAX];
 
-    ret = 1;
     sprintf(buffer, "%s/%s", path, filename);
-    push(strdup(buffer), NULL);
+    if (!push(strdup(buffer), NULL)) {
+      break;
+    }
+    ret = 1;
   }
   g_dir_close(dir);
   return(ret);
 }
 
-void push(gpointer data, gpointer user_data)
+int push(gpointer data, gpointer user_data)
 {
   int sock;
   struct hostent *hp;
@@ -50,13 +52,13 @@ void push(gpointer data, gpointer user_data)
   if ((hp = gethostbyname(OPT_ARG(HOST))) == (struct hostent *) 0) {
     LOG(LOG_NOTICE, "can't resolve %s: %s", OPT_ARG(HOST), hstrerror(h_errno));
     free(filename);
-    return;
+    return 0;
   } 
   sock = socket( AF_INET, SOCK_STREAM, 0 );
   if (sock == -1) {
     LOG(LOG_WARNING, "socket: %m");
     free(filename);
-    return;
+    return 0;
   }
   server.sin_family = AF_INET;
   memcpy((char *) &server.sin_addr, (char *) hp->h_addr, hp->h_length);
@@ -65,7 +67,7 @@ void push(gpointer data, gpointer user_data)
     close(sock);
     LOG(LOG_WARNING, "connect: %m");
     free(filename);
-    return;
+    return 0;
   }
   if (pushto(sock, filename)) {
     if (debug > 1) LOG(LOG_NOTICE, "uploaded %s", filename);
@@ -73,6 +75,7 @@ void push(gpointer data, gpointer user_data)
   }
   free(filename);
   close(sock);
+  return 1;
 }
 
 int pushto(int sock, char *filename)

@@ -52,6 +52,8 @@ mkdir -p $RPM_BUILD_ROOT/usr/lib/upwatch/dtd
 install -m 660 config/result.dtd $RPM_BUILD_ROOT/usr/lib/upwatch/dtd
 mkdir -p $RPM_BUILD_ROOT/etc/logrotate.d
 install -m 660 config/logrotate $RPM_BUILD_ROOT/etc/logrotate.d/upwatch
+mkdir -p $RPM_BUILD_ROOT/etc/cron.daily
+install -m 700 config/cron.daily $RPM_BUILD_ROOT/etc/cron.daily/upwatch
 
 mkdir -p $RPM_BUILD_ROOT/etc/rc.d/init.d
 [+ FOR program +]
@@ -88,8 +90,9 @@ install -m 660 [+program+]/[+program+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+prog
 %files
 %defattr(0660,root,upwatch,0770)
 %attr(0644,root,root) %doc AUTHORS COPYING ChangeLog NEWS README doc/upwatch.html doc/upwatch.txt doc/upwatch.pdf doc/upwatch.xml
-/usr/lib/upwatch
+%attr(0770,upwatch,upwatch) /usr/lib/upwatch
 /etc/logrotate.d/upwatch
+/etc/cron.daily/upwatch
 %dir /var/log/upwatch
 %dir /var/run/upwatch
 %dir /var/spool/upwatch

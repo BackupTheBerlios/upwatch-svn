@@ -24,7 +24,7 @@ extern int init(void);
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
-xmlDocPtr UpwatchXmlDoc(const char *root);
+#include "xml.h"
 
 #define PATH_RESULT_DTD "/usr/lib/upwatch/dtd/result.dtd"
 #define NAMESPACE_URL	"http://www.upwatch.com/schemas/1.0/"
@@ -51,4 +51,5 @@ extern int daemonize;
 
 /* list of probes */
 #define PROBE_PING 1
+#define PROBE_HTTPGET 2
 

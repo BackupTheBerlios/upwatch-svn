@@ -17,29 +17,65 @@
         </itemizedlist>
         <para> The definition table contains, of course, the definition of this particular
             probe, this is of course probe specific but in practive usually contains frequency,
-            target ip address, port number, current status.</para>
+            target ip address, port number, current status. We'll see what the other tables are for later on.</para>
+    </sect1>
+    <sect1 id="What_a_probe_does">
+        <title>What a probe does</title>
+        <para>Every probe performs a repetetive task: measuring some specific function on a specific host.
+          So first step is to know what to measure and on which host. For this it reads from the probe definition
+          table. It creates a local - in memory - copy of that table just in case the database becomes unreachable
+          for a period of time. It routinely walks this list and performs its task. The result are written in XML format
+          to a queue which is specified in the probe configuration (note: all queues reside in
+          <filename>/var/spool/upwatch</filename>). After that the probe just waits for the next round.
+       </para>
+       <para> Many probes have to do a lot of work. They are programmed to do this as efficient as possible.
+          For example: the uw_ping probe is code as a tight loop around a single select statement. This is the
+          most practical way (as far as I know) to ping thousands of hosts in, say, 20 seconds.
+          Other probes use pools of threads (like <varname>httpget</varname>).</para>
+    </sect1>
+    <sect1 id="What_happens_to_the_probe_results">
+        <title>What happens to the probe results?</title>
+        <para> The probe results are always picked up by the <varname>uw_notify</varname> process.
+           It reads the file, looks at the probe status, and at previous statuses, and decides (1) if someone
+           should be notified about some status change and (2) if we want to investigate why a particular error
+           happened. If it has to be investigated the queue file is placed in the <varname>uw_examine</varname>
+           queue (along with some instructions), else it goes into the outgoing queue
+        </para>
+        <para> The outgoing queue may be either the <varname>uw_process</varname> queue, or an
+           <varname>uw_send</varname> queue, which is emptied by the uw_send process which sends
+           all files to a remote queue on another host (received and queued by uw_accept).
+        </para>
+        <para> <varname>uw_examine</varname> can do some additional tests like traceroute to the target host.
+           It attaches this report
+           to the probe result, and in its turn puts everything in an <varname>uw_process</varname> or
+           <varname>uw_send</varname> queue.</para>
+    </sect1>
+    <sect1 id="uw_process_storing_results_in_the_database">
+        <title>uw_process: storing results in the database</title>
+        <para> When the probe results arrive in the uw_process queue it is picked up by the workhorse
+           of the lot, <varname>uw_process</varname>. It fills the result tables for the probes.</para>
         <para> The raw results table contains just that, raw probe results.</para>
         <para> Raw results are compressed into period tables in the foilowing way (using week as
             an example): the week is divided into 200 equal timeslots. For computing the plot
             values for a slot the process averages and takes the minimum and maximum value of
-            all day-values in that timeframe. The same process happens for the month and year
+            all day-values in that timeslot. The same process happens for the month and year
             tables. This way we ensure that we never have to read more then 200 database records
-            to produce a graph for a day, week, month, year or 5-year period.</para>
-    </sect1>
-    <sect1 id="What_a_probe_does">
-        <title>What a probe does</title>
-        <para> What a probe does</para>
-    </sect1>
-    <sect1 id="What_happens_to_the_probe_results">
-        <title>What happens to the probe results?</title>
-        <para> What happens to the probe results</para>
-    </sect1>
-    <sect1 id="uw_process_storing_results_in_the_database">
-        <title>uw_process: storing results in the database</title>
-        <para> uw_process: storing results in the database</para>
+            to produce a graph for a day, week, month, year or 5-year period.
+        </para>
+        <para> Status changes are logged in status history tables (pr_probe_hist), in a total overview
+          table (pr_status), and in a total overview history file (pr_hist). The last two
+          accomodate for easy retrieval by the webpages.</para>
     </sect1>
     <sect1 id="Scaling_up">
         <title>Scaling up</title>
-        <para> Scaling up</para>
+        <para> Various parts of the system may need more resources. Luckily Upwatch is designed
+           to scale up considerably. Of course it cannot scale infinately. The last bottleneck will
+           probably be the database. Although MySQL is known for its speed, even that has its limits.
+        </para>
+        <para> The probes may be scaled up, by moving them to another host</para>
+        <para> The website may be scaled up by spreading it out across several hosts</para>
+        <para> The database may be scaled up by putting it on separate hardware, using
+          more spindles (disks), and ultimately using MySQL mirrorring to divide reading and
+          writing across separate machines. MySQL has lots of info on increasing performance.</para>
     </sect1>
 </chapter>

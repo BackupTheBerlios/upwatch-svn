@@ -147,7 +147,7 @@ int run(void)
     sprintf(buffer, "%d", color);               subtree = xmlNewChild(httpget, NULL, "color", buffer);
     sprintf(buffer, "%.3f", hosts[id]->namelookup_time); subtree = xmlNewChild(httpget, NULL, "lookup", buffer);
     sprintf(buffer, "%.3f", hosts[id]->connect_time);    subtree = xmlNewChild(httpget, NULL, "connect", buffer);
-    sprintf(buffer, "%.3f", hosts[id]->pretransfer_time); subtree = xmlNewChild(httpget, NULL, "firstbyte", buffer);
+    sprintf(buffer, "%.3f", hosts[id]->pretransfer_time); subtree = xmlNewChild(httpget, NULL, "pretransfer", buffer);
     sprintf(buffer, "%.3f", hosts[id]->total_time); subtree = xmlNewChild(httpget, NULL, "total", buffer);
     if (hosts[id]->info) {
       subtree = xmlNewChild(httpget, NULL, "info", hosts[id]->info);

@@ -131,6 +131,7 @@ int main( int argc, char** argv )
     progname = argv[0];
   }
 
+  umask(002); // all created files must be group-writable
   arg_ct = optionProcess( &progOptions, argc, argv );
   argc -= arg_ct;
   argv += arg_ct;

@@ -16,7 +16,7 @@
 case "$1" in
   start)
 	echo -n "Starting [+prog-name+]: "
-	daemon --user upwatch [+prog-name+]
+	daemon --user upwatch /usr/sbin/[+prog-name+]
 	echo
 	touch /var/lock/subsys/[+prog-name+]
 	;;

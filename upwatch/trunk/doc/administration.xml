@@ -2,7 +2,32 @@
 
 <chapter id="Administration">
     <title>Administration</title>
-    <para>
-    </para>
+    <sect1 id="logging">
+       <title>Logging</title>
+       <para> The upwatch package contains various ways of logging errors. The
+         standard way is to its own logfile <filename>/var/log/upwatch/upwatch.log</filename>.
+         Other ways are logging to stderr (probably not practical) and to the syslog. Tweak the 
+         <varname>debug</varname> to increase the amount of logging. Setting the debug level
+         higher than 2 should only be used for debugging serious problems, for example it
+         causes daemons to stay always in the foreground. In debuglevel 0 only errors are logged,
+         in debuglevel 1 some progress information is logged.
+       </para>
+       <para> The website has its own logfile in <filename>log/error.log</filename></para>
+    </sect1>
+    <sect1 id="managing_daemons">
+       <title>Managing daemons</title>
+       <para> In most Linux distributions you can start/stop daemons using the scripts
+         in <filename>/etc/init.d</filename>. Don't forget: you will miss sample data in the database
+         if a probe is not running.
+       </para>
+    </sect1>
+    <sect1 id="Queues">
+       <title>Queues</title>
+       <para> Queues play an important part in upwatch. The queues are so-called <varname>maildir</varname>
+       queues. This means that while the queuefile is written, it is written to a temporary directory, and when it's
+       closed it is hardlinked to the actual queue directory. This way you can be absolutely sure that if you find
+       a file in the queue, it is complete and nobody has the file open. Only one process reads from the
+       queue and deletes the file when done. </para>
+    </sect1>
 </chapter>
 

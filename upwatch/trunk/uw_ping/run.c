@@ -251,7 +251,7 @@ int run(void)
     char buffer[1024];
 
     if (hosts[id]->msg) {
-      strcat(info, hosts[id]->msg);
+      strcpy(info, hosts[id]->msg);
       free(hosts[id]->msg);
       hosts[id]->msg = NULL;
     } else {
@@ -347,7 +347,7 @@ static int run_actual_probes(int count)
     gettimeofday(&now, &tz);
     //printf("diff = %d\n", timeval_diff(&now, &host->last_send_time));
     if (timeval_diff(&now, &host->last_send_time) > 10000000) { // nothing received for 10 seconds 
-      host->msg = strdup("Nothing received for 10 seconds");
+      host->msg = strdup("No replies received during 10 seconds");
       host->done++;
       done++;
       continue;

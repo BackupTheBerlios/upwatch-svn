@@ -75,7 +75,7 @@
            > cp $i/$i /usr/sbin
            > cp $i/$i.conf /etc/upwatch.d
            > done
-           $ for i in uw_send uw_process uw_notify uw_traceroute
+           $ for i in uw_*
            > do
            > mkdir -p /var/spool/upwatch/$i/tmp
            > mkdir -p /var/spool/upwatch/$i/new
@@ -86,16 +86,18 @@
        <title>PHP pages</title>
        <para> The PHP pages can just be copied to any directory. There is an include directory. Copy
           that a some location ouside the web root, and enter its location in the .htaccess file in the web root dir.
+          Also enter the database details in config.php.
        </para>
     </sect1>
     <sect1 id="Security_considerations">
        <title>Security considerations</title>
-       <para> Every upwatch directory and file is owner root, group upwatch and non-readable to others.
-         Some probes need root-access, most notable uw_ping, and they will be installed suid root.
-         These probes drop root privileges as soon as possible. Further you can assign each probe
-         its own database user and grant that user access rights  to its own database tables.
-         The probes itself don't write to the database, they only read from the
-         <varname>pr_xxx_def</varname> and the <varname>server</varname> tables.
+       <para> All upwatch directories are readable and writable by members of the group upwatch.
+          Most all executables run as user upwatch.
+          Some probes need root-access, most notable uw_ping, and they will be installed suid root.
+          These probes drop root privileges as soon as possible. Further you can assign each probe
+          its own database user and grant that user access rights  to its own database tables.
+          The probes itself don't write to the database, they only read from the
+          <varname>pr_xxx_def</varname> and the <varname>server</varname> tables.
        </para>
        <para> The PHP web user should have SELECT, UPDATE, DELETE access to all tables.
        </para>

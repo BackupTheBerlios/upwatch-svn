@@ -129,6 +129,7 @@ void process(gpointer data, gpointer user_data)
   }
   /* Second level is a list of probes, but be laxist */
   for (failures = 0; cur != NULL; cur = cur->next) {
+    if (xmlIsBlankNode(cur)) continue;
     for (found = 0, probe = prob_proc; probe->name; probe++) {
       if (!xmlStrcmp(cur->name, (const xmlChar *) probe->name)) {
 	if (cur->ns != ns) {
