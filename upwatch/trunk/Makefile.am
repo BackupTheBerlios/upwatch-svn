@@ -26,7 +26,7 @@ endif
 # monitor (for monitoring station. All remote probes.)
 # iptraf (uw_iptraf)
 # server (uw_process, uw_accept, uw_acceptbb, uw_setip)
-CLIENTPROG = uw_send uw_sysstat compat
+CLIENTPROG = uw_send uw_sysstat
 
 if ENABLE_SERVER
 # order is important here: uw_process should be last
@@ -53,7 +53,7 @@ PROGNAMES = ${CLIENTPROG} ${MONITORPROG} ${EXTRAPROG} ${SERVERPROG}
 export PROGNAMES MONITORPROG CLIENTPROG SERVERPROG EXTRAPROG
 export TOP_SRCDIR = $(top_srcdir)
 
-SUBDIRS = upwatch st-1.4 libstatgrab ${PROGNAMES} util scripts config common
+SUBDIRS = upwatch st-1.4 libstatgrab compat ${PROGNAMES} util scripts config common
 #DIST_SUBDIRS = ${SUBDIRS} doc
 
 doc_DATA = AUTHORS COPYING ChangeLog NEWS README upwatch.mysql
