@@ -1,6 +1,7 @@
 probe = ping
 program = uw_ping
 sbin_PROGRAMS = $(program)
+man_MANS = $(program).1
 uw_ping_SOURCES = run.c cmd_options.c cmd_options.h probe.def_h probe.res_h \
  $(program).spec-generic $(program).init $(program).init-suse
 uw_ping_CFLAGS = @LIBGLIB2_CFLAGS@ @MYSQL_CFLAGS@ @LIBXML2_CFLAGS@

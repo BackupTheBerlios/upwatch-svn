@@ -1,5 +1,6 @@
 program = uw_setip
 sbin_PROGRAMS = $(program)
+man_MANS = $(program).1
 uw_setip_SOURCES = run.c cmd_options.c cmd_options.h $(program).spec-generic \
  $(program).init $(program).init-suse
 uw_setip_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@

@@ -1,5 +1,6 @@
 program = uw_send
 sbin_PROGRAMS = $(program)
+man_MANS = $(program).1
 uw_send_SOURCES = run.c cmd_options.c cmd_options.h cmd_options.def $(program).spec-generic \
  $(program).init $(program).init-suse
 uw_send_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@

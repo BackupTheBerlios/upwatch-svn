@@ -1,5 +1,6 @@
 program = setproctitle
-bin_PROGRAMS = setproctitle
+noinst_PROGRAMS = setproctitle
+noinst_MANS = setproctitle.1
 setproctitle_SOURCES = run.c cmd_options.c cmd_options.h
 setproctitle_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@
 BUILT_SOURCES = cmd_options.h 

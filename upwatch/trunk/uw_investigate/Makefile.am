@@ -1,5 +1,6 @@
 program = uw_investigate
 sbin_PROGRAMS = $(program)
+man_MANS = $(program).1
 uw_investigate_SOURCES = run.c cmd_options.c cmd_options.h traceroute.c traceroute.h \
   cmd_options.def $(program).spec-generic  $(program).init $(program).init-suse
 uw_investigate_CFLAGS = @MYSQL_CFLAGS@ @LIBGTHREAD2_CFLAGS@ @LIBXML2_CFLAGS@ @LIBNET_CFLAGS@ @LIBPCAP_CFLAGS@ # -DUSE_THREADS

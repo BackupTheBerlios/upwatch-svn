@@ -16,6 +16,7 @@ DEF_LIBTDS = -DHAVE_LIBTDS
 endif
 
 sbin_PROGRAMS = $(program)
+man_MANS = $(program).1
 uw_process_SOURCES = run.c process.c generic_ct.c cmd_options.c cmd_options.h \
  uw_process.h modules.inc $(program).spec-generic $(program).init $(program).init-suse \
  ping.c httpget.c iptraf.c sysstat.c mysql.c bb_cpu.c bb.c pop3.c $(USE_LIBPQ) \

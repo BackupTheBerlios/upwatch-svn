@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.23 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.24 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -204,7 +204,7 @@ fi
 AM_CONDITIONAL(HAVE_LIBCRYPTO, test $HAVE_LIBCRYPTO -eq 1)
 AC_SUBST(LIBCRYPTO_LIBS)
 
-AC_CHECK_LIB([snmp], [snmp_open], [HAVE_LIBSNMP=1], [HAVE_LIBSNMP=0])
+AC_CHECK_LIB([snmp], [snmp_open], [HAVE_LIBSNMP=1], [HAVE_LIBSNMP=0], -lcrypto)
 if test $HAVE_LIBSNMP -eq 1
 then
 	LIBSNMP_LIBS=-lsnmp

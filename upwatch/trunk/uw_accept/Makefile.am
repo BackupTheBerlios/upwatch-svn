@@ -1,5 +1,6 @@
 program = uw_accept
 sbin_PROGRAMS = $(program)
+man_MANS = $(program).1
 uw_accept_SOURCES = run.c cmd_options.c cmd_options.h $(program).spec-generic \
  $(program).init $(program).init-suse
 uw_accept_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@

@@ -1,6 +1,7 @@
 probe = iptraf
 program = uw_iptraf
 sbin_PROGRAMS = $(program)
+man_MANS = $(program).1
 uw_iptraf_SOURCES = run.c cmd_options.c cmd_options.h probe.def_h probe.res_h \
  $(program).spec-generic $(program).init $(program).init-suse
 uw_iptraf_CFLAGS = @MYSQL_CFLAGS@ @LIBGTHREAD2_CFLAGS@ @LIBPCAP_CFLAGS@ @LIBXML2_CFLAGS@ -DUSE_THREADS

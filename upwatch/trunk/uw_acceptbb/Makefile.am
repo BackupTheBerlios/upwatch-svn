@@ -1,6 +1,7 @@
 probe = acceptbb
 program = uw_acceptbb
 sbin_PROGRAMS = $(program)
+man_MANS = $(program).1
 uw_acceptbb_SOURCES = run.c cmd_options.c cmd_options.h probe.def_h probe.res_h \
  $(program).spec-generic $(program).init $(program).init-suse
 uw_acceptbb_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@

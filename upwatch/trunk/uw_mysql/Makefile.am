@@ -1,6 +1,7 @@
 probe = mysql
 program = uw_mysql
 sbin_PROGRAMS = $(program)
+man_MANS = $(program).1
 uw_mysql_SOURCES = run.c cmd_options.c cmd_options.h probe.def_h probe.res_h \
  $(program).spec-generic $(program).init $(program).init-suse
 uw_mysql_CFLAGS = @MYSQL_CFLAGS@ @LIBGTHREAD2_CFLAGS@ @LIBXML2_CFLAGS@
