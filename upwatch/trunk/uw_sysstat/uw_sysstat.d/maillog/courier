@@ -1,0 +1,10 @@
+green [LOGDATE] imapd: Connection, ip=\[::ffff:[IPADDR]\]
+green [LOGDATE] imapd: LOGIN, \[USER=\], ip=\[::ffff:[IPADDR]\], protocol=IMAP
+green [LOGDATE] imapd: LOGOUT, ip=\[::ffff:[IPADDR]\]
+green [LOGDATE] imapd: LOGOUT, \[USER=\], ip=\[::ffff:[IPADDR]\], headers=[NUM], body=[NUM]
+green [LOGDATE] imapd: DISCONNECTED, ip=\[::ffff:[IPADDR]\], headers=[NUM], body=[NUM]
+green [LOGDATE] imapd: DISCONNECTED, \[USER=\], ip=\[::ffff:[IPADDR]\], headers=[NUM], body=[NUM]
+green [LOGDATE] pop3d: Connection, ip=\[::ffff:[IPADDR]\]
+green [LOGDATE] pop3d: LOGIN, \[USER=\], ip=\[::ffff:[IPADDR]\]
+green [LOGDATE] pop3d: LOGOUT, \[USER=\], ip=\[::ffff:[IPADDR]\], top=[NUM], retr=[NUM]
+
