@@ -241,7 +241,7 @@ static unsigned prv;
   if (rpt) {
     char buf[256];
 
-    sprintf(buf, "%s[%lu]: last message repeated %u times", progname, (unsigned long)getpid(), rpt);
+    sprintf(buf, "%s[%lu] last message repeated %u times", progname, (unsigned long)getpid(), rpt);
     _ll_lograw(level, buf);
     rpt = 0;
   }

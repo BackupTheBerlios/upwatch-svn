@@ -343,7 +343,7 @@ extern int forever;
   sprintf(buffer, "%d", (int) now);		xmlSetProp(sysstat, "date", buffer);
   sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60));
     xmlSetProp(sysstat, "expires", buffer);
-  sprintf(buffer, "%d", color);			subtree = xmlNewChild(sysstat, NULL, "color", buffer);
+  sprintf(buffer, "%d", color);  		xmlSetProp(sysstat, "color", buffer);
 
   sprintf(buffer, "%.1f", st.load->min1);	
     subtree = xmlNewChild(sysstat, NULL, "loadavg", buffer);

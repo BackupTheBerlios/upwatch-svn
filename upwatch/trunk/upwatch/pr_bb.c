@@ -44,36 +44,52 @@ void *bb_get_def(trx *t, int create)
   MYSQL_RES *result;
   MYSQL_ROW row;
 
-  // first we find the serverid, this will be used to find the probe definition in the hashtable
-  if (!query_server_by_name) {
-    LOG(LOG_WARNING, "don't know how to find a server by name");
-    return(NULL);
-  }
-  result = my_query(t->probe->db, 0, query_server_by_name, res->hostname, res->hostname, 
-                    res->hostname, res->hostname, res->hostname);
-  if (!result) return(NULL);
-  row = mysql_fetch_row(result);
-  if (row && row[0]) {
-    res->server   = atoi(row[0]);
-  } else {
-    LOG(LOG_WARNING, "server %s not found", res->hostname);
-    mysql_free_result(result);
-    return(NULL);
-  }
-  mysql_free_result(result);
-
   def = g_malloc0(t->probe->def_size);
   def->stamp    = time(NULL);
   def->server   = res->server;
   strcpy(def->hide, "no");
 
-  // first find the definition based on the serverid
-  result = my_query(t->probe->db, 0,
-                    "select id, contact, hide, email, delay from pr_bb_def "
-                    "where  bbname = '%s' and server = '%u'", res->bbname, res->server);
-  if (!result) {
-    g_free(def);
-    return(NULL);
+  if (res->color == STAT_PURPLE && res->probeid) {
+    // find the definition based on the probe id
+    result = my_query(t->probe->db, 0,
+                      "select id, contact, hide, email, delay from pr_bb_def "
+                      "where  id = '%u'", res->probeid);
+    if (!result) {
+      g_free(def);
+      return(NULL);
+    }
+  } else {
+    // first we find the serverid, this will be used to find the probe definition in the database
+    if (!query_server_by_name) {
+      LOG(LOG_WARNING, "don't know how to find a server by name");
+      g_free(def);
+      return(NULL);
+    }
+    result = my_query(t->probe->db, 0, query_server_by_name, res->hostname, res->hostname, 
+                      res->hostname, res->hostname, res->hostname);
+    if (!result) {
+      g_free(def);
+      return(NULL);
+    }
+    row = mysql_fetch_row(result);
+    if (row && row[0]) {
+      res->server   = atoi(row[0]);
+    } else {
+      LOG(LOG_WARNING, "server %s not found", res->hostname);
+      mysql_free_result(result);
+      g_free(def);
+      return(NULL);
+    }
+    mysql_free_result(result);
+
+    // first find the definition based on the serverid
+    result = my_query(t->probe->db, 0,
+                      "select id, contact, hide, email, delay from pr_bb_def "
+                      "where  bbname = '%s' and server = '%u'", res->bbname, res->server);
+    if (!result) {
+      g_free(def);
+      return(NULL);
+    }
   }
   if (mysql_num_rows(result) == 0) { // DEF RECORD NOT FOUND
     mysql_free_result(result);

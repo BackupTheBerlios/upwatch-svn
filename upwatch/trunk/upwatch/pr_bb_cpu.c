@@ -67,21 +67,23 @@ void *bb_cpu_get_def(trx *t, int create)
   MYSQL_ROW row;
   time_t now = time(NULL);
 
-  // first we find the serverid, this will be used to find the probe definition in the hashtable
-  result = my_query(t->probe->db, 0, query_server_by_name, res->hostname, res->hostname, 
-                    res->hostname, res->hostname, res->hostname);
-  if (!result) {
-    return(NULL);
-  }
-  row = mysql_fetch_row(result);
-  if (row && row[0]) {
-    res->server   = atoi(row[0]);
-  } else {
-    LOG(LOG_NOTICE, "server %s not found", res->hostname);
+  if (res->color != STAT_PURPLE && res->server == 0) { 
+    // first we find the serverid, this will be used to find the probe definition in the hashtable
+    result = my_query(t->probe->db, 0, query_server_by_name, res->hostname, res->hostname, 
+                      res->hostname, res->hostname, res->hostname);
+    if (!result) {
+      return(NULL);
+    }
+    row = mysql_fetch_row(result);
+    if (row && row[0]) {
+      res->server   = atoi(row[0]);
+    } else {
+      LOG(LOG_NOTICE, "server %s not found", res->hostname);
+      mysql_free_result(result);
+      return(NULL);
+    }
     mysql_free_result(result);
-    return(NULL);
   }
-  mysql_free_result(result);
 
   // look in the cache for the def
   def = g_hash_table_lookup(t->probe->cache, &res->server);

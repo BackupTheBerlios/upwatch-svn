@@ -45,6 +45,7 @@ typedef struct _module module;
 
 typedef struct transaction {
   module *probe;		// point to the module processing this transaction
+  char *fromhost;		// host where this result originated 
   int doc_count;
   xmlDocPtr doc;		// points to current XML document
   xmlNsPtr ns;			// points to namespace
@@ -58,7 +59,7 @@ typedef struct transaction {
 } trx;
 
 #define STANDARD_MODULE_STUFF(a) PROBE_##a, #a, NULL, NULL, \
-  NULL, sizeof(struct a##_result), sizeof(struct a##_def), 0, 0, 0
+  NULL, sizeof(struct a##_result), sizeof(struct a##_def), 0, 0, 0, 0, 0 
 
 #define STANDARD_MODULE_STRUCT \
   int class;					/* numberic probe class (id of record in probe table) */ \
@@ -69,7 +70,9 @@ typedef struct transaction {
   int res_size;					/* size of a result record */ \
   int def_size;					/* size of a definition record */ \
   int fuse;					/* be a fuse, (once red is always red, until the user resets it) */ \
-  int count;					/* stats: total handles in this run */ \
+  int lastseen;					/* stats: last seen this run */ \
+  int filecount;				/* stats: total files handled in this run */ \
+  int resultcount;				/* stats: total results handled in this run */ \
   int errors;					/* stats: total errors in this run */ \
   void (*free_def)(void *def);			/* free the probe_def record for this probe */ \
   void (*free_res)(void *res);			/* free the probe_result record for this probe */ \

@@ -3,7 +3,7 @@ Summary: UpWatch - A High performance monitoring framwork
 Vendor: http://www.upwatch.com
 Name: upwatch
 Version: [+ version +]
-Release: 7
+Release: 9
 Source: http://www.upwatch.com/%{name}-%{version}.tar.gz
 Packager: Ron Arts <raarts@upwatch.com>
 Copyright: Proprietary - Redistribution Prohibited
@@ -47,7 +47,7 @@ make DESTDIR=$RPM_BUILD_ROOT install
 mkdir -p $RPM_BUILD_ROOT/etc/logrotate.d
 install -m 660 config/logrotate $RPM_BUILD_ROOT/etc/logrotate.d/upwatch
 mkdir -p $RPM_BUILD_ROOT/etc/cron.daily
-install -m 700 config/cron.daily $RPM_BUILD_ROOT/etc/cron.daily/upwatch
+install -m 770 config/cron.daily $RPM_BUILD_ROOT/etc/cron.daily/upwatch
 
 %if %{strip_binaries}
 { cd $RPM_BUILD_ROOT
@@ -121,11 +121,11 @@ if [ "$1" -eq "0" ]; then
 %attr(0770,upwatch,upwatch) %dir /usr/share/upwatch/init
 %attr(0770,upwatch,upwatch) %dir /usr/share/upwatch/dtd
 /usr/share/upwatch/dtd/result.dtd
-/usr/share/upwatch/init/upwatch.redhat
-/usr/share/upwatch/init/upwatch.suse
+%attr(0755,root,root) /usr/share/upwatch/init/upwatch.redhat
+%attr(0755,root,root) /usr/share/upwatch/init/upwatch.suse
 %config(noreplace) /etc/upwatch.conf
 /etc/logrotate.d/upwatch
-/etc/cron.daily/upwatch
+%attr(700,root,root) /etc/cron.daily/upwatch
 %attr(2770,upwatch,upwatch) %dir /var/log/upwatch
 %attr(2770,upwatch,upwatch) %dir /var/spool/upwatch
 %attr(2770,upwatch,upwatch) %dir /var/run/upwatch

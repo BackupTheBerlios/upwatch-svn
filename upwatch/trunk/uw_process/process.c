@@ -305,6 +305,47 @@ static void update_server_color(trx *t, struct probe_result *prv)
 }
 
 //*******************************************************************
+// SEE IF THE USER HAS BEEN NOTIFIED FOR THIS COLOR
+//*******************************************************************
+void get_previous_pr_hist(trx *t)
+{
+  MYSQL_RES *result;
+  MYSQL_ROW row;
+
+  t->res->changed = 0;
+  strcpy(t->res->notified, "yes"); // if we cannot find pr_hist record, assume the user has already been warned
+  result = my_query(t->probe->db, 0,
+                    "select   id, stattime, notified, prv_color "
+                    "from     pr_hist  "
+                    "where    probe = '%u' and class = '%u' and stattime <= '%u' "
+                    "order by stattime desc limit 1",
+                    t->def->probeid, t->probe->class, t->res->stattime);
+  if (!result) return;
+  row = mysql_fetch_row(result);
+  if (row) {
+    t->res->prevhistid = atoll(row[0]);
+    t->res->changed = atoi(row[1]);
+    strcpy(t->res->notified, row[2]);
+    t->res->prevhistcolor = atoi(row[3]);
+  }
+  mysql_free_result(result);
+  return;
+}
+
+//*******************************************************************
+// INDICATE WE HAVE NOTIFIED THIS USER
+//*******************************************************************
+void set_pr_hist_notified(trx *t)
+{
+  MYSQL_RES *result;
+
+  result = my_query(t->probe->db, 0,
+                    "update pr_hist set notified = 'yes' "
+                    "where  id = '%ull'", t->res->prevhistid);
+  mysql_free_result(result);
+}
+
+//*******************************************************************
 // IS THIS SLOT COMPLETELY FILLED?
 //*******************************************************************
 int slot_is_complete(trx *t, int i, guint slotlow, guint slothigh)
@@ -392,6 +433,11 @@ int process(trx *t)
     t->probe->db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
                               OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
                               OPT_VALUE_DBCOMPRESS);
+    if (!t->probe->db) return -2;
+  }
+
+  if (t->probe->resultcount % 400 == 0) {
+    update_last_seen(t->probe);
   }
 
   if (debug > 3) fprintf(stderr, "accept_result\n");
@@ -495,7 +541,18 @@ int process(trx *t)
       must_update_def = TRUE;
     }
   }
-  if (t->probe->summarize) { // if we have a summarisation function
+
+  // RETRIEVE LAST HIST ENTRY FOR THIS PROBE
+  get_previous_pr_hist(t);
+
+  // notify if needed
+  if (strcmp(t->res->notified, "yes") && t->def->email[0]) { // not already notified and we have an address?
+    if (notify(t)) {
+      set_pr_hist_notified(t);
+    }
+  }
+
+  if (t->probe->summarize && t->res->color != STAT_PURPLE) { 
     if (t->res->stattime > t->def->newest) { // IF CURRENT RAW RECORD IS THE MOST RECENT
       guint cur_slot, prev_slot;
       gulong slotlow, slothigh;

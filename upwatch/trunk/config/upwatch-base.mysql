@@ -50,7 +50,9 @@ CREATE TABLE pr_hist (
   message text NOT NULL default '',
   PRIMARY KEY  (id),
   UNIQUE KEY probtime (probe,stattime),
-  KEY stattime (stattime)
+  UNIQUE KEY probclstat (probe,class,stattime),
+  KEY stattime (stattime),
+  KEY contact (contact)
 ) TYPE=MyISAM;
 
 INSERT INTO pr_hist set id = '1', message = 'do NOT delete!';
@@ -71,14 +73,14 @@ CREATE TABLE pr_status (
   stattime int unsigned NOT NULL default '0',
   expires int unsigned NOT NULL default '0',
   color smallint unsigned NOT NULL default '200',
-  changed int unsigned NOT NULL default '0',
-  notified enum('yes', 'no') NOT NULL default 'no',
   message text NOT NULL,
   PRIMARY KEY  (id),
   UNIQUE KEY uprobe (class,probe),
   KEY class (class),
   KEY probe (probe),
-  KEY server (server)
+  KEY server (server),
+  KEY expires (expires),
+  KEY contact (contact)
 ) TYPE=MyISAM;
 
 INSERT INTO pr_status set id = '1', message = 'do NOT delete!';

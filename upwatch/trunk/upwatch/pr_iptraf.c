@@ -22,7 +22,9 @@ void iptraf_xml_result_node(trx *t)
 {
   struct iptraf_result *res = (struct iptraf_result *)t->res;
 
-  inet_aton(res->ipaddress, &res->ipaddr);
+  if (res->ipaddress) {
+    inet_aton(res->ipaddress, &res->ipaddr);
+  }
   res->interval = xmlGetPropUnsigned(t->cur, (const xmlChar *) "interval");
 }
 
@@ -55,6 +57,8 @@ void iptraf_get_from_xml(trx *t)
 //*******************************************************************
 // find the real probeid from the ip address
 // get it from the cache. if there but too old: delete
+// the cache is used so we don't have to issue an SQL query for
+// every probe we process.
 //*******************************************************************
 void *iptraf_get_def(trx *t, int create)
 {
@@ -64,6 +68,23 @@ void *iptraf_get_def(trx *t, int create)
   MYSQL_ROW row;
   char buffer[10];
   time_t now = time(NULL);
+
+  if (res->color == STAT_PURPLE) {
+    result = my_query(t->probe->db, 0,
+                      "select ipaddress from pr_%s_def where id = '%u'", res->name, res->probeid);
+    if (!result) return(NULL);
+
+    row = mysql_fetch_row(result);
+    if (row && row[0]) {
+      res->ipaddress = strdup(row[0]);
+      inet_aton(res->ipaddress, &res->ipaddr);
+    } else {
+      LOG(LOG_NOTICE, "iptraf def %u not found", res->probeid);
+      mysql_free_result(result);
+      return(NULL);
+    }
+    mysql_free_result(result);
+  }
 
   def = g_hash_table_lookup(t->probe->cache, &res->ipaddr);
   if (def && def->stamp < now - (120 + uw_rand(240))) { // older then 2 - 6 minutes?
@@ -215,6 +236,8 @@ void iptraf_adjust_result(trx *t)
   char buffer[10];
   struct iptraf_result *res = (struct iptraf_result *)t->res;
 
+  if (res->color == STAT_PURPLE) return;
+
   if (res->color == 0) { // no color given in the result?
     guint largest = (res->incoming > res->outgoing ? res->incoming : res->outgoing) / 8;
     res->color = STAT_GREEN;
@@ -226,8 +249,8 @@ void iptraf_adjust_result(trx *t)
           largest/(res->interval?res->interval:1), t->def->red*1024);
       res->color = STAT_RED;
     }
+    sprintf(buffer, "%u", res->color);
+    set_result_value(t, "color", buffer);
   }
-  sprintf(buffer, "%u", res->color);
-  set_result_value(t, "color", buffer);
 }
 

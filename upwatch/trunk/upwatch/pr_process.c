@@ -62,8 +62,16 @@ int extract_info_from_xml(trx *t)
   res->probeid = xmlGetPropInt(t->cur, (const xmlChar *) "id");
   res->stattime = xmlGetPropUnsigned(t->cur, (const xmlChar *) "date");
   res->expires = xmlGetPropUnsigned(t->cur, (const xmlChar *) "expires");
+  res->color = xmlGetPropUnsigned(t->cur, (const xmlChar *) "color");
   res->received = xmlGetPropUnsigned(t->cur, (const xmlChar *) "received");
   res->ipaddress = xmlGetProp(t->cur, (const xmlChar *) "ipaddress");
+
+  if (res->stattime > t->probe->lastseen) {
+    t->probe->lastseen = res->stattime;
+  }
+
+  if (res->color == STAT_PURPLE) 
+    return 1; // PURPLE results don't have details of course, they are created by uw_purple
 
   if (t->probe->xml_result_node) {
     t->probe->xml_result_node(t);
@@ -199,8 +207,9 @@ void *get_def(trx *t, int create)
       // and we look into the result if the is anything useful in there.
       result = my_query(t->probe->db, 0,
                         "insert into pr_%s_def set server = '%d', "
-                        "        ipaddress = '%s', description = 'auto-added by system'",
-                        res->name, res->server, res->ipaddress?res->ipaddress:"");
+                        "        ipaddress = '%s', description = '%s'",
+                        res->name, res->server, res->ipaddress?res->ipaddress:"",
+                        t->fromhost ? t->fromhost : "automatically added");
       mysql_free_result(result);
       res->probeid = mysql_insert_id(t->probe->db);
       if (mysql_affected_rows(t->probe->db) == 0) { // nothing was actually inserted
@@ -332,7 +341,6 @@ int handle_result_file(gpointer data, gpointer user_data)
   char *filename = (char *)data;
   trx *t = (trx *) user_data;
   char *p;
-  char *fromhost = NULL;
   time_t fromdate;
   struct stat st;
   int filesize;
@@ -372,7 +380,7 @@ int handle_result_file(gpointer data, gpointer user_data)
   }
   p = xmlGetProp(t->cur, (const xmlChar *) "fromhost");
   if (p) {
-    fromhost = strdup(p);
+    t->fromhost = strdup(p);
     xmlFree(p);
   }
   fromdate = (time_t) xmlGetPropUnsigned(t->cur, (const xmlChar *) "date");
@@ -420,9 +428,9 @@ int handle_result_file(gpointer data, gpointer user_data)
       if (retval) {
         if (buf[0] == 0 || count % 100 == 0) {
           strftime(buf, sizeof(buf), "%Y-%m-%d %T", gmtime(&fromdate));
-          uw_setproctitle("%s %s@%s", buf, t->res->name, fromhost);
+          uw_setproctitle("%s %s@%s", buf, t->res->name, t->fromhost);
         }
-        if (debug > 3) { fprintf(stderr, "%s %s@%s", buf, t->res->name, fromhost); }
+        if (debug > 3) { fprintf(stderr, "%s %s@%s", buf, t->res->name, t->fromhost); }
         retval = t->process(t);
       }
       if (retval == 0 || retval == -1) { // error in processing this probe
@@ -455,6 +463,9 @@ int handle_result_file(gpointer data, gpointer user_data)
   ret = 4;
 
 errexit:
-  if (fromhost) free(fromhost);
+  if (t->fromhost) {
+    free(t->fromhost);
+    t->fromhost = NULL;
+  }
   return ret;
 }

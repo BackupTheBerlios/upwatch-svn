@@ -87,6 +87,22 @@ void *sysstat_get_def(trx *t, int create)
   MYSQL_ROW row;
   time_t now = time(NULL);
 
+  if (res->color == STAT_PURPLE) {
+    result = my_query(t->probe->db, 0,
+                      "select server from pr_%s_def where id = '%u'", res->name, res->probeid);
+    if (!result) return(NULL);
+
+    row = mysql_fetch_row(result);
+    if (row && row[0]) {
+      res->server = atoi(row[0]);
+    } else {
+      LOG(LOG_NOTICE, "%s def %u not found", res->name, res->probeid);
+      mysql_free_result(result);
+      return(NULL);
+    }
+    mysql_free_result(result);
+  }
+
   def = g_hash_table_lookup(t->probe->cache, &res->server);
   if (def && def->stamp < now - (120 + uw_rand(240))) { // older then 2 - 6 minutes?
      g_hash_table_remove(t->probe->cache, &res->server);
@@ -114,8 +130,8 @@ void *sysstat_get_def(trx *t, int create)
       }
       result = my_query(t->probe->db, 0,
                         "insert into pr_%s_def set server = '%d', "
-                        "        ipaddress = '127.0.0.1', description = 'auto-added by system'", 
-                        res->name, res->server);
+                        "        ipaddress = '127.0.0.1', description = '%s'", 
+                        res->name, res->server, t->fromhost ? t->fromhost : "automatically added");
       mysql_free_result(result);
       if (mysql_affected_rows(t->probe->db) == 0) { // nothing was actually inserted
         LOG(LOG_NOTICE, "insert missing pr_%s_def id %u: %s", 
@@ -180,12 +196,15 @@ void *sysstat_get_def(trx *t, int create)
 //*******************************************************************
 void sysstat_adjust_result(trx *t)
 { 
-  char buffer[10];
   struct sysstat_result *res = (struct sysstat_result *)t->res;
 
-  res->color = STAT_GREEN;
-  if (res->loadavg > t->def->yellow) res->color = STAT_YELLOW;
-  if (res->loadavg > t->def->red) res->color = STAT_RED;
-  sprintf(buffer, "%u", res->color);
-  set_result_value(t, "color", buffer);
+  if (res->color != STAT_PURPLE) {
+    char buffer[10];
+
+    res->color = STAT_GREEN;
+    if (res->loadavg > t->def->yellow) res->color = STAT_YELLOW;
+    if (res->loadavg > t->def->red) res->color = STAT_RED;
+    sprintf(buffer, "%u", res->color);
+    set_result_value(t, "color", buffer);
+  }
 }

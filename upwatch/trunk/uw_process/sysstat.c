@@ -18,6 +18,7 @@ static gint sysstat_store_raw_result(trx *t)
   struct probe_def *def = (struct probe_def *)t->def;
   char *escmsg;
 
+  if (t->res->color == STAT_PURPLE) return 1;
   t->seen_before = FALSE;
   if (res->message) {
     escmsg = g_malloc(strlen(res->message) * 2 + 1);

@@ -25,6 +25,7 @@ static gint iptraf_store_raw_result(trx *t)
   struct iptraf_result *res = (struct iptraf_result *)t->res;
   struct iptraf_def *def = (struct iptraf_def *)t->def;
     
+  if (t->res->color == STAT_PURPLE) return 1;
   t->seen_before = FALSE;
   def->slotday_in += res->incoming;
   def->slotday_out += res->outgoing;

@@ -196,7 +196,7 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   sprintf(buffer, "%d", (int) now);           xmlSetProp(httpget, "date", buffer);
   sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60)); 
     xmlSetProp(httpget, "expires", buffer);
-  sprintf(buffer, "%d", color);               subtree = xmlNewChild(httpget, NULL, "color", buffer);
+  sprintf(buffer, "%d", color);               xmlSetProp(httpget, "color", buffer);
   sprintf(buffer, "%f", probe->lookup);       subtree = xmlNewChild(httpget, NULL, "lookup", buffer);
   sprintf(buffer, "%f", probe->connect);      subtree = xmlNewChild(httpget, NULL, "connect", buffer);
   sprintf(buffer, "%f", probe->pretransfer);  subtree = xmlNewChild(httpget, NULL, "pretransfer", buffer);

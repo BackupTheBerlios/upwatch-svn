@@ -197,7 +197,7 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   sprintf(buffer, "%d", (int) now);           xmlSetProp(postgresql, "date", buffer);
   sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60));
     xmlSetProp(postgresql, "expires", buffer);
-  sprintf(buffer, "%d", color);               subtree = xmlNewChild(postgresql, NULL, "color", buffer);
+  sprintf(buffer, "%d", color);               xmlSetProp(postgresql, "color", buffer);
   sprintf(buffer, "%f", probe->connect);      subtree = xmlNewChild(postgresql, NULL, "connect", buffer);
   sprintf(buffer, "%f", probe->total);        subtree = xmlNewChild(postgresql, NULL, "total", buffer);
   if (probe->msg) {

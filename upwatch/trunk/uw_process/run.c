@@ -24,9 +24,21 @@ static int master = 1;
 static pid_t childpid[256];
 static int childpidcnt;
 
+void update_last_seen(module *probe)
+{
+  MYSQL_RES *result;
+
+  result = my_query(probe->db, 0,
+                    "update probe set lastseen = %u where id = '%u'",
+                    probe->lastseen, probe->class);
+  if (result) mysql_free_result(result);
+}
+
 static void modules_end_run(void)
 {
-  int i, total = 0;
+  int i;
+  int filetotal = 0;
+  int resulttotal = 0;
   char buf[1024];
 
   buf[0] = 0;
@@ -37,24 +49,20 @@ static void modules_end_run(void)
       modules[i]->end_run(modules[i]);
     }
     if (modules[i]->db) {
-      MYSQL_RES *result;
+      if (modules[i]->resultcount) {
+        update_last_seen(modules[i]);
+        sprintf(wrk, "%s:%u ", modules[i]->module_name, modules[i]->resultcount);
+        resulttotal += modules[i]->resultcount;
+        strcat(buf, wrk);
 
-      result = my_query(modules[i]->db, 0, 
-                        "update probe set lastseen = UNIX_TIMESTAMP() where name = '%s'", 
-                        modules[i]->module_name);
-      if (result) mysql_free_result(result);
+        filetotal += modules[i]->filecount;
+      }
       close_database(modules[i]->db);
       modules[i]->db = NULL;
     }
-    if (debug && modules[i]->count) {
-      sprintf(wrk, "%s:%u ", modules[i]->module_name, modules[i]->count);
-      total += modules[i]->count;
-      modules[i]->count = 0;
-      strcat(buf, wrk);
-    }
   }
-  if (total) { 
-    LOG(LOG_INFO, "Processed: Total:%u (%s)", total, buf);
+  if (resulttotal) { 
+    LOG(LOG_INFO, "Processed: %u files, %u results (%s)", filetotal, resulttotal, buf);
   }
 }
 
@@ -83,27 +91,30 @@ static void modules_start_run(void)
   int i;
 
   for (i = 0; modules[i]; i++) {
-    if (runcounter % 50 == 1) { // the first time or every 50 runs
-      MYSQL_RES *result;
+    MYSQL_RES *result;
 
-      modules[i]->db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
-                                     OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
-                                     OPT_VALUE_DBCOMPRESS);
-      if (modules[i]->db) {
-        result = my_query(modules[i]->db, 0, "select fuse from probe where id = '%d'", modules[i]->class);
-        if (result) {
-          MYSQL_ROW row;
-          row = mysql_fetch_row(result);
-          if (row) {
-            if (row[0]) modules[i]->fuse  = (strcmp(row[0], "yes") == 0) ? 1 : 0;
-          } else {
-            LOG(LOG_NOTICE, "probe record for id %u not found", modules[i]->class);
-          }
-          mysql_free_result(result);
+    modules[i]->filecount = 0;
+    modules[i]->resultcount = 0;
+    modules[i]->errors = 0;
+
+    modules[i]->db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
+                                   OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
+                                   OPT_VALUE_DBCOMPRESS);
+    if (modules[i]->db) {
+      result = my_query(modules[i]->db, 0, "select fuse, lastseen from probe where id = '%d'", modules[i]->class);
+      if (result) {
+        MYSQL_ROW row;
+        row = mysql_fetch_row(result);
+        if (row) {
+          if (row[0]) modules[i]->fuse  = (strcmp(row[0], "yes") == 0) ? 1 : 0;
+          if (row[1]) modules[i]->lastseen = atoi(row[1]);
+        } else {
+          LOG(LOG_NOTICE, "probe record for id %u not found", modules[i]->class);
         }
-        close_database(modules[i]->db);
-        modules[i]->db = NULL;
+        mysql_free_result(result);
       }
+      close_database(modules[i]->db);
+      modules[i]->db = NULL;
     }
 
     if (modules[i]->start_run) {

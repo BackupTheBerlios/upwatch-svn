@@ -198,7 +198,7 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   sprintf(buffer, "%d", (int) now);           xmlSetProp(mssql, "date", buffer);
   sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60));
     xmlSetProp(mssql, "expires", buffer);
-  sprintf(buffer, "%d", color);               subtree = xmlNewChild(mssql, NULL, "color", buffer);
+  sprintf(buffer, "%d", color);               xmlSetProp(mssql, "color", buffer);
   sprintf(buffer, "%f", probe->connect);      subtree = xmlNewChild(mssql, NULL, "connect", buffer);
   sprintf(buffer, "%f", probe->total);        subtree = xmlNewChild(mssql, NULL, "total", buffer);
   if (probe->msg) {

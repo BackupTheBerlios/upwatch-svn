@@ -30,6 +30,12 @@ probe = {
   };
 
   attribute = {
+    name = "color";
+    required = true;
+    descrip = "color as this probe thinks it should be";
+  };
+
+  attribute = {
     name = "received";
     descrip = "date/time this result was received by the upwatch server";
   };
@@ -37,11 +43,6 @@ probe = {
   element = {
     name = "host";
     descrip = "host where this element originated";
-  };
-
-  element = {
-    name = "color";
-    descrip = "color as this probe thinks it should be";
   };
 
   def = {
@@ -84,6 +85,12 @@ probe = {
   };
 
   attribute = {
+    name = "color";
+    required = true;
+    descrip = "color as this probe thinks it should be";
+  };
+
+  attribute = {
     name = "received";
     descrip = "date/time this result was received by the upwatch server";
   };
@@ -91,11 +98,6 @@ probe = {
   element = {
     name = "host";
     descrip = "host where this element originated";
-  };
-
-  element = {
-    name = "color";
-    descrip = "color as this probe thinks it should be";
   };
 
   result = {

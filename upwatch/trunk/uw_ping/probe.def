@@ -39,13 +39,14 @@ between the echo and the resulting ICMP reply packet.";
   };
 
   attribute = {
-    name = "received";
-    descrip = "date/time this result was received by the upwatch server";
+    name = "color";
+    required = true;
+    descrip = "color as this probe thinks it should be";
   };
 
-  element = {
-    name = "color";
-    descrip = "color as this probe thinks it should be";
+  attribute = {
+    name = "received";
+    descrip = "date/time this result was received by the upwatch server";
   };
 
   def = {

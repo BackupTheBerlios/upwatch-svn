@@ -313,7 +313,7 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   sprintf(buffer, "%s", probe->ipaddress);    xmlSetProp(snmpget, "ipaddress", buffer);
   sprintf(buffer, "%d", (int) now);           xmlSetProp(snmpget, "date", buffer);
   sprintf(buffer, "%d", ((int)now)+((int)OPT_VALUE_EXPIRES*60));   xmlSetProp(snmpget, "expires", buffer);
-  sprintf(buffer, "%d", color);               subtree = xmlNewChild(snmpget, NULL, "color", buffer);
+  sprintf(buffer, "%d", color);               xmlSetProp(snmpget, "color", buffer);
   sprintf(buffer, "%f", probe->value);        subtree = xmlNewChild(snmpget, NULL, "value", buffer);
   if (probe->msg) {
     subtree = xmlNewTextChild(snmpget, NULL, "info", probe->msg);

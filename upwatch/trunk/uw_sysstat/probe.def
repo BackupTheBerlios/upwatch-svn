@@ -41,13 +41,14 @@ probe = {
   };
 
   attribute = {
-    name = "received";
-    descrip = "date/time this result was received by the upwatch server";
+    name = "color";
+    required = true;
+    descrip = "color as this probe thinks it should be";
   };
 
-  element = {
-    name = "color";
-    descrip = "color as this probe thinks it should be";
+  attribute = {
+    name = "received";
+    descrip = "date/time this result was received by the upwatch server";
   };
 
   /* no extra definition fields */
@@ -194,6 +195,12 @@ probe = {
   };
 
   attribute = {
+    name = "color";
+    required = true;
+    descrip = "color as this probe thinks it should be";
+  };
+
+  attribute = {
     name = "received";
     descrip = "date/time this result was received by the upwatch server";
   };
@@ -203,10 +210,6 @@ probe = {
     descrip = "host where this element originated";
   };
 
-  element = {
-    name = "color";
-    descrip = "color as this probe thinks it should be";
-  };
 };
 
 probe = {
@@ -238,6 +241,12 @@ probe = {
   };
 
   attribute = {
+    name = "color";
+    required = true;
+    descrip = "color as this probe thinks it should be";
+  };
+
+  attribute = {
     name = "received";
     descrip = "date/time this result was received by the upwatch server";
   };
@@ -245,10 +254,5 @@ probe = {
   element = {
     name = "host";
     descrip = "host where this element originated";
-  };
-
-  element = {
-    name = "color";
-    descrip = "color as this probe thinks it should be";
   };
 };

@@ -30,6 +30,8 @@ struct summ_spec {
 }; 
 
 char *query_server_by_id(module *probe, int id);
+void update_last_seen(module *probe);
+int notify(trx *t);
 
 void mod_ic_add(module *probe, const char *table, const char *str);
 void mod_ic_flush(module *probe, const char *table);
@@ -38,8 +40,6 @@ void mod_ic_flush(module *probe, const char *table);
 extern gint ct_store_raw_result(trx *t);
 extern void ct_summarize(trx *t, char *from, char *into, 
                          guint slot, guint slotlow, guint slothigh, gint resummarize);
-
-void notify(trx *t, struct probe_result *prv);
 
 #endif /* __UW_PROCESS_GLOB_H */
 

@@ -43,6 +43,8 @@ int notify(trx *t)
   row = mysql_fetch_row(result);
   if (row) {
     t->res->prevhistcolor = atoi(row[0]);
+  } else {
+    t->res->prevhistcolor = 0;
   }
   mysql_free_result(result);
 
@@ -51,7 +53,7 @@ int notify(trx *t)
     return(notified);
   }
   // and if it's a fuse, we only warn if the fuse blows
-  if (t->probe->fuse && (t->res->color < STAT_BLUE)) {
+  if (t->probe->fuse && (t->res->color < STAT_PURPLE)) {
     return(notified);
   }
   notified = do_notification(t);

@@ -1,12 +1,7 @@
 #include "config.h"
 #include <generic.h>
 #include <unistd.h>
-#ifdef UW_PROCESS
 #include "uw_process_glob.h"
-#endif
-#ifdef UW_NOTIFY
-#include "uw_notify_glob.h"
-#endif
 
 #ifdef DMALLOC
 #include "dmalloc.h"

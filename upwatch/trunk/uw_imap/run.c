@@ -191,7 +191,7 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   sprintf(buffer, "%d", (int) now);           xmlSetProp(imap, "date", buffer);
   sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60));
     xmlSetProp(imap, "expires", buffer);
-  sprintf(buffer, "%d", color);               subtree = xmlNewChild(imap, NULL, "color", buffer);
+  sprintf(buffer, "%d", color);               xmlSetProp(imap, "color", buffer);
   sprintf(buffer, "%f", probe->connect);      subtree = xmlNewChild(imap, NULL, "connect", buffer);
   sprintf(buffer, "%f", probe->total);        subtree = xmlNewChild(imap, NULL, "total", buffer);
   if (probe->msg) {

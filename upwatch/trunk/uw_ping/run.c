@@ -303,8 +303,8 @@ int run(void)
     sprintf(buffer, "%s", inet_ntoa(hosts[id]->saddr.sin_addr)); xmlSetProp(ping, "ipaddress", buffer);
     sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60)); 
       xmlSetProp(ping, "expires", buffer);
+    sprintf(buffer, "%d", color); 		xmlSetProp(ping, "color", buffer);
     if (color == STAT_RED) xmlSetProp(ping, "investigate", "icmptraceroute");
-    sprintf(buffer, "%d", color); 		subtree = xmlNewChild(ping, NULL, "color", buffer);
     sprintf(buffer, "%f", ((float) hosts[id]->min_reply) * 0.000001);
       subtree = xmlNewChild(ping, NULL, "lowest", buffer);
     sprintf(buffer, "%f", ((float) (hosts[id]->total_time / (hosts[id]->num_recv==0?1:hosts[id]->num_recv))) * 0.000001);
