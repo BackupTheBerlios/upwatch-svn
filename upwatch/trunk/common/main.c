@@ -272,6 +272,7 @@ void _LOG(int level, const char *fmt, ...)
     time_t now;
     char timebuf[30];
     char hostname[256];
+    char *logfile = OPT_ARG(LOGFILE);
 
     time(&now);
     tms = gmtime(&now);
@@ -280,7 +281,7 @@ void _LOG(int level, const char *fmt, ...)
     gethostname(hostname, sizeof(hostname));
     strtok(hostname, ".");
 
-    out = fopen(OPT_ARG(LOGFILE), "a");
+    out = fopen(logfile, "a");
     if (out) {
       fprintf(out, "%s %s %s\n", timebuf, hostname, msg);
       fclose(out);

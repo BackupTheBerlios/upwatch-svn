@@ -100,13 +100,13 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
 {
   MYSQL_RES *result;
   struct ping_result *res = (struct ping_result *)probe_res;
-  struct ping_result *def = (struct ping_result *)probe_def;
+  struct probe_def *def = (struct probe_def *)probe_def;
   int already_there = TRUE;
     
   result = my_query("insert into pr_ping_raw "
-                    "set    probe = '%u', stattime = '%u', color = '%u', "
+                    "set    probe = '%u', yellow = '%d', red = '%d', stattime = '%u', color = '%u', "
                     "       value = '%f', lowest = '%f', highest = '%f', message = '%s'",
-                    def->probeid, res->stattime, res->color, 
+                    def->probeid, def->yellow, def->red, res->stattime, res->color, 
                     res->value, res->lowest, res->highest, res->message ? res->message : "");
   mysql_free_result(result);
   if (mysql_affected_rows(mysql) > 0) { // something was actually inserted
@@ -123,6 +123,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   MYSQL_RES *result;
   MYSQL_ROW row;
   struct ping_result *def = (struct ping_result *)probe_def;
+  gint avg_yellow, avg_red;
   float avg_value, min_lowest, max_highest; 
   guint stattime;
   guint max_color;
@@ -130,7 +131,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   stattime = slotlow + ((slothigh-slotlow)/2);
 
   result = my_query("select avg(lowest), avg(value), " 
-                    "       avg(highest), max(color) " 
+                    "       avg(highest), max(color), avg(yellow), avg(red) " 
                     "from   pr_ping_%s use index(probtime) "
                     "where  probe = '%d' and stattime >= %d and stattime < %d",
                     from, def->probeid, slotlow, slothigh);
@@ -150,11 +151,15 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   avg_value   = atof(row[1]);
   max_highest = atof(row[2]);
   max_color   = atoi(row[3]);
+  avg_yellow  = atoi(row[4]);
+  avg_red     = atoi(row[5]);
   mysql_free_result(result);
 
   result = my_query("insert into pr_ping_%s " 
-                    "set    value = %f, lowest = %f, highest = %f, probe = %d, color = '%u', stattime = %d",
-                    into, avg_value, min_lowest, max_highest, def->probeid, max_color, stattime);
+                    "set    value = %f, lowest = %f, highest = %f, probe = %d, color = '%u', " 
+                    "       stattime = %d, yellow = '%d', red = '%d'",
+                    into, avg_value, min_lowest, max_highest, def->probeid, 
+                    max_color, stattime, avg_yellow, avg_red);
   mysql_free_result(result);
 }
 

@@ -119,7 +119,7 @@ static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr
 //*******************************************************************
 static void *get_def(module *probe, void *probe_res)
 {
-  struct bb_cpu_result *def;
+  struct probe_def *def;
   struct bb_cpu_result *res = (struct bb_cpu_result *)probe_res;
   MYSQL_RES *result;
   MYSQL_ROW row;
@@ -134,7 +134,7 @@ static void *get_def(module *probe, void *probe_res)
   if (row && row[0]) {
     res->server   = atoi(row[0]);
   } else {
-    LOG(LOG_NOTICE, "server %s not found", def->hostname);
+    LOG(LOG_NOTICE, "server %s not found", res->hostname);
     mysql_free_result(result);
     return(NULL);
   }
@@ -237,6 +237,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   MYSQL_RES *result;
   MYSQL_ROW row;
   struct bb_cpu_result *def = (struct bb_cpu_result *)probe_def;
+  gint avg_yellow, avg_red;
   gfloat avg_loadavg;
   guint avg_user, avg_system, avg_idle, avg_swapin, avg_swapout, avg_blockin;
   guint avg_blockout, avg_swapped, avg_free, avg_buffered, avg_cached, avg_used;
@@ -248,7 +249,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   result = my_query("select avg(loadavg), avg(user), avg(system), avg(idle), "
                     "       avg(swapin), avg(swapout), avg(blockin), avg(blockout), "
                     "       avg(swapped), avg(free), avg(buffered), avg(cached), "
-                    "       avg(used), max(color) " 
+                    "       avg(used), max(color), avg(yellow), avg(red) " 
                     "from   pr_bb_cpu_%s use index(probtime) "
                     "where  probe = '%d' and stattime >= %d and stattime < %d",
                     from, def->probeid, slotlow, slothigh);
@@ -278,18 +279,22 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   avg_cached  = atoi(row[11]);
   avg_used    = atoi(row[12]);
   max_color   = atoi(row[13]);
+  avg_yellow  = atoi(row[14]);
+  avg_red     = atoi(row[15]);
   mysql_free_result(result);
 
   result = my_query("insert into pr_bb_cpu_%s " 
                     "set    loadavg = '%f', user = '%u', system = '%u', idle = '%u', "
                     "       swapin = '%u', swapout = '%u', blockin = '%u', blockout = '%u', "
                     "       swapped = '%u', free = '%u', buffered = '%u', cached = '%u', "
-                    "       used = '%u', probe = %d, color = '%u', stattime = %d",
+                    "       used = '%u', probe = %d, color = '%u', stattime = %d, "
+                    "       yellow = '%d', red = '%d'",
                     into, 
                     avg_loadavg, avg_user, avg_system, avg_idle, 
                     avg_swapin, avg_swapout, avg_blockin, avg_blockout, 
                     avg_swapped, avg_free, avg_buffered, avg_cached, 
-                    avg_used, def->probeid, max_color, stattime);
+                    avg_used, def->probeid, max_color, stattime,
+                    avg_yellow, avg_red);
   mysql_free_result(result);
 }
 

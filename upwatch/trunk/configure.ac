@@ -1,17 +1,43 @@
 # Process this file with autoconf to produce a configure script.
 AC_INIT(upwatch, 0.3, bugs@upwatch.com)
-AC_CONFIG_SRCDIR([upwatch/spool.c])
-AC_CONFIG_AUX_DIR(conf)
+AC_CONFIG_SRCDIR(upwatch/spool.c)
+VERSION=0.3
+PACKAGE=upwatch
+AC_CONFIG_AUX_DIR(cfg)
+AC_CANONICAL_TARGET
+AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
+AM_CONFIG_HEADER(config.h:config-h.in)
+AC_SUBST(VERSION)
 
-LIBOPTS_CHECK
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.1 $),)dnl
 
-AM_INIT_AUTOMAKE(upwatch, 0.3)
+# ----------------------------------------------------------------------
+# If `configure' is invoked (in)directly via `make', ensure that it
+# encounters no `make' conflicts.  Ignore error if shell does not have
+# unset, but at least set these to empty values.
+# ----------------------------------------------------------------------
+MFLAGS=
+MAKEFLAGS=
+MAKELEVEL=
+unset MFLAGS MAKEFLAGS MAKELEVEL 2>/dev/null
+
+ifdef([AC_LIBTOOL_WIN32_DLL], AC_LIBTOOL_WIN32_DLL)
+AM_WITH_DMALLOC
+
+# ----------------------------------------------------------------------
+# check for various programs used during the build.
+# ----------------------------------------------------------------------
+AC_PROG_CXX
 AC_PROG_CC
-AC_PROG_GCC_TRADITIONAL
-AC_PROG_AWK
+AC_PROG_CPP
+AC_PROG_INSTALL
 AC_PROG_LIBTOOL
+AC_EXEEXT
 AC_PROG_LN_S
+AC_PROG_MAKE_SET
+AC_PROG_AWK
 
+ 
 AC_ARG_ENABLE(debug,
     [  --enable-debug          Turn on compiler debugging information (default=no)],
     [if eval "test x$enable_debug = xyes"; then
@@ -21,6 +47,7 @@ AC_ARG_ENABLE(debug,
     fi]
 )
 
+# Checks for libraries.
 ################## MYSQL
 # path to libmysqlclient stuff:.
 AC_ARG_WITH(mysql-libs,
@@ -46,7 +73,6 @@ if test ! -f "$MYSQL_INC_PREFIX/mysql.h"
 then
   AC_MSG_ERROR([Cannot find $MYSQL_INC_PREFIX/mysql.h])
 fi
-
 
 CFLAGS="$CFLAGS $MYSQL_CFLAGS"
 
@@ -123,82 +149,60 @@ AC_SUBST(LIBXML2_CFLAGS)
 AC_SUBST(LIBXML2_LIBS)
 CFLAGS="$CFLAGS $LIBXML2_CFLAGS"
 
-# Checks for other libraries.
-#AC_CHECK_LIB([opts], [optionLoadLine], 
-#
-#  [LIBOPTS_LIBS=-lopts], [AC_MSG_ERROR([Sorry, we need -lopts to continue])])
-#AC_SUBST(LIBOPTS_LIBS)
-
-AC_CHECK_LIB([pthread], [pthread_create], 
+AC_CHECK_LIB([pthread], [pthread_create],
   [LIBPTHREAD_LIBS=-lpthread],[AC_MSG_ERROR([Sorry, we need -lpthread to continue])] )
 AC_SUBST(LIBPTHREAD_LIBS)
 
-AC_CHECK_LIB([curl], [curl_easy_init], 
+AC_CHECK_LIB([curl], [curl_easy_init],
   [LIBCURL_LIBS=-lcurl], [AC_MSG_ERROR([Sorry, we need -lcurl to continue])])
 AC_SUBST(LIBCURL_LIBS)
 
-AC_CHECK_LIB([pcap], [pcap_close], 
+AC_CHECK_LIB([pcap], [pcap_close],
   [LIBPCAP_LIBS=-lpcap], [AC_MSG_ERROR([Sorry, we need -lpcap to continue])])
 AC_SUBST(LIBPCAP_LIBS)
 
-AC_CHECK_LIB([gdbm], [gdbm_close], 
+AC_CHECK_LIB([gdbm], [gdbm_close],
   [LIBGDBM_LIBS=-lgdbm], [AC_MSG_ERROR([Sorry, we need -lgdbm to continue])])
 AC_SUBST(LIBGDBM_LIBS)
 
-AC_ARG_ENABLE(dmalloc,
-    [  --enable-dmalloc         Turn on memoty debugging using the dmalloc library(default=no)],
-    [if eval "test x$enable_dmalloc = xyes"; then
-        CFLAGS="${CFLAGS} -DDMALLOC"
-        LIBS="${LIBS} -ldmallocth"
-    fi]
-)
-
-#does not really work, eats memory pages like hell
-#AC_ARG_ENABLE(efence,
-#    [  --enable-efence         Turn on memory debugging using the ElectricFence library(default=no)],
-#    [if eval "test x$enable_efence = xyes"; then
-#        LIBS="${LIBS} -lefence"
-#    fi]
-#)
-
-# everybody needs libopts
-#LIBS="$LIBS ${LIBOPTS_LDADD}"
+#LIBOPTS_LDADD=-lopts
+#AC_SUBST(LIBOPTS_LDADD)
 
 # Checks for header files.
+AC_HEADER_DIRENT
 AC_HEADER_STDC
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h malloc.h netdb.h netinet/in.h stdlib.h string.h sys/ioctl.h sys/socket.h sys/time.h syslog.h unistd.h])
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h malloc.h memory.h netdb.h netinet/in.h stdlib.h string.h strings.h sys/fs/s5param.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h syslog.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
 AC_TYPE_OFF_T
+AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 AC_HEADER_TIME
 AC_STRUCT_TM
 
 # Checks for library functions.
+LIBOPTS_CHECK
+AC_PROG_GCC_TRADITIONAL
 AC_FUNC_MALLOC
 AC_FUNC_MKTIME
 AC_TYPE_SIGNAL
 AC_FUNC_STAT
 AC_FUNC_STRFTIME
-AC_CHECK_FUNCS([alarm atexit gethostbyname gethostname gettimeofday inet_ntoa memset putenv select socket strdup strerror strncasecmp strrchr strstr tzset])
+AC_CHECK_FUNCS([alarm atexit dup2 gethostbyname gethostname gettimeofday inet_ntoa memset putenv regcomp select socket strchr strdup strerror strncasecmp strrchr strstr strtol strtoul tzset uname])
 
-AM_CONFIG_HEADER(config.h)
-
-AC_CONFIG_FILES([Makefile 
-                 upwatch/Makefile 
-                 doc/Makefile 
-                 uw_accept/Makefile 
-                 uw_acceptbb/Makefile 
-                 uw_httpget/Makefile 
-                 uw_ping/Makefile 
-                 uw_sysstat/Makefile 
-                 uw_process/Makefile 
-                 uw_iptraf/Makefile 
-                 uw_notify/Makefile 
-                 uw_sysstat/Makefile 
-                 uw_investigate/Makefile 
-                 uw_send/Makefile]
-)
+AC_CONFIG_FILES([Makefile
+                 doc/Makefile
+                 libopts/Makefile
+                 upwatch/Makefile
+                 uw_accept/Makefile
+                 uw_acceptbb/Makefile
+                 uw_httpget/Makefile
+                 uw_investigate/Makefile
+                 uw_iptraf/Makefile
+                 uw_notify/Makefile
+                 uw_ping/Makefile
+                 uw_process/Makefile
+                 uw_send/Makefile
+                 uw_sysstat/Makefile])
 AC_OUTPUT
-

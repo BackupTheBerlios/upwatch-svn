@@ -21,9 +21,7 @@ struct iptraf_result {
 };
 
 struct iptraf_def {
-  STANDARD_PROBE_RESULT;
-  guint yellow;
-  guint red;
+  STANDARD_PROBE_DEF;
   guint slotday_in_total;   // in-memory counters for the current slot in the 
   guint slotday_out_total;  // pr_iptraf_day table. To speed things up a bit.
   guint slotday_max_color;  // same with color
@@ -178,9 +176,9 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
   }
 
   result = my_query("insert into pr_iptraf_raw "
-                    "set    probe = '%u', stattime = '%u', color = '%u', "
+                    "set    probe = '%u', yellow = '%d', red = '%d', stattime = '%u', color = '%u', "
                     "       in_total = '%u', out_total = '%u'",
-                    def->probeid, res->stattime, res->color, 
+                    def->probeid, def->yellow, def->red, res->stattime, res->color, 
                     res->in, res->out);
   mysql_free_result(result);
   if (mysql_affected_rows(mysql) > 0) { // something was actually inserted
@@ -198,6 +196,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   MYSQL_ROW row;
   struct iptraf_def *def = (struct iptraf_def *)probe_def;
   struct iptraf_result *res = (struct iptraf_result *)probe_res;
+  gint avg_yellow, avg_red;
   guint in_total, out_total;
   guint stattime;
   guint max_color;
@@ -212,7 +211,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
     def->slotday_out_total = 0;
     def->slotday_max_color = 0;
   } else {
-    result = my_query("select sum(in_total), sum(out_total), max(color) "
+    result = my_query("select sum(in_total), sum(out_total), max(color), avg(yellow), avg(red) "
                       "from   pr_iptraf_%s use index(probtime) "
                       "where  probe = '%u' and stattime >= '%u' and stattime < '%u'",
                       from, def->probeid, slotlow, slothigh);
@@ -228,16 +227,18 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
       return;
     }
 
-    in_total = atof(row[0]);
-    out_total = atof(row[1]);
+    in_total    = atof(row[0]);
+    out_total   = atof(row[1]);
     max_color   = atoi(row[2]);
+    avg_yellow  = atoi(row[3]);
+    avg_red     = atoi(row[4]);
     mysql_free_result(result);
   }
 
   result = my_query("insert into pr_iptraf_%s "
                     "set    in_total = '%u', out_total = '%u', "
-                    "       probe = '%u', color = '%u', stattime = '%u'",
-                    into, in_total, out_total, def->probeid, max_color, stattime);
+                    "       probe = '%u', color = '%u', stattime = '%u', yellow = '%d', red = '%d'",
+                    into, in_total, out_total, def->probeid, max_color, stattime, avg_yellow, avg_red);
   mysql_free_result(result);
 }
 

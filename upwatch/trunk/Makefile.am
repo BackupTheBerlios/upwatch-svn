@@ -1,15 +1,14 @@
 PROGNAMES = uw_send uw_accept uw_process uw_notify uw_acceptbb uw_investigate \
  uw_httpget uw_ping uw_iptraf uw_sysstat
 
-include $(srcdir)/libopts/MakeDefs.inc
-SUBDIRS = ${LIBOPTS_DIR} upwatch ${PROGNAMES} doc
+SUBDIRS = upwatch ${PROGNAMES} doc
 
 EXTRA_DIST = Makefile.am.common upwatch-spec.def upwatch-spec.tpl upwatch.spec upwatch.mysql templates \
   config/upwatch.conf config/upwatch-base.mysql config/result.dtd config/logrotate config/cron.daily \
   config/upwatch.init patches/libpcap-linux-timeout.patch \
   common/db.c common/generic_options.def common/init.tpl common/main.c common/man1.tpl common/spec.tpl \
   doc/upwatch.xml doc/Makefile doc/upwatch.xsl doc/jadetex.cfg doc/style.dsl doc/style.xsl doc/style.css \
-  compat/bb/*.mysql libopts/.libs/libopts.a
+  compat/bb/*.mysql
 
 BUILT_SOURCES = upwatch.mysql 
 
@@ -22,5 +21,3 @@ upwatch.mysql: config/upwatch-base.mysql uw_*/uw_*.mysql compat/bb/*.mysql
 rpm: dist
 	rpmbuild -ta upwatch-${VERSION}.tar.gz
 
-
-ACLOCAL_AMFLAGS = -I m4

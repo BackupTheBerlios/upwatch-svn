@@ -82,7 +82,7 @@ static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr
 //*******************************************************************
 static void *get_def(module *probe, void *probe_res)
 {
-  struct bb_generic_result *def;
+  struct probe_def *def;
   struct bb_generic_result *res = (struct bb_generic_result *)probe_res;
   MYSQL_RES *result;
   MYSQL_ROW row;
@@ -97,7 +97,7 @@ static void *get_def(module *probe, void *probe_res)
   if (row && row[0]) {
     res->server   = atoi(row[0]);
   } else {
-    LOG(LOG_NOTICE, "server %s not found", def->hostname);
+    LOG(LOG_NOTICE, "server %s not found", res->hostname);
     mysql_free_result(result);
     return(NULL);
   }

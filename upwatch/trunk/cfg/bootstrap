@@ -1,0 +1,257 @@
+#! /bin/sh
+#  -*- Mode: Shell-script -*- 
+# ----------------------------------------------------------------------
+# bootstrap --- maintainer's bootstrap script
+#
+# Time-stamp:      "2002-09-21 11:54:00 bkorb"
+# Author:          Bruce Korb <bkorb@gnu.org>
+# Maintainer:      Bruce Korb <bkorb@gnu.org>
+# Created:         Sun August 18, 2002
+# ----------------------------------------------------------------------
+# @(#) $Id: bootstrap,v 1.1 2002/12/19 12:41:09 raarts Exp $
+# ----------------------------------------------------------------------
+
+# This script is designed to find any directories which contain a
+# configure.in in script, and to run the autotools programs from each
+# of those directories to make sure they are in a state ready to
+# 'configure; make; make install'
+#
+# Often this process involves more than `libtoolize; automake; autoconf',
+# so supplementary actions can be placed in a bootstrap.local script
+# in the same directory as this script, and anywhere in the source tree
+# in bootstrap.dir files.  The bootstrap.local script will be sourced
+# twice; first with BOOTSTRAP=pre before the main part is run, and then
+# again with BOOTSTRAP=post after the main part has finished.  This makes
+# it possible to set up any links or temporary files required for this
+# script to work before it has executed, and then remove them when it
+# has finished.  The bootstrap.dir files are also sourced, in a random
+# order, as they are found in the tree just before the BOOTSTRAP=post
+# phase.  This allows a developer to put any peculiar bootstrap actions
+# required by individual directories where they can be seen (and not
+# forgotten!).
+#
+# In an ideal world, running this bootstrap script (including any extra
+# scripts it executes) should leave a freshly checked out CVS source tree
+# in the same state as a freshly unrolled tarball.  In this way, one
+# no longer has to maintain generated files under source control, they
+# can be generated after checkout using this bootstrap procedure.
+
+# Code:
+if [ -z "${VERBOSE}" ]
+then VERBOSE=false ; VERBOSE_ARG=""
+else VERBOSE=true ; VERBOSE_ARG="-x" ; set -x ; fi
+export VERBOSE VERBOSE_ARG
+
+set -e
+
+# Figure out the absolute path to the working directory.
+#
+wd=`echo $0|sed 's,/[^/]*$,,'`
+test -z "${wd}" && wd=.
+wd=`cd ${wd} ; pwd`
+
+# Search for a configure.in
+#
+for srcdir in ${wd} ${wd}/.. .. .; do
+    test -f $srcdir/configure.ac && break
+    test -f $srcdir/configure.in && break
+done
+
+if test -f $srcdir/configure.ac
+then config_file=configure.ac
+else config_file=configure.in
+fi
+export config_file srcdir
+
+#  This missing function is used in many places
+#
+MISSING="${wd}/missing"
+export MISSING
+
+# Source any local scripts which add to the bootstrap procedure.
+# The bootstrap.local script should test the value of the BOOTSTRAP
+# environment variable to see whether it should run the sections
+# to be called before the main script, or afterwards.
+#
+BOOTSTRAP=pre
+export BOOTSTRAP
+test -f ${wd}/bootstrap.local && \
+  sh ${VERBOSE_ARG} ${wd}/bootstrap.local $@
+
+# ----------------------------------------------------------------------
+# Make sure all of the maintainer tools required for bootstrap are
+# available on the host machine.
+# ----------------------------------------------------------------------
+
+tools="autoconf autoheader aclocal automake libtoolize"
+autoconf_reqver=2.50
+autoheader_reqver=2.50
+aclocal_reqver=1.4-p4
+automake_reqver=1.4-p4
+libtoolize_reqver=1.4
+
+#  A version is out-of-date if it does not compare equal to the correct
+#  version and then one of its component numbers compares less
+#
+out_of_date()
+{
+    if test "X${1}" = "X${2}"
+    then return 1 ; fi
+
+    tv=`IFS=" .";set -- ${1};echo $@`
+    bv=`IFS=" .";set -- ${2};echo $@`
+
+    #  FOREVER...(as long as we have version number components)
+    #
+    while :
+    do
+        #  Extract the next component.  If they are not equal,
+        #  then it is time to return 0 or 1.
+        #
+        x=`set -- $tv;echo $1`
+        y=`set -- $bv;echo $1`
+        if test "X$x" = "X$y" ; then :
+        else
+            set -- `(echo $x return 0; echo $y return 1) | sort -n | sed 1q`
+            shift
+            eval $@
+        fi
+
+        #  Shift off the first component of each.  If the base version is done
+        #  then the test version is more recent, otherwise the other way
+        #
+        tv=`set -- $tv;shift;echo $@`
+        bv=`set -- $bv;shift;echo $@`
+        [ -z "$bv" ] && return 1
+        [ -z "$tv" ] && return 0
+    done
+}
+
+# Rather than give up at the first failure, set this variable to
+# "exit 1", so that all the checks are performed before exiting.
+DIE=:
+
+for f in $tools
+do
+  v=`$f --version`
+  if test $? -ne 0
+  then
+    ${MISSING} ${f}
+    DIE="exit 1"
+  else
+    v=`echo "$v"|sed 1q |sed 's/.* \([0-9]\)/\1/'`
+    eval reqver=\$${f}_reqver
+
+    if out_of_date "${v}" "${reqver}"
+    then
+      ${MISSING} old ${f}
+      DIE="exit 1"
+    fi
+  fi
+
+  eval `echo $f | tr a-z A-Z`=$f
+done
+
+# If any of the above tests failed, abort at this point.
+#
+${DIE}
+
+doit ()
+{
+  if test "x$1" != x: ; then 
+    echo "RUN:  $@"
+    eval "$@"
+  fi
+}
+
+# Run through all of the required autogeneration tools in
+# each directory which contains a ${config_file} file...
+for i in `find $srcdir -name ${config_file} -print|grep -v CVS/`
+do
+  # Find the top directory with respect to the current ${config_file}.
+  top=`echo $i|sed 's,/[^/]*$,,'`
+  case $i in
+    /* | [A-Za-z]:\\*) ;;
+    *) top=`(cd $top && pwd)` ;;
+  esac
+
+  # A brief check to make sure we are not running in the wrong
+  # directory.
+  initfile=`fgrep AC_CONFIG_SRCDIR $top/${config_file} | sed 's,^.*(,,;s,).*$,,'`
+  if test -z "$initfile" || test ! -f $top/$initfile; then
+    cat <<- _EOF_
+        \$initfile is \`$initfile'
+        **Error**: Directory \`$top' does not look like a valid
+        top-level directory.
+_EOF_
+    exit 1
+  fi
+
+  # Execute this in a sub-shell so we don't lose our start location.
+  (
+    cd $top
+    echo bootstrapping in `pwd`
+
+    # remove any stale config.cache
+    doit rm -f config.cache
+
+    # Use auxdir if set in ${config_file}.
+    auxdir=${auxdir-`fgrep CONFIG_AUX_DIR ${config_file} | \
+        sed 's,^.*(,,;s,).*$,,'`}
+    test -n "$auxdir" || auxdir=$srcdir
+    test -d $auxdir || auxdir=.
+
+    if sed 's,#.*$,,;s,dnl[ \t].*$,,' ${config_file} \
+      | egrep 'A[CM]_PROG_LIBTOOL' > /dev/null ; then
+      doit $LIBTOOLIZE    --force
+      case "${auxdir}" in
+      '.' ) : ;;
+      * ) [ ! -f ltmain.sh ] || mv -f ltmain.sh ${auxdir}/.
+          [ ! -f config.guess ] || mv -f config.guess ${auxdir}/.
+          [ ! -f config.sub ] || mv -f config.sub ${auxdir}/.
+          ;;
+      esac
+    fi
+
+    if sed 's,#.*$,,;s,dnl[ \t].*$,,' ${config_file} \
+      | egrep 'A(C|M)_INIT_AUTOMAKE' > /dev/null ; then
+      doit $ACLOCAL       -I $auxdir
+    fi
+
+    doit $AUTOHEADER
+
+    if sed 's,#.*$,,;s,dnl[ \t].*$,,' ${config_file} \
+      | egrep 'A(C|M)_INIT_AUTOMAKE' > /dev/null ; then
+      doit $AUTOMAKE      --gnu --add-missing
+    fi
+
+    doit $AUTOCONF
+  ) || exit 1
+done
+
+# Execute (NOTE: not source!) any bootstrap.dir scripts we find in
+# the source tree.
+
+find . -name bootstrap.dir |
+egrep -v '/CVS/'       | (
+while read f
+do
+  (cd `dirname $f` ; srcdir=.
+   echo running bootstrap.dir in `pwd`
+   sh ${VERBOSE_ARG} ./bootstrap.dir recursive ) || exit 1
+done ) || exit 1
+
+# Source any local scripts which add to the bootstrap procedure.
+# The bootstrap.local script should test the value of the BOOTSTRAP
+# environment variable to see whether it should run the sections
+# to be called before the main script, or afterwards.
+BOOTSTRAP=post
+test ! -f ${wd}/bootstrap.local || . ${wd}/bootstrap.local $@
+
+# Local Variables:
+# mode: shell-script
+# sh-indentation: 2
+# indent-tabs-mode: nil
+# End:
+
+# bootstrap ends here

@@ -76,14 +76,14 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
 {
   MYSQL_RES *result;
   struct httpget_result *res = (struct httpget_result *)probe_res;
-  struct httpget_result *def = (struct httpget_result *)probe_def;
+  struct probe_def *def = (struct probe_def *)probe_def;
   int already_there = TRUE;
     
   result = my_query("insert into pr_httpget_raw "
-                    "set    probe = '%u', stattime = '%u', color = '%u', "
+                    "set    probe = '%u', yellow = '%u', red = '%u', stattime = '%u', color = '%u', "
                     "       lookup = '%f', connect = '%f', pretransfer = '%f', total = '%f', "
                     "       message = '%s' ",
-                    def->probeid, res->stattime, res->color, 
+                    def->probeid, def->yellow, def->red, res->stattime, res->color, 
                     res->lookup, res->connect, res->pretransfer, res->total,
                     res->message ? res->message : "");
 
@@ -101,8 +101,8 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
-
   struct httpget_result *def = (struct httpget_result *)probe_def;
+  gint avg_yellow, avg_red;
   float avg_lookup, avg_connect, avg_pretransfer, avg_total;
   guint stattime;
   guint max_color;
@@ -110,7 +110,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   stattime = slotlow + ((slothigh-slotlow)/2);
 
   result = my_query("select avg(lookup), avg(connect), avg(pretransfer), "
-                    "       avg(total), max(color) "
+                    "       avg(total), max(color), avg(yellow), avg(red) "
                     "from   pr_httpget_%s use index(probtime) "
                     "where  probe = '%d' and stattime >= %d and stattime < %d",
                     from, def->probeid, slotlow, slothigh);
@@ -131,12 +131,15 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   avg_pretransfer = atof(row[2]);
   avg_total = atof(row[3]);
   max_color   = atoi(row[4]);
+  avg_yellow  = atoi(row[5]);
+  avg_red     = atoi(row[6]);
   mysql_free_result(result);
 
   result = my_query("insert into pr_httpget_%s "
                     "set    lookup = '%f', connect = '%f', pretransfer = '%f', total = '%f', "
-                    "       probe = %d, color = '%u', stattime = %d",
-                    into, avg_lookup, avg_connect, avg_pretransfer, avg_total, def->probeid, max_color, stattime);
+                    "       probe = %d, color = '%u', stattime = %d, yellow = '%d', red = '%d'",
+                    into, avg_lookup, avg_connect, avg_pretransfer, avg_total, def->probeid, 
+                    max_color, stattime, avg_yellow, avg_red);
 
   mysql_free_result(result);
 }

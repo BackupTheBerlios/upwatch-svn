@@ -2,7 +2,6 @@
 #define __UW_PROCESS_H
 
 #define STANDARD_PROBE_RESULT   \
-  guint stamp; \
   guint color; \
   guint stattime; \
   guint probeid; \
@@ -12,6 +11,19 @@
 
 struct probe_result {
   STANDARD_PROBE_RESULT;
+};
+
+#define STANDARD_PROBE_DEF   \
+  guint stamp; \
+  guint server; \
+  guint probeid; \
+  gint  yellow; \
+  gint  red; \
+  guint color; \
+  guint stattime; \
+
+struct probe_def{
+  STANDARD_PROBE_DEF;
 };
 
 typedef struct _module {
