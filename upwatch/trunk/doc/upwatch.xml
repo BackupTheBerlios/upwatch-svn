@@ -67,6 +67,8 @@ Apart from the normal GNU compilation tools, and the aforementioned packages,
 you'll need the following on your system to build upwatch:
 </para>
 <itemizedlist>
+<listitem>automake 1.5</listitem>
+<listitem>autoconf 2.53 </listitem>
 <listitem>autogen 5.3.6</listitem>
 <listitem>libxslt 1.0.15</listitem>
 <listitem>kdelibs 3.0.0(for docbook)</listitem>
