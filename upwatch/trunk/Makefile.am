@@ -81,14 +81,14 @@ install-data-local:
 	  ${INSTALL} -d -m 770  -o upwatch -g upwatch ${DESTDIR}${dtddir} ;\
 	  ${INSTALL} -d -m 770  -o upwatch -g upwatch ${DESTDIR}${initdir} ;\
 	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${logdir} ;\
-	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTRIR}${spooldir} ;\
+	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir} ;\
 	else \
 	  mkdir -p ${DESTDIR}${confdir} ;\
 	  mkdir -p ${DESTDIR}${upwatchdir} ;\
 	  mkdir -p ${DESTDIR}${dtddir} ;\
 	  mkdir -p ${DESTDIR}${initdir} ;\
 	  mkdir -p ${DESTDIR}${logdir} ;\
-	  mkdir -p ${DESTRIR}${spooldir} ;\
+	  mkdir -p ${DESTDIR}${spooldir} ;\
 	fi
 
 rpm: all dist
