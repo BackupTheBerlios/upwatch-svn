@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<appendix id="Adding_a_probe">
+    <title>Adding a probe</title>
+    <sect1 id="So_you_want_to_add_a_probe">
+       <title>So you want to add a probe?</title>
+       <para> Are you really sure? Adding a probe involves writing C code, creating and designing database
+          tables and queue result files, creating PHP pages, and PHP graphs, writing documentation and submitting
+          these changes to CVS. It is a lot of work, though potentially very rewarding. </para>
+    </sect1>
+</appendix>

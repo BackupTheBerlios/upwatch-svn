@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<chapter id="How_it_all_works">
+    <title>How it all works</title>
+    <sect1 id="General_Overview">
+        <title>General Overview</title>
+        <para> The system primary function is to fill lots of database tables, to offer views on
+            those tables, and to page operators in case things go wrong. To enable this it
+            consists of a MySQL dataabase, lots of probe daemons (one daemon per probe), some
+            supporting daemons, a PHP website, and other software, like SMS and mail interfaces.</para>
+        <para> Things start at the database. For every probe it contains the following tables:</para>
+        <itemizedlist>
+            <listitem><para>Definition table</para></listitem>
+            <listitem><para>Raw results table</para></listitem>
+            <listitem><para>Tables for compressed results per day, week, month, year and 5 year</para></listitem>
+            <listitem><para>A table with an overview of state changes</para></listitem>
+        </itemizedlist>
+        <para> The definition table contains, of course, the definition of this particular
+            probe, this is of course probe specific but in practive usually contains frequency,
+            target ip address, port number, current status.</para>
+        <para> The raw results table contains just that, raw probe results.</para>
+        <para> Raw results are compressed into period tables in the foilowing way (using week as
+            an example): the week is divided into 200 equal timeslots. For computing the plot
+            values for a slot the process averages and takes the minimum and maximum value of
+            all day-values in that timeframe. The same process happens for the month and year
+            tables. This way we ensure that we never have to read more then 200 database records
+            to produce a graph for a day, week, month, year or 5-year period.</para>
+    </sect1>
+    <sect1 id="What_a_probe_does">
+        <title>What a probe does</title>
+        <para> What a probe does</para>
+    </sect1>
+    <sect1 id="What_happens_to_the_probe_results">
+        <title>What happens to the probe results?</title>
+        <para> What happens to the probe results</para>
+    </sect1>
+    <sect1 id="uw_process_storing_results_in_the_database">
+        <title>uw_process: storing results in the database</title>
+        <para> uw_process: storing results in the database</para>
+    </sect1>
+    <sect1 id="Scaling_up">
+        <title>Scaling up</title>
+        <para> Scaling up</para>
+    </sect1>
+</chapter>

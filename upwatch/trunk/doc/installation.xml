@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<chapter>
+    <title>Installation</title>
+    <sect1 id="Getting_upwatch">
+        <title>Getting upwatch</title>
+        <para> Currently, upwatch is not released, and is not allowed to be distributed. The
+            only way to get it, is through written permission of UpWatch BV.</para>
+        <para> If you aquired that, you will either receive access to CVS, or will receive a
+            tar.gz file, or .RPM's.</para>
+    </sect1>
+    <sect1 id="Requirements">
+        <title>Requirements</title>
+        <sect2 id="Run-time_requirements">
+            <title>Run-time requirements</title>
+            <para> Run time requirements differ per probe. Look in the corresponding .def file
+                (or in the spec file for the probe, here's a list of everything we expect on a
+                machine running all probes, and the database (I'll also list the version we use ourselves):</para>
+            <itemizedlist>
+                <listitem><para>glib2 2.0.1</para></listitem>
+                <listitem><para>gnet 1.1.2</para></listitem>
+                <listitem><para>mysql 3.23.49</para></listitem>
+                <listitem><para>cURL 7.9.5</para></listitem>
+                <listitem><para>libnet 1.0.2a</para></listitem>
+                <listitem><para>libpcap 0.6.2</para></listitem>
+            </itemizedlist>
+        </sect2>
+        <sect2 id="Build_requirements">
+            <title>Build requirements</title>
+            <para> Of course you can build the software yourself. Apart from the normal GNU
+                compilation tools, and the aforementioned packages, you'll need the following on
+                your system to build upwatch:</para>
+            <itemizedlist>
+                <listitem><para>autogen 5.3.6</para></listitem>
+                <listitem><para>libxslt 1.0.15</para></listitem>
+                <listitem><para>docbook 1.48</para></listitem>
+                <listitem><para>lynx 2.8.4</para></listitem>
+                <listitem><para>RPM tools, if you want to build RPM's</para></listitem>
+            </itemizedlist>
+            <para>If you run redhat, debian or SuSe, don't forget to install the devel packages
+                if there are any.</para>
+        </sect2>
+    </sect1>
+    <sect1 id="Compiling_upwatch">
+        <title>Compiling upwatch</title>
+        <para> Just in case you really want to (or need to) compile upwatch yourself, it's
+           pretty easy:
+        </para>
+           <literallayout>
+              $ tar xzvf upwatch-x.x.tar.gz
+              $ cd upwatch-x.x
+              $ ./configure
+              $ make
+           </literallayout>
+        <para> Nothing to it... In case of problems, you're probably missing some library or
+            header files, or they are in unexpected places. Look in config.log.</para>
+    </sect1>
+    <sect1 id="Actual_Installation">
+        <title>Actual Installation</title>
+        <para> Before you install the software decide on the architecture. If you know in
+            advance you'll have to monitor thousands of hosts, or the probes will exhaust your
+            machine otherwise, you may have to split your installation across several machines.
+            There may be more reasons to do that. Consult <link linkend="Scaling_up">Scaling
+            up</link> and <link linkend="How_it_all_works">How it all works</link>
+        </para>
+        <para> For simplicity we assume you run everything on the same host. In this case just
+           install all rpm's on this host. What if you can't use RPM's? Then follow the following
+           procedure as root:
+        </para>
+        <literallayout>
+           $ mkdir /etc/upwatch.d
+           $ cp config/upwatch.conf /etc
+           $ for i in uw_*
+           > do
+           > cp $i/$i /usr/sbin
+           > cp $i/$i.conf /etc/upwatch.d
+           > done
+           $ for i in uw_send uw_process uw_notify uw_traceroute
+           > do
+           > mkdir -p /var/spool/upwatch/$i/tmp
+           > mkdir -p /var/spool/upwatch/$i/new
+           > done
+        </literallayout>
+    </sect1>
+    <sect1 id="Security_considerations">
+       <title>Securiy considerations</title>
+       <para> All of upwatch can be run as a non-root user, except the probes which need root-access,
+          most notable, uw_ping. You can assign each probe its own user and grant that user access rights
+          to its own database tables. The probes only read from the <varname>pr_xxx_def</varname> and 
+          the <varname>server</varname> tables.</para>
+    </sect1>
+    <sect1 id="Database">
+        <title>Database</title>
+        <para> Create the database as follows:</para>
+
+    </sect1>
+</chapter>

@@ -1,0 +1,16 @@
+#!/bin/awk -f
+# transform mysql --xml -e "describe table" output to docbook table format
+
+BEGIN		{	FS = "<|>"; }
+/<row>/		{	print "               <row>"; next;	}
+/<\/row/	{	print "               </row>"; next;	}
+/Field/		{ 	printf("                 <entry colname = \"Field\"><para>%s </para></entry>\n", $3); next; }
+/Type/		{ 	printf("                 <entry colname = \"Type\"><para>%s </para></entry>\n", $3); next; }
+/Null/		{ 	printf("                 <entry colname = \"Null\"><para>%s </para></entry>\n", $3); next; }
+/Key/		{ 	printf("                 <entry colname = \"Key\"><para>%s </para></entry>\n", $3); next; }
+/Default/	{ 	printf("                 <entry colname = \"Default\"><para>%s </para></entry>\n", $3); next; }
+/Extra/		{ 	printf("                 <entry colname = \"Extra\"><para>%s </para></entry>\n", $3); next; }
+/Description/	{ 	printf("                 <entry colname = \"Description\"><para> </para></entry>\n"); next; }
+		{	next; }
+
+
