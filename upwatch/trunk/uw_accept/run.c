@@ -68,7 +68,10 @@ void init_dblist(void)
       mysql_free_result(result);
     }
     close_database(db);
-  }
+    LOG(LOG_INFO, "read %u realms", dblist_cnt);
+  } else {
+    LOG(LOG_NOTICE, "could not open database %s@%s as user %s", OPT_ARG(DBNAME), OPT_ARG(DBHOST), OPT_ARG(DBUSER));
+  } 
 }
 
 MYSQL *open_realm(char *realm)

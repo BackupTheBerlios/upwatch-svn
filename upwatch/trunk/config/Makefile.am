@@ -10,8 +10,8 @@ result.dtd : result.dtd-base ../uw_*/probe.dtd ../uw_*/probe.dtd-inc
 	echo  >> result.dtd
 	cat ../uw_*/probe.dtd  >> result.dtd
 
-EXTRA_DIST = upwatch.conf upwatch-base.mysql upwatch-full.mysql result.dtd-base logrotate sysconfig \
-  cron.daily upwatch.redhat upwatch.suse
+EXTRA_DIST = upwatch.conf upwatch-probe.mysql upwatch-realm.mysql upwatch-full.mysql result.dtd-base \
+  logrotate sysconfig cron.daily upwatch.redhat upwatch.suse
 
 install-data-local:
 	if test `${ID} -u` -eq 0; then \

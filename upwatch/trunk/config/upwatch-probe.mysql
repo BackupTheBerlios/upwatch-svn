@@ -22,20 +22,3 @@ CREATE TABLE probe (
 
 INSERT INTO probe set id = '1', name = 'empty', addbyhand = 'no', addbycust = 'no', comment = 'do NOT delete!';
 
---
--- Table structure for table 'pr_realm'
---
-
-CREATE TABLE pr_realm (
-  id int unsigned NOT NULL auto_increment,
-  name varchar(24) NOT NULL default '',
-  host varchar(64) NOT NULL default '',
-  port int unsigned NOT NULL default '3306',
-  db varchar(24) NOT NULL default '',
-  user varchar(24) NOT NULL default '',
-  password varchar(24) NOT NULL default '',
-  comment text NOT NULL,
-  PRIMARY KEY  (id)
-) TYPE=MyISAM;
-
-

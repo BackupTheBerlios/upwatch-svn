@@ -123,7 +123,7 @@
         <title>Database</title>
         <para>You actually need to create two databases, one for the probes to read from, and one 
         for the results to be written to. The first database should be called upwatch, the other
-        one can be any name (we use netland). Create the databases as follows. (You DO have a root 
+        one can be any name (in this example we use netland). Create the databases as follows. (You DO have a root 
         password set for mysql don't you?)</para>
         <literallayout>
            $ mysqladmin -u root --password=PASSWORD create upwatch
@@ -143,10 +143,11 @@
         <para>Do this for every host that runs probes.</para>
         <para>Next user is for the background processing (user upwatch) and the php access (user uwww):</para>
         <literallayout>
-           $ mysql -u root --PASSWORD=PASSWORD mysql
+           $ mysql -u root --PASSWORD=PASSWORD upwatch
            mysql> GRANT SELECT, INSERT, UPDATE, DELETE ON `netland`.* TO 'upwatch'@'localhost' IDENTIFIED BY 'PASSWD'
            mysql> GRANT SELECT, INSERT, UPDATE, DELETE ON `upwatch`.* TO 'upwatch'@'localhost' IDENTIFIED BY 'PASSWD'
            mysql> GRANT SELECT, INSERT, UPDATE, DELETE, PROCESS ON `netland`.* TO 'uwww'@'localhost' IDENTIFIED BY 'PASSWD'
+           mysql> insert into pr_realm set name = 'netland', host = 'localhost', db = 'netland', user = 'upwatch', password = 'PASSWORD';
         </literallayout>
         <para>Now enter the database connection info in /etc/upwatch.conf. This is for example that file on the 
         host that runs uw_process:</para>
@@ -161,6 +162,9 @@
           
           # debug mode
           debug 2
+
+          # realm
+          realm netland
 
           # log to syslog
           syslog no
