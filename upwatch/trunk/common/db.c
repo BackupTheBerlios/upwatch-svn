@@ -45,7 +45,7 @@ MYSQL_RES *my_query(MYSQL *mysql, int log_dupes, char *fmt, ...)
   va_start(arg, fmt);
   vsnprintf(qry, sizeof(qry)-1, fmt, arg);
   va_end(arg);
-  if (debug > 3) LOG(LOG_DEBUG, qry);
+  if (debug > 3) LOGRAW(LOG_DEBUG, qry);
 
   if (mysql_query(mysql, qry)) {
     switch (mysql_errno(mysql)) {

@@ -26,7 +26,7 @@ struct summ_spec summ_info[] = {
   { -1,         0,  NULL,    NULL    }
 };
 
-static void free_res(void *res)
+void free_res(void *res)
 {
   struct probe_result *r = (struct probe_result *)res;
 

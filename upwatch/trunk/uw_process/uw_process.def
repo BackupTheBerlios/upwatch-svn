@@ -119,5 +119,15 @@ and re-summarize it.  You can use the `ctime` and `slot` programs to help in
 determining the exact values. Use -d3 if you want to run in the foreground.';
 };
 
+flag = { 
+    name      = separate; 
+    arg_type  = string;
+    stack_arg;
+    descrip   = "Separate processing for one or more probes into a separate thread";
+    doc       =
+'For optimalisation reasons you can group processing of specific probes into threads.
+Put the names of these probes into a `separate` option.';
+};
+
 #include dbase_options.def
 #include generic_options.def

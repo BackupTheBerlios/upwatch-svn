@@ -21,6 +21,9 @@
 static int handle_file(gpointer data, gpointer user_data);
 extern  int process(module *module, trx *t);
 extern struct summ_spec summ_info[]; 
+void process_probes(gpointer data);
+gpointer process_probes_thread(gpointer data);
+gpointer read_input_files_thread(gpointer data);
 
 struct resfile {
   char *filename;
@@ -46,7 +49,7 @@ void resfile_remove(struct resfile *rf, int ondisk)
   if (ondisk) unlink(rf->filename);
   g_ptr_array_remove(resfile_arr, rf);
   resfile_free(rf);
-  g_static_rec_mutex_lock (&resfile_mutex);
+  g_static_rec_mutex_unlock (&resfile_mutex);
 }
 
 void resfile_incr(struct resfile *rf)
@@ -78,8 +81,10 @@ static void modules_end_run(void)
     if (modules[i]->end_run) {
       modules[i]->end_run();
     }
-    close_database(modules[i]->db);
-    modules[i]->db = NULL;
+    if (modules[i]->db) {
+      close_database(modules[i]->db);
+      modules[i]->db = NULL;
+    }
     if (debug && modules[i]->count) {
       sprintf(wrk, "%s:%u ", modules[i]->module_name, modules[i]->count);
       total += modules[i]->count;
@@ -93,6 +98,7 @@ static void modules_end_run(void)
 static void modules_cleanup(void)
 {
   int i;
+extern void free_res(void *res);
 
   for (i = 0; modules[i]; i++) {
 /*
@@ -100,11 +106,29 @@ static void modules_cleanup(void)
       modules[i]->cleanup();
     }
 */
+    if (modules[i]->queue) {
+      trx *t;
+
+      g_static_mutex_lock (&modules[i]->queue_mutex);
+      t = g_queue_pop_head(modules[i]->queue);
+      g_static_mutex_unlock (&modules[i]->queue_mutex);
+      if (t) {
+        // free the result block
+        if (t->res) {
+          if (modules[i]->free_res) {
+            modules[i]->free_res(t->res); // the probe specific part...
+          }
+          free_res(t->res); // .. and the generic part
+        }
+        resfile_decr(t->rf);
+        g_free(t);
+      }
+
+      g_queue_free(modules[i]->queue);
+    }
     if (modules[i]->cache) {
       g_hash_table_destroy(modules[i]->cache);
-    }
-    if (modules[i]->queue) {
-      g_queue_free(modules[i]->queue);
+      modules[i]->cache = NULL;
     }
   }
 }
@@ -147,7 +171,12 @@ int init(void)
   if (HAVE_OPT(RUN_QUEUE) || HAVE_OPT(SUMMARIZE)) {
     every = ONE_SHOT;
   } else {
+#ifdef G_THREADS_ENABLED
+    every = ONE_SHOT;
+    g_thread_init(NULL);
+#else
     every = EVERY_5SECS;
+#endif
   }
 
   // check trust option strings
@@ -177,9 +206,6 @@ int init(void)
       } 
     }
   }
-#ifdef G_THREADS_ENABLED
-  //g_thread_init(NULL);
-#endif
   xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
   resfile_arr = g_ptr_array_new();
   modules_init();
@@ -221,31 +247,21 @@ static int mystrcmp(char **a, char **b)
 //************************************************************************
 // read all files in the directory, sort and process them
 //***********************************************************************
-int run(void)
+void read_input_files(char *path)
 {
   int count = 0;
-  char path[PATH_MAX];
   G_CONST_RETURN gchar *filename;
   GError *error=NULL;
   GDir *dir;
   GPtrArray *arr = g_ptr_array_new();
   int i;
   int files = 0;
-  int failures = 0;
 extern int forever;
-static int resummarize(void);
-
-  if (debug > 3) LOG(LOG_DEBUG, "run()");
-
-  if (HAVE_OPT(SUMMARIZE)) {
-    return(resummarize()); // --summarize
-  }
-  sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), OPT_ARG(INPUT));
-  uw_setproctitle("listing %s", path);
   dir = g_dir_open (path, 0, &error);
   if (dir == NULL) {
     LOG(LOG_NOTICE, "g_dir_open: %s", error);
-    return 0;
+    g_ptr_array_free(arr, TRUE);
+    return;
   }
   while ((filename = g_dir_read_name(dir)) != NULL) {
     char buffer[PATH_MAX];
@@ -259,7 +275,7 @@ static int resummarize(void);
 
   if (!files) {
     g_ptr_array_free(arr, TRUE);
-    return 0;
+    return;
   }
   g_ptr_array_sort(arr, mystrcmp);
 
@@ -289,17 +305,110 @@ static int resummarize(void);
     count++;
   }
   g_ptr_array_free(arr, TRUE);
-  if (debug) LOG(LOG_DEBUG, "processing %u file entries", resfile_arr->len);
+}
 
+int run(void)
+{
+static int resummarize(void);
+
+  if (debug > 3) LOG(LOG_DEBUG, "run()");
+
+  if (HAVE_OPT(SUMMARIZE)) {
+    return(resummarize()); // --summarize
+  }
+
+#ifdef G_THREADS_ENABLED
+  {
+    GError *error=NULL;
+    GThread *tid;
+    int sep;
+    int     ct  = STACKCT_OPT( SEPARATE );
+    char**  pn = STACKLST_OPT( SEPARATE );
+
+    for (sep=0; sep < ct; sep++) { // for all 'separate' flags
+      char buf[1024], tmp[1024], *p;
+      char *tmp2 = tmp;
+      int found = 0;
+
+      strcpy(buf, pn[sep]);
+      p = strtok_r(buf, " ,;:\n\r\t/", &tmp2);  // split the argument into probenames
+      while (p) {
+        int j;
+        for (j=0; modules[j]; j++) {
+          if (strcmp(modules[j]->module_name, p) == 0) {
+            modules[j]->sep = sep;  // if found, set separate group number
+            found = 1;
+            break;
+          }
+        }
+        if (found) { // fork a thread for this separate group
+          g_thread_create(process_probes_thread, (gpointer)sep, FALSE, &error);
+          if (debug > 3) LOG(LOG_NOTICE, "%d %s", sep, pn[sep]);
+        }
+        p = strtok_r(NULL, " ,;:\n\r\t/", &tmp2);
+      }
+    }
+    g_thread_create(process_probes_thread, (gpointer)-1, FALSE, &error);
+    tid = g_thread_create(read_input_files_thread, NULL, TRUE, &error);
+    g_thread_join(tid);
+    modules_cleanup();
+  }
+#else
+  {
+    char path[PATH_MAX];
+    sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), OPT_ARG(INPUT));
+    uw_setproctitle("listing %s", path);
+    read_input_files(path);
+    process_probes(NULL);
+  }
+#endif
+  return(resfile_arr->len);
+}
+
+gpointer process_probes_thread(gpointer data)
+{
+extern int forever;
+  while (forever) {
+    sleep(1);
+    if (debug > 3) LOG(LOG_NOTICE, "Processing probes");
+    process_probes(data);
+  }
+  return(NULL);
+}
+
+gpointer read_input_files_thread(gpointer data)
+{
+  char path[PATH_MAX];
+extern int forever;
+  while (forever) {
+    sleep(5);
+    sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), OPT_ARG(INPUT));
+    uw_setproctitle("listing %s", path);
+    if (debug > 3) LOG(LOG_NOTICE, "Reading from %s", path);
+    read_input_files(path);
+  }
+  return(NULL);
+}
+
+void process_probes(gpointer data)
+{
+extern int forever;
+  int failures = 0;
+  int i, sep;
+  if (debug> 3) LOG(LOG_DEBUG, "processing %u file entries", resfile_arr->len);
+
+  sep = (int) data;
   // Now we have the queues updated, process all results
   //
   for (i = 0; modules[i]; i++) {
     unsigned count = 0;
     char buf[20];
 
+    if (modules[i]->sep != sep) continue;
     modules[i]->db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
                                      OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
                                      OPT_VALUE_DBCOMPRESS);
+    if (modules[i]->db == NULL) return;
     if (modules[i]->start_run) {
       modules[i]->start_run();
     }
@@ -337,8 +446,6 @@ static int resummarize(void);
       LOG(LOG_DEBUG, "Processed: %s:%u", modules[i]->module_name, count);
     }
   }
-
-  return(count);
 }
 
 //*******************************************************************
@@ -533,7 +640,7 @@ static int handle_file(gpointer data, gpointer user_data)
       break;
     }
     if (!found) {
-      LOG(LOG_ERR, "can't find method: %s", cur->name);
+      LOG(LOG_ERR, "can't find method: %s, saved to %s", cur->name, OPT_ARG(FAILURES));
       failures++;
       cur = cur->next;
     }

@@ -259,23 +259,10 @@ char *_logsrce;
 int _logline;
 char *_logfile;
 
-void _LOG(int level, const char *fmt, ...)
+void _LOGRAW(int level, const char *buffer)
 {
-  char buffer[65536];
-  char msg[2*65536];
   char *p, *file;
-  va_list arg;
-
-  if (fmt == NULL) fmt = "(null)";
-
-  va_start(arg, fmt);
-  vsnprintf(buffer, sizeof(buffer), fmt, arg);
-  va_end(arg);
-
-  // kill trailing blanks (xml errors have this a lot)
-  for (p = &buffer[strlen(buffer) - 1]; isspace(*p); p--) {
-    *p = 0;
-  }
+  char msg[2*65536];
 
   if ((p = strrchr(_logsrce, '/')) != NULL) {
     file = ++p;
@@ -294,6 +281,7 @@ void _LOG(int level, const char *fmt, ...)
     time_t now;
     char timebuf[30];
     char hostname[256];
+    char *p;
     char *logfile = OPT_ARG(LOGFILE);
 
     time(&now);
@@ -301,7 +289,8 @@ void _LOG(int level, const char *fmt, ...)
     strftime(timebuf, sizeof(timebuf), "%b %e %H:%M:%S", tms);
  
     gethostname(hostname, sizeof(hostname));
-    strtok(hostname, ".");
+    p = strchr(hostname, '.');
+    if (p) *p = 0;
 
     out = fopen(logfile, "a");
     if (out) {
@@ -315,6 +304,26 @@ void _LOG(int level, const char *fmt, ...)
     syslog(level, msg);
   }
   pthread_mutex_unlock(&_logmutex);
+}
+
+void _LOG(int level, const char *fmt, ...)
+{
+  char buffer[65536];
+  char *p;
+  va_list arg;
+
+  if (fmt == NULL) fmt = "(null)";
+
+  va_start(arg, fmt);
+  vsnprintf(buffer, sizeof(buffer), fmt, arg);
+  va_end(arg);
+
+  // kill trailing blanks (xml errors have this a lot)
+  for (p = &buffer[strlen(buffer) - 1]; isspace(*p); p--) {
+    *p = 0;
+  }
+
+  _LOGRAW(level, buffer);
 }
 
 // return an ascii format timestamp in UTC format
