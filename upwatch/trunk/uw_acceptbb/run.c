@@ -152,6 +152,11 @@ void runbb(char *req);
   while (i > 0 && isspace(buffer[i])) {
     buffer[i--] = 0;
   }
+  for(;i; i--) {
+    if (buffer[i] < 0 || buffer[i] == '\r') {
+      buffer[i] = ' ';
+    }
+  }
 
   switch (status) {
     case GNET_CONN_STATUS_READ:
