@@ -3,7 +3,7 @@
 - uw_snmp, snmp trap catcher
 - uw_ftp/uw_https etc
 - uw_diskfree
-- 
+- opensource it
 
 Adapt specfile for multiple distributions. This may be useful:
 
