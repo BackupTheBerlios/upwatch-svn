@@ -1,0 +1,418 @@
+2002-12-27 10:56  Ron Arts <raarts@upwatch.com>
+
+	Don't put .xml sources in the /usr/share/doc/upwatch.xx directory
+
+2002-12-27 10:47  Ron Arts <raarts@upwatch.com>
+
+	Start of threading work for uw_process. Updated TODO.
+
+2002-12-27 10:46  Ron Arts <raarts@upwatch.com>
+
+	various files including header files and the .mysql files are now
+	auto-generated using autogen. Apart from the cmd_options.def for
+	each program, we now have a probe.def for each probe. Do a make
+	clean in a directory and see what you have.
+
+2002-12-22 16:29  Ron Arts <raarts@upwatch.com>
+
+	Better logging
+
+2002-12-22 10:00  Ron Arts <raarts@upwatch.com>
+
+	Small README changes
+
+2002-12-20 17:17  Ron Arts <raarts@upwatch.com>
+
+	Added utilities `slot` and `ctime` Centralized versioning
+
+2002-12-20 15:46  Ron Arts <raarts@upwatch.com>
+
+	Fixed bug in sysstat where I frogot to retrieve the latest stattime
+	value Renamed 'stattime' to 'newest' Added property 'fromhost' to
+	result so we can see where results come from.
+
+2002-12-19 23:59  Ron Arts <raarts@upwatch.com>
+
+	- Added systemp for system temperature - Changed iptraf values from
+	int to float to handle large amounts of data - Fixed iptrad
+	red/yellow processing
+
+2002-12-19 14:29  Ron Arts <raarts@upwatch.com>
+
+	Fixed building rpm, bumped release number to 2.
+
+2002-12-19 13:42  Ron Arts <raarts@upwatch.com>
+
+	Added system temperature support for uw_sysstat
+
+2002-12-19 13:41  Ron Arts <raarts@upwatch.com>
+
+	Try to use the libopts tear-off library (but failed so far) Added
+	yellow/red line support in the graphs
+
+2002-12-18 00:13  Ron Arts <raarts@upwatch.com>
+
+	Integrate libopts to remove the dependancy on autogen, so we don't
+	have to install guile, umb-scheme etc for every upwatch
+	installation
+
+2002-12-17 21:08  Ron Arts <raarts@upwatch.com>
+
+	Fix for BB status+<delay> format
+
+2002-12-17 20:54  Ron Arts <raarts@upwatch.com>
+
+	Fixed bug where the endtime for a slot was wrong.
+
+2002-12-17 20:53  Ron Arts <raarts@upwatch.com>
+
+	Bugfixing, added --server-query, and --run-queue parameters, some
+	interface changes.
+
+2002-12-16 12:09  Ron Arts <raarts@upwatch.com>
+
+	Fixed some buffer cleanups
+
+2002-12-16 01:26  Ron Arts <raarts@upwatch.com>
+
+	Some processing fixes
+
+2002-12-16 00:57  Ron Arts <raarts@upwatch.com>
+
+	Bumped RPM relase number to 0.3-1 Fixed missing DIST entries
+
+2002-12-15 23:46  Ron Arts <raarts@upwatch.com>
+
+	Added Big Brother support
+
+2002-12-13 17:18  Ron Arts <raarts@upwatch.com>
+
+	Don't store raw pointers in pr_status and pr_hist any more, but
+	store the messages itself instead. raw records will be thrown away
+	eventually, invalidating the raw pointers.  Added bb_cpu probe.
+
+2002-12-12 23:59  Ron Arts <raarts@upwatch.com>
+
+	Fix a memory leak, and a doubly free'ed pointer. Cleanup.  Truncate
+	messages that are too long.
+
+2002-12-12 22:25  Ron Arts <raarts@upwatch.com>
+
+	Clean up messages received from BB clients
+
+2002-12-12 16:41  Ron Arts <raarts@upwatch.com>
+
+	Fix for very long queries, fix uw_sysstat dealing out dup results.
+
+2002-12-11 23:34  Ron Arts <raarts@upwatch.com>
+
+	Completed uw_sysstat probe
+
+2002-12-11 09:59  Ron Arts <raarts@upwatch.com>
+
+	More graceful handling of mysql-server-has-gone-away errors.
+
+2002-12-07 21:25  Ron Arts <raarts@upwatch.com>
+
+	New fieldnames for yellow and red
+
+2002-12-07 21:21  Ron Arts <raarts@upwatch.com>
+
+	New fieldnames
+
+2002-12-07 20:48  Ron Arts <raarts@upwatch.com>
+
+	Filesize check compile fix
+
+2002-12-07 20:42  Ron Arts <raarts@upwatch.com>
+
+	Check for filesize = 0, and skip it.
+
+2002-12-07 20:40  Ron Arts <raarts@upwatch.com>
+
+	Fixed bug when the filesize was a multiple of BUFSIZ
+
+2002-12-07 16:41  Ron Arts <raarts@upwatch.com>
+
+	In C you cannot declare a variable in the middle of your code. 
+	although apparently gcc3 doesn't seem to mind..
+
+2002-12-07 16:39  Ron Arts <raarts@upwatch.com>
+
+	Forgot to add these files
+
+2002-12-07 16:37  Ron Arts <raarts@upwatch.com>
+
+	Forgot this one
+
+2002-12-07 09:37  Ron Arts <raarts@upwatch.com>
+
+	Small fixes in pr_status updating
+
+2002-12-07 00:09  Ron Arts <raarts@upwatch.com>
+
+	- Bumped version to 0.3 - Added dmalloc and ElectricFence support -
+	Set all database fields to unsigned and set proper default values -
+	Rewrote uw_process, made the code much more generic and extensibe  
+	Removed staattime, expires, color and raw from the *_def records  
+	This change improved uw_process efficiency 30-fold.  - Added
+	$HOME/.*rc files and files in current directory. Handy for
+	testwork.
+
+2002-11-24 17:12  Ron Arts <raarts@upwatch.com>
+
+	Some doc changes
+
+2002-11-24 14:06  Ron Arts <raarts@upwatch.com>
+
+	Also clean upwatch.pdf on make clean
+
+2002-11-21 23:56  Ron Arts <raarts@upwatch.com>
+
+	Add check for mysql.h.
+
+2002-11-21 23:50  Ron Arts <raarts@upwatch.com>
+
+	Add uw_sysstat, add cpuload probe, add probe table
+
+2002-11-21 14:21  Ron Arts <raarts@upwatch.com>
+
+	config.rpath hoort niet in de makefile, want hoort bij gettext, en
+	dat gebruiken we niet (maybe someday...)
+
+2002-11-21 11:53  Ron Arts <raarts@upwatch.com>
+
+	Fixes for compilation on redhat 8.0
+
+2002-11-21 09:56  Ron Arts <raarts@upwatch.com>
+
+	Second try at traceroute implementation
+
+2002-11-21 09:55  Ron Arts <raarts@upwatch.com>
+
+	Added notify processing
+
+2002-11-21 09:53  Ron Arts <raarts@upwatch.com>
+
+	Added probe iptraf
+
+2002-11-19 16:05  Ron Arts <raarts@upwatch.com>
+
+	Small doc improvements
+
+2002-11-18 23:09  Ron Arts <raarts@upwatch.com>
+
+	Made the table and fieldnames for the server table optional Fixed
+	erroneous `port` variable in uw_accept.conf Bumped package version
+	to 0.2
+
+2002-11-18 20:51  Ron Arts <raarts@upwatch.com>
+
+	Fixed a gigantic memory leak.  Added setproctitle, even though I
+	can't get it to work together with gethostbyname and the autogen
+	options library...
+
+2002-11-18 10:41  Ron Arts <raarts@upwatch.com>
+
+	- Added iptraf probe processing - Added description field to probe
+	definitions - Renamed address field in probe definitions to
+	ipaddress, added hostname to httpget - Added indexes on
+	server/notify/ipaddress fields in the probe definition tables -
+	uw_send/uw_accept now upload binary files (preparation for XML
+	compression) - uw_iptraf can now capture on multiple interface
+
+2002-11-13 22:32  Ron Arts <raarts@upwatch.com>
+
+	First uw_iptraf working version.
+
+2002-11-11 22:50  Ron Arts <raarts@upwatch.com>
+
+	Added uw_iptraf, reworked makefiles, add patch for libpcap, and
+	dependency on our own libpcap RPM
+
+2002-11-08 00:12  Ron Arts <raarts@upwatch.com>
+
+	Reversed libpcap adding. I just decided to make a patch to libpcap
+	and cook my own rpm for it
+
+2002-11-07 23:35  Ron Arts <raarts@upwatch.com>
+
+	Added the version of libpcap that comes with nmap to this tree. The
+	linux version of the pcap library does not even look at the timeout
+	parameter! fyodor@insecure.org (who wrote nmap) solved this, so we
+	use his version.
+
+2002-11-05 22:27  Ron Arts <raarts@upwatch.com>
+
+	Fixed compiler warnings, added extra parameter to spool_result,
+	first cut at uw_investigate
+
+2002-11-02 00:41  Ron Arts <raarts@upwatch.com>
+
+	xml errors are now logged to the error log.  uw_process forgot to
+	delete input files when an xml syntax error was encountered
+
+2002-10-31 16:37  Ron Arts <raarts@upwatch.com>
+
+	Remove non-ASCII characters in HTML pages as the xml library chokes
+	on some
+
+2002-10-31 16:18  Ron Arts <raarts@upwatch.com>
+
+	Oops, brown bag, firstbyte should be pretransfer
+
+2002-10-29 00:57  Ron Arts <raarts@upwatch.com>
+
+	First cut at adding uw_acceptbb for Big Brother compatibility Same
+	for uw_investigate.  Fixed bug where uw_ping hanged if the MySQL
+	server could not be contacted.
+
+2002-10-28 22:09  Ron Arts <raarts@upwatch.com>
+
+	Added query overview for uw_process
+
+2002-10-07 10:39  Ron Arts <raarts@upwatch.com>
+
+	Fixed some segfaults. Improved runstats.
+
+2002-10-06 08:57  Ron Arts <raarts@upwatch.com>
+
+	Added cron.daily
+
+2002-10-06 08:54  Ron Arts <raarts@upwatch.com>
+
+	Added xml.h Moved the investigate option to uw_notify
+
+2002-10-06 00:09  Ron Arts <raarts@upwatch.com>
+
+	Added cron.daily (to remove old files in tmp/ maildir queues),
+	fixed xml memory leaks, added httpget to uw_process, added
+	documentation. Made all created files group-writable by default.
+
+2002-10-04 14:57  Ron Arts <raarts@upwatch.com>
+
+	Run everything as the upwatch user, improved permissions on
+	directories and files, killed memory leak in uw_ping, updated docs
+	on security, moved binaries from /usr/bin to /usr/sbin, added TODO
+	file.
+
+2002-10-02 22:39  Ron Arts <raarts@upwatch.com>
+
+	Forgot to add this file
+
+2002-10-02 21:35  Ron Arts <raarts@upwatch.com>
+
+	Added logrotate script, fixed some dependencies and
+	permission/ownerships
+
+2002-10-02 15:41  Ron Arts <raarts@upwatch.com>
+
+	You can now do `make rpm`, and ./autogen.sh does an automatic
+	./configure --enable-debug Removed all actual password, and
+	hostname from the .conf files.
+
+2002-10-02 14:40  Ron Arts <raarts@upwatch.com>
+
+	Now uses XML for probe results instead of our own ASCII format. 
+	Defined result.DTD.  The rpm now creates the `upwatch` user and
+	group which now own all directories and files. All probe rpm's now
+	require the upwatch rpm.  uw_process now skips hidden files
+	(starting with a dot) in the queue directories (so it won't process
+	vi swap files).  Added some docs on PHP pages.
+
+2002-09-30 22:54  Ron Arts <raarts@upwatch.com>
+
+	Auto-generate upwatch.mysql, added server table to it Added
+	--enable-debug to ./configure Created templates/php-cms.  Some
+	cleanups in uw_ping
+
+2002-09-22 18:09  Ron Arts <raarts@upwatch.com>
+
+	Moved uw_template dir to templates/probe
+
+2002-09-22 18:04  Ron Arts <raarts@upwatch.com>
+
+	Fix where a NULL row was returned, but not checked for. 
+	Preparation for renaming the uw_template directory.  Added mysql
+	database files.
+
+2002-09-20 10:24  Ron Arts <raarts@upwatch.com>
+
+	Fix linking glib2 without thread support, prepare for future
+	transaction support, add xmllint syntax checking for upwatch.xml
+
+2002-09-19 10:58  Ron Arts <raarts@upwatch.com>
+
+	Now links only libraries that are really needed, this also fixes
+	many unneccessary .rpm dependencies.  Also fixed uw_accept
+	accepting any user/passwd combination.
+
+2002-09-18 22:21  Ron Arts <raarts@upwatch.com>
+
+	First step at fixing .rpm dependencies. Renamed iptraf-any to
+	iptraf.
+
+2002-09-18 18:29  Ron Arts <raarts@upwatch.com>
+
+	Added missing upwatch.xsl files, and then some..
+
+2002-09-16 23:19  Ron Arts <raarts@upwatch.com>
+
+	Added small tutorial for adding a probe, added probe and doc
+	templates, removed files that are automatically generated anyway.
+
+2002-09-13 00:15  Ron Arts <raarts@upwatch.com>
+
+	Split up documentation into spearate file. Removed db2pdf
+	dependancy Added stylesheets. Added mysql --xml conversion script
+
+2002-09-11 15:37  Ron Arts <raarts@upwatch.com>
+
+	Added some index markups
+
+2002-09-11 14:36  Ron Arts <raarts@upwatch.com>
+
+	Fix XML errors in documentation
+
+2002-09-11 13:57  Ron Arts <raarts@upwatch.com>
+
+	More documentation, added `authquery` parameter for uw_accept,
+	replaced kdelib dependancy with docbook
+
+2002-09-09 14:00  Ron Arts <raarts@upwatch.com>
+
+	Dummy CVS update to test mail notifications
+
+2002-09-09 13:44  Ron Arts <raarts@upwatch.com>
+
+	Added extra dependancy rule for *.spec-install, added automake and
+	autoconf to build requirements
+
+2002-09-09 07:09  Ron Arts <raarts@upwatch.com>
+
+	Start of documentation
+
+2002-09-08 19:57  Ron Arts <raarts@upwatch.com>
+
+	Added infrastructure for documentation
+
+2002-09-07 23:44  Ron Arts <raarts@upwatch.com>
+
+	Added uw_notify, and ensured the probes would be able to write to
+	the uw_notify and the uw_traceroute queue
+
+2002-09-07 18:09  Ron Arts <raarts@upwatch.com>
+
+	First cut at README and INSTALL files. Removed some files that are
+	autogenerated anyway.
+
+2002-09-07 17:17  tag start
+
+2002-09-07 17:17  Ron Arts <raarts@upwatch.com>
+
+	Initial revision
+
+2002-09-07 17:17  Ron Arts <raarts@upwatch.com>
+
+	Imported sources
+
