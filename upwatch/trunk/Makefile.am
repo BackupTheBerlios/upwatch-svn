@@ -99,9 +99,11 @@ upwatch-full.mysql: config/upwatch-base.mysql config/upwatch-full.mysql uw_*/pro
 force:
 	touch force
 
-ChangeLog: force
-	cfg/cvs2cl.pl -U AUTHORS -b -T --hide-filenames
-	rm -f force
+#ChangeLog: force
+#       cfg/cvs2cl.pl -U AUTHORS -b -T --hide-filenames
+#       rm -f force
+ChangeLog:
+	svn log > ChangeLog
 
 CLEANFILES = upwatch.mysql upwatch.spec upwatch-*.tar.gz
 
@@ -128,7 +130,7 @@ rpm: all dist upwatch.spec
 	$(RPMBUILD) -ta upwatch-${VERSION}.tar.gz
 
 dist-hook:
-	rm -rf `find $(distdir) -name CVS`
+	rm -rf `find $(distdir) -name .svn`
 if !ENABLE_SERVER
 	for i in ${SERVERLIST} ; do \
 	  rm -rf "$(distdir)/$$i" ; \

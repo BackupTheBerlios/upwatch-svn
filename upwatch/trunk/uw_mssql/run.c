@@ -248,10 +248,11 @@ void probe(gpointer data, gpointer user_data)
   TDSSOCKET *tds;
   TDSLOGIN *login;
   TDSCONTEXT *context;
+  TDSCONNECTINFO *connect_info;
   int rc;
 
   /* grab a login structure */
-  login = (void *) tds_alloc_login();
+  login = tds_alloc_login();
 
   context = tds_alloc_context();
   if( context->locale && !context->locale->date_fmt ) {
@@ -266,28 +267,31 @@ void probe(gpointer data, gpointer user_data)
 
   tds_set_user(login, probe->dbuser);
   tds_set_app(login, "TSQL");
-  tds_set_host(login, "myhost");
   tds_set_library(login, "TDS-Library");
   tds_set_server(login, probe->ipaddress);
   tds_set_port(login, 1433);
-  tds_set_charset(login, "iso_1");
+  tds_set_client_charset(login, "iso_1");
   tds_set_language(login, "us_english");
-  tds_set_packet(login, 512);
   tds_set_passwd(login, probe->dbpasswd);
 
   gettimeofday(&start, NULL);
 
   /* open a connection*/
-  tds = tds_connect(login, context, NULL);
-
-  gettimeofday(&now, NULL);
-  probe->connect = ((float) timeval_diff(&now, &start)) * 0.000001;
-
-  if (!tds) {
-    /* FIX ME -- need to hook up message/error handlers */
+  
+  tds = tds_alloc_socket(context, 512);
+  tds_set_parent(tds, NULL);
+  connect_info = tds_read_config_info(NULL, login, context->locale);
+  if (!connect_info || tds_connect(tds, connect_info) == TDS_FAIL) {
+    gettimeofday(&now, NULL);
+    probe->connect = ((float) timeval_diff(&now, &start)) * 0.000001;
+    tds_free_connect(connect_info);
     probe->msg = strdup("There was a problem connecting to the server");
     goto end;
   }
+  tds_free_connect(connect_info);
+
+  gettimeofday(&now, NULL);
+  probe->connect = ((float) timeval_diff(&now, &start)) * 0.000001;
 
   rc = tds_submit_query(tds, probe->query);
   if (rc != TDS_SUCCEED) {
