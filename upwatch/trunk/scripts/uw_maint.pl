@@ -300,7 +300,7 @@ sub main {
 
 #  &remove_fill_probe_description_lock();
 
-  log_error(__LINE__, 'notice', "ended");
+  log_error(__LINE__, 'notice', "finished");
 
   exit (0);
 }

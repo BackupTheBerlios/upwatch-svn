@@ -34,6 +34,7 @@ syslog-ignore master\[[0-9]*\]: process [0-9]* exited, status [0-9]*
 syslog-ignore service-pop3\[[0-9]*\]: executed
 syslog-ignore service-lmtp\[[0-9]*\]: executed
 syslog-ignore service-imap\[[0-9]*\]: executed
+syslog-ignore saslpasswd: failed to set plaintext secret for cyrus: requested change was not needed 
 
 # cron
 syslog-ignore crond\[[0-9]*\]: \(CRON\) STARTUP
