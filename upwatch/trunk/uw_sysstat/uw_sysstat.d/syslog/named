@@ -3,8 +3,8 @@ green [LOGDATE] named[PID]: bad referral \([HOSTNAME] !< [HOSTNAME]\)
 green [LOGDATE] named[PID]: check_hints: A records for J\.ROOT-SERVERS\.NET class [NUM] do not match hint records
 green [LOGDATE] named[PID]: Cleaned cache of [NUM] RRset
 green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: bad zone transfer request: '[HOSTNAME]/IN': non-authoritative zone \(NOTAUTH\)
-green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: error sending response: host unreachable
-green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: error sending response: invalid file
+ignore [LOGDATE] named[PID]: client [IPADDR]#[NUM]: error sending response: host unreachable
+ignore [LOGDATE] named[PID]: client [IPADDR]#[NUM]: error sending response: invalid file
 green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: no more recursive clients: quota reached
 green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: update forwarding denied
 green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: update '[HOSTNAME]/IN' denied
@@ -12,7 +12,7 @@ green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: update '[NUM]\.[NUM]\.[NUM]\.
 green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: zone transfer '[HOSTNAME]/IN' denied
 green [LOGDATE] named[PID]: command channel listening on [IPADDR]#[NUM]
 green [LOGDATE] named[PID]: couldn't create pid file '[PATH]'
-green [LOGDATE] named[PID]: dispatch [HEX]: shutting down due to TCP receive error: connection reset
+ignore [LOGDATE] named[PID]: dispatch [HEX]: shutting down due to TCP receive error: connection reset
 green [LOGDATE] named[PID]: dns_master_load: [PATH]:[NUM]: ignoring out-of-zone data \(.*\)
 green [LOGDATE] named[PID]: drained [NUM] queries \(delay [NUM] sec\)
 green [LOGDATE] named[PID]: exiting
@@ -32,7 +32,7 @@ green [LOGDATE] named[PID]: listening on IPv[NUM] interface
 green [LOGDATE] named[PID]: loading configuration from '[PATH]'
 green [LOGDATE] named[PID]: Malformed response from \[[IPADDR]\]\.[NUM] \(query section mismatch \([HOSTNAME] IN A\)\)
 green [LOGDATE] named[PID]: master zone "[HOSTNAME]" \(IN\) loaded \(serial [NUM]\)
-green [LOGDATE] named[PID]: master zone "[HOSTNAME]" \(IN\) rejected due to errors \(serial [NUM]\)
+ignore [LOGDATE] named[PID]: master zone "[HOSTNAME]" \(IN\) rejected due to errors \(serial [NUM]\)
 green [LOGDATE] named[PID]: master zone "localhost" \(IN\) loaded \(serial [NUM]\)
 green [LOGDATE] named[PID]: master zone "nbs" \(IN\) loaded \(serial [NUM]\)
 green [LOGDATE] named[PID]: MAXQUERIES exceeded, possible data loop in resolving \([HOSTNAME]\)
@@ -55,7 +55,7 @@ green [LOGDATE] named[PID]: reloading nameserver
 green [LOGDATE] named[PID]: Response from unexpected source \(\[[IPADDR]\]\.[NUM]\)
 green [LOGDATE] named[PID]: running
 green [LOGDATE] named[PID]: shutting down
-green [LOGDATE] named[PID]: socket\.c:[NUM]: unexpected error:
+ignore [LOGDATE] named[PID]: socket\.c:[NUM]: unexpected error:
 green [LOGDATE] named[PID]: stopping command channel on [IPADDR]#[NUM]
 green [LOGDATE] named[PID]: suppressing duplicate notify \("[HOSTNAME]" IN SOA\)
 green [LOGDATE] named[PID]: sysquery: no addrs found for [USER] NS \(\)

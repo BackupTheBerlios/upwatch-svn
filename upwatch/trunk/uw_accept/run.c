@@ -277,11 +277,11 @@ void handle_session(st_netfd_t rmt_nfd, char *remotehost)
 {
   char user[64], passwd[18];
   char buffer[BUFSIZ];
-  int filesize;
+  int filesize, givensize;
   char *filename;
   void *sp_info;
   char *targ;
-  int length, len;
+  int len;
   int errors = 0;
 
   sprintf(buffer, "+OK UpWatch Acceptor v" UW_ACCEPT_VERSION ". Please login\n");
@@ -389,6 +389,7 @@ logged_in:
     LOG(LOG_WARNING, "%u: Illegal filesize", filesize);
     goto syntax;
   }
+  givensize = filesize; // remember for logging
   for (filename = buffer+5; *filename && isdigit(*filename); filename++)
     ;
   for (; *filename && isspace(*filename); filename++)
@@ -431,6 +432,8 @@ logged_in:
 
   targ = strdup(spool_tmpfilename(sp_info));
   while (filesize > 0) {
+    int length;
+
     memset(buffer, 0, sizeof(buffer));
     length = filesize > sizeof(buffer) ? sizeof(buffer) : filesize;
     //fprintf(stderr, "reading %u bytes", length);
@@ -459,7 +462,7 @@ logged_in:
     LOG(LOG_ERR, "%s: %s close error", remotehost, targ+spooldir_strlen);
     goto end;
   }
-  LOG(LOG_INFO, "%s: spooled to %s", remotehost, targ+spooldir_strlen);
+  LOG(LOG_INFO, "%s: spooled %u bytes to %s", remotehost, givensize, targ+spooldir_strlen);
   free(targ);
 
   sprintf(buffer, "+OK Thank you. Enter command\n");

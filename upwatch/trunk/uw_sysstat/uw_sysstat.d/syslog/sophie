@@ -19,6 +19,7 @@ green [LOGDATE] sophie[PID]: PID file         : [PATH]
 green [LOGDATE] sophie[PID]: Running as user  : mail 
 green [LOGDATE] sophie[PID]: SAVI config      : [PATH] 
 green [LOGDATE] sophie[PID]: Show virus name\? : yes 
+ignore [LOGDATE] sophie[PID]: Error strings
 green [LOGDATE] sophie[PID]: socket_check     : yes 
 green [LOGDATE] sophie[PID]: Socket group     : mail 
 green [LOGDATE] sophie[PID]: Socket path      : [PATH] 
