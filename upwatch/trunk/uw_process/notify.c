@@ -167,7 +167,7 @@ static int do_notification(trx *t)
   }
   servername = realm_server_by_id(t->res->realm, t->def->server);
 
-  sprintf(subject, "Subject: %s: %s %s (was %s)\n", servername,
+  sprintf(subject, "%s: %s %s (was %s)\n", servername,
                    t->probe->module_name, color2string(t->res->color),
                    color2string(t->res->prevhistcolor));
 

@@ -45,7 +45,7 @@ static gint snmpget_store_raw_result(trx *t)
 }
 
 //*******************************************************************
-// SUMMARIZE A TABLE INTO AN OLDER PERIOD
+// Create a meaningful subject line for the notification
 //*******************************************************************
 static int snmpget_notify_mail_subject(trx *t, FILE *fp, char *servername)
 {

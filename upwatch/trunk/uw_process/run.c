@@ -566,7 +566,7 @@ int master_checks(void)
     }
     if (pid == 0) {
       master = FALSE; 
-      break;
+      return 0;
     }
     if (debug > 2) fprintf(stderr, "started [%u] on %s\n", pid, path);
     LOG(LOG_NOTICE, "started [%u] on %s", pid, path);
