@@ -49,7 +49,7 @@ int run(void)
   int i;
   int files = 0;
 
-  if (debug > 1) LOG(LOG_DEBUG, "run()");
+  if (debug > 3) LOG(LOG_DEBUG, "run()");
   sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), progname);
   dir = g_dir_open (path, 0, NULL);
   while ((filename = g_dir_read_name(dir)) != NULL) {
@@ -117,7 +117,7 @@ void process(gpointer data, gpointer user_data)
       if (!strcmp(probe->name, method)) {
         found = 1;
         probe_count++;
-        if ((*probe->process)(spec, remark) != 0) {
+        if ((*probe->process)(spec, remark) == 0) {
           FILE *failures;
 
           failures = fopen(OPT_ARG(FAILURES), "a");

@@ -132,7 +132,7 @@ int process_ping(char *spec, GString *remark)
       close_database();
       return(FALSE);
     }
-    max_color = atoi(row[0]);
+    max_color = row[0] ? atoi(row[0]) : STAT_GREEN;
     mysql_free_result(result);
 
     result = my_query("update server set color = '%d' where id = '%d'", max_color, server);

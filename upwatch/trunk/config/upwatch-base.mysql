@@ -1,0 +1,38 @@
+--
+-- Table structure for table 'pr_hist'
+--
+
+CREATE TABLE pr_hist (
+  id int(10) unsigned NOT NULL auto_increment,
+  server int(10) unsigned NOT NULL default '1',
+  class int(10) unsigned NOT NULL default '0',
+  probe int(10) unsigned NOT NULL default '0',
+  stattime int(10) unsigned NOT NULL default '0',
+  prv_color smallint(5) unsigned NOT NULL default '0',
+  prv_hist int(10) unsigned NOT NULL default '0',
+  color smallint(5) unsigned NOT NULL default '0',
+  hist int(10) unsigned NOT NULL default '0',
+  message text NOT NULL,
+  PRIMARY KEY  (id),
+  UNIQUE KEY probtime (probe,stattime),
+  KEY probe (probe),
+  KEY stattime (stattime)
+) TYPE=MyISAM;
+
+--
+-- Table structure for table 'pr_status'
+--
+
+CREATE TABLE pr_status (
+  id int(10) unsigned NOT NULL auto_increment,
+  class int(10) unsigned NOT NULL default '0',
+  probe int(10) unsigned NOT NULL default '0',
+  server int(10) unsigned NOT NULL default '0',
+  color smallint(5) unsigned NOT NULL default '0',
+  PRIMARY KEY  (id),
+  UNIQUE KEY uprobe (class,probe),
+  KEY class (class),
+  KEY probe (probe),
+  KEY server (server)
+) TYPE=MyISAM;
+

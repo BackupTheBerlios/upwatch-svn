@@ -48,7 +48,7 @@ int run(void)
     MYSQL_RES *result;
     MYSQL_ROW row;
 
-    char *qry =
+    char *qry = // no real http probes yet
       "SELECT server.id, name, ipaddress.ip "
       "FROM   server, ipaddress "
       "WHERE  ipaddress.id = server.ipaddress and "
