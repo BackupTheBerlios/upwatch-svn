@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.42 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.43 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -471,6 +471,7 @@ fi
 echo "*********************************************************"
 echo 
 
+# base
 AC_CONFIG_FILES([Makefile])
 AC_CONFIG_FILES([config/Makefile])
 AC_CONFIG_FILES([common/Makefile])
@@ -481,25 +482,30 @@ AC_CONFIG_FILES([scripts/Makefile])
 AC_CONFIG_FILES([uw_send/Makefile])
 AC_CONFIG_FILES([uw_sysstat/Makefile])
 AC_CONFIG_FILES([compat/Makefile])
-AC_CONFIG_FILES([compat/bb/Makefile])
-AC_CONFIG_FILES([compat/bb/bbhimport/Makefile])
 AC_CONFIG_FILES([compat/sometests/Makefile])
 AC_CONFIG_FILES([compat/sometests/setproctitle/Makefile])
 
-  AC_CONFIG_FILES([uw_setip/Makefile])
-  AC_CONFIG_FILES([uw_accept/Makefile])
-  AC_CONFIG_FILES([uw_acceptbb/Makefile])
-  AC_CONFIG_FILES([uw_process/Makefile])
-  AC_CONFIG_FILES([uw_notify/Makefile])
-  AC_CONFIG_FILES([uw_httpget/Makefile])
-  AC_CONFIG_FILES([uw_ping/Makefile])
-  AC_CONFIG_FILES([uw_mysql/Makefile])
-  AC_CONFIG_FILES([uw_pop3/Makefile])
-  AC_CONFIG_FILES([uw_imap/Makefile])
-    AC_CONFIG_FILES([uw_iptraf/Makefile])
-    AC_CONFIG_FILES([uw_snmpget/Makefile])
-    AC_CONFIG_FILES([uw_mssql/Makefile])
-    AC_CONFIG_FILES([uw_postgresql/Makefile])
+# server 
+AC_CONFIG_FILES([uw_setip/Makefile])
+AC_CONFIG_FILES([uw_accept/Makefile])
+AC_CONFIG_FILES([uw_acceptbb/Makefile])
+AC_CONFIG_FILES([uw_process/Makefile])
+AC_CONFIG_FILES([uw_notify/Makefile])
+AC_CONFIG_FILES([compat/bb/Makefile])
+AC_CONFIG_FILES([compat/bb/bbhimport/Makefile])
+
+# monitors
+AC_CONFIG_FILES([uw_httpget/Makefile])
+AC_CONFIG_FILES([uw_ping/Makefile])
+AC_CONFIG_FILES([uw_mysql/Makefile])
+AC_CONFIG_FILES([uw_pop3/Makefile])
+AC_CONFIG_FILES([uw_imap/Makefile])
+AC_CONFIG_FILES([uw_snmpget/Makefile])
+AC_CONFIG_FILES([uw_mssql/Makefile])
+AC_CONFIG_FILES([uw_postgresql/Makefile])
+
+# extra
+AC_CONFIG_FILES([uw_iptraf/Makefile])
 
 cp patches/libstatgrab-configure.gnu libstatgrab/configure.gnu
 AC_CONFIG_SUBDIRS(libstatgrab)
