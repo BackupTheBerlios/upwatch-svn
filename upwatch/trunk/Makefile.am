@@ -13,7 +13,7 @@ EXTRA_DIST = Makefile.am.common upwatch-spec.def upwatch-spec.tpl upwatch.spec t
   common/probe.tpl common/probe.def common/common.h \
   doc/upwatch.xml doc/Makefile doc/upwatch.xsl doc/jadetex.cfg doc/style.dsl doc/style.xsl doc/style.css \
   upwatch.mysql probes.enum Makefile.am.libs VERSION common/minimal_options.def \
-  cfg/install-sh cfg/config.sub libtool cfg/mkinstalldirs ChangeLog
+  cfg/install-sh cfg/config.sub libtool cfg/mkinstalldirs cfg/depcomp ChangeLog
 
 upwatch.spec: upwatch-spec.def upwatch-spec.tpl uw_*/*.spec-generic uw_*/*.spec-install
 	autogen -b upwatch upwatch-spec.def
