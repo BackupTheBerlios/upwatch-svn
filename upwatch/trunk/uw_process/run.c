@@ -318,10 +318,18 @@ static void update_pr_status(int class, struct probe_result *def, struct probe_r
   MYSQL_RES *result;
 
   result = my_query("update pr_status "
-                    "set    stattime = '%u', expires = '%u', color = '%d' "
+                    "set    stattime = '%u', expires = '%u', color = '%d', raw = '%llu' "
                     "where  probe = '%u' and class = '%u'",
-                    res->stattime, res->expires, res->color, def->probeid, class);
+                    res->stattime, res->expires, res->color, res->raw, def->probeid, class);
   mysql_free_result(result);
+  if (mysql_affected_rows(mysql) == 0) { // nothing was actually updated, it was probably already there
+    LOG(LOG_NOTICE, "update_pr_status failed, inserting new record (class=%u, probe=%u)", class, def->probeid);
+    result = my_query("insert into pr_status "
+                      "set    class =  '%d', probe = '%u', stattime = '%u', expires = '%u', "
+                      "       server = '%u', color = '%d', raw = '%llu'",
+                      class, def->probeid, res->stattime, res->expires, def->server, res->color, res->raw);
+    mysql_free_result(result);
+  }
 }
 
 //*******************************************************************
@@ -337,7 +345,12 @@ static void insert_pr_status(int class, struct probe_result *def, struct probe_r
                     class, def->probeid, res->stattime, res->expires, def->server, res->color, res->raw);
   mysql_free_result(result);
   if (mysql_affected_rows(mysql) == 0) { // nothing was actually inserted, it was probably already there
-    update_pr_status(class, def, res);
+    LOG(LOG_NOTICE, "insert_pr_status failed, updating current record (class=%u, probe=%u)", class, def->probeid);
+    result = my_query("update pr_status "
+                      "set    stattime = '%u', expires = '%u', color = '%d', raw = '%llu' "
+                      "where  probe = '%u' and class = '%u'",
+                      res->stattime, res->expires, res->color, res->raw, def->probeid, class);
+    mysql_free_result(result);
   }
 }
 
@@ -518,9 +531,9 @@ static int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
           g_free(nxt);
         }
         if (res->stattime > def->stattime) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED
-          must_update_def = TRUE;
           update_pr_status(probe->class, def, res);  // UPDATE PR_STATUS
           update_server_color(def, res); // UPDATE SERVER COLOR
+          must_update_def = TRUE;
         }
       } else {
         if (res->stattime > def->stattime) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED

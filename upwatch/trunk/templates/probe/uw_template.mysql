@@ -3,19 +3,15 @@
 --
 
 CREATE TABLE pr_template_def (
-  id int NOT NULL auto_increment,
-  server int NOT NULL default '0',
-  notify int NOT NULL default '1',
+  id int unsigned NOT NULL auto_increment,
+  server int unsigned NOT NULL default '1',
+  notify int unsigned NOT NULL default '1',
   ipaddress varchar(80) NOT NULL default '',
   description text NOT NULL default '',
-  freq smallint NOT NULL default '1',
+  freq smallint unsigned NOT NULL default '1',
   count smallint unsigned NOT NULL default '5',
   yellow smallint unsigned NOT NULL default '1',
   red smallint unsigned NOT NULL default '3',
-  stattime int unsigned NOT NULL default '0',
-  expires int unsigned NOT NULL default '0',
-  color smallint unsigned NOT NULL default '200',
-  raw bigint NOT NULL,
   PRIMARY KEY  (id),
   KEY server (server),
   KEY notify (notify),
@@ -28,7 +24,7 @@ CREATE TABLE pr_template_def (
 
 CREATE TABLE pr_template_raw (
   id bigint unsigned NOT NULL auto_increment,
-  probe int unsigned NOT NULL default '0',
+  probe int unsigned NOT NULL default '1',
   stattime int unsigned NOT NULL default '0',
   color smallint unsigned NOT NULL default '200',
   value float NOT NULL default '0',
@@ -47,8 +43,8 @@ CREATE TABLE pr_template_raw (
 
 CREATE TABLE pr_template_day (
   id bigint unsigned NOT NULL auto_increment,
-  probe int unsigned NOT NULL default '0',
-  slot int NOT NULL default '0',
+  probe int unsigned NOT NULL default '1',
+  slot smallint unsigned NOT NULL default '0',
   stattime int unsigned NOT NULL default '0',
   color smallint unsigned NOT NULL default '200',
   value float NOT NULL default '0',
@@ -67,8 +63,8 @@ CREATE TABLE pr_template_day (
 
 CREATE TABLE pr_template_week (
   id bigint unsigned NOT NULL auto_increment,
-  probe int unsigned NOT NULL default '0',
-  slot smallint NOT NULL default '0',
+  probe int unsigned NOT NULL default '1',
+  slot smallint unsigned NOT NULL default '0',
   stattime int unsigned NOT NULL default '0',
   color smallint unsigned NOT NULL default '200',
   value float NOT NULL default '0',
@@ -87,8 +83,8 @@ CREATE TABLE pr_template_week (
 
 CREATE TABLE pr_template_month (
   id bigint unsigned NOT NULL auto_increment,
-  probe int unsigned NOT NULL default '0',
-  slot smallint NOT NULL default '0',
+  probe int unsigned NOT NULL default '1',
+  slot smallint unsigned NOT NULL default '0',
   stattime int unsigned NOT NULL default '0',
   color smallint unsigned NOT NULL default '200',
   value float NOT NULL default '0',
@@ -107,8 +103,8 @@ CREATE TABLE pr_template_month (
 
 CREATE TABLE pr_template_year (
   id bigint unsigned NOT NULL auto_increment,
-  probe int unsigned NOT NULL default '0',
-  slot smallint NOT NULL default '0',
+  probe int unsigned NOT NULL default '1',
+  slot smallint unsigned NOT NULL default '0',
   stattime int unsigned NOT NULL default '0',
   color smallint unsigned NOT NULL default '200',
   value float NOT NULL default '0',
@@ -127,8 +123,8 @@ CREATE TABLE pr_template_year (
 
 CREATE TABLE pr_template_5year (
   id bigint unsigned NOT NULL auto_increment,
-  probe int unsigned NOT NULL default '0',
-  slot smallint NOT NULL default '0',
+  probe int unsigned NOT NULL default '1',
+  slot smallint unsigned NOT NULL default '0',
   stattime int unsigned NOT NULL default '0',
   color smallint unsigned NOT NULL default '200',
   value float NOT NULL default '0',

@@ -1,21 +1,60 @@
 AutoGen Definitions options;
 export        = "#define progOptions uw_templateOptions";
 prog-name     = uw_template;
-prog-title    = "Upwatch probe daemon";
-version       = "0.1";
+prog-title    = "Upwatch parallel template daemon";
+version       = "0.3";
+homerc        = "/etc/upwatch.conf";
 homerc        = "/etc/upwatch.d/uw_template.conf";
+homerc        = "$HOME/.upwatchrc";
+homerc        = "$HOME";
+homerc        = "$$/upwatch.conf";
+homerc        = "$$/uw_template.conf";
 detail        = 
-'uw_template does the following: ';
+'uw_template reads a list of hosts from the database, and sends template 
+packets to each host.  This happens in parallel, so uw_template can 
+process thousands of hosts in a very short period.';
 
 // this section is for the generated specfile
-spec-requires = "libpcap mysql glib2 gnet >= 1.1.2 curl >= 7.9.3 libnet >= 1.0.2";
-spec-install  = "mkdir -p $RPM_BUILD_ROOT/var/spool/upwatch/uw_template/tmp";
-spec-install  = "mkdir -p $RPM_BUILD_ROOT/var/spool/upwatch/uw_template/new";
-spec-files    = "%dir /var/spool/upwatch/uw_template/new";
-spec-files    = "%dir /var/spool/upwatch/uw_template/tmp";
+spec-requires = "mysql glib2";
+spec-files    = "%attr(4770,root,upwatch) /usr/sbin/uw_template";
 
 // describe commandline flags
 flag = {
+    name      = begin;
+    value     = b;
+    arg_type  = numeric;
+    arg-default = 0;
+    arg-range = '0->59';
+    descrip   = "second to begin probing";
+    doc       =
+'The probing process is started every minute. To prevent the thundering-herd syndrome
+you can configure on which second the probing starts. So set one probe to 0, another to
+10, etcetera.';
+};
+
+flag = {
+    name      = output;
+    value     = O;
+    arg_type  = string;
+    descrip   = "name of queue to drop results";
+    doc       =
+'The argument is taken to be a maildir under the directory `spooldir`.
+All results are placed in this queue.';
+};
+
+flag = {
+    name      = investigate;
+    value     = V;
+    arg_type  = string;
+    arg-default = "uw_investigate";
+    descrip   = "Queue to drop commands for the investigate process";
+    doc       =
+'The argument is taken to be a maildir under the directory `spooldir`.
+If a probe fails, a request to investigate is put into this queue.';
+};
+
+flag = {
+    must-set;
     name      = spooldir;
     value     = S;
     arg_type  = string;
@@ -29,5 +68,120 @@ removes any files in `tmp` that are older then 36 hours. For some more info
 about maildir see http://www.qmail.org/man/man5/maildir.html.';
 };
 
-#include ../common/generic_options.def
+flag = {
+    must-set;
+    name      = statfile;
+    value     = K;
+    arg_type  = string;
+    descrip   = "file to keep current state of probes";
+    doc       =
+'To determine if probe status changed, we keep the previous status
+in a file. This is the name of that file';
+};
 
+flag = {
+    must-set;
+    name      = uwuser;
+    value     = U;        /* flag style option character */
+    arg_type  = string;   /* option argument indication  */
+    max       = NOLIMIT;  /* occurrence limit (none)     */
+    descrip   = "Upwatch username";
+};
+
+flag = {
+    must-set;
+    name      = uwpasswd;
+    value     = P;        /* flag style option character */
+    arg_type  = string;   /* option argument indication  */
+    max       = NOLIMIT;  /* occurrence limit (none)     */
+    descrip   = "UpWatch password";
+};
+
+flag = {
+    must-set;
+    name      = dbtype;
+    value     = T;        /* flag style option character */
+    arg-default = "mysql";
+    arg_type  = string;   /* option argument indication  */
+    max       = NOLIMIT;  /* occurrence limit (none)     */
+    descrip   = "Database type to use (mysql or postgresql)";
+    doc       =
+'the name of the database. For now this only can be "mysql" but other
+databases might be supported in the future';
+};
+
+flag = {
+    must-set;
+    name      = dbcompress;
+    value     = C;        /* flag style option character */
+    arg-default = 1;
+    arg_type  = numeric;   /* option argument indication  */
+    max       = NOLIMIT;  /* occurrence limit (none)     */
+    descrip   = "Use compression on database connection";
+    doc       =
+'If set, this option compresses all communication with the database server';
+};
+
+flag = {
+    must-set;
+    name      = dbhost;
+    value     = h;        /* flag style option character */
+    arg_type  = string;   /* option argument indication  */
+    max       = NOLIMIT;  /* occurrence limit (none)     */
+    descrip   = "Database host to connect to";
+    doc       =
+'This option denotes the internet hostname where the database resides. For MySQL this
+means the programs connects to port 3306 on this host. This hostname should be DNS
+resolvable of course, but an IP address may be specified';
+};
+
+flag = {
+    must-set;
+    name      = dbname;
+    value     = n;        /* flag style option character */
+    arg_type  = string;   /* option argument indication  */
+    max       = NOLIMIT;  /* occurrence limit (none)     */
+    descrip   = "Database name to connect to";
+};
+
+flag = {
+    must-set;
+    name      = dbuser;
+    value     = u;        /* flag style option character */
+    arg_type  = string;   /* option argument indication  */
+    max       = NOLIMIT;  /* occurrence limit (none)     */
+    descrip   = "Database user to connect as";
+};
+
+flag = {
+    must-set;
+    name      = dbpasswd;
+    value     = p;        /* flag style option character */
+    arg_type  = string;   /* option argument indication  */
+    max       = NOLIMIT;  /* occurrence limit (none)     */
+    descrip   = "Database password";
+};
+
+flag = {
+    name      = server_table_name;
+    arg_type  = string;
+    arg-default = "server";
+    descrip   = "Name of the servertable in the database";
+};
+
+flag = { 
+    name      = server_table_id_field; 
+    arg_type  = string;
+    arg-default = "id";
+    descrip   = "Name of the id-field in the servertable";
+};
+
+flag = {
+    name      = server_table_name_field;
+    arg_type  = string;
+    arg-default = "name";
+    descrip   = "Name of the name-field in the servertable";
+};
+
+
+#include ../common/generic_options.def
