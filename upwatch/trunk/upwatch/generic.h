@@ -34,6 +34,7 @@ extern int init(void);
 char *uw_gmtime(time_t *now);
 long timeval_diff(struct timeval *a,struct timeval *b);
 guint *guintdup(guint val);
+int uw_rand(float maxval);
 
 extern int debug;
 extern int startsec;

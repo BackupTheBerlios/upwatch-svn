@@ -76,13 +76,18 @@ static void *get_def(module *probe, void *probe_res)
   struct iptraf_result *res = (struct iptraf_result *)probe_res;
   MYSQL_RES *result;
   MYSQL_ROW row;
+  time_t now = time(NULL);
 
   def = g_hash_table_lookup(probe->cache, &res->ipaddr);
+  if (def && def->stamp < now - (120 + uw_rand(240))) { // older then 2 - 6 minutes?
+     g_hash_table_remove(probe->cache, &res->ipaddr);
+     def = NULL;
+  }
   if (def == NULL) {    // if not there construct from database and insert in hash
     gulong slotlow, slothigh;
 
     def = g_malloc0(sizeof(struct iptraf_def));
-    def->stamp = time(NULL);
+    def->stamp = now;
 
     result = my_query(probe->db, 0,
                       "select id, yellow, red "

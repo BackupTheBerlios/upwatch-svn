@@ -122,7 +122,7 @@ static void *get_def(module *probe, struct probe_result *res)
   time_t now = time(NULL);
 
   def = g_hash_table_lookup(probe->cache, &res->probeid);
-  if (def && def->stamp < now - 600) { // older then 10 minutes?
+  if (def && def->stamp < now - (120 + uw_rand(240))) { // older then 2 - 6 minutes?
      g_hash_table_remove(probe->cache, &res->probeid);
      def = NULL;
   }
@@ -560,6 +560,7 @@ int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
     }
   } else {
     if (res->stattime > def->newest) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED
+      update_pr_status(probe, def, res);  // UPDATE PR_STATUS (not for the color, but for the expiry time)
       must_update_def = TRUE;
     }
   }

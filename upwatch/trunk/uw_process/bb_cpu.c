@@ -88,7 +88,7 @@ static void *get_def(module *probe, void *probe_res)
 
   // look in the cache for the def
   def = g_hash_table_lookup(probe->cache, &res->server);
-  if (def && def->stamp < now - 600) { // older then 10 minutes?
+  if (def && def->stamp < now - (120 + uw_rand(240))) { // older then 2 - 6 minutes?
      g_hash_table_remove(probe->cache, &res->server);
      def = NULL;
   }

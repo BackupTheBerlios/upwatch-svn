@@ -11,3 +11,7 @@ guint *guintdup(guint val)
   return(iptr);
 }
 
+int uw_rand(float maxval)
+{
+  return 1+(int) (maxval*rand()/(RAND_MAX+1.0));
+}
