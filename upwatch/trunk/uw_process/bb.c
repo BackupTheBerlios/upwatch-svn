@@ -9,21 +9,16 @@
 #include "dmalloc.h"
 #endif
 
-struct bb_generic_result {
+struct bb_result {
   STANDARD_PROBE_RESULT;
 };
-
-static int accept_probe(module *probe, const char *name)
-{
-  return(strncmp(name, "bb_", 3) == 0);
-}
 
 //*******************************************************************
 // Only used for debugging
 //*******************************************************************
 static int fix_result(module *probe, void *probe_res)
 {
-  struct bb_generic_result *res = (struct bb_generic_result *)probe_res;
+  struct bb_result *res = (struct bb_result *)probe_res;
 
   if (debug) LOG(LOG_DEBUG, "%s: %s %d stattime %u expires %u", 
                  res->name, res->hostname, res->color, res->stattime, res->expires);
@@ -40,7 +35,7 @@ static int fix_result(module *probe, void *probe_res)
 static void *get_def(module *probe, void *probe_res)
 {
   struct probe_def *def;
-  struct bb_generic_result *res = (struct bb_generic_result *)probe_res;
+  struct bb_result *res = (struct bb_result *)probe_res;
   MYSQL_RES *result;
   MYSQL_ROW row;
 
@@ -64,8 +59,8 @@ static void *get_def(module *probe, void *probe_res)
 
   // first find the definition based on the serverid
   result = my_query(probe->db, 0,
-                    "select id from pr_bb_generic_def "
-                    "where  bbname = '%s' and server = '%u'", res->name, res->name, res->server);
+                    "select id from pr_bb_def "
+                    "where  bbname = '%s' and server = '%u'", res->name, res->server);
   if (!result) {
     g_free(def);
     return(NULL);
@@ -97,7 +92,7 @@ static void *get_def(module *probe, void *probe_res)
     // no def record found? Create one. pr_status will be done later.
     mysql_free_result(result);
     result = my_query(probe->db, 0,
-                      "insert into pr_bb_generic_def set server = '%u', " 
+                      "insert into pr_bb_def set server = '%u', " 
                       "       description = '%s', bbname = '%s'", 
                        res->name, res->server, res->hostname, res->name);
     mysql_free_result(result);
@@ -110,13 +105,13 @@ static void *get_def(module *probe, void *probe_res)
   return(def);
 }
 
-module bb_generic_module  = {
-  STANDARD_MODULE_STUFF(bb_generic),
+module bb_module  = {
+  STANDARD_MODULE_STUFF(bb),
   NULL,
   NULL,
   NULL,
   NULL,
-  accept_probe,
+  NULL,
   NULL,
   NULL,
   fix_result,

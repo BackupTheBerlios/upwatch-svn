@@ -8,8 +8,8 @@ extern module mssql_module;
 extern module postgresql_module;
 extern module snmpget_module;
 extern module imap_module;
-extern module bb_generic_module;
 extern module bb_cpu_module;
+extern module bb_module;
 
 module *modules[] = {
   &httpget_module,
@@ -22,7 +22,7 @@ module *modules[] = {
   &postgresql_module,
   &snmpget_module,
   &imap_module,
-  &bb_generic_module,
   &bb_cpu_module,
+  &bb_module,
   NULL
 };
