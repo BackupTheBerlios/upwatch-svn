@@ -14,6 +14,7 @@
 #include <ctype.h>
 #include <fcntl.h>
 #include <findsaddr.h>
+#include <regex.h>
 
 char ipaddress[24];
 
@@ -39,6 +40,13 @@ typedef struct{
 } stats_t;
 stats_t st;
 
+struct regexspec {
+  char *regex;  // regular expression
+  regex_t preg; // compiled version
+};
+GSList *syslog_ignore;
+GSList *syslog_red;
+
 int get_stats(void)
 {
   if((st.cpu = cpu_percent_usage()) == NULL) return 0;
@@ -56,6 +64,91 @@ int get_stats(void)
   return 1;
 }
 
+#define STATFILE "/var/run/upwatch/uw_sysstat.stat"
+//
+// check the system log for funny things. Set appropriate color
+GString *check_log(char *syslogfile, int *color, int testmode)
+{
+  long offset = 0;
+  long size = 0;
+  FILE *in;
+  char buffer[32768];
+  GString* string;
+
+  string = g_string_new("");
+
+  // find previous last position
+  if ((in = fopen(STATFILE, "r")) != NULL) {
+    fscanf(in, "%lu", &offset);
+    fclose(in);
+  }
+  
+  // open logfile
+  if ((in = fopen(syslogfile, "r")) == NULL) {
+    LOG(LOG_NOTICE, "%s: %m", syslogfile);
+    return(NULL);
+  }
+  fseek(in, 0, SEEK_END);
+  size = ftell(in);
+  if (offset > size) {
+    //truncated? restart
+    offset = 0;
+  }
+  if (testmode) offset = 0;
+  fseek(in, offset, SEEK_SET);
+  while (fgets(buffer, sizeof(buffer), in)) {
+    int add = FALSE;
+    int match = FALSE;
+
+    // first check the red conditions
+    GSList* list = g_slist_nth(syslog_red, 0);
+
+    while (list) {
+      struct regexspec *spec = list->data;
+      if (spec && regexec(&spec->preg,  buffer, 0, 0, 0) == 0) {
+        // match a red condition. Set color to red and add this logline
+        if (*color < STAT_RED) *color = STAT_RED;
+        add = TRUE;
+        if (testmode) {
+          printf("RED match: %s %s", spec->regex, buffer);
+        }
+        break;
+      }
+      list = g_slist_next(list);
+    }
+
+    list = g_slist_nth(syslog_ignore, 0);
+    while (list && !add) {
+      struct regexspec *spec = list->data;
+      if (spec && regexec(&spec->preg,  buffer, 0, 0, 0) == 0) {
+        match = TRUE; // for the ignore list. At least one needs to match
+        break;
+      }
+      list = g_slist_next(list);
+    }
+    if (!match && *color < STAT_YELLOW) {
+      *color = STAT_YELLOW;
+      if (testmode) {
+        printf("match YELLOW: %s", buffer);
+      }
+      add = TRUE;
+    } 
+    if (add) {
+      string = g_string_append(string, buffer);
+    }
+  }
+  offset = ftell(in);
+  if (!testmode) {
+    if ((in = fopen(STATFILE, "w")) != NULL) {
+      fprintf(in, "%lu", offset);
+      fclose(in);
+    } else {
+      LOG(LOG_NOTICE, "%s: %m", STATFILE);
+    }
+  }
+  return(string);
+}
+
 int init(void)
 {
   struct sockaddr_in from, to;
@@ -70,12 +163,68 @@ int init(void)
     return 0;
   }
 
+  if (HAVE_OPT(SYSLOG_IGNORE)) {
+    struct regexspec *spec = NULL;
+    int     ct  = STACKCT_OPT( SYSLOG_IGNORE );
+    char**  pn = STACKLST_OPT( SYSLOG_IGNORE );
+
+    for (--ct; ct >= 0; ct--) {
+      int err;
+
+      if (!spec) {
+        spec = malloc(sizeof(struct regexspec));
+      }
+      err = regcomp(&spec->preg, pn[ct], REG_EXTENDED|REG_NOSUB);
+      if (err) {
+        char buffer[256];
+
+        regerror(err, &spec->preg, buffer, sizeof(buffer));
+        LOG(LOG_NOTICE, buffer);
+        continue;
+      }
+      spec->regex = pn[ct];
+      syslog_ignore = g_slist_append(syslog_ignore, spec);
+      spec = NULL;
+    }
+  }
+
+  if (HAVE_OPT(SYSLOG_RED)) {
+    struct regexspec *spec = NULL;
+    int     ct  = STACKCT_OPT( SYSLOG_RED );
+    char**  pn = STACKLST_OPT( SYSLOG_RED );
+
+    for (--ct; ct >= 0; ct--) {
+      int err;
+
+      if (!spec) {
+        spec = malloc(sizeof(struct regexspec));
+      }
+      err = regcomp(&spec->preg, pn[ct], REG_EXTENDED|REG_NOSUB);
+      if (err) {
+        char buffer[256];
+
+        regerror(err, &spec->preg, buffer, sizeof(buffer));
+        LOG(LOG_NOTICE, buffer);
+        continue;
+      }
+      spec->regex = pn[ct];
+      syslog_red = g_slist_append(syslog_red, spec);
+      spec = NULL;
+    }
+  }
+
+  if (OPT_VALUE_SYSLOG_TEST) {
+    int logcolor = STAT_GREEN;
+    check_log(OPT_ARG(SYSLOG_FILE), &logcolor, TRUE);
+    printf("color = %d\n", logcolor);
+    exit(0);
+  }
   // determine ip address for default gateway interface
   setsin(&to, inet_addr("1.1.1.1"));
   msg = findsaddr(&to, &from);
   if (msg) {
-    LOG(LOG_NOTICE, msg);
-    strcpy(ipaddress, "127.0.0.1");
+    LOG(LOG_NOTICE, (char *)msg);
+    strcpy(ipaddress, OPT_ARG(IPADDRESS));
   } else {
     strcpy(ipaddress, inet_ntoa(from.sin_addr)); 
   }
@@ -91,9 +240,10 @@ int init(void)
 int run(void)
 {
   xmlDocPtr doc;
-  xmlNodePtr subtree, sysstat;
+  xmlNodePtr subtree, sysstat, errlog;
   int ret = 0;
   int color = STAT_GREEN;
+  int logcolor = STAT_GREEN;
 static int prv_color = STAT_GREEN;
   time_t now;
   char buffer[1024];
@@ -102,6 +252,7 @@ static int prv_color = STAT_GREEN;
   long long rt=0, wt=0;
   int ct  = STACKCT_OPT(OUTPUT);
   char **output = STACKLST_OPT(OUTPUT);
+  GString *log;
   int i;
 extern int forever;
 
@@ -171,6 +322,9 @@ extern int forever;
     }
     unlink("tmp/.uw_sysstat.tmp");
   }
+
+  log = check_log(OPT_ARG(SYSLOG_FILE), &logcolor, FALSE);
+
   doc = UpwatchXmlDoc("result");
   xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
   now = time(NULL);
@@ -181,7 +335,7 @@ extern int forever;
   sprintf(buffer, "%d", (int) now);		xmlSetProp(sysstat, "date", buffer);
   sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60));
     xmlSetProp(sysstat, "expires", buffer);
-  sprintf(buffer, "%d", color);				subtree = xmlNewChild(sysstat, NULL, "color", buffer);
+  sprintf(buffer, "%d", color);			subtree = xmlNewChild(sysstat, NULL, "color", buffer);
 
   sprintf(buffer, "%.1f", st.load->min1);	
     subtree = xmlNewChild(sysstat, NULL, "loadavg", buffer);
@@ -208,6 +362,17 @@ extern int forever;
   sprintf(buffer, "%llu", st.mem->used/1024);	subtree = xmlNewChild(sysstat, NULL, "used", buffer);
   sprintf(buffer, "%d", systemp);		subtree = xmlNewChild(sysstat, NULL, "systemp", buffer);
   subtree = xmlNewTextChild(sysstat, NULL, "info", info);
+
+  errlog = xmlNewChild(xmlDocGetRootElement(doc), NULL, "errlog", NULL);
+  sprintf(buffer, "%ld", OPT_VALUE_SERVERID);	xmlSetProp(errlog, "server", buffer);
+  xmlSetProp(errlog, "ipaddress", ipaddress);
+  sprintf(buffer, "%d", (int) now);		xmlSetProp(errlog, "date", buffer);
+  sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60));
+    xmlSetProp(errlog, "expires", buffer);
+  sprintf(buffer, "%d", logcolor);		subtree = xmlNewChild(errlog, NULL, "color", buffer);
+  if (log && log->str && strlen(log->str) > 0) {
+    subtree = xmlNewTextChild(errlog, NULL, "info", log->str);
+  }
 
   if (HAVE_OPT(HPQUEUE)) {
     if (color != prv_color) {

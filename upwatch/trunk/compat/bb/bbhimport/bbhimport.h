@@ -3,7 +3,7 @@
 typedef enum
 {
 PROBE_EMPTY = 1,
-#include "../probes.enum"
+#include "../../../probes.enum"
 } probeidx;
 
 

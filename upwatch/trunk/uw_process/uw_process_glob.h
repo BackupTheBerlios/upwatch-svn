@@ -42,7 +42,7 @@ struct probe_def {
 };
 
 #define STANDARD_MODULE_STUFF(a) PROBE_##a, #a, NULL, NULL, G_STATIC_MUTEX_INIT, \
-  NULL, NULL, sizeof(struct a##_result), -1, 0, 0
+  NULL, NULL, sizeof(struct a##_result), 0, -1, 0, 0
 
 typedef struct _module {
   int class; 		// numberic probe class (id of record in probe table)
@@ -53,6 +53,7 @@ typedef struct _module {
   GQueue *queue;	// queued result record 
   GPtrArray *insertc;	// cache for doing multi value insert statements 
   int res_size;		// size of a result record
+  int fuse;		// act like a fuse, i.e. once red is always red, until the user resets it.
   int sep;		// group number for separate thread
   int count;		// stats: total handles in this run
   int errors;		// stats: total errors in this run

@@ -431,12 +431,27 @@ extern int forever;
   for (i = 0; modules[i]; i++) {
     unsigned count = 0;
     char buf[20];
+    MYSQL_RES *result;
 
     if (modules[i]->sep != sep) continue;
     modules[i]->db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
                                      OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
                                      OPT_VALUE_DBCOMPRESS);
     if (modules[i]->db == NULL) return;
+
+
+    result = my_query(modules[i]->db, 0, "select fuse from probe where id = '%d'", modules[i]->class);
+    if (result) {
+      MYSQL_ROW row;
+      row = mysql_fetch_row(result);
+      if (row) {
+        if (row[0]) modules[i]->fuse  = atoi(row[0]);
+      } else {
+        LOG(LOG_NOTICE, "probe record for id %u not found", modules[i]->class);
+      }
+      mysql_free_result(result);
+    }
+
     if (modules[i]->start_run) {
       modules[i]->start_run(modules[i]);
     }

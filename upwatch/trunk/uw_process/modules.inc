@@ -10,6 +10,7 @@ extern module bb_module;
 extern module postgresql_module;
 extern module snmpget_module;
 extern module mssql_module;
+extern module errlog_module;
 
 module *modules[] = {
   &httpget_module,
@@ -19,6 +20,7 @@ module *modules[] = {
   &mysql_module,
   &pop3_module,
   &imap_module,
+  &errlog_module,
   &bb_cpu_module,
   &bb_module,
 #if HAVE_LIBPQ

@@ -7,6 +7,7 @@ CREATE TABLE probe (
   name varchar(24) NOT NULL default '',
   description varchar(128) NOT NULL default '',
   addbyhand enum('yes','no') NOT NULL default 'yes',
+  fuse enum('yes','no') NOT NULL default 'no',
   class varchar(16) NOT NULL default '',
   graphgroup varchar(16) NOT NULL default '',
   graphtypes varchar(255) NOT NULL default 'default',

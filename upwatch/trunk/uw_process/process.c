@@ -289,10 +289,11 @@ static struct probe_result *get_following_record(module *probe, struct probe_def
 //*******************************************************************
 // UPDATE PR_STATUS
 //*******************************************************************
-static void update_pr_status(module *probe, struct probe_def *def, struct probe_result *res)
+static void update_pr_status(module *probe, struct probe_def *def, struct probe_result *res, struct probe_result *prv)
 {
   MYSQL_RES *result;
   char *escmsg;
+  char color[24];
 
   if (res->message) {
     escmsg = g_malloc(strlen(res->message) * 2 + 1);
@@ -301,12 +302,19 @@ static void update_pr_status(module *probe, struct probe_def *def, struct probe_
     escmsg = strdup("");
   }
 
+  if (probe->fuse && (res->color < prv->color)) {
+    // if this probe acts like a fuse, don't update if new color is less then old color
+    sprintf(color, "color = '%u'", prv->color);
+  } else {
+    sprintf(color, "color = '%u'", res->color);
+  }
+
   result = my_query(probe->db, 0,
                     "update pr_status "
-                    "set    stattime = '%u', expires = '%u', color = '%d', hide = '%s', " 
+                    "set    stattime = '%u', expires = '%u', %s, hide = '%s', " 
                     "       message = '%s', yellow = '%f', red = '%f', contact = '%u', server = '%u' "
                     "where  probe = '%u' and class = '%u'",
-                    res->stattime, res->expires, res->color, def->hide, 
+                    res->stattime, res->expires, color, def->hide, 
                     escmsg, def->yellow, def->red, def->contact, def->server, def->probeid, probe->class);
   mysql_free_result(result);
   if (mysql_affected_rows(probe->db) == 0) { // nothing was actually updated, probably already there
@@ -315,9 +323,9 @@ static void update_pr_status(module *probe, struct probe_def *def, struct probe_
     result = my_query(probe->db, 0,
                       "insert into pr_status "
                       "set    class =  '%u', probe = '%u', stattime = '%u', expires = '%u', "
-                      "       server = '%u', color = '%u', message = '%s', yellow = '%f', red = '%f', "
+                      "       server = '%u', %s, message = '%s', yellow = '%f', red = '%f', "
                       "       contact = '%u', hide = '%s'",
-                      probe->class, def->probeid, res->stattime, res->expires, def->server, res->color, 
+                      probe->class, def->probeid, res->stattime, res->expires, def->server, color, 
                       escmsg, def->yellow, def->red, def->contact, def->hide);
     mysql_free_result(result);
   }
@@ -411,11 +419,33 @@ static void delete_history(module *probe, struct probe_def *def, struct probe_re
 //*******************************************************************
 // UPDATE SERVER COLOR
 //*******************************************************************
-static void update_server_color(module *probe, struct probe_def *def, struct probe_result *res)
+static void update_server_color(module *probe, struct probe_def *def, struct probe_result *res, struct probe_result *prv)
 {
   MYSQL_RES *result;
+  int maxcolor, newcolor;
 
   if (def->server < 2) return;
+
+  if (probe->fuse && (res->color < prv->color)) {
+    // if this probe acts like a fuse, use the previous color if it's higher
+    newcolor = prv->color;
+  } else {
+    newcolor = res->color;
+  }
+  maxcolor = newcolor; // init
+
+  result = my_query(probe->db, 0,
+                    "select max(color) as color from pr_status where server = '%u'", def->server);
+  if (result) {
+    MYSQL_ROW row;
+    row = mysql_fetch_row(result);
+    if (row && row[0]) {
+      maxcolor = atoi(row[0]);
+    }
+  }
+  mysql_free_result(result);
+  if (res->color <= maxcolor) return;
+
   result = my_query(probe->db, 0,
                     // update server set color = '200' where id = '345'
                     "update %s set %s = '%u' where %s = '%u'",
@@ -561,13 +591,13 @@ int process(module *probe, trx *t)
       g_free(nxt);
     }
     if (t->res->stattime > def->newest) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED
-      update_pr_status(probe, def, t->res);  // UPDATE PR_STATUS
-      update_server_color(probe, def, t->res); // UPDATE SERVER COLOR
+      update_pr_status(probe, def, t->res, prv);    // UPDATE PR_STATUS
+      update_server_color(probe, def, t->res, prv); // UPDATE SERVER COLOR
       must_update_def = TRUE;
     }
   } else {
     if (t->res->stattime > def->newest) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED
-      update_pr_status(probe, def, t->res);  // UPDATE PR_STATUS (not for the color, but for the expiry time)
+      update_pr_status(probe, def, t->res, prv);  // UPDATE PR_STATUS (not for the color, but for the expiry time)
       must_update_def = TRUE;
     }
   }

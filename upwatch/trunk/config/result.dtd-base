@@ -1,4 +1,4 @@
-<!ELEMENT result	((ping|httpget|iptraf|sysstat|bb|bb_cpu|mysql|pop3|mssql|postgresql|imap)*)>
+<!ELEMENT result	((ping|httpget|iptraf|sysstat|errlog|bb|bb_cpu|mysql|pop3|mssql|postgresql|imap)*)>
 <!ATTLIST result	fromhost NMTOKEN #REQUIRED
 			date NMTOKEN #REQUIRED
 > 

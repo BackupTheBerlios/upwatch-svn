@@ -2,6 +2,7 @@ include $(top_srcdir)/Makefile.am.path
 
 if HAVE_CURSES
 UWSAIDAR = uwsaidar
+UWREGEXP = uwregexp
 endif
 
 if SOLARIS
@@ -12,7 +13,7 @@ if CYGWIN
 MYCFLAGS = -DCYGWIN
 endif
 
-bin_PROGRAMS = ctime slot $(UWSAIDAR) uwq
+bin_PROGRAMS = ctime slot $(UWSAIDAR) $(UWREGEXP) uwq
 man_MANS = ctime.1 slot.1 uwq.1
 INCLUDES = -I../upwatch 
 BUILT_SOURCES = 
@@ -22,6 +23,10 @@ if HAVE_CURSES
 uwsaidar_SOURCES = uwsaidar.c
 uwsaidar_LDADD = $(LIBSTATGRAB) $(SOLARISLIBS) @LIBCURSES_LIBS@ 
 uwsaidar_CFLAGS = -I$(INCL_STATGRAB) $(MYCFLAGS)
+
+uwregexp_SOURCES = uwregexp.c
+uwregexp_LDADD = $(SOLARISLIBS) @LIBCURSES_LIBS@ -lreadline
+uwregexp_CFLAGS = $(MYCFLAGS)
 endif
 
 include $(top_srcdir)/Makefile.am.common

@@ -393,7 +393,7 @@ static int snprintf_does_errno;  // set to true if snprintf does %m conversions
 
       
   // kill trailing blanks (xml errors have this a lot)
-  for (p = &buffer[(char)(strlen(buffer) - 1)]; isspace(*p); p--) {
+  for (p = &buffer[(unsigned char)(strlen(buffer) - 1)]; isspace(*p); p--) {
     *p = 0;
   }
 
