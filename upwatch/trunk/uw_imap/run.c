@@ -150,6 +150,7 @@ void refresh_database(MYSQL *mysql)
   }
   mysql_free_result(result);
   if (mysql_errno(mysql)) {
+    LOG(LOG_INFO, "saw an error: not removing any probes");
     g_hash_table_foreach(cache, reset_seen, NULL);
   } else {
     g_hash_table_foreach_remove(cache, return_seen, NULL);
