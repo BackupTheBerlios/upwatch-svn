@@ -106,7 +106,7 @@ void refresh_database(MYSQL *mysql)
                 "       pr_snmpget_def.yellow,  pr_snmpget_def.red "
                 "FROM   pr_snmpget_def, pr_domain "
                 "WHERE  pr_snmpget_def.id > 1 and pr_snmpget_def.disable <> 'yes'"
-                "       and pr_snmpget_def.pgroup = '%d'",
+                "       and pr_snmpget_def.pgroup = '%d' and pr_domain.id = pr_snmpget_def.domid",
                 (unsigned) OPT_VALUE_GROUPID);
 
   result = my_query(mysql, 1, qry);

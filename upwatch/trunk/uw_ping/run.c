@@ -167,13 +167,13 @@ int run(void)
   while (mysql) {
     MYSQL_RES *result;
     MYSQL_ROW row;
-    char qry[256]; 
+    char qry[512]; 
 
     sprintf(qry, "SELECT pr_ping_def.id, pr_ping_def.domid, pr_ping_def.tblid, pr_domain.name, "
                  "       pr_ping_def.count, pr_ping_def.yellow, " 
                  "       pr_ping_def.red, pr_ping_def.ipaddress as ip, "
                  "       pr_ping_def.freq "
-                 "FROM   pr_ping_def "
+                 "FROM   pr_ping_def, pr_domain "
                  "WHERE  pr_ping_def.id > 1 and pr_ping_def.disable <> 'yes'"
                  "       and pr_ping_def.pgroup = '%d'",
                 (unsigned)OPT_VALUE_GROUPID);
