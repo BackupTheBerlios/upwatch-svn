@@ -28,12 +28,9 @@ flag = {
     arg_type  = string;
     descrip   = "maildir-type spooldirectory for result files";
     doc       =
-'This probe generates files with data. These are put in maildir style
-spooldirectories. This parameter denotes the basedirectory. Inside
-this directory a directory `tmp` and `new` should exist. All files
-will finally reside in `new`. You should set up some cron job that
-removes any files in `tmp` that are older then 36 hours. For some more info
-about maildir see http://www.qmail.org/man/man5/maildir.html.';
+'Probes generates files with data. These are put in maildir style
+spooldirectories. This parameter denotes the basedirectory. 
+For some more info about maildir see http://www.qmail.org/man/man5/maildir.html.';
 };
 
 // describe commandline flags
