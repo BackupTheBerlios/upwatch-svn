@@ -69,7 +69,7 @@ EXTRA_DIST = Makefile.am.common Makefile.am.libs Makefile.am.path VERSION libtoo
   install-sh config.sub mkinstalldirs depcomp cfg/cvs2cl.pl
 
 upwatch.spec: upwatch-spec.def upwatch-spec.tpl common/spec.tpl \
-  uw_*/*.spec-files uw_*/*.spec-requires 
+  uw_*/*.spec-files uw_*/*.spec-requires  uw_*/*.spec-buildrequires
 	autogen -b upwatch -Dconfargs="$(CONFARGS)" upwatch-spec.def
 
 upwatch-base.mysql: config/upwatch-base.mysql uw_*/probe.def_mysql

@@ -20,7 +20,7 @@ else
 GENINCL = -L /usr/share/autogen -L $(top_srcdir)/common
 endif
 
-SPECFILES = $(program:%=%.spec-requires) $(program:%=%.spec-files)
+SPECFILES = $(program:%=%.spec-requires) $(program:%=%.spec-buildrequires) $(program:%=%.spec-files)
 INITFILES = $(program:%=%.redhat) $(program:%=%.suse) $(program:%=%.solaris)
 PROBFILES  = probe.def_h probe.res_h probe.enum probe.def_mysql probe.raw_mysql probe.xml probe.dtd probe.dtd-inc
 AGDEFINES = -Dconfdir=$(confdir) -Dsysconfdir=$(sysconfdir) -Dsbindir=$(sbindir) \
@@ -49,7 +49,7 @@ probe.def_h probe.res_h probe.enum probe.def_mysql probe.raw_mysql probe.dtd pro
 	chmod +x $(<:%.def=%).suse
 	chmod +x $(<:%.def=%).solaris
 
-%.spec-requires %.spec-files: %.def
+%.spec-requires %.spec-buildrequires %.spec-files: %.def
 	autogen -b $(<:%.def=%) $(AGDEFINES) $(GENINCL) -T $(SPECTPL) $<
 
 CLEANFILES = $(program:%=%.c) $(program:%=%.h) $(program:%=%.1) Makefile.in \

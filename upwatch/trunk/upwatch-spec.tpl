@@ -3,13 +3,13 @@ Summary: UpWatch - A High performance monitoring framwork
 Vendor: http://www.upwatch.com
 Name: upwatch
 Version: [+ version +]
-Release: 9
+Release: 10
 Source: http://www.upwatch.com/%{name}-%{version}.tar.gz
 Packager: Ron Arts <raarts@upwatch.com>
 Copyright: Proprietary - Redistribution Prohibited
 Group: Application/Monitoring
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
-BuildRequires: gzip glib2-devel mysql-devel autogen libxslt lynx 
+BuildRequires: gzip glib2-devel mysql-devel autogen libxslt lynx readline-devel
 Requires: libxml2 >= 2.4.19 glib2
 [+ FOR clientprog +]# [+clientprog+] requirements:
 [+ include (string-append (get "clientprog") "/" (get "clientprog") ".spec-requires") ;+]
@@ -204,6 +204,7 @@ Group: Application/Monitoring
 Requires: upwatch 
 [+ FOR serverprog +]# [+serverprog+] requirements:
 [+ include (string-append (get "serverprog") "/" (get "serverprog") ".spec-requires") ;+]
+[+ include (string-append (get "serverprog") "/" (get "serverprog") ".spec-buildrequires") ;+]
 [+ ENDFOR +]
 %description server
 Upwatch is a full-fledged monitoring and report engine for

@@ -149,8 +149,8 @@ int init(void)
 int run(void)
 {
   MYSQL *mysql;
-  xmlDocPtr doc, red;
-  int id = 0, redcount = 0;
+  xmlDocPtr doc;
+  int id = 0;
   struct hostinfo **newh = NULL;
   struct tm *tm;
   time_t now = time(NULL);
@@ -175,7 +175,7 @@ int run(void)
                  "       pr_ping_def.freq "
                  "FROM   pr_ping_def, pr_domain "
                  "WHERE  pr_ping_def.id > 1 and pr_ping_def.disable <> 'yes'"
-                 "       and pr_ping_def.pgroup = '%d'",
+                 "       and pr_ping_def.pgroup = '%d' and pr_domain.id = pr_ping_def.domid",
                 (unsigned)OPT_VALUE_GROUPID);
 
     if (mysql_query(mysql, qry)) {
@@ -193,7 +193,8 @@ int run(void)
       struct in_addr *ipa = (struct in_addr *)&ip;
 
       char *ipaddress = row[7];
-      int probeid = atoi(row[0]);
+      int uid = atoi(row[0]);
+      int probeid = atoi(row[2]);
       int count = atoi(row[4]);
       int yellow = atoi(row[5]);
       int red = atoi(row[6]);
@@ -213,7 +214,9 @@ int run(void)
       if (red < yellow) red = yellow;
 
       newh[id] = calloc(1, sizeof(struct hostinfo));
-      newh[id]->id = probeid;
+      newh[id]->id = uid;
+      newh[id]->domain = strdup(row[3]);
+      newh[id]->probeid = probeid;
       newh[id]->count = count;
       newh[id]->yellow = yellow;
       newh[id]->red = red;
@@ -261,7 +264,6 @@ int run(void)
   uw_setproctitle("writing results");
   doc = UpwatchXmlDoc("result", NULL); 
 
-  red = UpwatchXmlDoc("result", NULL); 
   for (id=0; hosts[id]; id++) {
     xmlDocPtr cur = doc;
     xmlNodePtr subtree, ping;
@@ -281,8 +283,6 @@ int run(void)
     missed = hosts[id]->num_sent - hosts[id]->num_recv;
     if (missed >= hosts[id]->red) {
       color = STAT_RED;
-      cur = red;
-      redcount++;
     } else if (missed >= hosts[id]->yellow) {
       color = STAT_YELLOW;
     } else {
@@ -332,12 +332,7 @@ int run(void)
   for (i=0; i < ct; i++) {
     spool_result(OPT_ARG(SPOOLDIR), output[i], doc, NULL);
   }
-  if (redcount) {
-    xmlSetDocCompressMode(red, OPT_VALUE_COMPRESS);
-    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(INVESTIGATE), red, NULL);
-  }
   xmlFreeDoc(doc);
-  xmlFreeDoc(red);
   return(num_hosts); // amount of items processed
 }
 

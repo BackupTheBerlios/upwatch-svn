@@ -7,7 +7,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.52 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.53 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -86,7 +86,6 @@ AM_CONDITIONAL([CYGWIN], test x$cygwin = xtrue)
 # ----------------------------------------------------------------------
 # check for various programs used during the build.
 # ----------------------------------------------------------------------
-AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_INSTALL
