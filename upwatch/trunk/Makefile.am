@@ -48,14 +48,15 @@ PROGNAMES = ${CLIENTPROG} ${MONITORPROG} ${EXTRAPROG} ${SERVERPROG}
 export PROGNAMES MONITORPROG CLIENTPROG SERVERPROG EXTRAPROG
 export TOP_SRCDIR = $(top_srcdir)
 
-SUBDIRS = upwatch st-1.4 libstatgrab-0.7 ${PROGNAMES} util scripts config common
-DIST_SUBDIRS = ${SUBDIRS}
+SUBDIRS = upwatch st-1.4 libstatgrab-0.7 ${PROGNAMES} util scripts compat config common
+DIST_SUBDIRS = ${SUBDIRS} doc
 
 doc_DATA = AUTHORS COPYING ChangeLog NEWS README upwatch.mysql
 
 EXTRA_DIST = Makefile.am.common Makefile.am.libs Makefile.am.path VERSION libtool ChangeLog \
   upwatch-spec.def upwatch-spec.tpl upwatch.spec templates upwatch.mysql probes.enum \
   patches/libpcap-linux-timeout.patch patches/libstatgrab-configure.gnu \
+  doc/upwatch.html doc/upwatch.pdf doc/upwatch.txt \
   cfg/install-sh cfg/config.sub cfg/mkinstalldirs cfg/depcomp cfg/cvs2cl.pl
 
 upwatch.spec: upwatch-spec.def upwatch-spec.tpl common/spec.tpl \

@@ -24,4 +24,4 @@ Inside this directory directories called `tmp` and `new` should exist. All files
 will be read from `new`.'; 
 };
 
-#include general_options.def
+#include generic_options.def

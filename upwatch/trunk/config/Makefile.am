@@ -10,6 +10,6 @@ result.dtd : result.dtd-base ../uw_*/probe.dtd ../uw_*/probe.dtd-inc
 	echo  >> result.dtd
 	cat ../uw_*/probe.dtd  >> result.dtd
 
-EXTRA_DIST = upwatch.conf upwatch-base.mysql result.dtd logrotate \
+EXTRA_DIST = upwatch.conf upwatch-base.mysql result.dtd-base logrotate \
   cron.daily upwatch.redhat upwatch.suse
 

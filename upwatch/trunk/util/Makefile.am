@@ -1,22 +1,32 @@
 include $(top_srcdir)/Makefile.am.path
 
+if HAVE_CURSES
+UWSAIDAR = uwsaidar
+endif
+
+if SOLARIS
+SOLARISLIBS = -lkstat
+endif
+
 if CYGWIN
 MYCFLAGS = -DCYGWIN
 endif
 
-bin_PROGRAMS = ctime slot uwsaidar uwq
+bin_PROGRAMS = ctime slot $(UWSAIDAR) uwq
 man_MANS = ctime.1 slot.1 uwq.1
 INCLUDES = -I../upwatch 
 BUILT_SOURCES = 
 EXTRA_DIST = ctime.1 slot.1 uwq.1
 
+if HAVE_CURSES
 uwsaidar_SOURCES = uwsaidar.c
-uwsaidar_LDADD = $(LIBSTATGRAB) @LIBNCURSES_LIBS@
+uwsaidar_LDADD = $(LIBSTATGRAB) $(SOLARISLIBS) @LIBCURSES_LIBS@ 
 uwsaidar_CFLAGS = -I$(INCL_STATGRAB) $(MYCFLAGS)
+endif
 
 include $(top_srcdir)/Makefile.am.common
 
-uwq_SOURCES = uwq.c uwq_options.c uwq_options.h uwq_options.def 
+uwq_SOURCES = uwq.c uwq_options.h uwq_options.c uwq_options.def 
 uwq_LDADD = $(LIBOPTS) @LIBGLIB2_LIBS@
 uwq_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@
 BUILT_SOURCES += uwq_options.h uwq.1

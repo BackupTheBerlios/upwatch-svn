@@ -259,8 +259,7 @@ fi
 %files
 %defattr(0660,root,upwatch,0770)
 /usr/share/doc/%{name}-%{version}
-#%attr(0755,root,root) /usr/lib/libopts.so
-#%attr(0755,root,root) /usr/lib/libopts.so.9
+%doc doc/upwatch.txt doc/upwatch.html doc/upwatch.pdf
 %attr(0770,upwatch,upwatch) %dir /etc/upwatch.d
 %attr(0770,upwatch,upwatch) %dir /usr/share/upwatch
 %attr(0770,upwatch,upwatch) %dir /usr/share/upwatch/init

@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.36 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.37 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -327,12 +327,21 @@ AC_CHECK_LIB([pthread], [pthread_create],
   [LIBPTHREAD_LIBS=-lpthread],[AC_MSG_ERROR([Sorry, we need -lpthread to continue])] )
 AC_SUBST(LIBPTHREAD_LIBS)
 
-# NCURSES
+# CURSES/NCURSES
+AC_CHECK_LIB([curses], [initscr], [HAVE_LIBCURSES=1], [HAVE_LIBCURSES=0])
+if test $HAVE_LIBCURSES -eq 1
+then
+        LIBCURSES_LIBS=-lcurses
+fi
 AC_CHECK_LIB([ncurses], [initscr], [HAVE_LIBNCURSES=1], [HAVE_LIBNCURSES=0])
 if test $HAVE_LIBNCURSES -eq 1
 then
-        LIBNCURSES_LIBS=-lncurses
+        LIBCURSES_LIBS=-lncurses
 fi
+AM_CONDITIONAL(HAVE_CURSES, test ! -z $LIBCURSES_LIBS)
+AC_SUBST(LIBCURSES_LIBS)
+
+# NCURSES
 AM_CONDITIONAL(HAVE_LIBNCURSES, test $HAVE_LIBNCURSES -eq 1)
 AC_SUBST(LIBNCURSES_LIBS)
 

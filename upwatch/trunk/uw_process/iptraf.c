@@ -222,7 +222,7 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
   }
   sprintf(buf, "(DEFAULT, '%u', '%f', '%f', '0', '%u', '%u', '%f', '%f', '')",
                def->probeid, def->yellow, def->red, res->stattime, res->color,
-               res->in_total, res->out_total);
+               res->in, res->out);
 
   if (HAVE_OPT(MULTI_VALUE_INSERTS)) {
     mod_ic_add(probe, "pr_iptraf_raw", strdup(buf));
