@@ -291,7 +291,7 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
     LOG(LOG_WARNING, "timeout on greeting string");
     return 0;
   }
-  if (debug > 3) fprintf(stderr, "< %s", buffer);
+  if (debug > 3) fprintf(stderr, "%s[%u] < %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
   if (buffer[0] != '+') {
     LOG(LOG_WARNING, buffer);
     return 0;
@@ -299,7 +299,7 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
 
   sprintf(buffer, "USER %s\n", q->user);
   uw_setproctitle("%s:%d %s", q->host, q->port, buffer);
-  if (debug > 3) fprintf(stderr, "> %s", buffer);
+  if (debug > 3) fprintf(stderr, "%s[%u] > %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
   if (len == ETIME) {
     LOG(LOG_WARNING, "timeout on greeting string");
@@ -317,7 +317,7 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
     LOG(LOG_WARNING, "timeout on USER response");
     return 0;
   }
-  if (debug > 3) fprintf(stderr, "< %s", buffer);
+  if (debug > 3) fprintf(stderr, "%s[%u] < %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
   if (buffer[0] != '+') {
     LOG(LOG_WARNING, buffer);
     return 0;
@@ -325,7 +325,7 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
 
   sprintf(buffer, "PASS %s\n", q->pwd);
   uw_setproctitle("%s:%d PASS xxxxxxxx", q->host, q->port);
-  if (debug > 3) fprintf(stderr, "> %s", buffer);
+  if (debug > 3) fprintf(stderr, "%s[%u] > %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
   if (len == ETIME) {
     LOG(LOG_WARNING, "timeout on greeting string");
@@ -343,7 +343,7 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
     LOG(LOG_WARNING, "timeout on PASS response");
     return 0;
   }
-  if (debug > 3) fprintf(stderr, "< %s", buffer);
+  if (debug > 3) fprintf(stderr, "%s[%u] < %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
   if (buffer[0] != '+') {
     LOG(LOG_WARNING, buffer);
     return 0;
@@ -351,7 +351,7 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
 
   sprintf(buffer, "DATA %d %s\n", filesize, basename);
   uw_setproctitle("%s:%d %s", q->host, q->port, buffer);
-  if (debug > 3) fprintf(stderr, "> %s", buffer);
+  if (debug > 3) fprintf(stderr, "%s[%u] > %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
   if (len == ETIME) {
     LOG(LOG_WARNING, "timeout on greeting string");
@@ -369,7 +369,7 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
     LOG(LOG_WARNING, "timeout on DATA response");
     return 0;
   }
-  if (debug > 3) fprintf(stderr, "< %s", buffer);
+  if (debug > 3) fprintf(stderr, "%s[%u] < %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
   if (buffer[0] != '+') {
     LOG(LOG_WARNING, buffer);
     return 0;
@@ -417,7 +417,7 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
     LOG(LOG_WARNING, "timeout on DATA response");
     return 0;
   }
-  if (debug > 3) fprintf(stderr, "< %s", buffer);
+  if (debug > 3) fprintf(stderr, "%s[%u] < %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
   if (buffer[0] != '+') {
     LOG(LOG_WARNING, buffer);
     return 0;
@@ -425,7 +425,7 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
 
   sprintf(buffer, "QUIT\n");
   uw_setproctitle("%s:%d %s", q->host, q->port, buffer);
-  if (debug > 3) fprintf(stderr, "> %s", buffer);
+  if (debug > 3) fprintf(stderr, "%s[%u] > %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
   if (len == ETIME) {
     LOG(LOG_WARNING, "timeout on greeting string");
@@ -442,7 +442,7 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
   if (len == ETIME) {
     LOG(LOG_WARNING, "timeout on QUIT response");
   }
-  if (debug > 3) fprintf(stderr, "< %s", buffer);
+  if (debug > 3) fprintf(stderr, "%s[%u] < %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
   return 1;
 }
 
