@@ -1,6 +1,7 @@
 AutoGen Definitions upwatch-spec;
 
 version = `cat VERSION`;
+release = `cat RELEASE`;
 #shell 
 for i in $MONITORPROG
 do

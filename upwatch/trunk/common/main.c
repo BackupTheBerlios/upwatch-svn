@@ -87,7 +87,8 @@ int main( int argc, char** argv, char **envp )
   if (OPT_VALUE_SYSLOG)  _log2syslog  = TRUE;
   if (HAVE_OPT(LOGFILE)) _logfilename = OPT_ARG(LOGFILE);
 
-  LOG(LOG_NOTICE, "start (V%s, compiled %s %s with GCC %s)", VERSION, __DATE__, __TIME__, __VERSION__);
+  LOG(LOG_NOTICE, "start (Version %s-%s, date %s %s)", VERSION, RELEASE, __DATE__, __TIME__);
+  LOG(LOG_INFO, "using GCC %s", __VERSION__);
 
   atexit(exit_function);
   if (!init()) exit(1);

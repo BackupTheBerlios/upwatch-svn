@@ -1,9 +1,9 @@
 [+ AutoGen5 template spec +]
-Summary: UpWatch - A High performance monitoring framwork
+Summary: UpWatch - A High Performance Monitoring Framework
 Vendor: http://www.upwatch.com
 Name: upwatch
 Version: [+ version +]
-Release: 3
+Release: [+ release +]
 Source: http://www.upwatch.com/%{name}-%{version}.tar.gz
 Packager: Ron Arts <raarts@upwatch.com>
 Copyright: GPL

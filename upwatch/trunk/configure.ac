@@ -2,12 +2,15 @@
 AC_INIT(upwatch, 0.95, bugs@upwatch.com)
 AC_CONFIG_SRCDIR(upwatch/spool.c)
 VERSION=`cat VERSION`
+RELEASE=`cat RELEASE`
 PACKAGE=upwatch
 AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.71 $),)dnl
+AC_DEFINE_UNQUOTED([RELEASE], ["${RELEASE}"], [Package release string])
+
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.72 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
