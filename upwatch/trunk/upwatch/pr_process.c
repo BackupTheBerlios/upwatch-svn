@@ -100,9 +100,12 @@ int extract_info_from_xml(trx *t)
       res->prevcolor = xmlNodeListGetInt(t->doc, t->cur->xmlChildrenNode, 1);
       continue;
     }
-    if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "notify")) && (t->cur->ns == t->ns)) {
-      res->proto = xmlGetProp(t->cur, (const xmlChar *) "proto");
-      res->target = xmlGetProp(t->cur, (const xmlChar *) "target");
+    if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "host")) && (t->cur->ns == t->ns)) {
+      p = xmlNodeListGetString(t->doc, t->cur->xmlChildrenNode, 1);
+      if (p) { 
+        res->hostname = strdup(p); 
+        xmlFree(p);
+      }
       continue;
     }
     if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "host")) && (t->cur->ns == t->ns)) {

@@ -241,10 +241,7 @@ void add_to_xml_document(char *hostname, char *probename, char *colorstr, struct
   sprintf(buffer, "%d", ((int)date)+((unsigned)OPT_VALUE_EXPIRES*60));
   xmlSetProp(probe, "expires", buffer); // 200 minutes
   sprintf(buffer, "%d", color);               xmlSetProp(probe, "color", buffer);
-  host = xmlNewChild(probe, NULL, "host", NULL);
-  sprintf(buffer, "%s", hostname);     subtree = xmlNewChild(host, NULL, "hostname", buffer);
-  //sprintf(buffer, "%s", inet_ntoa(hosts[id]->saddr.sin_addr));
-  //  subtree = xmlNewChild(host, NULL, "ipaddress", buffer);
+  sprintf(buffer, "%s", hostname);            subtree = xmlNewChild(probe, NULL, "host", buffer);
   if (message && *message) {
     subtree = xmlNewChild(probe, NULL, "info", message);
   }

@@ -417,6 +417,12 @@ probe = {
   comment = "";
 
   attribute = {
+    name = "server";
+    required = true;
+    descrip = "id of this server in the database";
+  };
+
+  attribute = {
     name = "ipaddress";
     default = "127.0.0.1";
     descrip = "target ip address";
@@ -447,16 +453,16 @@ probe = {
   };
 
   attribute = {
+    name = "interval";
+    default = "60";
+    descrip = "time between measurements";
+  };
+
+  attribute = {
     name = "received";
     default = "0";
     descrip = "date/time this result was received by the upwatch server";
   };
-
-  element = {
-    name = "host";
-    descrip = "host where this element originated";
-  };
-
 };
 
 probe = {
@@ -470,6 +476,12 @@ probe = {
   comment = "";
 
   attribute = {
+    name = "server";
+    required = true;
+    descrip = "id of this server in the database";
+  };
+
+  attribute = {
     name = "ipaddress";
     default = "127.0.0.1";
     descrip = "target ip address";
@@ -500,13 +512,14 @@ probe = {
   };
 
   attribute = {
+    name = "interval";
+    default = "60";
+    descrip = "time between measurements";
+  };
+
+  attribute = {
     name = "received";
     default = "0";
     descrip = "date/time this result was received by the upwatch server";
-  };
-
-  element = {
-    name = "host";
-    descrip = "host where this element originated";
   };
 };

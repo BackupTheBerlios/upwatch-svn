@@ -1,13 +1,7 @@
-<!ELEMENT result	((ping|httpget|iptraf|sysstat|errlog|bb|bb_cpu|mysql|pop3|mssql|postgresql|imap)*)>
+<!ELEMENT result	((ping|httpget|iptraf|sysstat|errlog|bb|bb_cpu|mysql|pop3|mssql|postgresql|imap|diskfree|hwstat|tcpconnect)*)>
 <!ATTLIST result	fromhost NMTOKEN #REQUIRED
 			date NMTOKEN #REQUIRED
 > 
 
-<!ELEMENT host          (hostname,ipaddress?)>
-<!ELEMENT hostname      (#PCDATA)>
-<!ELEMENT ipaddress     (#PCDATA)>
-
 <!ELEMENT prevcolor     (#PCDATA)>
 <!ELEMENT info          (#PCDATA)>
-
-
