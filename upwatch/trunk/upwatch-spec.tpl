@@ -80,6 +80,10 @@ done
 # patch sudoers file to allow members of the upwatch group to
 # restart the services
 patch_sudoers() {
+  if [ ! -f /etc/sudoers ]
+  then
+    return
+  fi
   if [ -f /etc/sudoers.tmp ]
   then
     return
