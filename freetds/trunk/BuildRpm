@@ -1,0 +1,18 @@
+#!/bin/sh
+
+set -x
+
+./configure
+
+SVNVERSION=`svnversion .`
+RPMVERSION=`head -1 VERSION`
+
+sed -e "s/^Version:.*/Version: $RPMVERSION/g" \
+    -e "s/^Release:.*/Release: $SVNVERSION/g" freetds.spec > ~/sources/SPECS/freetds.spec ;
+cd .. 
+ln -sf freetds freetds-$RPMVERSION 
+tar czvf ~/sources/SOURCES/freetds-$RPMVERSION.tar.gz freetds-$RPMVERSION/. --exclude .svn 
+rm -f freetds-$RPMVERSION
+cd ~/sources/SPECS
+rpmbuild -bb freetds.spec
+

@@ -22,10 +22,10 @@ Group: Development/Libraries
 Summary: Include files needed for development with FreeTDS 
 Requires: freetds = %{version}
 
-#%package unixodbc
-#Group: System Environment/Libraries
-#Summary: Driver ODBC for unixODBC
-#Requires: freetds = %{version}, unixODBC >= 2.0.0
+%package unixodbc
+Group: System Environment/Libraries
+Summary: Driver ODBC for unixODBC
+Requires: freetds = %{version}, unixODBC >= 2.0.0
 
 %package doc
 Group: Documentation
@@ -35,8 +35,8 @@ Summary: User documentation for FreeTDS
 The freetds-devel package contains the files necessary for development with 
 the FreeTDS libraries. 
 
-#%description unixodbc
-#The freetds-unixodbc package contains ODBC driver build for unixODBC.
+%description unixodbc
+The freetds-unixodbc package contains ODBC driver build for unixODBC.
 
 %description doc
 The freetds-doc package contains the useguide and reference of FreeTDS 
@@ -80,14 +80,14 @@ rm -rf $RPM_BUILD_ROOT
 %{_libdir}/libsybdb.la
 %{_libdir}/libtds.a
 %{_libdir}/libtds.la
-#%{_libdir}/libtdsodbc.a
-#%{_libdir}/libtdsodbc.la
+%{_libdir}/libtdsodbc.a
+%{_libdir}/libtdsodbc.la
 %{_libdir}/libtdssrv.a
 %{_libdir}/libtdssrv.la
 
-#%files unixodbc
-#%defattr(-,root,root)
-#%{_libdir}/libtdsodbc.so*
+%files unixodbc
+%defattr(-,root,root)
+%{_libdir}/libtdsodbc.so*
 
 %files doc
 %defattr (-,root,root)
