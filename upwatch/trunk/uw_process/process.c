@@ -226,18 +226,6 @@ static void create_pr_hist(trx *t, struct probe_result *prv)
     escmsg = strdup("");
   }
 
-/*
-  if (t->res->received > t->res->expires) {
-    result = my_query(t->probe->db, 0,
-                      "insert into pr_hist "
-                      "set    server = '%u', class = '%u', probe = '%u', stattime = '%u', "
-                      "       prv_color = '%d', color = '%d', message = '%s', contact = '%u', "
-                      "       hide = '%s'",
-                      t->def->server, t->probe->class, t->def->probeid, t->res->expires,
-                      prv->color, STAT_PURPLE, escmsg, t->def->contact, t->def->hide);
-    mysql_free_result(result);
-  }
-*/
   result = my_query(t->probe->db, 0,
                     "insert into pr_hist "
                     "set    server = '%u', class = '%u', probe = '%u', stattime = '%u', "
