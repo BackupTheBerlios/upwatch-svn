@@ -22,7 +22,7 @@ int init(void)
 
 int run(void)
 {
-  int ret = 0;
+  int count = 0;
   char path[PATH_MAX];
   G_CONST_RETURN gchar *filename;
   GDir *dir;
@@ -36,10 +36,10 @@ int run(void)
     if (!push(strdup(buffer), NULL)) {
       break;
     }
-    ret = 1;
+    count++;
   }
   g_dir_close(dir);
-  return(ret);
+  return(count);
 }
 
 int push(gpointer data, gpointer user_data)

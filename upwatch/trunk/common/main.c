@@ -105,12 +105,12 @@ static void every_minute(void)
     if (!forever) break; // kill -TERM ?
     ++runcounter;
     gettimeofday(&start, NULL);
-    ret = run(); 	/* this will run every minute */
+    ret = run(); 	/* run every minute - returns amount of items processed */
     if (debug > 0 && ret) {
       struct timeval end;
 
       gettimeofday(&end, NULL);
-      LOG(LOG_DEBUG, "run %d took %f seconds", runcounter, ((float)timeval_diff(&end, &start))/1000000.0);
+      LOG(LOG_DEBUG, "run %d: processed %d items in %f seconds", runcounter, ret, ((float)timeval_diff(&end, &start))/1000000.0);
     }     
   }
   return;
@@ -187,7 +187,7 @@ static void wait_to_start(void)
     sleep(3);
     return;
   }
-  if (now > startsec) {
+  if (now >= startsec) {
     wait = startsec - now + 60;
   } else {
     wait = startsec - now;

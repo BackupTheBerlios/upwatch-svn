@@ -41,7 +41,7 @@ int mystrcmp(char **a, char **b)
 
 int run(void)
 {
-  int ret = 0;
+  int count = 0;
   char path[PATH_MAX];
   G_CONST_RETURN gchar *filename;
   GDir *dir;
@@ -66,17 +66,17 @@ int run(void)
   g_dir_close(dir);
   if (files) {
     g_ptr_array_sort(arr, mystrcmp);
-    ret = 1;
   }
 
   for (i=0; i < arr->len; i++) {
     //printf("%s\n", g_ptr_array_index(arr,i));
     process(g_ptr_array_index(arr,i), NULL);
+    count++;
   }
 
   g_ptr_array_free(arr, TRUE);
   close_database();
-  return(ret);
+  return(count);
 }
 
 void process(gpointer data, gpointer user_data)

@@ -80,8 +80,10 @@ int process_httpget(xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "info")) && (cur->ns == ns)) {
       p = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-      strcpy(message, p);
-      xmlFree(p);
+      if (p) {
+	strcpy(message, p);
+        xmlFree(p);
+      }
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "host")) && (cur->ns == ns)) {
       xmlNodePtr hname;

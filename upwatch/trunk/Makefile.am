@@ -14,6 +14,6 @@ upwatch.spec: upwatch-spec.def upwatch-spec.tpl uw_*/*.spec-generic uw_*/*.spec-
 upwatch.mysql: config/upwatch-base.mysql uw_*/uw_*.mysql
 	cat $+ > upwatch.mysql
 
-rpm: clean all dist
+rpm: dist
 	rpm -ta upwatch-0.1.tar.gz
 

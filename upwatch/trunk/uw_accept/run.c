@@ -28,7 +28,7 @@ static int uw_password_ok(char *user, char *passwd)
     MYSQL_ROW row;
 
     sprintf(buffer, OPT_ARG(AUTHQUERY), user, passwd);
-    if (debug) LOG(LOG_DEBUG, buffer);
+    if (debug > 1) LOG(LOG_DEBUG, buffer);
     if (mysql_query(mysql, buffer)) {
       LOG(LOG_ERR, "buffer: %s", mysql_error(mysql));
       close_database();

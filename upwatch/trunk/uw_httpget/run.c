@@ -49,7 +49,7 @@ int run(void)
   time_t now;
 
   if (debug > 0) LOG(LOG_DEBUG, "reading info from database");
-  if (open_database() == 0) {
+  while (open_database() == 0) {
     MYSQL_RES *result;
     MYSQL_ROW row;
 
@@ -62,6 +62,7 @@ int run(void)
 
     if (mysql_query(mysql, qry)) {
       LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql)); // if we can't read info from the database, use cached info
+      break;
     }
 
     result = mysql_store_result(mysql);
@@ -102,13 +103,15 @@ int run(void)
       LOG(LOG_ERR, mysql_error(mysql));
       LOG(LOG_ERR, "no database, no cached info - bailing out");
       close_database();
-      return(1);
+      break;
     }
     close_database();
     if (debug > 0) LOG(LOG_DEBUG, "%d probes read", num_hosts);
-  } else if (hosts == NULL) {
+    break;
+  }
+  if (hosts == NULL) {
     LOG(LOG_ERR, "no database, no cached info - bailing out");
-    return(1);
+    return 0;
   }
 
   if (debug > 0) LOG(LOG_DEBUG, "running probes", "new");
@@ -160,7 +163,7 @@ int run(void)
     }
   }
   spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc);
-  return(0);
+  return num_hosts;
 }
 
 
@@ -206,6 +209,7 @@ void probe(gpointer data, gpointer user_data)
   char buffer[BUFSIZ];
   long headerlen = 0;
 
+  if (!host) return;
   sprintf(buffer, "http://%s%s", host->host, host->uri);
   curl = curl_easy_init();
 
@@ -239,7 +243,7 @@ void probe(gpointer data, gpointer user_data)
   curl_easy_getinfo(curl, CURLINFO_PRETRANSFER_TIME, &host->pretransfer_time);
   host->pretransfer_time *= 1000.0; // convert to millesecs
 
-  host->info[512] = 0; // limit amount of data
+  if (host->info) host->info[512] = 0; // limit amount of data
 
   curl_easy_cleanup(curl);
 }

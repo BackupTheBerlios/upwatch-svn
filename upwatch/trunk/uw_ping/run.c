@@ -154,7 +154,7 @@ int run(void)
 
   tm = gmtime(&now);
   if (debug > 0) LOG(LOG_DEBUG, "reading ping info from database");
-  if (open_database() == 0) {
+  while (open_database() == 0) {
     MYSQL_RES *result;
     MYSQL_ROW row;
     char *qry = 
@@ -167,13 +167,13 @@ int run(void)
     if (mysql_query(mysql, qry)) {
       LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql));
       close_database();
-      return(1);
+      break;
     }
     result = mysql_store_result(mysql);
     if (!result) {
       if (debug) LOG(LOG_DEBUG, "%s: no result", qry);
       close_database();
-      return(FALSE);
+      break;
     }
     newh = calloc(mysql_num_rows(result), sizeof(struct hostinfo));
     while ((row = mysql_fetch_row(result))) {
@@ -232,11 +232,12 @@ int run(void)
     hosts = newh; // replace with new structure
     if (debug > 0) LOG(LOG_DEBUG, "done reading");
     close_database();
+    break;
   }
   if (hosts == NULL) {
     LOG(LOG_ERR, mysql_error(mysql));
     LOG(LOG_ERR, "no database, no cached info - bailing out");
-    return(1);
+    return 0;
   }
   run_actual_probes(num_hosts); /* this runs the actual probes */
   if (debug > 0) LOG(LOG_DEBUG, "done running probes");
@@ -317,7 +318,7 @@ int run(void)
   }
   spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc);
   xmlFreeDoc(doc);
-  return(1); // returning true means run() actually did something
+  return(num_hosts); // amount of items processed
 }
 
 static int run_actual_probes(int count)
