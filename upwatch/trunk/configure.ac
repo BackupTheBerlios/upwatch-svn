@@ -7,7 +7,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.59 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.60 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -550,6 +550,6 @@ AC_CONFIG_FILES([uw_iptraf/Makefile])
 
 cp patches/libstatgrab-configure.gnu libstatgrab/configure.gnu
 AC_CONFIG_SUBDIRS(libstatgrab)
-AC_CONFIG_SUBDIRS(xmbmon203)
+( cd xmbmon203 ; ./configure ; cd .. )
 
 AC_OUTPUT

@@ -1,0 +1,49 @@
+--- xmbmon203-orig/Makefile.in	2003-07-04 05:13:45.000000000 +0200
++++ xmbmon203/Makefile.in	2004-05-24 23:40:23.777768120 +0200
+@@ -37,14 +37,16 @@
+ RM=rm -f
+ INSTALL=install
+ 
+-INST_DIR=/usr/local/bin
++INST_DIR=$(DESTDIR)/usr/local/bin
+ INST_XDIR=/usr/X11R6/bin
+ INST_XRDIR=/usr/X11R6/lib/X11/app-defaults
+  
+ .c.o:
+ 	$(CC) -c $(CFLAGS) $*.c
+ 
+-PROGRAM = mbmon xmbmon
++PROGRAM = mbmon xmbmon.a
++PACKAGE = upwatch
++VERSION = `cat ../VERSION`
+ 
+ TESTPROG = testpci testsmb testhwm testfan
+ 
+@@ -55,6 +57,17 @@
+ 
+ all: $(PROGRAM)
+ 
++distdir: 
++	mkdir -p ../$(PACKAGE)-$(VERSION)/xmbmon203/AC-TOOLS
++	cp *.c *.h Makefile.* *.txt configure *.in *.resources ../$(PACKAGE)-$(VERSION)/xmbmon203
++	cp AC-TOOLS/config.* AC-TOOLS/install-sh ../$(PACKAGE)-$(VERSION)/xmbmon203/AC-TOOLS
++
++check:
++	echo check OK
++
++xmbmon.a: $(OBJS)
++	$(AR) -r xmbmon.a *.o
++
+ mbmon: mbmon.c mbmon.h methods.h pci_pm.h smbuses.h sensors.h $(OBJS)
+ 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ mbmon.c $(OBJS) $(SPLIBS)
+ 
+@@ -130,8 +143,8 @@
+ 	$(RM) Makefile config.cache config.log config.h config.status
+ 
+ install: $(PROGRAM)
++	mkdir -p $(INST_DIR)
+ 	$(INSTALL) -o root -g wheel -m 4555 -c -p mbmon $(INST_DIR)
+-	$(INSTALL) -o root -g wheel -m 4555 -c -p xmbmon $(INST_XDIR)
+ 
+ lint:
+ 	$(LINT) $(INCLUDES) $(DEFS) $(FONTDEFINES) $(SRCS) -lm

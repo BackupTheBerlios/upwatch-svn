@@ -45,6 +45,8 @@ INST_XRDIR=/usr/X11R6/lib/X11/app-defaults
 	$(CC) -c $(CFLAGS) $*.c
 
 PROGRAM = mbmon xmbmon.a
+PACKAGE = upwatch
+VERSION = `cat ../VERSION`
 
 TESTPROG = testpci testsmb testhwm testfan
 
@@ -54,6 +56,14 @@ HWM_OBJ = sens_winbond.o sens_via686.o sens_it87.o sens_gl52.o sens_lm85.o sens_
 OBJS = getMBinfo.o tyan_tiger.o pci_pm.o sensors.o $(MB_OBJ) $(SMB_OBJ) $(HWM_OBJ)
 
 all: $(PROGRAM)
+
+distdir: 
+	mkdir -p ../$(PACKAGE)-$(VERSION)/xmbmon203/AC-TOOLS
+	cp *.c *.h Makefile.* *.txt configure *.in *.resources ../$(PACKAGE)-$(VERSION)/xmbmon203
+	cp AC-TOOLS/config.* AC-TOOLS/install-sh ../$(PACKAGE)-$(VERSION)/xmbmon203/AC-TOOLS
+
+check:
+	echo check OK
 
 xmbmon.a: $(OBJS)
 	$(AR) -r xmbmon.a *.o
@@ -133,8 +143,8 @@ distclean: clean
 	$(RM) Makefile config.cache config.log config.h config.status
 
 install: $(PROGRAM)
+	mkdir -p $(INST_DIR)
 	$(INSTALL) -o root -g wheel -m 4555 -c -p mbmon $(INST_DIR)
-	$(INSTALL) -o root -g wheel -m 4555 -c -p xmbmon $(INST_XDIR)
 
 lint:
 	$(LINT) $(INCLUDES) $(DEFS) $(FONTDEFINES) $(SRCS) -lm
