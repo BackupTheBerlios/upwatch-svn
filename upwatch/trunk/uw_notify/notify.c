@@ -13,6 +13,7 @@ static int do_notification(trx *t);
 //*******************************************************************
 // if we enter this function, we know
 // the user has not been warned yet.
+// 
 //*******************************************************************
 int notify(trx *t)
 {
@@ -23,15 +24,19 @@ int notify(trx *t)
   if (debug > 3) fprintf(stderr, "%s %u %s (was %s). %s\n", t->probe->module_name, t->def->probeid, 
                   color2string(t->res->color), color2string(t->res->prevhistcolor), t->res->hostname);
 
+  // First check if this color has stabilized long enough
   if (t->res->stattime - t->res->changed < (t->def->delay * 60)) {
     if (debug > 3) fprintf(stderr, "Not %s long enough\n", color2string(t->res->color));
     return(notified); // NOT YET
   }
 
+  // now go back to the last time the user received a warning, and
+  // retrieve the color we had at that time
   result = my_query(t->probe->db, 0,
-                    "select   prv_color "
+                    "select   color "
                     "from     pr_hist  "
-                    "where    probe = '%u' and class = '%u' and stattime <= '%u' and notified = 'yes' "
+                    "where    probe = '%u' and class = '%u' and stattime <= '%u' "
+                    "         and notified = 'yes' "
                     "order by stattime desc limit 1",
                     t->def->probeid, t->probe->class, t->res->stattime);
   if (!result) return(notified);
@@ -40,6 +45,15 @@ int notify(trx *t)
     t->res->prevhistcolor = atoi(row[0]);
   }
   mysql_free_result(result);
+
+  // if it's the same, we don't really need to warn right?
+  if (t->res->prevhistcolor == t->res->color) {
+    return(notified);
+  }
+  // and if it's a fuse, we only warn if the fuse blows
+  if (t->probe->fuse && (t->res->color < STAT_BLUE)) {
+    return(notified);
+  }
   notified = do_notification(t);
   return(notified);
 }

@@ -197,6 +197,7 @@ sub main {
 
   foreach my $probename (@probes) {
     my $lastid;
+    my $limit = $opt_l;
     my $q;
 
     $cursor = $db->prepare("select id from pr_${probename}_def order by id desc limit 1");
