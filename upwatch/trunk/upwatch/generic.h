@@ -24,6 +24,9 @@ void _LOGRAW(int level, char *fmt);
 extern char *_logsrce;
 extern char *progname;
 extern int _logline;
+extern int _log2stderr;
+extern int _log2syslog;
+extern char *_logfilename;
 
 extern int run(void);
 extern int init(void);
