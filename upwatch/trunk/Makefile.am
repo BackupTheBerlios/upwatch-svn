@@ -127,7 +127,7 @@ install-data-local:
 	fi
 
 rpm: all dist upwatch.spec
-	$(RPMBUILD) -ta upwatch-${VERSION}.tar.gz
+	SED=sed $(RPMBUILD) -ta upwatch-${VERSION}.tar.gz
 
 dist-hook:
 	rm -rf `find $(distdir) -name .svn`

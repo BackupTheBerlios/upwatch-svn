@@ -114,7 +114,7 @@ then
 
 if [ -f /etc/SuSE-release ]
 then
-  RCPREF=""/sbin/rc";
+  RCPREF="/sbin/rc";
   patch_sudoers "$RCPREF";
   DISTR=suse
   ln -sf /usr/share/upwatch/init/upwatch.$DISTR /etc/init.d/upwatch
@@ -123,7 +123,7 @@ then
 [+ FOR clientprog +]  ln -sf ../../etc/init.d/[+clientprog+] rc[+clientprog+]
 [+ ENDFOR +]  popd
 fi
-for i in `$(RCPREF)upwatch status | grep running | cut -d' ' -f1`
+for i in `${RCPREF}upwatch status | grep running | cut -d' ' -f1`
 do
   /etc/init.d/$i restart
 done
@@ -132,9 +132,10 @@ if [ -x /sbin/chkconfig ]; then
 [+ FOR clientprog +]  /sbin/chkconfig --add [+clientprog+] 2>/dev/null || true
 [+ ENDFOR +]fi
 
-# indicate in the logfile we have installed
-LOGMSG=`date +"%b %e %T" rpm[$$]: installed %{name}-%{version}-%{release}`
-echo "$LOGMSG" >> /var/log/upwatch/messages
+# indicate in the logfile we have installed a new package
+DATE=`date +%b\ %e\ %T`
+HOST=`hostname | cut -d. -f1`
+echo $DATE $HOST rpm[$$]: installed %{name}-%{version}-%{release} >> /var/log/upwatch/messages
 chown upwatch:upwatch /var/log/upwatch/messages
 chmod 664 /var/log/upwatch/messages
 
