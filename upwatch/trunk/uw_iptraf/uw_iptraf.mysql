@@ -1,0 +1,158 @@
+--
+-- Table structure for table 'pr_iptraf_def'
+--
+
+CREATE TABLE pr_iptraf_def (
+  id int(8) NOT NULL auto_increment,
+  server int(8) NOT NULL default '0',
+  notify int(11) NOT NULL default '1',
+  yellowkb int(11) unsigned NOT NULL default '300',
+  redkb int(11) unsigned NOT NULL default '500',
+  stattime int(10) unsigned NOT NULL default '0',
+  expires int(10) unsigned NOT NULL default '0',
+  color smallint(5) unsigned NOT NULL default '0',
+  lasthist int(10) unsigned NOT NULL default '0',
+  message text NOT NULL,
+  PRIMARY KEY  (id)
+) TYPE=MyISAM;
+
+--
+-- Table structure for table 'pr_iptraf_hist'
+--
+
+CREATE TABLE pr_iptraf_hist (
+  id int(10) unsigned NOT NULL auto_increment,
+  probe int(10) unsigned NOT NULL default '0',
+  stattime int(10) unsigned NOT NULL default '0',
+  color smallint(5) unsigned NOT NULL default '0',
+  message text NOT NULL,
+  PRIMARY KEY  (id),
+  UNIQUE KEY probtime (probe,stattime),
+  KEY probe (probe),
+  KEY stattime (stattime)
+) TYPE=MyISAM;
+
+--
+-- Table structure for table 'pr_iptraf_raw'
+--
+
+CREATE TABLE pr_iptraf_raw (
+  id int(10) unsigned NOT NULL auto_increment,
+  probe int(10) unsigned NOT NULL default '0',
+  hist int(10) unsigned NOT NULL default '0',
+  stattime int(10) unsigned NOT NULL default '0',
+  color smallint(5) unsigned NOT NULL default '0',
+  in_total int(11) NOT NULL default '0',
+  out_total int(11) NOT NULL default '0',
+  PRIMARY KEY  (id),
+  UNIQUE KEY probtime (probe,stattime),
+  KEY probe (probe),
+  KEY hist (hist),
+  KEY stattime (stattime)
+) TYPE=MyISAM;
+
+--
+-- Table structure for table 'pr_iptraf_day'
+--
+
+CREATE TABLE pr_iptraf_day (
+  id int(10) unsigned NOT NULL auto_increment,
+  probe int(10) unsigned NOT NULL default '0',
+  hist int(10) unsigned NOT NULL default '0',
+  slot int(4) NOT NULL default '0',
+  stattime int(10) unsigned NOT NULL default '0',
+  color smallint(5) unsigned NOT NULL default '0',
+  in_total int(11) NOT NULL default '0',
+  out_total int(11) NOT NULL default '0',
+  PRIMARY KEY  (id),
+  UNIQUE KEY probtime (probe,stattime),
+  KEY probe (probe),
+  KEY hist (hist),
+  KEY slot (slot),
+  KEY stattime (stattime)
+) TYPE=MyISAM;
+
+--
+-- Table structure for table 'pr_iptraf_week'
+--
+
+CREATE TABLE pr_iptraf_week (
+  id int(10) unsigned NOT NULL auto_increment,
+  probe int(10) unsigned NOT NULL default '0',
+  hist int(10) unsigned NOT NULL default '0',
+  slot int(4) NOT NULL default '0',
+  stattime int(10) unsigned NOT NULL default '0',
+  color smallint(5) unsigned NOT NULL default '0',
+  in_total int(11) NOT NULL default '0',
+  out_total int(11) NOT NULL default '0',
+  PRIMARY KEY  (id),
+  UNIQUE KEY probtime (probe,stattime),
+  KEY probe (probe),
+  KEY hist (hist),
+  KEY slot (slot),
+  KEY stattime (stattime)
+) TYPE=MyISAM;
+
+--
+-- Table structure for table 'pr_iptraf_month'
+--
+
+CREATE TABLE pr_iptraf_month (
+  id int(10) unsigned NOT NULL auto_increment,
+  probe int(10) unsigned NOT NULL default '0',
+  hist int(10) unsigned NOT NULL default '0',
+  slot int(4) NOT NULL default '0',
+  stattime int(10) unsigned NOT NULL default '0',
+  color smallint(5) unsigned NOT NULL default '0',
+  in_total int(11) NOT NULL default '0',
+  out_total int(11) NOT NULL default '0',
+  PRIMARY KEY  (id),
+  UNIQUE KEY probtime (probe,stattime),
+  KEY probe (probe),
+  KEY hist (hist),
+  KEY slot (slot),
+  KEY stattime (stattime)
+) TYPE=MyISAM;
+
+--
+-- Table structure for table 'pr_iptraf_year'
+--
+
+CREATE TABLE pr_iptraf_year (
+  id int(10) unsigned NOT NULL auto_increment,
+  probe int(10) unsigned NOT NULL default '0',
+  hist int(10) unsigned NOT NULL default '0',
+  slot int(4) NOT NULL default '0',
+  stattime int(10) unsigned NOT NULL default '0',
+  color smallint(5) unsigned NOT NULL default '0',
+  in_total int(11) NOT NULL default '0',
+  out_total int(11) NOT NULL default '0',
+  PRIMARY KEY  (id),
+  UNIQUE KEY probtime (probe,stattime),
+  KEY probe (probe),
+  KEY hist (hist),
+  KEY slot (slot),
+  KEY stattime (stattime)
+) TYPE=MyISAM;
+
+--
+-- Table structure for table 'pr_iptraf_5year'
+--
+
+CREATE TABLE pr_iptraf_5year (
+  id int(10) unsigned NOT NULL auto_increment,
+  probe int(10) unsigned NOT NULL default '0',
+  hist int(10) unsigned NOT NULL default '0',
+  slot int(4) NOT NULL default '0',
+  stattime int(10) unsigned NOT NULL default '0',
+  color smallint(5) unsigned NOT NULL default '0',
+  in_total int(11) NOT NULL default '0',
+  out_total int(11) NOT NULL default '0',
+  PRIMARY KEY  (id),
+  UNIQUE KEY probtime (probe,stattime),
+  KEY probe (probe),
+  KEY hist (hist),
+  KEY slot (slot),
+  KEY stattime (stattime)
+) TYPE=MyISAM;
+

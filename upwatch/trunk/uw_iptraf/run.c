@@ -1,201 +1,241 @@
-#include "config.h"
-
-#include <generic.h>
+#include "generic.h"
 #include "cmd_options.h"
-#include "iptraf.h"
 
-void process(gpointer data, gpointer user_data);
-GThreadPool *pool;
+#include <unistd.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in_systm.h>
+#include <netinet/in.h>
+#include <netinet/ether.h>
+#include <netinet/ip.h>
+#include <netinet/tcp.h>
+#include <netinet/udp.h>
+
+#include <pcap.h>
+
+static void incoming_packet(u_char *user, const struct pcap_pkthdr *hdr, const u_char *packet);
+static gint mypid;
+extern int forever;
+
+struct iocount {
+  uint32_t in;
+  uint32_t out;
+};
+
+struct ipnetw {
+  uint32_t network;
+  uint32_t mask;
+  uint16_t size;
+  struct iocount *count;
+};
+
+static GStaticMutex m_ipnets = G_STATIC_MUTEX_INIT;
+struct ipnetw *ipnets;
+int count_ipnets;
+
+void writeXMLresult(struct ipnetw *ipnets, int count_ipnets)
+{
+  xmlDocPtr doc;
+  time_t now;
+  struct ipnetw *net;
+  int i;
+
+  doc = UpwatchXmlDoc("result");
+  now = time(NULL);
+
+  for (net = ipnets, i = count_ipnets; i && net; i--, net++) {
+    int j;
+
+    for (j=0; j < net->size; j++) {
+      xmlDocPtr cur = doc;
+      xmlNodePtr iptraf;
+      char buffer[256];
+      struct in_addr ip;
+
+      ip.s_addr = htonl(net->network + j);
+      iptraf = xmlNewChild(xmlDocGetRootElement(cur), NULL, "iptraf", NULL);
+      sprintf(buffer, "%s", inet_ntoa(ip));  xmlSetProp(iptraf, "id", buffer);
+      sprintf(buffer, "%d", (int) now);           xmlSetProp(iptraf, "date", buffer);
+      sprintf(buffer, "%d", ((int)now)+(2*60));   xmlSetProp(iptraf, "expires", buffer);
+      sprintf(buffer, "%u", net->count[j].in);    xmlNewChild(iptraf, NULL, "incoming", buffer);
+      sprintf(buffer, "%u", net->count[j].out);   xmlNewChild(iptraf, NULL, "outgoing", buffer);
+    }
+    free(net->count);
+  }
+  free(ipnets);
+  spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc, NULL);
+  xmlFreeDoc(doc);
+}
+
+gpointer iptraf_write(gpointer data)
+{
+extern int forever;
+
+  while (1) {
+    int i, oldcount_ipnets;
+    struct ipnetw *newnet, *oldnet, *net;
+    int     ct  = STACKCT_OPT( NETWORK );
+    char**  pn = STACKLST_OPT( NETWORK );
+
+    newnet = malloc(ct * sizeof(struct ipnetw));
+    for (net = newnet, i = ct; i; i--, net++) {
+      char network[256];
+      int width;
+      struct in_addr addr;
+      char *p;
+
+      p = strchr(*pn, '/');
+      if (!p) { 
+        LOG(LOG_NOTICE, "no slash in %s - skipped", *pn);
+        continue;
+      }
+      memset(network, 0, sizeof(network));
+      strncpy(network, *pn, p - *pn);
+      width = atoi(++p);
+      if (width < 8 || width > 32) { 
+        LOG(LOG_NOTICE, "illegal value for width in %s", *pn);
+        continue;
+      }
+      inet_aton(network, &addr);
+      net->network = ntohl(addr.s_addr);
+      net->mask = 0xFFFFFFFF << (32 - width);
+      net->size = 0x1 << (32 - width);
+      net->count = calloc(net->size, sizeof(struct iocount));
+      pn++;
+    } 
+    g_static_mutex_lock (&m_ipnets);
+    oldnet = ipnets;
+    ipnets = newnet;
+    oldcount_ipnets = count_ipnets;
+    count_ipnets = ct;
+    g_static_mutex_unlock (&m_ipnets);
+   
+    if (oldnet) {
+      writeXMLresult(oldnet, oldcount_ipnets);
+    }
+    for (i=0; i < 60; i++) { // wait 1 minute
+      sleep(1);
+      if (!forever)  {
+        return(NULL);
+      }
+    }
+  }  
+  return(NULL);
+}
 
 int init(void)
 {
-  GError *error;
-
   daemonize = TRUE;
-  every = EVERY_5SECS;
+  every = ONE_SHOT;
   g_thread_init(NULL);
-  pool = g_thread_pool_new(iptraf, NULL, 10, 0, &error);
-  if (pool == NULL) {
-    LOG(LOG_NOTICE, error->message);
-    g_error_free(error);
-    return(0);
-  }
   xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
   return 1;
 }
 
-int mystrcmp(char **a, char **b)
-{
-  int ret = strcmp(*a, *b);
-
-  if (ret < 0) return(-1);
-  if (ret > 0) return(1);
-  return(0);
-
-}
-
 int run(void)
 {
-  int count = 0;
-  char path[PATH_MAX];
-  G_CONST_RETURN gchar *filename;
-  GDir *dir;
-  GPtrArray *arr = g_ptr_array_new();
-  int i;
-  int files = 0;
-  
-  if (debug > 3) LOG(LOG_DEBUG, "run()");
-  sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), progname);
-  dir = g_dir_open (path, 0, NULL);
-  while ((filename = g_dir_read_name(dir)) != NULL) {
-    char buffer[PATH_MAX];
-    
-    if (filename[0] == '.') continue;  // skip hidden files
-    sprintf(buffer, "%s/%s", path, filename);
-    g_ptr_array_add(arr, strdup(buffer));
-    files++;
-  } 
-  g_dir_close(dir);
-  if (files) {
-    g_ptr_array_sort(arr, mystrcmp);
-  }
+  GError *error;
+  GThread *wt;
+  char *dev, errbuf[PCAP_ERRBUF_SIZE];
+  pcap_t *handle;
+extern int forever;                // will be set to zero by TERM signal
 
-  for (i=0; i < arr->len; i++) {
-    //printf("%s\n", g_ptr_array_index(arr,i));
-    process(g_ptr_array_index(arr,i), NULL);
-    free(g_ptr_array_index(arr,i));
-    count++;
+  wt = g_thread_create(iptraf_write, NULL, TRUE, &error);
+  if (wt == NULL) {
+    LOG(LOG_NOTICE, "g_thread_create: %s", error);
+    return 0;
   }
+  mypid = getpid() & 0xffff;
+  if (HAVE_OPT(INTERFACE)) {
+    dev = OPT_ARG(INTERFACE);
+  } else {
+    dev = pcap_lookupdev(errbuf);
+  }
+  handle = pcap_open_live(dev, BUFSIZ, 0, 1000, errbuf); // not promiscuous, timeout 1sec
+  if (!handle) {
+    LOG(LOG_ERR, "open pcap device %s: %s", dev, errbuf);
+    return 0;
+  }
+  if (debug) LOG(LOG_INFO, "capturing on %s", dev);
 
-  g_ptr_array_free(arr, TRUE);
-  return(count);
+  ////////////////////// main loop ////////////////////
+
+  while (forever) {
+    pcap_dispatch(handle, 1, incoming_packet, NULL);
+  }
+  pcap_close(handle);
+  g_thread_join(wt);
+  return 1;
 }
 
-void Unlink(char *file) {}
-#define unlink Unlink
-
-void process(gpointer data, gpointer user_data)
+static void incoming_packet(u_char *user, const struct pcap_pkthdr *hdr, const u_char *packet)
 {
-  char *filename = (char *)data;
-  xmlDocPtr doc, workq;
-  xmlNsPtr ns;
-  xmlNodePtr cur;
-  int probe_count = 0;
+  register struct ethhdr *et = (struct ethhdr *) packet;
+  register struct ip *ip = (struct ip *) (packet + sizeof(struct ethhdr));
+  register uint32_t ipaddr = ntohl(ip->ip_src.s_addr);
+  register struct ipnetw *net = ipnets;
+  register unsigned int i;
 
-  if (debug) LOG(LOG_DEBUG, "Processing %s", filename);
+#if 0
+static int reporter = 0;
+  char src[256];
+  char dst[256];
+#endif
 
-  doc = xmlParseFile(filename);
-  if (doc == NULL) {
-    LOG(LOG_NOTICE, "%s: %m", filename);
-    return;
-  }
+  if (ntohs(et->h_proto) != ETH_P_IP) return; // only look at IP packets
+  if (ip->ip_v != 4) return;                  // and only IP version 4 (currently)
 
-  cur = xmlDocGetRootElement(doc);
-  if (cur == NULL) {
-    LOG(LOG_NOTICE, "%s: empty document", filename);
-    xmlFreeDoc(doc);
-    unlink(filename);
-    return;
-  }
-  ns = xmlSearchNsByHref(doc, cur, (const xmlChar *) NAMESPACE_URL);
-  if (ns == NULL) {
-    LOG(LOG_NOTICE, "%s: wrong type, result namespace not found", filename);
-    xmlFreeDoc(doc);
-    unlink(filename);
-    return;
-  }
-  if (xmlStrcmp(cur->name, (const xmlChar *) "result")) {
-    LOG(LOG_NOTICE, "%s: wrong type, root node is not 'result'", filename);
-    xmlFreeDoc(doc);
-    unlink(filename);
-    return;
-  }
-  /*
-   * Now, walk the tree.
-   */
-  /* First level we expect just result */
-  cur = cur->xmlChildrenNode;
-  while (cur && xmlIsBlankNode(cur)) {
-    cur = cur->next;
-  }
-  if (cur == 0) {
-    LOG(LOG_NOTICE, "%s: wrong type, empty file'", filename);
-    xmlFreeDoc(doc);
-    unlink(filename);
-    return;
-  }
-  /* Second level is a list of probes, but be laxist */
-  for (;cur != NULL; cur = cur->next) {
-    GError *error = NULL;
-    char *inv;
-    int type, port;
-    struct trace_info *ti;
-    xmlNodePtr host;
+#if 0
+  strcpy(src, inet_ntoa(ip->ip_src));
+  strcpy(dst, inet_ntoa(ip->ip_dst));
+  //printf("id = %d, ttl = %d, protocol = %d, saddr = %s, daddr = %s, len = %d ", 
+  //   ip->ip_id, ip->ip_ttl, ip->ip_p, src, dst, ntohs(ip->ip_len));
+  //printf("\n");
+#endif
 
-    if (xmlIsBlankNode(cur)) continue;
-    inv = xmlGetProp(cur, (const xmlChar *) "investigate");
-    if (inv == NULL) continue;
-    if (!strcmp(inv, "icmptraceroute")) {
-      type = TR_ICMP;
-    } else if (!strcmp(inv, "tcptraceroute")) {
-      type = TR_TCP;
-      port = xmlGetPropInt(cur, (const xmlChar *) "port");
-    } else if (!strcmp(inv, "udptraceroute")) {
-      type = TR_UDP;
-      port = xmlGetPropInt(cur, (const xmlChar *) "port");
-    } else {
-      xmlFree(inv);  
-      continue; // unknown type
+  g_static_mutex_lock (&m_ipnets);
+  ipaddr = ntohl(ip->ip_src.s_addr);
+  for (net = ipnets, i = count_ipnets; i && net; i--, net++) {
+    if ((ipaddr & net->mask) != net->network) { 
+      //printf("%x & %x != %x\n", ipaddr, net->mask,  net->network);
+      continue; // current ip address in this network?
     }
-    // this one needs investigation, so remove from this document tree, 
-    // save it in the workqueue, and start an investigate thread 
-    ti = calloc(1, sizeof(struct trace_info));
-    ti->type = type;
-    ti->cur = cur;
+    if ((ipaddr & ~net->mask) > net->size) {
+      //printf("%lx & ~%lx > %x\n", ipaddr, net->mask,  net->size);
+      continue;    // superfluous check?
+    }
+    net->count[ipaddr & ~net->mask].out += ntohs(ip->ip_len);
+    break;
+  }
 
-    // first find the hostname and/or ipaddress
-    for (host = cur->xmlChildrenNode; host != NULL; host = host->next) {
-      if ((!xmlStrcmp(host->name, (const xmlChar *) "host")) && (host->ns == ns)) {
-        xmlNodePtr hname;
-        xmlChar *p;
+  ipaddr = ntohl(ip->ip_dst.s_addr);
+  for (net = ipnets, i = count_ipnets; i && net; i--, net++) {
+    if ((ipaddr & net->mask) != net->network) { 
+      //printf("%x & %x != %x\n", ipaddr, net->mask,  net->network);
+      continue; // current ip address in this network?
+    }
+    if ((ipaddr & ~net->mask) > net->size) {
+      //printf("%lx & ~%lx > %x\n", ipaddr, net->mask,  net->size);
+      continue;    // superfluous check?
+    }
+    net->count[ipaddr & ~net->mask].in += ntohs(ip->ip_len);
+    break;
+  }
+#if 0
+  if (++reporter > 256) {
+    reporter = 0;
+    for (net = ipnets, i = count_ipnets; i && net; i--, net++) {
+      int j;
 
-        for (hname = host->xmlChildrenNode; hname != NULL; hname = hname->next) {
-          if (xmlIsBlankNode(hname)) continue;
-          if ((!xmlStrcmp(hname->name, (const xmlChar *) "hostname")) && (hname->ns == ns)) {
-            p = xmlNodeListGetString(doc, hname->xmlChildrenNode, 1);
-            ti->hostname = strdup(p);
-            xmlFree(p);
-          }
-          if ((!xmlStrcmp(hname->name, (const xmlChar *) "ipaddress")) && (hname->ns == ns)) {
-            p = xmlNodeListGetString(doc, hname->xmlChildrenNode, 1);
-            ti->ipaddress = strdup(p);
-            xmlFree(p);
-          }
+      for (j=0; j < net->size; j++) {
+        if (net->count[j].in || net->count[j].out) {
+          printf("%d: in %d, out %d\n", j, net->count[j].in, net->count[j].out);
         }
       }
-    }
-
-    xmlUnlinkNode(cur);
-    workq = UpwatchXmlDoc("result"); // create new document
-    xmlAddPrevSibling(workq->children, ti->cur);  // link in the current node
-    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(WORKQUEUE), workq, &ti->workfilename); // save in workqueue
-    xmlUnlinkNode(ti->cur);  // unlink again
-    xmlFreeDoc(workq); // and free work document
-     
-    g_thread_pool_push(pool, ti, &error);
-    xmlFree(inv);  
-    if (error != NULL) {
-      LOG(LOG_NOTICE, error->message);
-      g_error_free(error);
-      xmlFreeDoc(doc);
-      return;
+      printf("\n");
     }
   }
-  spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc, NULL); // these don't need to be investigated
-  xmlFreeDoc(doc);
-  if (debug > 1) LOG(LOG_DEBUG, "Processed %d probes", probe_count);
-  if (debug > 1) LOG(LOG_DEBUG, "unlink(%s)", filename);
-  unlink(filename);
-  return;
+#endif
+  g_static_mutex_unlock (&m_ipnets);
 }
 

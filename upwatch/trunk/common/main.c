@@ -22,7 +22,7 @@ char *progname;
 
 void termination_handler (int signum)
 {
-  // Note: this function hangs when ElectricFence is used
+  // Note: this function hangs when ElectricFence is used, don't know why
   LOG(LOG_NOTICE, "signal %d received - finishing up", signum); 
 
   forever = 0;
@@ -47,7 +47,7 @@ static void one_shot(void)
     struct timeval end;
 
     gettimeofday(&end, NULL);
-    LOG(LOG_DEBUG, "Processed %d items in %f seconds", runcounter, ret, ((float)timeval_diff(&end, &start))/1000000.0);
+    LOG(LOG_DEBUG, "run lasted %f seconds", ((float)timeval_diff(&end, &start))/1000000.0);
   }     
   return;
 }
@@ -149,6 +149,7 @@ int main( int argc, char** argv )
   sigemptyset (&new_action.sa_mask);
   new_action.sa_flags = 0;
   sigaction (SIGTERM, &new_action, NULL);
+  sigaction (SIGINT, &new_action, NULL);
 
   /* ignore SIGHUP */
   new_action.sa_handler = SIG_IGN;

@@ -9,15 +9,8 @@ detail        =
 'uw_iptraf does the following: ';
 
 // this section is for the generated specfile
-spec-requires = "libpcap = 0.6.2-13uw mysql glib2 >= 2.0.4 gnet >= 1.1.2 curl >= 7.9.3 libnet >= 1.0.2";
-spec-install  = "mkdir -p $RPM_BUILD_ROOT/var/spool/upwatch/uw_iptraf/tmp";
-spec-install  = "mkdir -p $RPM_BUILD_ROOT/var/spool/upwatch/uw_iptraf/new";
-spec-install  = "mkdir -p $RPM_BUILD_ROOT/var/spool/upwatch/uw_iptraf_work/tmp";
-spec-install  = "mkdir -p $RPM_BUILD_ROOT/var/spool/upwatch/uw_iptraf_work/new";
-spec-files    = "%dir /var/spool/upwatch/uw_iptraf/new";
-spec-files    = "%dir /var/spool/upwatch/uw_iptraf/tmp";
-spec-files    = "%dir /var/spool/upwatch/uw_iptraf_work/new";
-spec-files    = "%dir /var/spool/upwatch/uw_iptraf_work/tmp";
+spec-requires = "libpcap mysql glib2 >= 2.0.4";
+spec-files    = "%attr(4770,root,upwatch) /usr/sbin/uw_iptraf";
 
 // describe commandline flags
 flag = {
@@ -45,12 +38,24 @@ All results are placed in this queue.';
 };
 
 flag = {
-    name      = workqueue;
-    value     = Q;
+    name      = interface;
+    value     = i;
     arg_type  = string;
-    descrip   = "name of queue to keep temporary files";
+    descrip   = "name of interface to capture traffic";
     doc       =
-'The argument is taken to be a maildir under the directory `spooldir`.
-Probe results currently being iptrafd are kept here.';
+'This specifies the name of the interface iptraf should bind to,
+and capture packets from';
+};
+
+flag = {
+    name      = network;
+    value     = n;
+    arg_type  = string;
+    stack_arg;
+    descrip   = "internal network in CIDR format";
+    doc       =
+'iptraf needs to know which network are internal and which are external,
+specificy thosr with one or more -n options. Note only CIDR format is supported
+(192.168.170.0/24)';
 };
 
