@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.10 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.11 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -201,6 +201,7 @@ AC_CHECK_FUNCS([alarm atexit dup2 gethostbyname gethostname gettimeofday inet_nt
 AC_CONFIG_FILES([Makefile
                  doc/Makefile
                  upwatch/Makefile
+                 st-1.4/Makefile
                  util/Makefile
                  uw_accept/Makefile
                  uw_acceptbb/Makefile

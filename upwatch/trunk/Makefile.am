@@ -8,15 +8,17 @@ export TOP_SRCDIR = $(top_srcdir)
 
 SUBDIRS = upwatch st-1.4 ${PROGNAMES} util compat doc
 
-EXTRA_DIST = Makefile.am.common upwatch-spec.def upwatch-spec.tpl upwatch.spec templates \
-  config/upwatch.conf config/upwatch-base.mysql config/result.dtd config/logrotate config/cron.daily \
-  config/upwatch.init patches/libpcap-linux-timeout.patch \
+EXTRA_DIST = Makefile.am.common Makefile.am.libs VERSION libtool ChangeLog \
+  upwatch-spec.def upwatch-spec.tpl upwatch.spec templates upwatch.mysql probes.enum \
+  config/upwatch.conf config/upwatch-base.mysql config/result.dtd config/logrotate \
+  config/cron.daily config/upwatch.init \
+  patches/libpcap-linux-timeout.patch \
   common/db.c common/generic_options.def common/dbase_options.def common/init.tpl \
-  common/main.c common/man1.tpl common/spec.tpl \
+  common/main.c common/man1.tpl common/spec.tpl common/minimal_options.def \
   common/probe.tpl common/probe_generic.def common/common.h \
-  doc/upwatch.xml doc/Makefile doc/upwatch.xsl doc/jadetex.cfg doc/style.dsl doc/style.xsl doc/style.css \
-  upwatch.mysql probes.enum Makefile.am.libs VERSION common/minimal_options.def \
-  cfg/install-sh cfg/config.sub libtool cfg/mkinstalldirs cfg/depcomp ChangeLog
+  doc/upwatch.xml doc/Makefile doc/upwatch.xsl doc/jadetex.cfg doc/style.dsl \
+  doc/style.xsl doc/style.css \
+  cfg/install-sh cfg/config.sub cfg/mkinstalldirs cfg/depcomp
 
 upwatch.spec: upwatch-spec.def upwatch-spec.tpl uw_*/*.spec-generic uw_*/*.spec-install
 	autogen -b upwatch upwatch-spec.def
