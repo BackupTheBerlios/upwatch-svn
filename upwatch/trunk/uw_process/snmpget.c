@@ -15,44 +15,23 @@ struct snmpget_result {
 };
 extern module snmpget_module;
 
+static int accept_probe(const char *name)
+{
+  return(strcmp(name, "snmpget") == 0);
+}
+
 //*******************************************************************
 // GET THE INFO FROM THE XML FILE
 // Caller must free the pointer it returns
 //*******************************************************************
-static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
+static void get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
 {
-  struct snmpget_result *res;
+  struct snmpget_result *res = (struct snmpget_result *)probe_res;
 
-  res = g_malloc0(sizeof(struct snmpget_result));
-  if (res == NULL) {
-    return(NULL);
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "value")) && (cur->ns == ns)) {
+    res->value = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+    return;
   }
-
-  res->probeid = xmlGetPropInt(cur, (const xmlChar *) "id");
-  res->stattime = xmlGetPropUnsigned(cur, (const xmlChar *) "date");
-  res->expires = xmlGetPropUnsigned(cur, (const xmlChar *) "expires");
-  for (cur = cur->xmlChildrenNode; cur != NULL; cur = cur->next) {
-    char *p;
-
-    if (xmlIsBlankNode(cur)) continue;
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "color")) && (cur->ns == ns)) {
-      res->color = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "value")) && (cur->ns == ns)) {
-      res->value = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "info")) && (cur->ns == ns)) {
-      p = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-      if (p) {
-        res->message = strdup(p);
-        xmlFree(p);
-      }
-      continue;
-    }
-  }
-  return(res);
 }
 
 //*******************************************************************
@@ -134,10 +113,15 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
 }
 
 module snmpget_module  = {
-  STANDARD_MODULE_STUFF(SNMPGET, "snmpget"),
+  STANDARD_MODULE_STUFF(snmpget),
   NULL,
   NULL,
-  extract_info_from_xml_node,
+  NULL,
+  NULL,
+  accept_probe,
+  NULL,
+  get_from_xml,
+  NULL,
   NULL,
   store_raw_result,
   summarize

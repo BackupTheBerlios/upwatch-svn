@@ -25,7 +25,10 @@ static void free_res(void *res)
 {
   struct probe_result *r = (struct probe_result *)res;
 
+  if (r->name) g_free(r->name);
   if (r->message) g_free(r->message);
+  if (r->hostname) g_free(r->hostname);
+  if (r->ipaddress) g_free(r->ipaddress);
   g_free(r);
 }
 
@@ -42,16 +45,66 @@ static void cleanup(void)
 
 int init(void)
 {
+  int i;
+
   daemonize = TRUE;
   if (HAVE_OPT(RUN_QUEUE)) {
     every = ONE_SHOT;
   } else {
     every = EVERY_5SECS;
   }
+
+  // check trust option strings
+  {
+    int i, found=0;
+    int     ct  = STACKCT_OPT( TRUST );
+    char**  pn = STACKLST_OPT( TRUST );
+
+    for (ct--; ct; ct--) {
+      for (i=0; modules[i]; i++) {
+        if (modules[i]->accept_probe(pn[ct])) {
+          found = 1; break;
+        } 
+      } 
+      if (strcmp(pn[ct], "all") == 0 ||
+          strcmp(pn[ct], "none") == 0) { 
+          found = 1;
+      }
+      if (!found) {
+        LOG(LOG_NOTICE, "warning: unknown trust `%s' ignored", pn[ct]);
+      } 
+    }
+  }
   g_thread_init(NULL);
   xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
   atexit(cleanup);
+  for (i = 0; modules[i]; i++) {
+    if (modules[i]->init) {
+      modules[i]->init();
+    }
+  }
   return(1);
+}
+
+// return true if the given probename is trusted
+int trust(char *name)
+{
+  int trust;
+  int     ct  = STACKCT_OPT( TRUST );
+  char**  pn = STACKLST_OPT( TRUST );
+
+  for (trust=0; trust < ct; trust++) {
+    if (strcmp(pn[ct], "all") == 0) {
+      return 1;
+    }
+    if (strcmp(pn[ct], "none") == 0) {
+      return 0;
+    }
+    if (strcmp(pn[trust], name) == 0) {
+      return 1;
+    }
+  }
+  return 0;
 }
 
 static int mystrcmp(char **a, char **b)
@@ -100,7 +153,14 @@ extern int forever;
   }
   g_dir_close(dir);
   if (files) {
+    int i;
+
     g_ptr_array_sort(arr, mystrcmp);
+    for (i = 0; modules[i]; i++) {
+      if (modules[i]->start_run) {
+        modules[i]->start_run();
+      }
+    }
   }
 
   for (i=0; i < arr->len && forever; i++) {
@@ -124,6 +184,7 @@ static int handle_file(gpointer data, gpointer user_data)
   xmlNsPtr ns;
   xmlNodePtr cur;
   char *p, *fromhost=NULL;
+  time_t fromdate = 0;
   int found=0, failures=0;
   int probe_count = 0;
   struct stat st;
@@ -183,6 +244,7 @@ static int handle_file(gpointer data, gpointer user_data)
     fromhost = strdup(p);
     xmlFree(p);
   }
+  fromdate = (time_t) xmlGetPropUnsigned(cur, (const xmlChar *) "date");
 
   /*
    * Now, walk the tree.
@@ -206,8 +268,9 @@ static int handle_file(gpointer data, gpointer user_data)
       continue;
     }
     for (found = 0, i = 0; modules[i]; i++) {
-      if (!xmlStrcmp(cur->name, (const xmlChar *) modules[i]->name)) {
+      if (modules[i]->accept_probe(cur->name)) {
         int ret;
+        char buf[20];
 
 	if (cur->ns != ns) {
           LOG(LOG_ERR, "method found, but namespace incorrect on %s", cur->name);
@@ -216,7 +279,8 @@ static int handle_file(gpointer data, gpointer user_data)
         found = 1;
         probe_count++;
         //xmlDocFormatDump(stderr, doc, 1);
-        uw_setproctitle("%s: %s", fromhost, modules[i]->name);
+        strftime(buf, sizeof(buf), "%F %T", gmtime(&fromdate));
+        uw_setproctitle("%s %s@%s", buf, cur->name, fromhost);
         ret = process(modules[i], doc, cur, ns);
         if (ret == 0) {
           failures++;
@@ -251,6 +315,77 @@ static int handle_file(gpointer data, gpointer user_data)
   }
   if (fromhost) g_free(fromhost);
   return fatal;
+}
+
+//*******************************************************************
+// GET THE INFO FROM THE XML FILE
+// Caller must free the pointer it returns
+//*******************************************************************
+static void *extract_info_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
+{
+  struct probe_result *res;
+
+  res = g_malloc0(probe->res_size);
+  if (res == NULL) {
+    return(NULL);
+  }
+
+  res->name = strdup(cur->name);
+
+  res->server = xmlGetPropInt(cur, (const xmlChar *) "server");
+  res->probeid = xmlGetPropInt(cur, (const xmlChar *) "id");
+  res->stattime = xmlGetPropUnsigned(cur, (const xmlChar *) "date");
+  res->expires = xmlGetPropUnsigned(cur, (const xmlChar *) "expires");
+  res->ipaddress = xmlGetProp(cur, (const xmlChar *) "ipaddress");
+
+  if (probe->xml_result_node) {
+    probe->xml_result_node(probe, doc, cur, ns, res);
+  }
+
+  for (cur = cur->xmlChildrenNode; cur != NULL; cur = cur->next) {
+    char *p;
+
+    if (xmlIsBlankNode(cur)) continue;
+    if ((!xmlStrcmp(cur->name, (const xmlChar *) "color")) && (cur->ns == ns)) {
+      res->color = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+      continue;
+    }
+    if ((!xmlStrcmp(cur->name, (const xmlChar *) "info")) && (cur->ns == ns)) {
+      p = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+      if (p) {
+        res->message = strdup(p);
+        xmlFree(p);
+      }
+      continue;
+    }
+    if ((!xmlStrcmp(cur->name, (const xmlChar *) "host")) && (cur->ns == ns)) {
+      xmlNodePtr hname;
+
+      for (hname = cur->xmlChildrenNode; hname != NULL; hname = hname->next) {
+        if (xmlIsBlankNode(hname)) continue;
+        if ((!xmlStrcmp(hname->name, (const xmlChar *) "hostname")) && (hname->ns == ns)) {
+          p = xmlNodeListGetString(doc, hname->xmlChildrenNode, 1);
+          if (p) {
+            res->hostname = strdup(p);
+            xmlFree(p);
+          }
+          continue;
+        }
+        if ((!xmlStrcmp(hname->name, (const xmlChar *) "ipaddress")) && (hname->ns == ns)) {
+          p = xmlNodeListGetString(doc, hname->xmlChildrenNode, 1);
+          if (p) {
+            res->ipaddress = strdup(p);
+            xmlFree(p);
+          }
+          continue;
+        }
+      }
+    }
+    if (probe->get_from_xml) {
+      probe->get_from_xml(probe, doc, cur, ns, res);
+    }
+  }
+  return(res);
 }
 
 //*******************************************************************
@@ -289,7 +424,7 @@ static void *get_def(module *probe, struct probe_result *res)
         if (row[3]) def->yellow = atof(row[3]);
         if (row[4]) def->red    = atof(row[4]);
       } else {
-        LOG(LOG_NOTICE, "pr_status record for %s id %u not found", probe->name, def->probeid);
+        LOG(LOG_NOTICE, "pr_status record for %s id %u not found", res->name, def->probeid);
       }
       mysql_free_result(result);
     }
@@ -299,21 +434,47 @@ static void *get_def(module *probe, struct probe_result *res)
       // but get the server and yellow/red info from the def record for now
       result = my_query("select server, yellow, red "
                         "from   pr_%s_def "
-                        "where  id = '%u'", probe->name, def->probeid);
-      if (result) {
-        row = mysql_fetch_row(result);
-        if (row) {
-          if (row[0]) def->server   = atoi(row[0]);
-          if (row[1]) def->yellow   = atof(row[1]);
-          if (row[2]) def->red      = atof(row[2]);
-        }
+                        "where  id = '%u'", res->name, def->probeid);
+      if (!result) return(NULL);
+
+      if (mysql_num_rows(result) == 0) { // DEF RECORD NOT FOUND
         mysql_free_result(result);
+        if (!trust(res->name)) {
+          LOG(LOG_NOTICE, "pr_%s_def id %u not found and not trusted - skipped",
+                           res->name, def->probeid);
+          return(NULL);
+        }
+        // at this point, we have a probe result, but we can't find the _def record
+        // for it. We apparantly trust this result, so we can create the definition
+        // ourselves. For that we need to fill in the server id and the ipaddress
+        // and we look into the result if the is anything useful in there.
+/*
+        result = my_query("insert into pr_%s_def set server = '%d', "
+                          "        ipaddress = '%s', description = 'auto-added by system'",
+                          res->name, res->server, res->ipaddress);
+        mysql_free_result(result);
+        if (mysql_affected_rows(mysql) == 0) { // nothing was actually inserted
+          LOG(LOG_NOTICE, "insert missing pr_%s_def id %u: %s", 
+                           res->name, def->probeid, mysql_error(mysql));
+        }
+        result = my_query("select id, yellow, red "
+                          "from   pr_%s_def "
+                          "where  server = '%u'", res->name, res->server);
+        if (!result) return(NULL);
+*/
       }
+      row = mysql_fetch_row(result);
+      if (row) {
+        if (row[0]) def->server   = atoi(row[0]);
+        if (row[1]) def->yellow   = atof(row[1]);
+        if (row[2]) def->red      = atof(row[2]);
+      }
+      mysql_free_result(result);
     }
 
     result = my_query("select stattime from pr_%s_raw use index(probtime) "
                       "where probe = '%u' order by stattime desc limit 1",
-                       probe->name, def->probeid);
+                       res->name, def->probeid);
     if (result) {
       row = mysql_fetch_row(result);
       if (row && mysql_num_rows(result) > 0) {
@@ -349,7 +510,7 @@ static struct probe_result *get_previous_record(module *probe, struct probe_def 
                     "from     pr_%s_raw use index(probtime) "
                     "where    probe = '%u' and stattime < '%u' "
                     "order by stattime desc limit 1", 
-                    probe->name, def->probeid, res->stattime);
+                    res->name, def->probeid, res->stattime);
   if (!result) return(prv);
   row = mysql_fetch_row(result);
   if (row) {
@@ -382,7 +543,7 @@ static struct probe_result *get_following_record(module *probe, struct probe_def
                     "from     pr_%s_raw use index(probtime) "
                     "where    probe = '%u' and stattime < '%u' "
                     "order by stattime desc limit 1", 
-                    probe->name, def->probeid, res->stattime);
+                    res->name, def->probeid, res->stattime);
   if (!result) return(nxt);
   row = mysql_fetch_row(result);
   if (row) {
@@ -600,8 +761,12 @@ static int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
             probe->free_def? probe->free_def : g_free);
   }
 
-  res = probe->extract_from_xml(probe, doc, cur, ns); // EXTRACT INFO FROM XML NODE
+  res = extract_info_from_xml(probe, doc, cur, ns); // EXTRACT INFO FROM XML NODE
   if (!res) return 1;
+
+  if (probe->fix_result) {
+    probe->fix_result(probe, res); // do some final calculations on the result
+  }
 
   if (probe->get_def) {
     def = probe->get_def(probe, res); // RETRIEVE PROBE DEFINITION RECORD FROM DATABASE
@@ -668,7 +833,7 @@ static int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
             prev_slot = uw_slot(summ_info[i].period, prv->stattime, &slotlow, &slothigh);
             cur_slot = uw_slot(summ_info[i].period, res->stattime, &dummy_low, &dummy_high);
             if (cur_slot != prev_slot) { // IF WE ENTERED A NEW SLOT, SUMMARIZE PREVIOUS SLOT
-              //if (strcmp(probe->name, "sysstat") == 0) {
+              //if (strcmp(res->name, "sysstat") == 0) {
               //  LOG(LOG_DEBUG, "cur(%u for %u) != prv(%u for %u), summarizing %s from %u to %u",
               //                 cur_slot, res->stattime, prev_slot, prv->stattime,
               //                 summ_info[i].from, slotlow, slothigh);
@@ -686,7 +851,7 @@ static int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
             cur_slot = uw_slot(summ_info[i].period, res->stattime, &slotlow, &slothigh);
             if (slothigh > not_later_then) continue; // we already know there are no records later then this
             // IF THE LAST RECORD FOR THIS SLOT HAS BEEN SEEN
-            if (have_records_later_than(probe->name, def->probeid, summ_info[i].from, slothigh)) { 
+            if (have_records_later_than(res->name, def->probeid, summ_info[i].from, slothigh)) { 
               // RE-SUMMARIZE CURRENT SLOT
               probe->summarize(def, res, summ_info[i].from, summ_info[i].to, slotlow, slothigh);
             } else {
@@ -704,10 +869,12 @@ static int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
   g_free(prv);
 
   // free the result block
-  if (probe->free_res) {
-    if (res) probe->free_res(res); // the probe specific part...
+  if (res) {
+    if (probe->free_res) {
+      probe->free_res(res); // the probe specific part...
+    }
+    free_res(res); // .. and the generic part
   }
-  if (res) free_res(res); // .. and the generic part
 
   // note we don't free the *def here, because that structure is owned by the hashtable
   return 1;

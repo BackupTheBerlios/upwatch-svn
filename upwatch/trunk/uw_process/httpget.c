@@ -15,56 +15,35 @@ struct httpget_result {
 };
 extern module httpget_module;
 
+static int accept_probe(const char *name)
+{
+  return(strcmp(name, "httpget") == 0);
+}
+
 //*******************************************************************
 // GET THE INFO FROM THE XML FILE
 // Caller must free the pointer it returns
 //*******************************************************************
-static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
+static void get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
 {
-  struct httpget_result *res;
+  struct httpget_result *res = (struct httpget_result *)probe_res;
 
-  res = g_malloc0(sizeof(struct httpget_result));
-  if (res == NULL) {
-    return(NULL);
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "lookup")) && (cur->ns == ns)) {
+    res->lookup = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+    return;
   }
-
-  res->probeid = xmlGetPropInt(cur, (const xmlChar *) "id");
-  res->stattime = xmlGetPropUnsigned(cur, (const xmlChar *) "date");
-  res->expires = xmlGetPropUnsigned(cur, (const xmlChar *) "expires");
-  for (cur = cur->xmlChildrenNode; cur != NULL; cur = cur->next) {
-    char *p;
-
-    if (xmlIsBlankNode(cur)) continue;
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "color")) && (cur->ns == ns)) {
-      res->color = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "lookup")) && (cur->ns == ns)) {
-      res->lookup = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "connect")) && (cur->ns == ns)) {
-      res->connect = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "pretransfer")) && (cur->ns == ns)) {
-      res->pretransfer = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "total")) && (cur->ns == ns)) {
-      res->total = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "info")) && (cur->ns == ns)) {
-      p = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-      if (p) {
-        res->message = strdup(p);
-        xmlFree(p);
-      }
-      continue;
-    }
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "connect")) && (cur->ns == ns)) {
+    res->connect = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+    return;
   }
-  return(res);
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "pretransfer")) && (cur->ns == ns)) {
+    res->pretransfer = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+    return;
+  }
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "total")) && (cur->ns == ns)) {
+    res->total = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+    return;
+  }
 }
 
 //*******************************************************************
@@ -149,10 +128,15 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
 }
 
 module httpget_module  = {
-  STANDARD_MODULE_STUFF(HTTPGET, "httpget"),
+  STANDARD_MODULE_STUFF(httpget),
   NULL,
   NULL,
-  extract_info_from_xml_node,
+  NULL,
+  NULL,
+  accept_probe,
+  NULL,
+  get_from_xml,
+  NULL,
   NULL,
   store_raw_result,
   summarize

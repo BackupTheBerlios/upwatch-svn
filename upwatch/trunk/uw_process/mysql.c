@@ -15,48 +15,27 @@ struct mysql_result {
 };
 extern module mysql_module;
 
+static int accept_probe(const char *name)
+{
+  return(strcmp(name, "mysql") == 0);
+}
+
 //*******************************************************************
 // GET THE INFO FROM THE XML FILE
 // Caller must free the pointer it returns
 //*******************************************************************
-static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
+static void get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
 {
-  struct mysql_result *res;
+  struct mysql_result *res = (struct mysql_result *)probe_res;
 
-  res = g_malloc0(sizeof(struct mysql_result));
-  if (res == NULL) {
-    return(NULL);
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "connect")) && (cur->ns == ns)) {
+    res->connect = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+    return;
   }
-
-  res->probeid = xmlGetPropInt(cur, (const xmlChar *) "id");
-  res->stattime = xmlGetPropUnsigned(cur, (const xmlChar *) "date");
-  res->expires = xmlGetPropUnsigned(cur, (const xmlChar *) "expires");
-  for (cur = cur->xmlChildrenNode; cur != NULL; cur = cur->next) {
-    char *p;
-
-    if (xmlIsBlankNode(cur)) continue;
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "color")) && (cur->ns == ns)) {
-      res->color = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "connect")) && (cur->ns == ns)) {
-      res->connect = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "total")) && (cur->ns == ns)) {
-      res->total = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "info")) && (cur->ns == ns)) {
-      p = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-      if (p) {
-        res->message = strdup(p);
-        xmlFree(p);
-      }
-      continue;
-    }
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "total")) && (cur->ns == ns)) {
+    res->total = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+    return;
   }
-  return(res);
 }
 
 //*******************************************************************
@@ -139,10 +118,15 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
 }
 
 module mysql_module  = {
-  STANDARD_MODULE_STUFF(MYSQL, "mysql"),
+  STANDARD_MODULE_STUFF(mysql),
   NULL,
   NULL,
-  extract_info_from_xml_node,
+  NULL,
+  NULL,
+  accept_probe,
+  NULL,
+  get_from_xml,
+  NULL,
   NULL,
   store_raw_result,
   summarize

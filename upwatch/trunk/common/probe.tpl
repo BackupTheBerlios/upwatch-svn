@@ -116,5 +116,5 @@ IF unsigned +]unsigned [+
 ENDIF+]
   int [+name+];	/* [+descrip+] */[+ ESAC type +][+ ENDFOR def+][+ ENDFOR probe +]
 [+ == enum +][+ FOR probe 
-+]PROBE_[+(string-upcase (get "name"))+] = [+id+],
++]PROBE_[+name+] = [+id+],
 [+ ENDFOR probe +][+ ESAC +]

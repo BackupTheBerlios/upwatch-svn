@@ -16,95 +16,75 @@ struct sysstat_result {
 
 extern module sysstat_module;
 
+static int accept_probe(const char *name)
+{
+  return(strcmp(name, "sysstat") == 0);
+}
+
 //*******************************************************************
 // GET THE INFO FROM THE XML FILE
 // Caller must free the pointer it returns
 //*******************************************************************
-static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
+static void get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
 {
-  struct sysstat_result *res;
+  struct sysstat_result *res = (struct sysstat_result *)probe_res;
 
-  res = g_malloc0(sizeof(struct sysstat_result));
-  if (res == NULL) {
-    return(NULL);
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "loadavg")) && (cur->ns == ns)) {
+    res->loadavg = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+    return;
   }
-
-  res->server = xmlGetPropInt(cur, (const xmlChar *) "server");
-  res->stattime = xmlGetPropUnsigned(cur, (const xmlChar *) "date");
-  res->expires = xmlGetPropUnsigned(cur, (const xmlChar *) "expires");
-  for (cur = cur->xmlChildrenNode; cur != NULL; cur = cur->next) {
-    char *p;
-
-    if (xmlIsBlankNode(cur)) continue;
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "color")) && (cur->ns == ns)) {
-      res->color = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1); 
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "loadavg")) && (cur->ns == ns)) {
-      res->loadavg = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "user")) && (cur->ns == ns)) {
-      res->user = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "system")) && (cur->ns == ns)) {
-      res->system = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "idle")) && (cur->ns == ns)) {
-      res->idle = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "swapin")) && (cur->ns == ns)) {
-      res->swapin = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "swapout")) && (cur->ns == ns)) {
-      res->swapout = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "blockin")) && (cur->ns == ns)) {
-      res->blockin = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "blockout")) && (cur->ns == ns)) {
-      res->blockout = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "swapped")) && (cur->ns == ns)) {
-      res->swapped = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "free")) && (cur->ns == ns)) {
-      res->free = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "buffered")) && (cur->ns == ns)) {
-      res->buffered = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "cached")) && (cur->ns == ns)) {
-      res->cached = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "used")) && (cur->ns == ns)) {
-      res->used = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "systemp")) && (cur->ns == ns)) {
-      res->systemp = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "info")) && (cur->ns == ns)) {
-      p = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-      if (p) {
-        res->message = strdup(p);
-        xmlFree(p);
-      }
-    }
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "user")) && (cur->ns == ns)) {
+    res->user = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+    return;
   }
-  return(res);
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "system")) && (cur->ns == ns)) {
+    res->system = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+    return;
+  }
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "idle")) && (cur->ns == ns)) {
+    res->idle = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+    return;
+  }
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "swapin")) && (cur->ns == ns)) {
+    res->swapin = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+    return;
+  }
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "swapout")) && (cur->ns == ns)) {
+    res->swapout = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+    return;
+  }
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "blockin")) && (cur->ns == ns)) {
+    res->blockin = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+    return;
+  }
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "blockout")) && (cur->ns == ns)) {
+    res->blockout = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+    return;
+  }
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "swapped")) && (cur->ns == ns)) {
+    res->swapped = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+    return;
+  }
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "free")) && (cur->ns == ns)) {
+    res->free = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+    return;
+  }
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "buffered")) && (cur->ns == ns)) {
+    res->buffered = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+    return;
+  }
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "cached")) && (cur->ns == ns)) {
+    res->cached = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+    return;
+  }
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "used")) && (cur->ns == ns)) {
+    res->used = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+    return;
+  }
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "systemp")) && (cur->ns == ns)) {
+    res->systemp = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+    return;
+  }
 }
 
 //*******************************************************************
@@ -128,13 +108,36 @@ static void *get_def(module *probe, void *probe_res)
   if (def == NULL) {
     def = g_malloc0(sizeof(struct probe_result));
     def->stamp = time(NULL);
+    def->server = res->server;
     
     result = my_query("select id, yellow, red "
                       "from   pr_%s_def "
-                      "where  server = '%u'", probe->name, res->server);
+                      "where  server = '%u'", res->name, res->server);
     if (!result) return(NULL);
+
+    if (mysql_num_rows(result) == 0) { // DEF RECORD NOT FOUND
+      mysql_free_result(result);
+      if (!trust(res->name)) {
+        LOG(LOG_NOTICE, "pr_%s_def id %u not found and not trusted - skipped", 
+                         res->name, def->probeid);
+        return(NULL);
+      }
+      result = my_query("insert into pr_%s_def set server = '%d', "
+                        "        ipaddress = '127.0.0.1', description = 'auto-added by system'", 
+                        res->name, res->server);
+      mysql_free_result(result);
+      if (mysql_affected_rows(mysql) == 0) { // nothing was actually inserted
+        LOG(LOG_NOTICE, "insert missing pr_%s_def id %u: %s", 
+                         res->name, def->probeid, mysql_error(mysql));
+      }
+      result = my_query("select id, yellow, red "
+                        "from   pr_%s_def "
+                        "where  server = '%u'", res->name, res->server);
+      if (!result) return(NULL);
+    }
     row = mysql_fetch_row(result); 
-    if (!row) {
+    if (!row || !row[0]) {
+      LOG(LOG_NOTICE, "no pr_%s_def found for server %u - skipped", res->name, res->server);
       mysql_free_result(result);
       return(NULL);
     }
@@ -155,25 +158,26 @@ static void *get_def(module *probe, void *probe_res)
       }
       mysql_free_result(result);
     } else {
-      LOG(LOG_NOTICE, "pr_status record for %s id %u not found", probe->name, def->probeid);
-    }
-
-    if (!def->server) {
       // couldn't find pr_status record? Will be created later,
       // but get the server from the def record for now
+      LOG(LOG_NOTICE, "pr_status record for %s id %u not found", res->name, def->probeid);
       result = my_query("select server "
                         "from   pr_%s_def " 
-                        "where  id = '%u'", probe->name, def->probeid);
-      if (result) {
-        row = mysql_fetch_row(result);
-        if (row) def->server   = atoi(row[0]);
+                        "where  id = '%u'", res->name, def->probeid);
+      if (!result) return(NULL);
+      row = mysql_fetch_row(result);
+      if (!row || !row[0] || mysql_num_rows(result) == 0) {
+        LOG(LOG_NOTICE, "pr_%s_def id %u not found - bailing out", res->name, def->probeid);
         mysql_free_result(result);
+        return(NULL);
       }
+      def->server  = atoi(row[0]);
+      mysql_free_result(result);
     }
 
     result = my_query("select stattime from pr_%s_raw use index(probtime) "
                       "where probe = '%u' order by stattime desc limit 1",
-                       probe->name, def->probeid);
+                       res->name, def->probeid);
     if (result) {
       row = mysql_fetch_row(result);
       if (row && mysql_num_rows(result) > 0) {
@@ -296,10 +300,15 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
 }
 
 module sysstat_module  = {
-  STANDARD_MODULE_STUFF(SYSSTAT, "sysstat"),
+  STANDARD_MODULE_STUFF(sysstat),
   NULL,
   NULL,
-  extract_info_from_xml_node,
+  NULL,
+  NULL,
+  accept_probe,
+  NULL,
+  get_from_xml,
+  NULL,
   get_def,
   store_raw_result,
   summarize

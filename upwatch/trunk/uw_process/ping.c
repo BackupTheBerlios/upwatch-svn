@@ -12,88 +12,34 @@
 struct ping_result {
   STANDARD_PROBE_RESULT;
 #include "../uw_ping/probe.res_h"
-  gchar *hostname;
-  gchar *ipaddress;
 };
 extern module ping_module;
 
-static void free_res(void *res)
+static int accept_probe(const char *name)
 {
-  struct ping_result *r = (struct ping_result *)res;
-
-  if (r->hostname) g_free(r->hostname);
-  if (r->ipaddress) g_free(r->ipaddress);
+  return(strcmp(name, "ping") == 0);
 }
 
 //*******************************************************************
 // GET THE INFO FROM THE XML FILE
 // Caller must free the pointer it returns
 //*******************************************************************
-static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
+static void get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
 {
-  struct ping_result *res;
+  struct ping_result *res = (struct ping_result *)probe_res;
 
-  res = g_malloc0(sizeof(struct ping_result));
-  if (res == NULL) {
-    return(NULL);
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "min")) && (cur->ns == ns)) {
+    res->lowest = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+    return;
   }
-
-  res->probeid = xmlGetPropInt(cur, (const xmlChar *) "id");
-  res->stattime = xmlGetPropUnsigned(cur, (const xmlChar *) "date");
-  res->expires = xmlGetPropUnsigned(cur, (const xmlChar *) "expires");
-  for (cur = cur->xmlChildrenNode; cur != NULL; cur = cur->next) {
-    char *p;
-
-    if (xmlIsBlankNode(cur)) continue;
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "color")) && (cur->ns == ns)) {
-      res->color = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "min")) && (cur->ns == ns)) {
-      res->lowest = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "avg")) && (cur->ns == ns)) {
-      res->value = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "max")) && (cur->ns == ns)) {
-      res->highest = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "info")) && (cur->ns == ns)) {
-      p = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-      if (p) {
-        res->message = strdup(p);
-        xmlFree(p);
-      }
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "host")) && (cur->ns == ns)) {
-      xmlNodePtr hname;
-
-      for (hname = cur->xmlChildrenNode; hname != NULL; hname = hname->next) {
-        if (xmlIsBlankNode(hname)) continue;
-        if ((!xmlStrcmp(hname->name, (const xmlChar *) "hostname")) && (hname->ns == ns)) {
-          p = xmlNodeListGetString(doc, hname->xmlChildrenNode, 1);
-          if (p) {
-            res->hostname = strdup(p);
-            xmlFree(p);
-          }
-          continue;
-        }
-        if ((!xmlStrcmp(hname->name, (const xmlChar *) "ipaddress")) && (hname->ns == ns)) {
-          p = xmlNodeListGetString(doc, hname->xmlChildrenNode, 1);
-          if (p) {
-            res->ipaddress = strdup(p);
-            xmlFree(p);
-          }
-          continue;
-        }
-      }
-    }
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "avg")) && (cur->ns == ns)) {
+    res->value = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+    return;
   }
-  return(res);
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "max")) && (cur->ns == ns)) {
+    res->highest = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+    return;
+  }
 }
 
 //*******************************************************************
@@ -174,10 +120,15 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
 }
 
 module ping_module  = {
-  STANDARD_MODULE_STUFF(PING, "ping"),
+  STANDARD_MODULE_STUFF(ping),
   NULL,
-  free_res,
-  extract_info_from_xml_node,
+  NULL,
+  NULL,
+  NULL,
+  accept_probe,
+  NULL,
+  get_from_xml,
+  NULL,
   NULL,
   store_raw_result,
   summarize

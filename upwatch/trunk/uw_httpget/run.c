@@ -141,6 +141,7 @@ int run_actual_probes(int count);
     }
     httpget = xmlNewChild(xmlDocGetRootElement(cur), NULL, "httpget", NULL);
     sprintf(buffer, "%d", hosts[id]->id);       xmlSetProp(httpget, "id", buffer);
+    sprintf(buffer, "%s", inet_ntoa(hosts[id]->saddr.sin_addr)); xmlSetProp(httpget, "ipaddress", buffer);
     sprintf(buffer, "%d", (int) now);           xmlSetProp(httpget, "date", buffer);
     sprintf(buffer, "%d", ((int)now)+(2*60));   xmlSetProp(httpget, "expires", buffer);
     if (investigate) { 

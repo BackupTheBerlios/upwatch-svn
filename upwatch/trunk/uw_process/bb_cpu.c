@@ -12,69 +12,23 @@
 struct bb_cpu_result {
   STANDARD_PROBE_RESULT;
 #include "../uw_acceptbb/probe.res_h"
-  char *hostname;
 };
 extern module bb_cpu_module;
 
-static void free_res(void *res)
+static int accept_probe(const char *name)
 {
-  struct bb_cpu_result *r = (struct bb_cpu_result *)res;
-
-  if (r->hostname) g_free(r->hostname);
+  return(strcmp(name, "bb_cpu") == 0);
 }
 
 //*******************************************************************
-// GET THE INFO FROM THE XML FILE
-// Caller must free the pointer it returns
+// Ok, we'll give it a try, decode the info string a bit.
+// [ntserver3.netland.nl] up: 33 days, 1 users, 22 procs, load=9%, PhysicalMem: 256MB(50%)
+// up: 43 days, 0 users, 88 procs, load=6
 //*******************************************************************
-static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
+static int fix_result(module *probe, void *probe_res)
 {
-  struct bb_cpu_result *res;
+  struct bb_cpu_result *res = (struct bb_cpu_result *)probe_res;
 
-  res = g_malloc0(sizeof(struct bb_cpu_result));
-  if (res == NULL) {
-    return(NULL);
-  }
-
-  // res->probeid will be filled in later;
-  res->stattime = xmlGetPropUnsigned(cur, (const xmlChar *) "date");
-  res->expires = xmlGetPropUnsigned(cur, (const xmlChar *) "expires");
-  for (cur = cur->xmlChildrenNode; cur != NULL; cur = cur->next) {
-    char *p;
-
-    if (xmlIsBlankNode(cur)) continue;
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "color")) && (cur->ns == ns)) {
-      res->color = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "info")) && (cur->ns == ns)) {
-      p = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-      if (p) {
-        res->message = strdup(p);
-        xmlFree(p);
-      }
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "host")) && (cur->ns == ns)) {
-      xmlNodePtr hname;
-
-      for (hname = cur->xmlChildrenNode; hname != NULL; hname = hname->next) {
-        if (xmlIsBlankNode(hname)) continue;
-        if ((!xmlStrcmp(hname->name, (const xmlChar *) "hostname")) && (hname->ns == ns)) {
-          p = xmlNodeListGetString(doc, hname->xmlChildrenNode, 1);
-          if (p) {
-            res->hostname = strdup(p);
-            xmlFree(p);
-          }
-          continue;
-        }
-      }
-    }
-  }
-
-  // Ok, we'll give it a try, decode the info string a bit.
-  // [ntserver3.netland.nl] up: 33 days, 1 users, 22 procs, load=9%, PhysicalMem: 256MB(50%)
-  // up: 43 days, 0 users, 88 procs, load=6
   if (res->message) {
     char *load = strstr(res->message, "load=");
     char *win = strstr(res->message, "PhysicalMem");
@@ -102,9 +56,9 @@ static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr
     }
   }
   if (debug) LOG(LOG_DEBUG, "%s: %s %d stattime:%u expires:%u loadavg:%.2f user:%u idle:%u used:%u free:%u",
-                 probe->name, res->hostname, res->color, res->stattime, res->expires,
+                 res->name, res->hostname, res->color, res->stattime, res->expires,
                  res->loadavg, res->user, res->idle, res->used, res->free);
-  return(res);
+  return 1;
 }
 
 //*******************************************************************
@@ -149,7 +103,7 @@ static void *get_def(module *probe, void *probe_res)
     def->stamp    = time(NULL);
 
     // first find the definition based on the serverid
-    result = my_query("select id from pr_%s_def where server = '%u'", probe->name, res->server);
+    result = my_query("select id from pr_%s_def where server = '%u'", res->name, res->server);
     if (!result) {
       g_free(def);
       return(NULL);
@@ -168,7 +122,7 @@ static void *get_def(module *probe, void *probe_res)
           if (row[0]) def->color  = atoi(row[0]);
           if (row[1]) def->newest = atoi(row[1]);
         } else {
-          LOG(LOG_NOTICE, "pr_status record for %s id %u not found", probe->name, res->probeid);
+          LOG(LOG_NOTICE, "pr_status record for %s id %u not found", res->name, res->probeid);
         }
         mysql_free_result(result);
       } else {
@@ -180,17 +134,17 @@ static void *get_def(module *probe, void *probe_res)
       // no def record found? Create one. And a pr_status record too.
       mysql_free_result(result);
       result = my_query("insert into pr_%s_def set server = '%u', description = '%s'", 
-                         probe->name, res->server, res->hostname);
+                         res->name, res->server, res->hostname);
       mysql_free_result(result);
       res->probeid = mysql_insert_id(mysql);
-      LOG(LOG_NOTICE, "pr_status and pr_%s_def created for %s, id = %u", probe->name, res->hostname, res->probeid);
+      LOG(LOG_NOTICE, "pr_status and pr_%s_def created for %s, id = %u", res->name, res->hostname, res->probeid);
     }
     def->probeid = res->probeid;
     def->server = res->server;
 
     result = my_query("select stattime from pr_%s_raw use index(probtime) "
                       "where probe = '%u' order by stattime desc limit 1",
-                       probe->name, def->probeid);
+                       res->name, def->probeid);
     if (result) {
       row = mysql_fetch_row(result);
       if (row && mysql_num_rows(result) > 0) {
@@ -303,10 +257,15 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
 }
 
 module bb_cpu_module  = {
-  STANDARD_MODULE_STUFF(BB_CPU, "bb_cpu"),
+  STANDARD_MODULE_STUFF(bb_cpu),
   NULL,
-  free_res,
-  extract_info_from_xml_node,
+  NULL,    
+  NULL,    
+  NULL,    
+  accept_probe,
+  NULL,    
+  NULL,
+  fix_result,    
   get_def,
   store_raw_result,
   summarize

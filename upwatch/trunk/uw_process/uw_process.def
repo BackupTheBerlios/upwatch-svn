@@ -69,6 +69,21 @@ them later';
 
 // describe commandline flags
 flag = {
+    name      = trust;
+    value     = t;
+    arg_type  = string;
+    stack_arg;
+    descrip   = "create definition record for this probe if not found";
+    doc       =
+'If a probe result is being processed, but no definition is found for it,
+create the definition record with default values. This may result in
+spurios probe definitions is your input data is not bugfree, or comes
+from untrusted sources. You may specify this option for any probetype,
+or give the special values `all` or `none`';
+
+};
+
+flag = {
     name      = run_queue;
     value     = q;
     descrip   = "Process the queue once, and then exit";

@@ -63,7 +63,7 @@ static void every_second(void)
   while (forever) {
     struct timeval start;
 
-    uw_setproctitle("waiting");
+    uw_setproctitle("sleeping");
     sleep(1);
     if (!forever) break; // kill -TERM ?
     gettimeofday(&start, NULL);
@@ -87,7 +87,7 @@ static void every_5secs(void)
   while (forever) {
     struct timeval start;
 
-    uw_setproctitle("waiting");
+    uw_setproctitle("sleeping");
     sleep(5);
     if (!forever) break; // kill -TERM ?
     gettimeofday(&start, NULL);
@@ -111,7 +111,7 @@ static void every_minute(void)
   while (forever) {
     struct timeval start;
 
-    uw_setproctitle("waiting");
+    uw_setproctitle("sleeping");
     wait_to_start();
     if (!forever) break; // kill -TERM ?
     ++runcounter;

@@ -182,6 +182,7 @@ int ob_client_func (GConn* conn, GConnStatus status,
       {
         //fprintf(stderr, "user_data: %d %s %s\n", cs->state, cs->user, cs->pwd);
         if (cs->state != STATE_DATA && !strncasecmp(buffer, "QUIT", 4)) {
+          uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), bye);
           gnet_conn_write (conn, strdup(bye), strlen(bye), 0);
           cs->state = STATE_EXIT;
           break;
@@ -319,6 +320,7 @@ int ob_client_func (GConn* conn, GConnStatus status,
           }
           if (cs->buffer) g_free (cs->buffer);
           free(cs);
+          uw_setproctitle("accepting connections");
           gnet_conn_delete (conn, TRUE);
         }
         break;
@@ -328,7 +330,6 @@ int ob_client_func (GConn* conn, GConnStatus status,
     case GNET_CONN_STATUS_TIMEOUT:
     case GNET_CONN_STATUS_ERROR:
       {
-        uw_setproctitle("accepting connections");
         if (cs->state == STATE_DATA || cs->state == STATE_ERROR) {
           if (cs->sp_info) spool_close(cs->sp_info, FALSE);
           if (debug) {
@@ -341,6 +342,7 @@ int ob_client_func (GConn* conn, GConnStatus status,
         }
         if (cs->buffer) g_free (cs->buffer);
         free(cs);
+        uw_setproctitle("accepting connections");
         gnet_conn_delete (conn, TRUE);
         break;
       }

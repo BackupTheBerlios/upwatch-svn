@@ -17,7 +17,7 @@ int main (int argc, char *argv[])
   argv += arg_ct;
 
   if (argc < 1) {
-    fprintf(stderr, "Usage: ctime arg\n");
+    fprintf(stderr, "Usage: slot arg\n");
     exit (1);
   }
   arg = atoi(*argv);

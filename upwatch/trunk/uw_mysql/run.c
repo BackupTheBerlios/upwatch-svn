@@ -193,6 +193,7 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
 
   mysql = xmlNewChild(xmlDocGetRootElement(doc), NULL, "mysql", NULL);
   sprintf(buffer, "%d", probe->id);           xmlSetProp(mysql, "id", buffer);
+  sprintf(buffer, "%s", probe->ipaddress);    xmlSetProp(mysql, "ipaddress", buffer);
   sprintf(buffer, "%d", (int) now);           xmlSetProp(mysql, "date", buffer);
   sprintf(buffer, "%d", ((int)now)+(2*60));   xmlSetProp(mysql, "expires", buffer);
   sprintf(buffer, "%d", color);               subtree = xmlNewChild(mysql, NULL, "color", buffer);

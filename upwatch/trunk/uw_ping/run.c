@@ -295,6 +295,7 @@ int run(void)
     ping = xmlNewChild(xmlDocGetRootElement(cur), NULL, "ping", NULL);
     sprintf(buffer, "%d", hosts[id]->id);	xmlSetProp(ping, "id", buffer);
     sprintf(buffer, "%d", (int) now); 		xmlSetProp(ping, "date", buffer);
+    sprintf(buffer, "%s", inet_ntoa(hosts[id]->saddr.sin_addr)); xmlSetProp(ping, "ipaddress", buffer);
     sprintf(buffer, "%d", ((int)now)+(2*60)); 	xmlSetProp(ping, "expires", buffer);
     if (color == STAT_RED) xmlSetProp(ping, "investigate", "icmptraceroute");
     host = xmlNewChild(ping, NULL, "host", NULL);

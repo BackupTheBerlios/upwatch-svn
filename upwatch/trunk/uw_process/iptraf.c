@@ -31,42 +31,44 @@ struct iptraf_def {
 
 extern module iptraf_module;
 
+static int accept_probe(const char *name)
+{
+  return(strcmp(name, "iptraf") == 0);
+}
+
 //*******************************************************************
 // GET THE INFO FROM THE XML FILE
 // Caller must free the pointer it returns
 //*******************************************************************
-static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
+static void xml_result_node(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
 {
-  struct iptraf_result *res;
+  struct iptraf_result *res = (struct iptraf_result *)probe_res;
   char *p;
-
-  res = g_malloc0(sizeof(struct iptraf_result));
-  if (res == NULL) {
-    return(NULL);
-  }
 
   p = xmlGetProp(cur, (const xmlChar *) "id");
   if (p) {
-    strcpy(res->ip, p);
+    strcpy(res->ip, p); 
     inet_aton(p, &res->ipaddr);
     xmlFree(p);
   }
-  res->stattime = xmlGetPropLong(cur, (const xmlChar *) "date");
-  res->expires = xmlGetPropLong(cur, (const xmlChar *) "expires");
-  res->color = xmlGetPropInt(cur, (const xmlChar *) "color");
-  for (cur = cur->xmlChildrenNode; cur != NULL; cur = cur->next) {
-    if (xmlIsBlankNode(cur)) continue;
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "in")) && (cur->ns == ns)) {
-      res->in_total = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "out")) && (cur->ns == ns)) {
-      res->out_total = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-  }
+}
 
-  return(res);
+//*******************************************************************
+// GET THE INFO FROM THE XML FILE
+// Caller must free the pointer it returns
+//*******************************************************************
+static void get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
+{
+  struct iptraf_result *res = (struct iptraf_result *)probe_res;
+
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "in")) && (cur->ns == ns)) {
+    res->in_total = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+    return;
+  }
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "out")) && (cur->ns == ns)) {
+    res->out_total = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+    return;
+  }
 }
 
 //*******************************************************************
@@ -89,8 +91,30 @@ static void *get_def(module *probe, void *probe_res)
 
     result = my_query("select id, yellow, red "
                       "from   pr_%s_def "
-                      "where  ipaddress = '%s'", probe->name, res->ip);
+                      "where  ipaddress = '%s'", res->name, res->ip);
     if (!result) return(NULL);
+
+    if (mysql_num_rows(result) == 0) { // DEF RECORD NOT FOUND
+      mysql_free_result(result);
+      if (!trust(res->name)) {
+        LOG(LOG_NOTICE, "pr_%s_def ip %s not found and not trusted - skipped",
+                         res->name, res->ip);
+        return(NULL);
+      }
+      result = my_query("insert into pr_%s_def set ipaddress = '%s', "
+                        "        description = 'auto-added by system'",
+                        res->name, res->ip);
+      mysql_free_result(result);
+      if (mysql_affected_rows(mysql) == 0) { // nothing was actually inserted
+        LOG(LOG_NOTICE, "insert missing pr_%s_def id %s: %s", 
+                         res->name, res->ip, mysql_error(mysql));
+      }
+      result = my_query("select id, yellow, red "
+                        "from   pr_%s_def "
+                        "where  ipaddress = '%s'", res->name, res->ipaddress);
+      if (!result) return(NULL);
+    }
+
     row = mysql_fetch_row(result);
     if (!row) {
       mysql_free_result(result);
@@ -113,7 +137,7 @@ static void *get_def(module *probe, void *probe_res)
       }
       mysql_free_result(result);
     } else {
-      LOG(LOG_NOTICE, "pr_status record for %s id %u not found", probe->name, def->probeid);
+      LOG(LOG_NOTICE, "pr_status record for %s id %u not found", res->name, def->probeid);
     }
 
     if (!def->server) {
@@ -121,7 +145,7 @@ static void *get_def(module *probe, void *probe_res)
       // but get the server from the def record for now
       result = my_query("select server "
                         "from   pr_%s_def "
-                        "where  id = '%u'", probe->name, def->probeid);
+                        "where  id = '%u'", res->name, def->probeid);
       if (result) {
         row = mysql_fetch_row(result);
         if (row) def->server   = atoi(row[0]);
@@ -147,7 +171,7 @@ static void *get_def(module *probe, void *probe_res)
       mysql_free_result(result);
     } else {
       LOG(LOG_NOTICE, "raw record for %s id %u not found between %u and %u", 
-                      probe->name, def->probeid, slotlow, slothigh);
+                      res->name, def->probeid, slotlow, slothigh);
       def->slotday_avg_yellow = def->yellow;
       def->slotday_avg_red    = def->red;   
     }
@@ -255,10 +279,15 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
 }
 
 module iptraf_module  = {
-  STANDARD_MODULE_STUFF(IPTRAF, "iptraf"),
+  STANDARD_MODULE_STUFF(iptraf),
   NULL,
   NULL,
-  extract_info_from_xml_node,
+  NULL,
+  NULL,
+  accept_probe,
+  xml_result_node,
+  get_from_xml,
+  NULL,
   get_def,
   store_raw_result,
   summarize
