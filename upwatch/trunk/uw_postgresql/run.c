@@ -7,7 +7,7 @@
 struct probedef {
   int           id;             /* unique probe id */
   int           probeid;        /* server probe id */
-  char          *domain;        /* database domain */
+  char          *realm;        /* database realm */
   int		seen;           /* seen */
   char		*ipaddress;     /* server name */
 #include "probe.def_h"
@@ -22,7 +22,7 @@ void free_probe(void *probe)
   struct probedef *r = (struct probedef *)probe;
 
   if (r->ipaddress) g_free(r->ipaddress);
-  if (r->domain) g_free(r->domain);
+  if (r->realm) g_free(r->realm);
   if (r->dbname) g_free(r->dbname);
   if (r->dbuser) g_free(r->dbuser);
   if (r->dbpasswd) g_free(r->dbpasswd);
@@ -43,7 +43,7 @@ gboolean return_seen(gpointer key, gpointer value, gpointer user_data)
   struct probedef *probe = (struct probedef *)value;
 
   if (probe->seen == 0) {
-    LOG(LOG_INFO, "removed probe %s:%u from list", probe->domain, probe->probeid);
+    LOG(LOG_INFO, "removed probe %s:%u from list", probe->realm, probe->probeid);
     return 1;
   }
   probe->seen = 0;
@@ -100,12 +100,12 @@ void refresh_database(MYSQL *mysql)
   MYSQL_ROW row;
   char qry[1024];
 
-  sprintf(qry,  "SELECT pr_postgresql_def.id, pr_postgresql_def.domid, pr_postgresql_def.tblid, pr_domain.name, "
+  sprintf(qry,  "SELECT pr_postgresql_def.id, pr_postgresql_def.domid, pr_postgresql_def.tblid, pr_realm.name, "
                 "       pr_postgresql_def.ipaddress, pr_postgresql_def.dbname, "
                 "       pr_postgresql_def.dbuser, pr_postgresql_def.dbpasswd,"
                 "       pr_postgresql_def.query, "
                 "       pr_postgresql_def.yellow,  pr_postgresql_def.red "
-                "FROM   pr_postgresql_def, pr_domain "
+                "FROM   pr_postgresql_def, pr_realm "
                 "WHERE  pr_postgresql_def.id > 1 and pr_postgresql_def.disable <> 'yes'"
                 "       and pr_postgresql_def.pgroup = '%d'",
                 (unsigned)OPT_VALUE_GROUPID);
@@ -125,7 +125,7 @@ void refresh_database(MYSQL *mysql)
       probe = g_malloc0(sizeof(struct probedef));
       if (atoi(row[1]) > 1) {
         probe->probeid = atoi(row[2]);
-        probe->domain = strdup(row[3]);
+        probe->realm = strdup(row[3]);
       } else {
         probe->probeid = probe->id;
       }
@@ -205,8 +205,8 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   }
 
   postgresql = xmlNewChild(xmlDocGetRootElement(doc), NULL, "postgresql", NULL);
-  if (probe->domain) {
-    xmlSetProp(postgresql, "domain", probe->domain);
+  if (probe->realm) {
+    xmlSetProp(postgresql, "realm", probe->realm);
   }
   sprintf(buffer, "%d", probe->probeid);      xmlSetProp(postgresql, "id", buffer);
   sprintf(buffer, "%s", probe->ipaddress);    xmlSetProp(postgresql, "ipaddress", buffer);

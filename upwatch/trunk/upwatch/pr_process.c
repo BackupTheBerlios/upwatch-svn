@@ -66,7 +66,8 @@ int extract_info_from_xml(trx *t)
   res->interval = xmlGetPropUnsigned(t->cur, (const xmlChar *) "interval");
   res->received = xmlGetPropUnsigned(t->cur, (const xmlChar *) "received");
   res->ipaddress = xmlGetProp(t->cur, (const xmlChar *) "ipaddress");
-  res->domain = xmlGetProp(t->cur, (const xmlChar *) "domain");
+  res->realm = xmlGetProp(t->cur, (const xmlChar *) "domain"); // only one of domain/realm can be present
+  res->realm = xmlGetProp(t->cur, (const xmlChar *) "realm");
 
   if (res->stattime > t->probe->lastseen) {
     t->probe->lastseen = res->stattime;
@@ -140,7 +141,7 @@ int extract_info_from_xml(trx *t)
 int accept_result(trx *t)
 {
   LOG(LOG_DEBUG, "%s %s %d: %d stattime %u expires %u",
-               t->res->domain, t->res->name, t->res->probeid, 
+               t->res->realm, t->res->name, t->res->probeid, 
                t->res->color, t->res->stattime, t->res->expires);
   return 1; // ok
 }
@@ -196,7 +197,7 @@ void *get_def(trx *t, int create)
       mysql_free_result(result);
       if (!create) {
         LOG(LOG_NOTICE, "%s: pr_%s_def id %u not found - skipped",
-                         res->domain, res->name, res->probeid);
+                         res->realm, res->name, res->probeid);
         return(NULL);
       }
       if (res->server == 0) {

@@ -14,7 +14,7 @@
 #include <st.h>
 
 struct dbspec {
-  char domain[25];
+  char realm[25];
   char host[65];
   int port;
   char db[64];
@@ -36,23 +36,23 @@ static char *chop(char *s, int i)
   return(s);
 }
 
-MYSQL *open_domain(char *domain)
+MYSQL *open_realm(char *realm)
 {
   int i;
   MYSQL *mysql;
 
   if (!dblist) {
-    LOG(LOG_ERR, "open_domain but no dblist found");
+    LOG(LOG_ERR, "open_realm but no dblist found");
     return NULL;
   }
-  if (domain == NULL || domain[0] == 0) {
+  if (realm == NULL || realm[0] == 0) {
     mysql = open_database(dblist[0].host, dblist[0].port,
             dblist[0].db, dblist[0].user, dblist[0].password);
     return(mysql);
   }
 
   for (i=0; i < dblist_cnt; i++) {
-    if (strcmp(dblist[i].domain, domain) == 0) {
+    if (strcmp(dblist[i].realm, realm) == 0) {
       mysql = open_database(dblist[i].host, dblist[i].port,
               dblist[i].db, dblist[i].user, dblist[i].password);
       return(mysql);
@@ -65,10 +65,10 @@ static int uw_password_ok(char *user, char *passwd)
 {
   MYSQL *mysql;
   MYSQL_RES *result;
-  char *domain = strrchr(user, '@');
+  char *realm = strrchr(user, '@');
 
-  if (domain) domain++;
-  mysql = open_domain(domain);
+  if (realm) realm++;
+  mysql = open_realm(realm);
   if (mysql) {
     gchar buffer[256];
     MYSQL_ROW row;
@@ -110,15 +110,15 @@ int init(void)
     MYSQL_RES *result;
     dblist = calloc(100, sizeof(struct dbspec));
 
-    result = my_query(db, 0, "select pr_domain.name, pr_domain.host, "
-                             "       pr_domain.port, pr_domain.db, pr_domain.user, "
-                             "       pr_domain.password "
-                             "from   pr_domain "
-                             "where  pr_domain.id > 1");
+    result = my_query(db, 0, "select pr_realm.name, pr_realm.host, "
+                             "       pr_realm.port, pr_realm.db, pr_realm.user, "
+                             "       pr_realm.password "
+                             "from   pr_realm "
+                             "where  pr_realm.id > 1");
     if (result) {
       MYSQL_ROW row;
       while ((row = mysql_fetch_row(result)) != NULL) {
-        strcpy(dblist[dblist_cnt].domain, row[0]);
+        strcpy(dblist[dblist_cnt].realm, row[0]);
         strcpy(dblist[dblist_cnt].host, row[1]);
         dblist[dblist_cnt].port = atoi(row[2]);
         strcpy(dblist[dblist_cnt].db, row[3]);
@@ -270,7 +270,7 @@ login:
     return;
   }
 
-  // expect here: USER xxxxxxx or USER xxxxx@domain
+  // expect here: USER xxxxxxx or USER xxxxx@realm
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
   if (len == -1) {

@@ -34,7 +34,7 @@ void free_res(void *res)
   if (r->message) g_free(r->message);
   if (r->hostname) g_free(r->hostname);
   if (r->ipaddress) g_free(r->ipaddress);
-  if (r->domain) g_free(r->domain);
+  if (r->realm) g_free(r->realm);
   g_free(r);
 }
 
@@ -395,13 +395,13 @@ int process(trx *t)
   struct probe_result *prv=NULL;
   int err = 1; /* default ok */
 
-  if (t->res->domain && t->res->domain[0]) {
-    t->probe->db = open_domain(t->res->domain);
+  if (t->res->realm && t->res->realm[0]) {
+    t->probe->db = open_realm(t->res->realm);
   } else {
-    if (t->probe->find_domain) {
-      t->probe->find_domain(t);
+    if (t->probe->find_realm) {
+      t->probe->find_realm(t);
     } else {
-      t->probe->db = open_domain(NULL);
+      t->probe->db = open_realm(NULL);
     }
   }
   if (!t->probe->db) return -2;

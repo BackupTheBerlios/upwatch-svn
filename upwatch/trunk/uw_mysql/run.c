@@ -7,7 +7,7 @@
 struct probedef {
   int           id;             /* unique probe id */
   int           probeid;        /* server probe id */
-  char          *domain;        /* database domain */
+  char          *realm;        /* database realm */
   int		seen;           /* seen */
   char		*ipaddress;     /* server name */
 #include "probe.def_h"
@@ -41,7 +41,7 @@ gboolean return_seen(gpointer key, gpointer value, gpointer user_data)
   struct probedef *probe = (struct probedef *)value;
 
   if (probe->seen == 0) {
-    LOG(LOG_INFO, "removed probe %s:%u from list", probe->domain, probe->probeid);
+    LOG(LOG_INFO, "removed probe %s:%u from list", probe->realm, probe->probeid);
     return 1;
   }
   probe->seen = 0;
@@ -98,14 +98,14 @@ void refresh_database(MYSQL *mysql)
   MYSQL_ROW row;
   char qry[1024];
 
-  sprintf(qry,  "SELECT pr_mysql_def.id, pr_mysql_def.domid, pr_mysql_def.tblid, pr_domain.name, "
+  sprintf(qry,  "SELECT pr_mysql_def.id, pr_mysql_def.domid, pr_mysql_def.tblid, pr_realm.name, "
                 "       pr_mysql_def.ipaddress, pr_mysql_def.dbname, "
                 "       pr_mysql_def.dbuser, pr_mysql_def.dbpasswd,"
                 "       pr_mysql_def.query, "
                 "       pr_mysql_def.yellow,  pr_mysql_def.red "
-                "FROM   pr_mysql_def, pr_domain "
+                "FROM   pr_mysql_def, pr_realm "
                 "WHERE  pr_mysql_def.id > 1 and pr_mysql_def.disable <> 'yes'"
-                "       and pr_mysql_def.pgroup = '%d' and pr_domain.id = pr_mysql_def.domid",
+                "       and pr_mysql_def.pgroup = '%d' and pr_realm.id = pr_mysql_def.domid",
                 (unsigned)OPT_VALUE_GROUPID);
 
   result = my_query(mysql, 1, qry);
@@ -123,7 +123,7 @@ void refresh_database(MYSQL *mysql)
       probe = g_malloc0(sizeof(struct probedef));
       if (atoi(row[1]) > 1) {
         probe->probeid = atoi(row[2]);
-        probe->domain = strdup(row[3]);
+        probe->realm = strdup(row[3]);
       } else {
         probe->probeid = probe->id;
       }
@@ -203,8 +203,8 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   }
 
   mysql = xmlNewChild(xmlDocGetRootElement(doc), NULL, "mysql", NULL);
-  if (probe->domain) {
-    xmlSetProp(mysql, "domain", probe->domain);
+  if (probe->realm) {
+    xmlSetProp(mysql, "realm", probe->realm);
   }
   sprintf(buffer, "%d", probe->probeid);      xmlSetProp(mysql, "id", buffer);
   sprintf(buffer, "%s", probe->ipaddress);    xmlSetProp(mysql, "ipaddress", buffer);

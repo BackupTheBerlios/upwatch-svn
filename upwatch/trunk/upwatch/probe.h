@@ -6,7 +6,7 @@
   guint color; \
   guint prevcolor; \
   guint stattime; \
-  char *domain; \
+  char *realm; \
   guint probeid; \
   guint server; \
   char *hostname; \

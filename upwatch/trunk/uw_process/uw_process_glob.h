@@ -16,7 +16,7 @@ PROBE_EMPTY = 1,
 struct _module {
   STANDARD_MODULE_STRUCT
 #define NO_FIND_DOMAIN NULL
-  gint (*find_domain)(trx *t);
+  gint (*find_realm)(trx *t);
 #define NO_STORE_RESULTS NULL
   gint (*store_results)(trx *t);
 #define NO_NOTIFY_MAIL_SUBJECT NULL
@@ -25,8 +25,6 @@ struct _module {
   void (*summarize)(trx *t, char *from, char *into, 
                     guint slot, guint slotlow, guint slothigh, gint ignoredupes);
 };
-
-MYSQL *open_domain(char *domain);
 
 struct summ_spec {
   int period;   // 
@@ -48,7 +46,7 @@ extern void ct_summarize(trx *t, char *from, char *into,
                          guint slot, guint slotlow, guint slothigh, gint resummarize);
 
 struct dbspec {
-  char *domain;
+  char *realm;
   char *host;
   int port;
   char *db;
@@ -62,10 +60,10 @@ struct dbspec {
 extern struct dbspec *dblist;
 extern int dblist_cnt;
 
-MYSQL *open_domain(char *domain);
-int domain_server_by_name(char *domain, char *name);
-char *domain_server_by_id(char *domain, int id);
-int domain_server_by_ip(char *domain, char *ip);
+MYSQL *open_realm(char *realm);
+int realm_server_by_name(char *realm, char *name);
+char *realm_server_by_id(char *realm, int id);
+int realm_server_by_ip(char *realm, char *ip);
 
 int mail(char *to, char *subject, char *body, time_t date);
 

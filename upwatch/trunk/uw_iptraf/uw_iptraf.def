@@ -18,6 +18,19 @@ spec-files = `echo "%attr(4770,root,upwatch)" $sbindir/uw_iptraf`;
 
 // describe commandline flags
 flag = {
+    name      = realm;
+    value     = R;
+    arg_type  = string;
+    descrip   = "upwatch realm where this probe belongs to";
+    doc       =
+'The upwatch backend can work with several realm. Each realm is maintained in
+a separate database, defines its own probes, and receives its own results.
+With this option you can specify the realm where the result for this probe
+will be stored';
+};
+
+// describe commandline flags
+flag = {
     name      = domain;
     value     = D;
     arg_type  = string;

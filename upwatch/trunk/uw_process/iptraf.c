@@ -23,13 +23,13 @@ int iptraf_accept_result(trx *t)
 
   query_server_by_ip = NULL;
 
-  if (t->res->domain == NULL) {
+  if (t->res->realm == NULL) {
     query_server_by_ip = dblist[0].srvrbyip;
     return 1;
   }
 
   for (i=0; i < dblist_cnt; i++) {
-    if (strcmp(t->res->domain, dblist[i].domain)) continue;
+    if (strcmp(t->res->realm, dblist[i].realm)) continue;
     query_server_by_ip = dblist[i].srvrbyip;
     break;
   }

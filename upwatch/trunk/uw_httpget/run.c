@@ -16,7 +16,7 @@
 struct probedef {
   int		id;             /* unique probe id */
   int		probeid;        /* server probe id */
-  char 		*domain;	/* database domain */
+  char 		*realm;	/* database realm */
   int		seen;           /* seen */
   char		*ipaddress;     /* server name */
 #include "probe.def_h"
@@ -33,7 +33,7 @@ void free_probe(void *probe)
   struct probedef *r = (struct probedef *)probe;
 
   if (r->ipaddress) g_free(r->ipaddress);
-  if (r->domain) g_free(r->domain);
+  if (r->realm) g_free(r->realm);
   if (r->uri) g_free(r->uri);
   if (r->hostname) g_free(r->hostname);
   if (r->msg) g_free(r->msg);
@@ -53,7 +53,7 @@ gboolean return_seen(gpointer key, gpointer value, gpointer user_data)
   struct probedef *probe = (struct probedef *)value;
 
   if (probe->seen == 0) {
-    LOG(LOG_INFO, "removed probe %s:%u from list", probe->domain, probe->probeid);
+    LOG(LOG_INFO, "removed probe %s:%u from list", probe->realm, probe->probeid);
     return 1;
   }
   probe->seen = 0;
@@ -110,13 +110,13 @@ void refresh_database(MYSQL *mysql)
   MYSQL_ROW row;
   char qry[1024];
 
-  sprintf(qry,  "SELECT pr_httpget_def.id, pr_httpget_def.domid, pr_httpget_def.tblid, pr_domain.name,"
+  sprintf(qry,  "SELECT pr_httpget_def.id, pr_httpget_def.domid, pr_httpget_def.tblid, pr_realm.name,"
                 "       pr_httpget_def.ipaddress, pr_httpget_def.uri, "
                 "       pr_httpget_def.hostname, pr_httpget_def.port, "
                 "       pr_httpget_def.yellow,  pr_httpget_def.red "
-                "FROM   pr_httpget_def, pr_domain "
+                "FROM   pr_httpget_def, pr_realm "
                 "WHERE  pr_httpget_def.id > 1 and pr_httpget_def.disable <> 'yes'"
-                "       and pr_httpget_def.pgroup = '%u' and pr_domain.id = pr_httpget_def.domid",
+                "       and pr_httpget_def.pgroup = '%u' and pr_realm.id = pr_httpget_def.domid",
                 (unsigned) OPT_VALUE_GROUPID);
 
   result = my_query(mysql, 1, qry);
@@ -134,7 +134,7 @@ void refresh_database(MYSQL *mysql)
       probe = g_malloc0(sizeof(struct probedef));
       if (atoi(row[1]) > 1) {
         probe->probeid = atoi(row[2]);
-        probe->domain = strdup(row[3]);
+        probe->realm = strdup(row[3]);
       } else {
         probe->probeid = probe->id;
       }  
@@ -208,8 +208,8 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   }
 
   httpget = xmlNewChild(xmlDocGetRootElement(doc), NULL, "httpget", NULL);
-  if (probe->domain) {
-    xmlSetProp(httpget, "domain", probe->domain);
+  if (probe->realm) {
+    xmlSetProp(httpget, "realm", probe->realm);
   }
   sprintf(buffer, "%d", probe->probeid);      xmlSetProp(httpget, "id", buffer);
   sprintf(buffer, "%s", probe->ipaddress);    xmlSetProp(httpget, "ipaddress", buffer);

@@ -13,7 +13,7 @@
 struct probedef {
   int           	id;             /* unique probe id */
   int           	probeid;        /* server probe id */
-  char          	*domain;        /* database domain */
+  char          	*realm;        /* database realm */
   int			seen;           /* seen */
   char			*ipaddress;     /* server name */
 #include "probe.def_h"
@@ -51,7 +51,7 @@ void free_probe(void *probe)
   struct probedef *r = (struct probedef *)probe;
 
   if (r->ipaddress) g_free(r->ipaddress);
-  if (r->domain) g_free(r->domain);
+  if (r->realm) g_free(r->realm);
   if (r->msg) g_free(r->msg);
   g_free(r);
 }
@@ -68,7 +68,7 @@ gboolean return_seen(gpointer key, gpointer value, gpointer user_data)
   struct probedef *probe = (struct probedef *)value;
 
   if (probe->seen == 0) {
-    LOG(LOG_INFO, "removed probe %s:%u from list", probe->domain, probe->probeid);
+    LOG(LOG_INFO, "removed probe %s:%u from list", probe->realm, probe->probeid);
     return 1;
   }
   probe->seen = 0;
@@ -150,12 +150,12 @@ void refresh_database(MYSQL *mysql)
   MYSQL_ROW row;
   char qry[1024];
 
-  sprintf(qry,  "SELECT pr_ping_def.id, pr_ping_def.domid, pr_ping_def.tblid, pr_domain.name, "
+  sprintf(qry,  "SELECT pr_ping_def.id, pr_ping_def.domid, pr_ping_def.tblid, pr_realm.name, "
                 "       pr_ping_def.ipaddress, pr_ping_def.count, "
                 "       pr_ping_def.yellow,  pr_ping_def.red "
-                "FROM   pr_ping_def, pr_domain "
+                "FROM   pr_ping_def, pr_realm "
                 "WHERE  pr_ping_def.id > 1 and pr_ping_def.disable <> 'yes'"
-                "       and pr_ping_def.pgroup = '%d' and pr_domain.id = pr_ping_def.domid",
+                "       and pr_ping_def.pgroup = '%d' and pr_realm.id = pr_ping_def.domid",
                 (unsigned)OPT_VALUE_GROUPID);
 
   result = my_query(mysql, 1, qry);
@@ -174,7 +174,7 @@ void refresh_database(MYSQL *mysql)
       probe->id = id;
       if (atoi(row[1]) > 1) {
         probe->probeid = atoi(row[2]);
-        probe->domain = strdup(row[3]);
+        probe->realm = strdup(row[3]);
       } else {
         probe->probeid = probe->id;
       }
@@ -228,8 +228,8 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   }
 
   ping = xmlNewChild(xmlDocGetRootElement(doc), NULL, "ping", NULL);
-  if (probe->domain) {
-    xmlSetProp(ping, "domain", probe->domain);
+  if (probe->realm) {
+    xmlSetProp(ping, "realm", probe->realm);
   }
   sprintf(buffer, "%d", probe->probeid);      xmlSetProp(ping, "id", buffer);
   sprintf(buffer, "%s", probe->ipaddress);    xmlSetProp(ping, "ipaddress", buffer);

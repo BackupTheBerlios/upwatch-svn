@@ -62,6 +62,9 @@ void writeXMLresult(struct ipnetw *ipnets, int count_ipnets)
       if (HAVE_OPT(DOMAIN)) {
         xmlSetProp(iptraf, "domain", OPT_ARG(DOMAIN));
       }
+      if (HAVE_OPT(REALM)) {
+        xmlSetProp(iptraf, "realm", OPT_ARG(REALM));
+      }
       sprintf(buffer, "%s", inet_ntoa(ip));       xmlSetProp(iptraf, "ipaddress", buffer);
       sprintf(buffer, "%u", (int) now);           xmlSetProp(iptraf, "date", buffer);
       sprintf(buffer, "%u", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60)); 

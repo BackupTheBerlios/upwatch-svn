@@ -165,7 +165,7 @@ static int do_notification(trx *t)
   if (t->def->email[0] == 0) {
     return(notified);
   }
-  servername = domain_server_by_id(t->res->domain, t->def->server);
+  servername = realm_server_by_id(t->res->realm, t->def->server);
 
   sprintf(subject, "Subject: %s: %s %s (was %s)\n", servername,
                    t->probe->module_name, color2string(t->res->color),

@@ -37,15 +37,15 @@ void update_last_seen(module *probe)
   if (result) mysql_free_result(result);
 }
 
-MYSQL *open_domain(char *domain)
+MYSQL *open_realm(char *realm)
 {
   int i;
 
   if (!dblist) {
-    LOG(LOG_ERR, "open_domain but no dblist found");
+    LOG(LOG_ERR, "open_realm but no dblist found");
     return NULL;
   }
-  if (domain == NULL || domain[0] == 0) {
+  if (realm == NULL || realm[0] == 0) {
     if (dblist[0].mysql) return(dblist[0].mysql);
     dblist[0].mysql = open_database(dblist[0].host, dblist[0].port, 
                       dblist[0].db, dblist[0].user, dblist[0].password);
@@ -53,7 +53,7 @@ MYSQL *open_domain(char *domain)
   }
 
   for (i=0; i < dblist_cnt; i++) {
-    if (strcmp(dblist[i].domain, domain) == 0) {
+    if (strcmp(dblist[i].realm, realm) == 0) {
       if (dblist[i].mysql) return(dblist[i].mysql);
       dblist[i].mysql = open_database(dblist[i].host, dblist[i].port, 
                         dblist[i].db, dblist[i].user, dblist[i].password);
@@ -63,21 +63,21 @@ MYSQL *open_domain(char *domain)
   return(NULL);
 }
 
-int domain_server_by_name(char *domain, char *name)
+int realm_server_by_name(char *realm, char *name)
 {
   int i, id = -1;
   MYSQL_RES *result;
   MYSQL_ROW row;
 
   if (!dblist) {
-    LOG(LOG_ERR, "domain_server_by_name but no dblist found");
+    LOG(LOG_ERR, "realm_server_by_name but no dblist found");
     return id;
   }
-  if (domain == NULL || domain[0] == 0) {
+  if (realm == NULL || realm[0] == 0) {
     i = 0;
   } else {
     for (i=0; i < dblist_cnt; i++) {
-      if (strcmp(dblist[i].domain, domain) == 0) {
+      if (strcmp(dblist[i].realm, realm) == 0) {
         break;
       }
     }
@@ -92,21 +92,21 @@ int domain_server_by_name(char *domain, char *name)
   return(id);
 }
 
-int domain_server_by_ip(char *domain, char *ip)
+int realm_server_by_ip(char *realm, char *ip)
 {
   int i, id = -1;
   MYSQL_RES *result;
   MYSQL_ROW row;
 
   if (!dblist) {
-    LOG(LOG_ERR, "domain_server_by_name but no dblist found");
+    LOG(LOG_ERR, "realm_server_by_name but no dblist found");
     return id;
   }
-  if (domain == NULL || domain[0] == 0) {
+  if (realm == NULL || realm[0] == 0) {
     i = 0;
   } else {
     for (i=0; i < dblist_cnt; i++) {
-      if (strcmp(dblist[i].domain, domain) == 0) {
+      if (strcmp(dblist[i].realm, realm) == 0) {
         break;
       }
     }
@@ -121,7 +121,7 @@ int domain_server_by_ip(char *domain, char *ip)
   return(id);
 }
 
-char *domain_server_by_id(char *domain, int id)
+char *realm_server_by_id(char *realm, int id)
 {
   int i;
   char *name = NULL;
@@ -129,14 +129,14 @@ char *domain_server_by_id(char *domain, int id)
   MYSQL_ROW row;
 
   if (!dblist) {
-    LOG(LOG_ERR, "domain_server_by_name but no dblist found");
+    LOG(LOG_ERR, "realm_server_by_name but no dblist found");
     return name;
   }
-  if (domain == NULL || domain[0] == 0) {
+  if (realm == NULL || realm[0] == 0) {
     i = 0;
   } else {
     for (i=0; i < dblist_cnt; i++) {
-      if (strcmp(dblist[i].domain, domain) == 0) {
+      if (strcmp(dblist[i].realm, realm) == 0) {
         break;
       }
     }
@@ -161,7 +161,7 @@ static void modules_end_run(void)
   buf[0] = 0;
 
   for (i=0; i < dblist_cnt; i++) {
-    if (dblist[i].domain) free(dblist[i].domain);
+    if (dblist[i].realm) free(dblist[i].realm);
     if (dblist[i].host) free(dblist[i].host);
     if (dblist[i].db) free(dblist[i].db);
     if (dblist[i].user) free(dblist[i].user);
@@ -228,16 +228,16 @@ static void modules_start_run(void)
     MYSQL_RES *result;
     dblist = calloc(100, sizeof(struct dbspec));
     
-    result = my_query(db, 0, "select pr_domain.name, pr_domain.host, "
-                             "       pr_domain.port, pr_domain.db, pr_domain.user, "
-                             "       pr_domain.password, pr_domain.srvrbyname, "
-                             "       pr_domain.srvrbyid, pr_domain.srvrbyip "
-                             "from   pr_domain "
-                             "where  pr_domain.id > 1");
+    result = my_query(db, 0, "select pr_realm.name, pr_realm.host, "
+                             "       pr_realm.port, pr_realm.db, pr_realm.user, "
+                             "       pr_realm.password, pr_realm.srvrbyname, "
+                             "       pr_realm.srvrbyid, pr_realm.srvrbyip "
+                             "from   pr_realm "
+                             "where  pr_realm.id > 1");
     if (result) {
       MYSQL_ROW row;
       while ((row = mysql_fetch_row(result)) != NULL) {
-        dblist[dblist_cnt].domain = strdup(row[0]);
+        dblist[dblist_cnt].realm = strdup(row[0]);
         dblist[dblist_cnt].host = strdup(row[1]);
         dblist[dblist_cnt].port = atoi(row[2]);
         dblist[dblist_cnt].db = strdup(row[3]);

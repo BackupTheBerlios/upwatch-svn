@@ -8,7 +8,7 @@
 
 struct dbspec {
   int domid;
-  char *domain;
+  char *realm;
   char *host;
   int port;
   char *db;
@@ -56,7 +56,7 @@ int find_expired_probes(struct dbspec *dbspec)
     time_t now = time(NULL);
 
     probe = xmlNewChild(xmlDocGetRootElement(doc), NULL, row[0], NULL);
-    xmlSetProp(probe, "domain", dbspec->domain);
+    xmlSetProp(probe, "realm", dbspec->realm);
     xmlSetProp(probe, "id", row[1]);
     xmlSetProp(probe, "server", row[2]);
     sprintf(buffer, "%u", (int) now);	xmlSetProp(probe, "date", buffer);
@@ -65,13 +65,13 @@ int find_expired_probes(struct dbspec *dbspec)
     xmlNewChild(probe, NULL, "color", "400");  // PURPLE
     xmlNewChild(probe, NULL, "prevcolor", row[3]);
 
-    LOG(LOG_NOTICE, "%s: purpled %s %s", dbspec->domain, row[0], row[1]);
+    LOG(LOG_NOTICE, "%s: purpled %s %s", dbspec->realm, row[0], row[1]);
     count++;
   }
   if (count) {
     xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
     spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc, NULL);
-    LOG(LOG_NOTICE, "%s: purpled %u probes", dbspec->domain, count);
+    LOG(LOG_NOTICE, "%s: purpled %u probes", dbspec->realm, count);
   }
 
 errexit:
@@ -98,17 +98,17 @@ int run(void)
 
   LOG(LOG_INFO, "syncing..");
   uw_setproctitle("reading info from database");
-  result = my_query(upwatch, 0, "select pr_domain.id, pr_domain.name, pr_domain.host, "
-                                "       pr_domain.port, pr_domain.db, pr_domain.user, "
-                                "       pr_domain.password "
-                                "from   pr_domain "
-                                "where  pr_domain.id > 1");
+  result = my_query(upwatch, 0, "select pr_realm.id, pr_realm.name, pr_realm.host, "
+                                "       pr_realm.port, pr_realm.db, pr_realm.user, "
+                                "       pr_realm.password "
+                                "from   pr_realm "
+                                "where  pr_realm.id > 1");
   if (result) {
     while ((row = mysql_fetch_row(result)) != NULL) {
       struct dbspec db;
 
       db.domid = atoi(row[0]);
-      db.domain = row[1];
+      db.realm = row[1];
       db.host = row[2];
       db.port = atoi(row[3]);
       db.db = row[4];

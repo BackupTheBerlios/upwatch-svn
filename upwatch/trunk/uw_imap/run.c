@@ -13,7 +13,7 @@
 struct probedef {
   int           id;             /* unique probe id */
   int           probeid;        /* server probe id */
-  char          *domain;        /* database domain */
+  char          *realm;        /* database realm */
   int		seen;           /* seen */
   char		*ipaddress;     /* server name */
 #include "probe.def_h"
@@ -29,7 +29,7 @@ void free_probe(void *probe)
   struct probedef *r = (struct probedef *)probe;
 
   if (r->ipaddress) g_free(r->ipaddress);
-  if (r->domain) g_free(r->domain);
+  if (r->realm) g_free(r->realm);
   if (r->username) g_free(r->username);
   if (r->password) g_free(r->password);
   if (r->msg) g_free(r->msg);
@@ -48,7 +48,7 @@ gboolean return_seen(gpointer key, gpointer value, gpointer user_data)
   struct probedef *probe = (struct probedef *)value;
 
   if (probe->seen == 0) {
-    LOG(LOG_INFO, "removed probe %s:%u from list", probe->domain, probe->probeid);
+    LOG(LOG_INFO, "removed probe %s:%u from list", probe->realm, probe->probeid);
     return 1;
   }
   probe->seen = 0;
@@ -105,13 +105,13 @@ void refresh_database(MYSQL *mysql)
   MYSQL_ROW row;
   char qry[1024];
 
-  sprintf(qry,  "SELECT pr_imap_def.id, pr_imap_def.domid, pr_imap_def.tblid, pr_domain.name, "
+  sprintf(qry,  "SELECT pr_imap_def.id, pr_imap_def.domid, pr_imap_def.tblid, pr_realm.name, "
                 "       pr_imap_def.ipaddress, pr_imap_def.username, "
                 "       pr_imap_def.password, "
                 "       pr_imap_def.yellow,  pr_imap_def.red "
-                "FROM   pr_imap_def, pr_domain "
+                "FROM   pr_imap_def, pr_realm "
                 "WHERE  pr_imap_def.id > 1 and pr_imap_def.disable <> 'yes'"
-                "       and pr_imap_def.pgroup = '%d' and pr_domain.id = pr_imap_def.domid",
+                "       and pr_imap_def.pgroup = '%d' and pr_realm.id = pr_imap_def.domid",
                 (unsigned)OPT_VALUE_GROUPID);
 
   result = my_query(mysql, 1, qry);
@@ -129,7 +129,7 @@ void refresh_database(MYSQL *mysql)
       probe = g_malloc0(sizeof(struct probedef));
       if (atoi(row[1]) > 1) {
         probe->probeid = atoi(row[2]);
-        probe->domain = strdup(row[3]);
+        probe->realm = strdup(row[3]);
       } else {
         probe->probeid = probe->id;
       }
@@ -200,8 +200,8 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   }
 
   imap = xmlNewChild(xmlDocGetRootElement(doc), NULL, "imap", NULL);
-  if (probe->domain) {
-    xmlSetProp(imap, "domain", probe->domain);
+  if (probe->realm) {
+    xmlSetProp(imap, "realm", probe->realm);
   }
   sprintf(buffer, "%d", probe->probeid);      xmlSetProp(imap, "id", buffer);
   sprintf(buffer, "%s", probe->ipaddress);    xmlSetProp(imap, "ipaddress", buffer);

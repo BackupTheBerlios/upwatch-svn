@@ -289,7 +289,7 @@ sub main {
   my $db = DBI->connect("DBI:$dbtype:database=$dbname;host=$dbhost;port=3306", $dbuser, $dbpasswd ) || 
     die_with_exit(__LINE__, 1, DBI::errstr);
 
-  $cursor = $db->prepare("select * from pr_domain where id > 1");
+  $cursor = $db->prepare("select * from pr_realm where id > 1");
   $rc = $cursor->execute || die_with_exit(__LINE__, 0, $db->errstr);
   if ($cursor->rows == 0) {
     die_with_exit(__LINE__, 0, "table probe is empty?? Please fix");

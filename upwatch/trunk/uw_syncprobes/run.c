@@ -8,7 +8,7 @@
 
 struct dbspec {
   int domid;
-  char *domain;
+  char *realm;
   char *host;
   int port;
   char *db;
@@ -38,17 +38,17 @@ int run(void)
 
   LOG(LOG_INFO, "syncing..");
   uw_setproctitle("reading info from database");
-  result = my_query(upwatch, 0, "select pr_domain.id, pr_domain.name, pr_domain.host, "
-                                "       pr_domain.port, pr_domain.db, pr_domain.user, "
-                                "       pr_domain.password, probe.name as tbl "
-                                "from   probe, pr_domain " 
-                                "where  probe.id > 1 and pr_domain.id > 1");
+  result = my_query(upwatch, 0, "select pr_realm.id, pr_realm.name, pr_realm.host, "
+                                "       pr_realm.port, pr_realm.db, pr_realm.user, "
+                                "       pr_realm.password, probe.name as tbl "
+                                "from   probe, pr_realm " 
+                                "where  probe.id > 1 and pr_realm.id > 1");
   if (result) {
     while ((row = mysql_fetch_row(result)) != NULL) {
       struct dbspec db;
 
       db.domid = atoi(row[0]);
-      db.domain = row[1];
+      db.realm = row[1];
       db.host = row[2];
       db.port = atoi(row[3]);
       db.db = row[4];
@@ -73,7 +73,7 @@ struct deftable {
 };
  
 #define SIZE_STEP 1000
-struct deftable *read_def(MYSQL *db, char *table, int domainid, int isaggr, int *count)
+struct deftable *read_def(MYSQL *db, char *table, int realmid, int isaggr, int *count)
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
@@ -84,7 +84,7 @@ struct deftable *read_def(MYSQL *db, char *table, int domainid, int isaggr, int 
     result = my_query(db, 0, "select id, domid, tblid, unix_timestamp(changed) " 
                              "from   pr_%s_def "
                              "where  id > 1 and domid = %u "
-                             "order  by tblid asc", table, domainid);
+                             "order  by tblid asc", table, realmid);
   } else {
     result = my_query(db, 0, "select id, domid, tblid, unix_timestamp(changed) " 
                              "from   pr_%s_def "
@@ -157,7 +157,7 @@ void delete_record(MYSQL *upwatch, char *name, unsigned id)
 
 }
 
-void insert_record(MYSQL *db, char *name, unsigned tblid, unsigned domainid, MYSQL *upwatch)
+void insert_record(MYSQL *db, char *name, unsigned tblid, unsigned realmid, MYSQL *upwatch)
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
@@ -177,7 +177,7 @@ void insert_record(MYSQL *db, char *name, unsigned tblid, unsigned domainid, MYS
   numfields = mysql_num_fields(result);
   fields = mysql_fetch_fields(result);
 
-  sprintf(buffer, "insert into pr_%s_def set domid = '%u', tblid = '%u', ", name, domainid, tblid);
+  sprintf(buffer, "insert into pr_%s_def set domid = '%u', tblid = '%u', ", name, realmid, tblid);
   for (i=3; i<numfields; i++) {
     char escaped[16384];
 
@@ -263,7 +263,7 @@ void sync_table(MYSQL *upwatch, struct dbspec *dbspec, char *table)
   close_database(db);
   if (added || updated || deleted) {
     LOG(LOG_INFO, "synced %s:pr_%s_def, added %u, updated %u, deleted %u", 
-                    dbspec->domain, table, added, updated, deleted);
+                    dbspec->realm, table, added, updated, deleted);
   }
 }
 

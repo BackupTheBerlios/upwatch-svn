@@ -8,7 +8,7 @@
 struct probedef {
   int           id;             /* unique probe id */
   int           probeid;        /* server probe id */
-  char          *domain;        /* database domain */
+  char          *realm;        /* database realm */
   int		seen;           /* seen */
   char		*ipaddress;     /* server name */
 #include "probe.def_h"
@@ -23,7 +23,7 @@ void free_probe(void *probe)
   struct probedef *r = (struct probedef *)probe;
 
   if (r->ipaddress) g_free(r->ipaddress);
-  if (r->domain) g_free(r->domain);
+  if (r->realm) g_free(r->realm);
   if (r->dbname) g_free(r->dbname);
   if (r->dbuser) g_free(r->dbuser);
   if (r->dbpasswd) g_free(r->dbpasswd);
@@ -43,7 +43,7 @@ gboolean return_seen(gpointer key, gpointer value, gpointer user_data)
   struct probedef *probe = (struct probedef *)value;
 
   if (probe->seen == 0) {
-    LOG(LOG_INFO, "removed probe %s:%u from list", probe->domain, probe->probeid);
+    LOG(LOG_INFO, "removed probe %s:%u from list", probe->realm, probe->probeid);
     return 1;
   }
   probe->seen = 0;
@@ -100,14 +100,14 @@ void refresh_database(MYSQL *mysql)
   MYSQL_ROW row;
   char qry[1024];
 
-  sprintf(qry,  "SELECT pr_mssql_def.id, pr_mssql_def.domid, pr_mssql_def.tblid, pr_domain.name, "
+  sprintf(qry,  "SELECT pr_mssql_def.id, pr_mssql_def.domid, pr_mssql_def.tblid, pr_realm.name, "
                 "       pr_mssql_def.ipaddress, pr_mssql_def.dbname, "
                 "       pr_mssql_def.dbuser, pr_mssql_def.dbpasswd,"
                 "       pr_mssql_def.query, "
                 "       pr_mssql_def.yellow,  pr_mssql_def.red "
-                "FROM   pr_mssql_def, pr_domain "
+                "FROM   pr_mssql_def, pr_realm "
                 "WHERE  pr_mssql_def.id > 1 and pr_mssql_def.disable <> 'yes'"
-                "       and pr_mssql_def.pgroup = '%d' and pr_domain.id = pr_mssql_def.domid ",
+                "       and pr_mssql_def.pgroup = '%d' and pr_realm.id = pr_mssql_def.domid ",
                 (unsigned)OPT_VALUE_GROUPID);
 
   result = my_query(mysql, 1, qry);
@@ -125,7 +125,7 @@ void refresh_database(MYSQL *mysql)
       probe = g_malloc0(sizeof(struct probedef));
       if (atoi(row[1]) > 1) {
         probe->probeid = atoi(row[2]);
-        probe->domain = strdup(row[3]);
+        probe->realm = strdup(row[3]);
       } else {
         probe->probeid = probe->id;
       }
@@ -207,8 +207,8 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   }
 
   mssql = xmlNewChild(xmlDocGetRootElement(doc), NULL, "mssql", NULL);
-  if (probe->domain) {
-    xmlSetProp(mssql, "domain", probe->domain);
+  if (probe->realm) {
+    xmlSetProp(mssql, "realm", probe->realm);
   }
   sprintf(buffer, "%d", probe->probeid);      xmlSetProp(mssql, "id", buffer);
   sprintf(buffer, "%s", probe->ipaddress);    xmlSetProp(mssql, "ipaddress", buffer);
