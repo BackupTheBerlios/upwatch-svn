@@ -263,7 +263,7 @@ void probe(gpointer data, gpointer user_data)
   conn = PQsetdbLogin(dbhost, NULL, NULL, NULL, dbname, dbuser, dbpasswd);
   if (PQstatus(conn) == CONNECTION_BAD) {
     probe->msg = strdup(PQerrorMessage(conn));
-    return;
+    goto err_exit;
   }
   gettimeofday(&now, NULL);
   probe->connect = ((float) timeval_diff(&now, &start)) * 0.000001;
@@ -278,6 +278,7 @@ void probe(gpointer data, gpointer user_data)
 
 exit:
   PQclear(res);
+err_exit:
   PQfinish(conn);
   gettimeofday(&now, NULL);
   probe->total = ((float) timeval_diff(&now, &start)) * 0.000001;
