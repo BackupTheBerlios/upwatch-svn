@@ -41,10 +41,10 @@ pkglibdir = $(libdir)/upwatch
 pkgincludedir = $(includedir)/upwatch
 top_builddir = ..
 
-ACLOCAL = ${SHELL} /home/raarts/upwatch/missing --run aclocal-1.6
-AUTOCONF = ${SHELL} /home/raarts/upwatch/missing --run autoconf
-AUTOMAKE = ${SHELL} /home/raarts/upwatch/missing --run automake-1.6
-AUTOHEADER = ${SHELL} /home/raarts/upwatch/missing --run autoheader
+ACLOCAL = ${SHELL} /disk1/home/raarts/upwatch/missing --run aclocal-1.6
+AUTOCONF = ${SHELL} /disk1/home/raarts/upwatch/missing --run autoconf
+AUTOMAKE = ${SHELL} /disk1/home/raarts/upwatch/missing --run automake-1.6
+AUTOHEADER = ${SHELL} /disk1/home/raarts/upwatch/missing --run autoheader
 
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 INSTALL = /usr/bin/install -c
@@ -70,7 +70,7 @@ OBJEXT = o
 PATH_SEPARATOR = :
 
 SHELL = /bin/sh
-AMTAR = ${SHELL} /home/raarts/upwatch/missing --run tar
+AMTAR = ${SHELL} /disk1/home/raarts/upwatch/missing --run tar
 AS = @AS@
 AWK = gawk
 CC = gcc
@@ -122,7 +122,7 @@ VERSION = 0.8
 XSLTPROC = /usr/bin/xsltproc
 am__include = include
 am__quote = 
-install_sh = /home/raarts/upwatch/install-sh
+install_sh = /disk1/home/raarts/upwatch/install-sh
 docdir = $(datadir)/doc/$(PACKAGE)-$(VERSION)
 upwatchdir = $(datadir)/$(PACKAGE)
 confdir = $(sysconfdir)/$(PACKAGE).d
@@ -131,25 +131,21 @@ initdir = $(upwatchdir)/init
 logdir = ${localstatedir}/log/upwatch
 spooldir = ${localstatedir}/spool/upwatch
 
-program = uw_null
-
 #SOLARISLIBS = -lresolv
 
+program = uw_null
 sbin_PROGRAMS = $(program)
-man_MANS = $(program).1
-conf_DATA = $(program).conf
+man_MANS = uw_null.1
+conf_DATA = $(program:%=%.conf)
 init_DATA = $(INITFILES)
 
-uw_null_SOURCES = run.c cmd_options.h cmd_options.c \
- $(SPECFILES) $(INITFILES) 
-
+uw_null_SOURCES = run.c uw_null.h uw_null.c $(SPECFILES) $(INITFILES) 
 uw_null_CFLAGS = -I/usr/include/mysql  -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include    -I/usr/include/libxml2   $(AM_CFLAGS)
-BUILT_SOURCES = cmd_options.h cmd_options.c $(SPECFILES) $(INITFILES)
-INCLUDES = -I../upwatch 
-EXTRA_DIST = cmd_options.def $(program).conf
-LDADD = $(DB_O) $(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) -L/usr/lib -lmysqlclient \
-   -lglib-2.0    -lxml2 -lz -lm   $(SOLARISLIBS)
+uw_null_LDADD = uw_null_$(DB_O) uw_null_$(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) -L/usr/lib -lmysqlclient  -lglib-2.0   $(SOLARISLIBS)
 
+BUILT_SOURCES = $(program:%=%.1) $(program:%=%.h) $(program:%=%.c) $(SPECFILES) $(INITFILES)
+INCLUDES = -I../upwatch
+EXTRA_DIST = $(program:%=%.conf) $(program:%=%.def) 
 
 LIBUPWATCH = $(top_srcdir)/upwatch/libupwatch.a  -lxml2 -lz -lm  
 LIBUPWATCHT = $(top_srcdir)/upwatch/libupwatcht.a  -lxml2 -lz -lm  
@@ -181,7 +177,7 @@ AGDEFINES = -Dconfdir=$(confdir) -Dsysconfdir=$(sysconfdir) -Dsbindir=$(sbindir)
  -Dlogdir=$(logdir) -Dspooldir=$(spooldir)
 
 
-CLEANFILES = cmd_options.c cmd_options.h *.1 Makefile.in \
+CLEANFILES = $(program:%=%.c) $(program:%=%.h) $(program:%=%.1) Makefile.in \
   $(PROBFILES) $(SPECFILES) $(INITFILES)
 
 subdir = uw_null
@@ -194,13 +190,12 @@ PROGRAMS = $(sbin_PROGRAMS)
 am__objects_1 =
 am__objects_2 = $(am__objects_1) $(am__objects_1)
 am__objects_3 = $(am__objects_1) $(am__objects_1) $(am__objects_1)
-am_uw_null_OBJECTS = uw_null-run.$(OBJEXT) uw_null-cmd_options.$(OBJEXT) \
+am_uw_null_OBJECTS = uw_null-run.$(OBJEXT) uw_null-uw_null.$(OBJEXT) \
 	$(am__objects_2) $(am__objects_3)
 uw_null_OBJECTS = $(am_uw_null_OBJECTS)
-uw_null_LDADD = $(LDADD)
-#uw_null_DEPENDENCIES = db.o main.o \
+#uw_null_DEPENDENCIES = uw_null_$(DB_O) uw_null_$(MAIN_O) \
 #	$(top_srcdir)/upwatch/libupwatch.a
-uw_null_DEPENDENCIES = db.o main.o \
+uw_null_DEPENDENCIES = uw_null_$(DB_O) uw_null_$(MAIN_O) \
 	$(top_srcdir)/upwatch/libupwatch.a
 uw_null_LDFLAGS =
 
@@ -211,8 +206,8 @@ LDFLAGS =
 LIBS = 
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-DEP_FILES = ./$(DEPDIR)/uw_null-cmd_options.Po \
-	./$(DEPDIR)/uw_null-run.Po
+DEP_FILES = ./$(DEPDIR)/uw_null-run.Po \
+	./$(DEPDIR)/uw_null-uw_null.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -270,7 +265,7 @@ clean-sbinPROGRAMS:
 	  rm -f $$p $$f ; \
 	done
 uw_null-run.$(OBJEXT): run.c
-uw_null-cmd_options.$(OBJEXT): cmd_options.c
+uw_null-uw_null.$(OBJEXT): uw_null.c
 uw_null$(EXEEXT): $(uw_null_OBJECTS) $(uw_null_DEPENDENCIES) 
 	@rm -f uw_null$(EXEEXT)
 	$(LINK) $(uw_null_LDFLAGS) $(uw_null_OBJECTS) $(uw_null_LDADD) $(LIBS)
@@ -281,8 +276,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-include ./$(DEPDIR)/uw_null-cmd_options.Po
 include ./$(DEPDIR)/uw_null-run.Po
+include ./$(DEPDIR)/uw_null-uw_null.Po
 
 distclean-depend:
 	-rm -rf ./$(DEPDIR)
@@ -323,23 +318,23 @@ uw_null-run.lo: run.c
 	$(CCDEPMODE) $(depcomp) \
 	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(uw_null_CFLAGS) $(CFLAGS) -c -o uw_null-run.lo `test -f 'run.c' || echo '$(srcdir)/'`run.c
 
-uw_null-cmd_options.o: cmd_options.c
-	source='cmd_options.c' object='uw_null-cmd_options.o' libtool=no \
-	depfile='$(DEPDIR)/uw_null-cmd_options.Po' tmpdepfile='$(DEPDIR)/uw_null-cmd_options.TPo' \
+uw_null-uw_null.o: uw_null.c
+	source='uw_null.c' object='uw_null-uw_null.o' libtool=no \
+	depfile='$(DEPDIR)/uw_null-uw_null.Po' tmpdepfile='$(DEPDIR)/uw_null-uw_null.TPo' \
 	$(CCDEPMODE) $(depcomp) \
-	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(uw_null_CFLAGS) $(CFLAGS) -c -o uw_null-cmd_options.o `test -f 'cmd_options.c' || echo '$(srcdir)/'`cmd_options.c
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(uw_null_CFLAGS) $(CFLAGS) -c -o uw_null-uw_null.o `test -f 'uw_null.c' || echo '$(srcdir)/'`uw_null.c
 
-uw_null-cmd_options.obj: cmd_options.c
-	source='cmd_options.c' object='uw_null-cmd_options.obj' libtool=no \
-	depfile='$(DEPDIR)/uw_null-cmd_options.Po' tmpdepfile='$(DEPDIR)/uw_null-cmd_options.TPo' \
+uw_null-uw_null.obj: uw_null.c
+	source='uw_null.c' object='uw_null-uw_null.obj' libtool=no \
+	depfile='$(DEPDIR)/uw_null-uw_null.Po' tmpdepfile='$(DEPDIR)/uw_null-uw_null.TPo' \
 	$(CCDEPMODE) $(depcomp) \
-	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(uw_null_CFLAGS) $(CFLAGS) -c -o uw_null-cmd_options.obj `cygpath -w cmd_options.c`
+	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(uw_null_CFLAGS) $(CFLAGS) -c -o uw_null-uw_null.obj `cygpath -w uw_null.c`
 
-uw_null-cmd_options.lo: cmd_options.c
-	source='cmd_options.c' object='uw_null-cmd_options.lo' libtool=yes \
-	depfile='$(DEPDIR)/uw_null-cmd_options.Plo' tmpdepfile='$(DEPDIR)/uw_null-cmd_options.TPlo' \
+uw_null-uw_null.lo: uw_null.c
+	source='uw_null.c' object='uw_null-uw_null.lo' libtool=yes \
+	depfile='$(DEPDIR)/uw_null-uw_null.Plo' tmpdepfile='$(DEPDIR)/uw_null-uw_null.TPlo' \
 	$(CCDEPMODE) $(depcomp) \
-	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(uw_null_CFLAGS) $(CFLAGS) -c -o uw_null-cmd_options.lo `test -f 'cmd_options.c' || echo '$(srcdir)/'`cmd_options.c
+	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(uw_null_CFLAGS) $(CFLAGS) -c -o uw_null-uw_null.lo `test -f 'uw_null.c' || echo '$(srcdir)/'`uw_null.c
 CCDEPMODE = depmode=gcc3
 
 mostlyclean-libtool:
@@ -582,62 +577,31 @@ uninstall-man: uninstall-man1
 	uninstall-man uninstall-man1 uninstall-sbinPROGRAMS
 
 
-main.o: $(top_srcdir)/common/main.c cmd_options.def $(CMDDEF)
-	$(COMPILE)  -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include    -I/usr/include/libxml2   -I/usr/include/mysql $(AM_CFLAGS) -c $(top_srcdir)/common/main.c
+%_main.o: $(top_srcdir)/common/main.c $(@:%_main.o=%.def) $(CMDDEF)
+	$(COMPILE) -include $(@:%_main.o=%.h) -o $@  -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include    -I/usr/include/libxml2   \
+		-I/usr/include/mysql $(AM_CFLAGS) -c $(top_srcdir)/common/main.c
 
-db.o: $(top_srcdir)/common/db.c cmd_options.def $(CMDDEF)
-	$(COMPILE)  -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include    -I/usr/include/libxml2   -I/usr/include/mysql $(AM_CFLAGS) -c $(top_srcdir)/common/db.c
+%_db.o: $(top_srcdir)/common/db.c $(@:%_db.o=%.def) $(CMDDEF)
+	$(COMPILE) -include $(@:%_db.o=%.h) -o $@  -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include    -I/usr/include/libxml2   \
+		-I/usr/include/mysql $(AM_CFLAGS) -c $(top_srcdir)/common/db.c
 
-cmd_options.h: cmd_options.def $(CMDDEF)
-	autogen -b cmd_options $(AGDEFINES) $(GENINCL) cmd_options.def
+%.c %.h: %.def
+	autogen -b $(<:%.def=%) $(AGDEFINES) $(GENINCL) $<
 
-probe.def_h: probe.def $(PROBDEF)
+probe.def_h probe.res_h probe.enum probe.mysql probe.dtd probe.dtd-inc probe.xml: probe.def $(PROBDEF)
 	autogen -b probe $(AGDEFINES) $(GENINCL) -T $(PROBTPL) probe.def
 
-probe.res_h: probe.def $(PROBDEF)
-	autogen -b probe $(AGDEFINES) $(GENINCL) -T $(PROBTPL) probe.def
+%.1: %.def
+	autogen -b $(<:%.def=%) $(AGDEFINES) $(GENINCL) -T $(MAN1TPL) $<
 
-probe.enum: probe.def $(PROBDEF) 
-	autogen -b probe $(AGDEFINES) $(GENINCL) -T $(PROBTPL) probe.def
+%.redhat %.suse %.solaris: %.def
+	autogen -b $(<:%.def=%) $(AGDEFINES) $(GENINCL) -T $(INITTPL) $<
+	chmod +x $(<:%.def=%).redhat
+	chmod +x $(<:%.def=%).suse
+	chmod +x $(<:%.def=%).solaris
 
-probe.mysql: probe.def $(PROBDEF) 
-	autogen -b probe $(AGDEFINES) $(GENINCL) -T $(PROBTPL) probe.def
-
-probe.dtd: probe.def $(PROBDEF)
-	autogen -b probe $(AGDEFINES) $(GENINCL) -T $(PROBTPL) probe.def
-
-probe.dtd-inc: probe.def $(PROBDEF)
-	autogen -b probe $(AGDEFINES) $(GENINCL) -T $(PROBTPL) probe.def
-
-probe.xml: probe.def $(PROBDEF)
-	autogen -b probe $(AGDEFINES) $(GENINCL) -T $(PROBTPL) probe.def
-
-$(program).1: cmd_options.def $(top_srcdir)/common/man1.tpl
-	autogen -b $(program) $(AGDEFINES) $(GENINCL) -T $(MAN1TPL) cmd_options.def
-
-$(program).redhat: cmd_options.def $(CMDDEF)
-	autogen -b $(program) $(AGDEFINES) $(GENINCL) -T $(INITTPL) cmd_options.def
-	chmod +x $(program).redhat
-	chmod +x $(program).suse
-	chmod +x $(program).solaris
-
-$(program).suse: cmd_options.def $(CMDDEF)
-	autogen -b $(program) $(AGDEFINES) $(GENINCL) -T $(INITTPL) cmd_options.def
-	chmod +x $(program).redhat
-	chmod +x $(program).suse
-	chmod +x $(program).solaris
-
-$(program).solaris: cmd_options.def $(CMDDEF)
-	autogen -b $(program) $(AGDEFINES) $(GENINCL) -T $(INITTPL) cmd_options.def
-	chmod +x $(program).redhat
-	chmod +x $(program).suse
-	chmod +x $(program).solaris
-
-$(program).spec-requires: cmd_options.def $(CMDDEF) $(SPECTPL)
-	autogen -b $(program) $(AGDEFINES) $(GENINCL) -T $(SPECTPL) cmd_options.def
-
-$(program).spec-files: cmd_options.def $(CMDDEF) $(SPECTPL)
-	autogen -b $(program) $(AGDEFINES) $(GENINCL) -T $(SPECTPL) cmd_options.def
+%.spec-requires %.spec-files: %.def
+	autogen -b $(<:%.def=%) $(AGDEFINES) $(GENINCL) -T $(SPECTPL) $<
 
 install-data-local:
 	if test `${ID} -u` -eq 0; then \

@@ -9,7 +9,6 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include "cmd_options.h"
 #include "generic.h"
 
 #ifdef DMALLOC 

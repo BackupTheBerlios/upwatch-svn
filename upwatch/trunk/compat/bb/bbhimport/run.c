@@ -1,7 +1,13 @@
 #include "config.h"
 #include <generic.h>
 #include "bbhimport.h"
-#include "cmd_options.h"
+
+/* list of probes */
+typedef enum
+{
+PROBE_EMPTY = 1,
+#include "../../../probes.enum"
+} probeidx;
 
 void process(MYSQL *mysql, char *ip, char *hostname, char *args);
 

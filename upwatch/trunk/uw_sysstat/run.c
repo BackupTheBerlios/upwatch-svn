@@ -1,7 +1,7 @@
 #include "config.h"
 
 #include <generic.h>
-#include "cmd_options.h"
+#include "uw_sysstat.h"
 #include <statgrab.h>
 
 #include <sys/socket.h>

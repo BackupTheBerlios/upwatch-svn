@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include "cmd_options.h"
+#include "uw_httpget.h"
 #define TIMEOUT	50000000L
 
 struct probedef {

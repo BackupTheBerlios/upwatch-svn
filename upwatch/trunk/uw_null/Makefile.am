@@ -1,24 +1,23 @@
 include $(top_srcdir)/Makefile.am.path
 
-program = uw_null
-
 if SOLARIS
 SOLARISLIBS = -lresolv
 endif
 
+program = uw_null
 sbin_PROGRAMS = $(program)
-man_MANS = $(program).1
-conf_DATA = $(program).conf
+man_MANS = uw_null.1
+conf_DATA = $(program:%=%.conf)
 init_DATA = $(INITFILES)
 
-uw_null_SOURCES = run.c cmd_options.h cmd_options.c \
- $(SPECFILES) $(INITFILES) 
+uw_null_SOURCES = run.c uw_null.h uw_null.c $(SPECFILES) $(INITFILES) 
 uw_null_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ $(AM_CFLAGS)
-BUILT_SOURCES = cmd_options.h cmd_options.c $(SPECFILES) $(INITFILES)
-INCLUDES = -I../upwatch 
-EXTRA_DIST = cmd_options.def $(program).conf
-LDADD = $(DB_O) $(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @MYSQL_LIBS@ \
-  @LIBGLIB2_LIBS@ @LIBXML2_LIBS@ $(SOLARISLIBS)
+uw_null_LDADD = uw_null_$(DB_O) uw_null_$(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @MYSQL_LIBS@ @LIBGLIB2_LIBS@ $(SOLARISLIBS)
+
+BUILT_SOURCES = $(program:%=%.1) $(program:%=%.h) $(program:%=%.c) $(SPECFILES) $(INITFILES)
+INCLUDES = -I../upwatch
+EXTRA_DIST = $(program:%=%.conf) $(program:%=%.def) 
+
 include $(top_srcdir)/Makefile.am.common
 
 install-data-local:

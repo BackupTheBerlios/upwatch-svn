@@ -9,7 +9,7 @@
 
 #include <generic.h>
 #include <st.h>
-#include "cmd_options.h"
+#include "uw_send.h"
 
 struct q_info {
   char *name;     // queue name

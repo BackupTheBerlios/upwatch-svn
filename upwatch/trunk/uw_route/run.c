@@ -9,7 +9,7 @@
 #include <netinet/in_systm.h>
 
 #include <generic.h>
-#include "cmd_options.h"
+#include "uw_route.h"
 #include "slot.h"
 
 #ifdef DMALLOC

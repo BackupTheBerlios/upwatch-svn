@@ -2,7 +2,7 @@ include $(top_srcdir)/Makefile.am.path
 
 program = uw_template
 sbin_PROGRAMS = $(program)
-man_MANS = $(program).1
+man_MANS = uw_template.1
 conf_DATA = $(program).conf
 init_DATA = $(INITFILES)
 

@@ -2,7 +2,7 @@
 #include <generic.h>
 #include <sys/time.h>
 
-#include "cmd_options.h"
+#include "uw_postgresql.h"
 
 struct probedef {
   int		id;             /* server probe id */

@@ -1,4 +1,5 @@
 #include "config.h"
+#include "uw_accept.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -11,7 +12,6 @@
 
 #include <generic.h>
 #include <st.h>
-#include "cmd_options.h"
 
 int thread_count;
 int spooldir_strlen; // strlen of spooldir

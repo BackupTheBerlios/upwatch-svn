@@ -2,7 +2,6 @@
 #include <mysql.h>
 #include <stdarg.h>
 #include <generic.h>
-#include "cmd_options.h"
 
 #ifdef DMALLOC 
 #include "dmalloc.h"

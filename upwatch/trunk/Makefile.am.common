@@ -26,63 +26,32 @@ PROBFILES  = probe.def_h probe.res_h probe.enum probe.mysql probe.xml probe.dtd 
 AGDEFINES = -Dconfdir=$(confdir) -Dsysconfdir=$(sysconfdir) -Dsbindir=$(sbindir) \
  -Dlogdir=$(logdir) -Dspooldir=$(spooldir)
 
-main.o: $(top_srcdir)/common/main.c cmd_options.def $(CMDDEF)
-	$(COMPILE) @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ $(AM_CFLAGS) -c $(top_srcdir)/common/main.c
+%_main.o: $(top_srcdir)/common/main.c $(@:%_main.o=%.def) $(CMDDEF)
+	$(COMPILE) -include $(@:%_main.o=%.h) -o $@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ \
+		@MYSQL_CFLAGS@ $(AM_CFLAGS) -c $(top_srcdir)/common/main.c
 
-db.o: $(top_srcdir)/common/db.c cmd_options.def $(CMDDEF)
-	$(COMPILE) @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ $(AM_CFLAGS) -c $(top_srcdir)/common/db.c
+%_db.o: $(top_srcdir)/common/db.c $(@:%_db.o=%.def) $(CMDDEF)
+	$(COMPILE) -include $(@:%_db.o=%.h) -o $@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ \
+		@MYSQL_CFLAGS@ $(AM_CFLAGS) -c $(top_srcdir)/common/db.c
 
-cmd_options.h: cmd_options.def $(CMDDEF)
-	autogen -b cmd_options $(AGDEFINES) $(GENINCL) cmd_options.def
-
-probe.def_h: probe.def $(PROBDEF)
+%.c %.h: %.def
+	autogen -b $(<:%.def=%) $(AGDEFINES) $(GENINCL) $<
+	
+probe.def_h probe.res_h probe.enum probe.mysql probe.dtd probe.dtd-inc probe.xml: probe.def $(PROBDEF)
 	autogen -b probe $(AGDEFINES) $(GENINCL) -T $(PROBTPL) probe.def
 
-probe.res_h: probe.def $(PROBDEF)
-	autogen -b probe $(AGDEFINES) $(GENINCL) -T $(PROBTPL) probe.def
+%.1: %.def
+	autogen -b $(<:%.def=%) $(AGDEFINES) $(GENINCL) -T $(MAN1TPL) $<
 
-probe.enum: probe.def $(PROBDEF) 
-	autogen -b probe $(AGDEFINES) $(GENINCL) -T $(PROBTPL) probe.def
+%.redhat %.suse %.solaris: %.def
+	autogen -b $(<:%.def=%) $(AGDEFINES) $(GENINCL) -T $(INITTPL) $<
+	chmod +x $(<:%.def=%).redhat
+	chmod +x $(<:%.def=%).suse
+	chmod +x $(<:%.def=%).solaris
 
-probe.mysql: probe.def $(PROBDEF) 
-	autogen -b probe $(AGDEFINES) $(GENINCL) -T $(PROBTPL) probe.def
+%.spec-requires %.spec-files: %.def
+	autogen -b $(<:%.def=%) $(AGDEFINES) $(GENINCL) -T $(SPECTPL) $<
 
-probe.dtd: probe.def $(PROBDEF)
-	autogen -b probe $(AGDEFINES) $(GENINCL) -T $(PROBTPL) probe.def
-
-probe.dtd-inc: probe.def $(PROBDEF)
-	autogen -b probe $(AGDEFINES) $(GENINCL) -T $(PROBTPL) probe.def
-
-probe.xml: probe.def $(PROBDEF)
-	autogen -b probe $(AGDEFINES) $(GENINCL) -T $(PROBTPL) probe.def
-
-$(program).1: cmd_options.def $(top_srcdir)/common/man1.tpl
-	autogen -b $(program) $(AGDEFINES) $(GENINCL) -T $(MAN1TPL) cmd_options.def
-
-$(program).redhat: cmd_options.def $(CMDDEF)
-	autogen -b $(program) $(AGDEFINES) $(GENINCL) -T $(INITTPL) cmd_options.def
-	chmod +x $(program).redhat
-	chmod +x $(program).suse
-	chmod +x $(program).solaris
-
-$(program).suse: cmd_options.def $(CMDDEF)
-	autogen -b $(program) $(AGDEFINES) $(GENINCL) -T $(INITTPL) cmd_options.def
-	chmod +x $(program).redhat
-	chmod +x $(program).suse
-	chmod +x $(program).solaris
-
-$(program).solaris: cmd_options.def $(CMDDEF)
-	autogen -b $(program) $(AGDEFINES) $(GENINCL) -T $(INITTPL) cmd_options.def
-	chmod +x $(program).redhat
-	chmod +x $(program).suse
-	chmod +x $(program).solaris
-
-$(program).spec-requires: cmd_options.def $(CMDDEF) $(SPECTPL)
-	autogen -b $(program) $(AGDEFINES) $(GENINCL) -T $(SPECTPL) cmd_options.def
-
-$(program).spec-files: cmd_options.def $(CMDDEF) $(SPECTPL)
-	autogen -b $(program) $(AGDEFINES) $(GENINCL) -T $(SPECTPL) cmd_options.def
-
-CLEANFILES = cmd_options.c cmd_options.h *.1 Makefile.in \
+CLEANFILES = $(program:%=%.c) $(program:%=%.h) $(program:%=%.1) Makefile.in \
   $(PROBFILES) $(SPECFILES) $(INITFILES)
 

@@ -1,5 +1,5 @@
 #include "generic.h"
-#include "cmd_options.h"
+#include "uw_iptraf.h"
 
 #include <unistd.h>
 #include <sys/socket.h>

@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#include "cmd_options.h"
+#include "uw_pop3.h"
 #define TIMEOUT	10000000L
 
 struct probedef {

@@ -4,14 +4,17 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#ifdef UW_PROCESS
+#include "uw_process_glob.h"
+#endif
+#ifdef UW_NOTIFY
+#include "uw_notify_glob.h"
+#endif
 
 #include <netdb.h>
 #include <netinet/in.h>
 #include <netinet/in_systm.h>
 
-#include <generic.h>
-#include "cmd_options.h"
-#include "uw_process.h"
 #include "slot.h"
 #include "modules.inc"
 
@@ -200,16 +203,15 @@ int init(void)
 {
   struct sigaction new_action;
 
-  if (I_AM(uw_notify) && HAVE_OPT(SUMMARIZE)) {
-    fprintf(stderr, "Illegal option --summarize\n");
-    return 1;
-  }
-
   daemonize = TRUE;
-  if (HAVE_OPT(RUN_QUEUE) || HAVE_OPT(SUMMARIZE)) {
+  if (HAVE_OPT(RUN_QUEUE)) {
     every = ONE_SHOT;
   } else {
     every = EVERY_5SECS;
+  }
+#ifdef UW_PROCESS
+  if (HAVE_OPT(SUMMARIZE)) {
+    every = ONE_SHOT;
   }
 
   // check trust option strings
@@ -239,6 +241,7 @@ int init(void)
       } 
     }
   }
+#endif
   if (!HAVE_OPT(INPUT)) {
     LOG(LOG_NOTICE, "Error: no input queue given");
     return(0);
@@ -261,6 +264,7 @@ int init(void)
   return(1);
 }
 
+#ifdef UW_PROCESS
 // return true if the given probename is trusted
 int trust(char *name)
 {
@@ -281,6 +285,7 @@ int trust(char *name)
   }
   return 0;
 }
+#endif
 
 static int mystrcmp(char **a, char **b)
 {
@@ -349,9 +354,11 @@ static int resummarize(void);
 
   if (debug > 3) { LOG(LOG_DEBUG, "run()"); }
 
+#ifdef UW_PROCESS
   if (HAVE_OPT(SUMMARIZE)) {
     return(resummarize()); // --summarize
   }
+#endif
 
   // the following statement ensures the nss-*.so libraries are loaded
   // before fork() is called. If not, AND this program is run under gdb
@@ -466,8 +473,10 @@ static int handle_file(gpointer data, gpointer user_data)
   int i;
   int output_ct = STACKCT_OPT(OUTPUT);
   char **output_pn = STACKLST_OPT(OUTPUT);
+#ifdef UW_PROCESS
   int notify_ct = STACKCT_OPT(NOTIFY);
   char **notify_pn = STACKLST_OPT(NOTIFY);
+#endif
 
   if (debug) { LOG(LOG_DEBUG, "Processing %s", filename); }
 
@@ -547,8 +556,10 @@ static int handle_file(gpointer data, gpointer user_data)
   }
   failed = UpwatchXmlDoc("result");
   xmlSetDocCompressMode(failed, OPT_VALUE_COMPRESS);
+#ifdef UW_PROCESS
   notify = UpwatchXmlDoc("result");
   xmlSetDocCompressMode(notify, OPT_VALUE_COMPRESS);
+#endif
 
   /* Second level is a list of probes, but be laxist */
   for (failures = 0; cur != NULL;) {
@@ -599,6 +610,7 @@ static int handle_file(gpointer data, gpointer user_data)
       break;
     }
     if (found) {
+#ifdef UW_PROCESS
       xmlNodePtr node, new;
 
       if (t->notify) {
@@ -608,6 +620,7 @@ static int handle_file(gpointer data, gpointer user_data)
         xmlFreeNode(node);
         xmlAddChild(xmlDocGetRootElement(notify), new);
       }
+#endif
     } else {
       xmlNodePtr node, new;
 
@@ -628,9 +641,11 @@ static int handle_file(gpointer data, gpointer user_data)
   for (i=0; i < output_ct; i++) {
     spool_result(OPT_ARG(SPOOLDIR), output_pn[i], doc, NULL);
   }
+#ifdef UW_PROCESS
   for (i=0; i < notify_ct; i++) {
     spool_result(OPT_ARG(SPOOLDIR), notify_pn[i], doc, NULL);
   }
+#endif
   unlink(filename);
 
 errexit:
@@ -642,6 +657,7 @@ errexit:
   return 0;
 }
 
+#ifdef UW_PROCESS
 static int resummarize(void)
 {
   gint idx, found;
@@ -743,3 +759,5 @@ extern int forever;
   close_database(mysql);
   return(found);
 }
+#endif
+

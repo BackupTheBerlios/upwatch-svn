@@ -3,7 +3,7 @@
 #include <limits.h>
 #include <sys/time.h>
 
-#include "cmd_options.h"
+#include "uw_snmpget.h"
 #include <ucd-snmp/ucd-snmp-config.h>
 #include <ucd-snmp/ucd-snmp-includes.h>
 #include <ucd-snmp/mib.h>

@@ -14,7 +14,7 @@
 #include <ctype.h>
 
 #include <st.h>
-#include "cmd_options.h"
+#include "uw_acceptbb.h"
 
 #define TIMEOUT 10000000L
 int thread_count;

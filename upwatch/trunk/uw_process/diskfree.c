@@ -1,9 +1,13 @@
 #include "config.h"
 #include <string.h>
 #include <generic.h>
-#include "cmd_options.h"
 #include "slot.h"
-#include "uw_process.h"
+#ifdef UW_PROCESS
+#include "uw_process_glob.h"
+#endif
+#ifdef UW_NOTIFY
+#include "uw_notify_glob.h"
+#endif
 
 #ifdef DMALLOC
 #include "dmalloc.h"
@@ -124,8 +128,10 @@ module diskfree_module  = {
   NO_GET_FROM_XML,
   fix_result,
   get_def,
+#ifdef UW_PROCESS
   NO_STORE_RESULTS,
   NO_SUMMARIZE,
+#endif
   NO_END_PROBE,
   NO_END_RUN
 };

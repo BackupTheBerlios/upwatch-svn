@@ -3,20 +3,25 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#ifdef UW_PROCESS
+#include "uw_process_glob.h"
+#endif
+#ifdef UW_NOTIFY
+#include "uw_notify_glob.h"
+#endif
 
 #include <netdb.h>
 #include <netinet/in.h>
 #include <netinet/in_systm.h>
 
 #include <generic.h>
-#include "cmd_options.h"
-#include "uw_process.h"
 #include "slot.h"
 
 #ifdef DMALLOC
 #include "dmalloc.h"
 #endif
 
+#ifdef UW_PROCESS
 struct summ_spec summ_info[] = {
   { SLOT_DAY,   0,  "raw",   "day"   },
   { SLOT_WEEK,  7,  "day",   "week"  },
@@ -25,6 +30,7 @@ struct summ_spec summ_info[] = {
   { SLOT_YEAR5, 5,  "year",  "5year" },
   { -1,         0,  NULL,    NULL    }
 };
+#endif
 
 void free_res(void *res)
 {
@@ -87,6 +93,12 @@ static void *get_def(module *probe, struct probe_result *res)
 
     if (mysql_num_rows(result) == 0) { // DEF RECORD NOT FOUND
       mysql_free_result(result);
+#ifdef UW_NOTIFY
+      LOG(LOG_NOTICE, "pr_%s_def id %u not found - skipped",
+                       res->name, res->probeid);
+      return(NULL);
+#endif
+#ifdef UW_PROCESS
       if (!trust(res->name)) {
         LOG(LOG_NOTICE, "pr_%s_def id %u not found and not trusted - skipped",
                          res->name, res->probeid);
@@ -116,6 +128,7 @@ static void *get_def(module *probe, struct probe_result *res)
                         "from   pr_%s_def "
                         "where  id = '%u'", res->name, res->probeid);
       if (!result) return(NULL);
+#endif
     }
     row = mysql_fetch_row(result);
     if (row) {
@@ -149,6 +162,7 @@ static void *get_def(module *probe, struct probe_result *res)
   return(def);
 }
 
+#ifdef UW_PROCESS
 //*******************************************************************
 // RETRIEVE PRECEDING RAW RECORD FROM DATABASE (well just the color)
 //*******************************************************************
@@ -216,6 +230,7 @@ static struct probe_result *get_following_record(module *probe, struct probe_def
   mysql_free_result(result);
   return(nxt);
 }
+#endif
 
 //*******************************************************************
 // UPDATE PR_STATUS
@@ -406,6 +421,7 @@ static void update_server_color(module *probe, struct probe_def *def, struct pro
   mysql_free_result(result);
 }
 
+#ifdef UW_PROCESS
 //*******************************************************************
 // IS THIS SLOT COMPLETELY FILLED?
 //*******************************************************************
@@ -434,6 +450,7 @@ int slot_is_complete(module *probe, char *name, guint probeid, int i, guint slot
   mysql_free_result(result);
   return(val);
 }
+#endif
 
 /*
  * PSEUDO CODE:
@@ -514,6 +531,7 @@ int process(module *probe, trx *t)
     goto exit_with_res;
   }
 
+#ifdef UW_PROCESS
   if (debug > 3) fprintf(stderr, "STORE RAW RESULTS\n");
   if (probe->store_results) {
     int ret = probe->store_results(probe, t->def, t->res, &seen_before); // STORE RAW RESULTS
@@ -632,6 +650,8 @@ finish:
     t->def->color = t->res->color;
   }
   g_free(prv);
+
+#endif /* UW_PROCESS */
 
 exit_with_res:
   if (probe->end_probe) {

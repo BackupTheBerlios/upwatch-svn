@@ -1,7 +1,5 @@
 include $(top_srcdir)/Makefile.am.path
 
-program = uw_process
-
 if SOLARIS
 SOLARISLIBS = -lresolv
 endif
@@ -21,22 +19,25 @@ USE_LIBTDS = mssql.c
 DEF_LIBTDS = -DHAVE_LIBTDS
 endif
 
-sbin_PROGRAMS = $(program)
-man_MANS = $(program).1
-conf_DATA = $(program).conf
+program = uw_process uw_tnot 
+sbin_PROGRAMS = uw_process 
+man_MANS = uw_process.1 
+conf_DATA = $(program:%=%.conf)
 init_DATA = $(INITFILES)
 
-uw_process_SOURCES = run.c process.c generic_ct.c cmd_options.h cmd_options.c \
- insertcache.c uw_process.h modules.inc $(SPECFILES) $(INITFILES) notify.c \
+uw_process_SOURCES = run.c process.c generic_ct.c uw_process.c insertcache.c notify.c \
  ping.c httpget.c iptraf.c sysstat.c mysql.c bb_cpu.c bb.c pop3.c $(USE_LIBPQ) \
- $(USE_LIBSNMP) $(USE_LIBTDS) imap.c errlog.c diskfree.c
+ $(USE_LIBSNMP) $(USE_LIBTDS) imap.c errlog.c diskfree.c \
+ uw_common.h uw_process.h uw_process_glob.h modules.inc $(SPECFILES) $(INITFILES)
 uw_process_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ $(AM_CFLAGS) \
-  $(DEF_LIBPQ) $(DEF_LIBSNMP) $(DEF_LIBTDS) $(DEF_LIBESMTP) 
-BUILT_SOURCES = cmd_options.h cmd_options.c $(SPECFILES) $(INITFILES)
-INCLUDES = -I../upwatch 
-EXTRA_DIST = cmd_options.def $(program).conf
-LDADD = $(DB_O) $(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @MYSQL_LIBS@ \
+  $(DEF_LIBPQ) $(DEF_LIBSNMP) $(DEF_LIBTDS) $(DEF_LIBESMTP) -DUW_PROCESS
+uw_process_LDADD = uw_process_$(DB_O) uw_process_$(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @MYSQL_LIBS@ \
   @LIBGLIB2_LIBS@ @LIBXML2_LIBS@ $(SOLARISLIBS)
+
+BUILT_SOURCES = $(program:%=%.1) $(program:%=%.h) $(program:%=%.c) $(SPECFILES) $(INITFILES) ../probes.enum
+INCLUDES = -I../upwatch
+EXTRA_DIST = $(program:%=%.conf) $(program:%=%.def)
+
 include $(top_srcdir)/Makefile.am.common
 
 run.c: ../probes.enum
@@ -46,16 +47,16 @@ run.c: ../probes.enum
 
 install-data-local:
 	if test `${ID} -u` -eq 0; then \
-	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/$(program) ;\
-	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/$(program)/new ;\
-	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/$(program)/tmp ;\
+	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/uw_process ;\
+	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/uw_process/new ;\
+	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/uw_process/tmp ;\
 	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/q_failed ;\
 	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/q_failed/new ;\
 	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/q_failed/tmp ;\
 	else \
-	  mkdir -p ${DESTDIR}${spooldir}/$(program) ;\
-	  mkdir -p ${DESTDIR}${spooldir}/$(program)/new ;\
-	  mkdir -p ${DESTDIR}${spooldir}/$(program)/tmp ;\
+	  mkdir -p ${DESTDIR}${spooldir}/uw_process ;\
+	  mkdir -p ${DESTDIR}${spooldir}/uw_process/new ;\
+	  mkdir -p ${DESTDIR}${spooldir}/uw_process/tmp ;\
 	  mkdir -p ${DESTDIR}${spooldir}/q_failed ;\
 	  mkdir -p ${DESTDIR}${spooldir}/q_failed/new ;\
 	  mkdir -p ${DESTDIR}${spooldir}/q_failed/tmp ;\
@@ -63,9 +64,10 @@ install-data-local:
 
 CLEANFILES += ../probes.enum
 
-bin_PROGRAMS = tnot
-tnot_SOURCES = tnot.c notify.c cmd_options.h cmd_options.c
-tnot_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ \
-  $(DEF_LIBPQ) $(DEF_LIBSNMP) $(DEF_LIBTDS) $(DEF_LIBESMTP) 
-
+noinst_PROGRAMS = uw_tnot
+uw_tnot_SOURCES = tnotrun.c notify.c uw_tnot.h uw_tnot.c
+uw_tnot_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ \
+  $(DEF_LIBPQ) $(DEF_LIBSNMP) $(DEF_LIBTDS) $(DEF_LIBESMTP) -DUW_PROCESS
+uw_tnot_LDADD = uw_tnot_$(DB_O) uw_tnot_$(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @MYSQL_LIBS@ \
+  @LIBGLIB2_LIBS@ @LIBXML2_LIBS@ $(SOLARISLIBS)
 

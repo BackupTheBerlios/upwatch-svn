@@ -3,7 +3,7 @@ include $(top_srcdir)/Makefile.am.path
 program = uw_investigate
 AM_CFLAGS = -DWITH_THREADS
 sbin_PROGRAMS = $(program)
-man_MANS = $(program).1
+man_MANS = uw_investigate.1
 conf_DATA = $(program).conf
 init_DATA = $(INITFILES)
 

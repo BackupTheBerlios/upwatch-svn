@@ -13,7 +13,7 @@
 
 #include <generic.h>
 #include <uwstat.h>
-#include "cmd_options.h"
+#include "uw_ping.h"
 
 struct hostinfo {
   int 			id;		/* server probe id */

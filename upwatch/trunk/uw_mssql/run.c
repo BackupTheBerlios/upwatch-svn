@@ -3,7 +3,7 @@
 #include <sys/time.h>
 #include "tds.h"
 
-#include "cmd_options.h"
+#include "uw_mssql.h"
 
 struct probedef {
   int		id;             /* server probe id */

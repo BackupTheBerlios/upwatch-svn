@@ -1,6 +1,6 @@
 #include "config.h"
 #include <generic.h>
-#include "cmd_options.h"
+#include "setproctitle.h"
 
 int init(void)
 {

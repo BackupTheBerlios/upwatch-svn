@@ -1,9 +1,13 @@
 #include "config.h"
 #include <string.h>
 #include <generic.h>
-#include "cmd_options.h"
 #include "slot.h"
-#include "uw_process.h"
+#ifdef UW_PROCESS
+#include "uw_process_glob.h"
+#endif
+#ifdef UW_NOTIFY
+#include "uw_notify_glob.h"
+#endif
 
 #ifdef DMALLOC
 #include "dmalloc.h"
@@ -123,6 +127,12 @@ static void *get_def(module *probe, void *probe_res)
 
     if (mysql_num_rows(result) == 0) { // DEF RECORD NOT FOUND
       mysql_free_result(result);
+#ifdef UW_NOTIFY
+      LOG(LOG_NOTICE, "pr_%s_def id %u not found - skipped", 
+                       res->name, def->probeid);
+      return(NULL);
+#endif
+#ifdef UW_PROCESS
       if (!trust(res->name)) {
         LOG(LOG_NOTICE, "pr_%s_def id %u not found and not trusted - skipped", 
                          res->name, def->probeid);
@@ -142,6 +152,7 @@ static void *get_def(module *probe, void *probe_res)
                         "from   pr_%s_def "
                         "where  server = '%u'", res->name, res->server);
       if (!result) return(NULL);
+#endif
     }
     row = mysql_fetch_row(result); 
     if (!row || !row[0]) {
@@ -338,8 +349,10 @@ module sysstat_module  = {
   get_from_xml,
   NO_FIX_RESULT,
   get_def,
+#ifdef UW_PROCESS
   store_raw_result,
   summarize,
+#endif
   NO_END_PROBE,
   NO_END_RUN
 };

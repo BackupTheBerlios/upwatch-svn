@@ -107,29 +107,6 @@ flag = {
 };
 
 flag = {
-    name      = smtpserverport;
-    arg_type  = number;
-    arg_default = 25;
-    descrip   = "Outgoing SMTP server port";
-    doc       =
-'SMTP server port number to send email notifications to';
-};
-
-flag = {
-    name      = from-email;
-    arg_type  = string;
-    arg_default = "beheer@netland.nl";
-    descrip   = "Email address for outgoing messages";
-};
-
-flag = {
-    name      = from-name;
-    arg_type  = string;
-    arg_default = "CMS Netland Internet Services BV";
-    descrip   = "Email name for outgoing messages";
-};
-
-flag = {
     name      = copy;
     value     = c;
     arg_type  = string;

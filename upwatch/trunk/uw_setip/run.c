@@ -11,7 +11,7 @@
 
 #include <generic.h>
 #include <st.h>
-#include "cmd_options.h"
+#include "uw_setip.h"
 
 int thread_count;
 

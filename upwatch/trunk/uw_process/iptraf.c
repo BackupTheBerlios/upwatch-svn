@@ -4,9 +4,13 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <generic.h>
-#include "cmd_options.h"
 #include "slot.h"
-#include "uw_process.h"
+#ifdef UW_PROCESS
+#include "uw_process_glob.h"
+#endif
+#ifdef UW_NOTIFY
+#include "uw_notify_glob.h"
+#endif
 
 #ifdef DMALLOC
 #include "dmalloc.h"
@@ -32,7 +36,9 @@ extern module iptraf_module;
 
 static void iptraf_end_run(module *probe)
 {
+#ifdef UW_PROCESS
   mod_ic_flush(probe, "pr_iptraf_raw");
+#endif
 }
 
 //*******************************************************************
@@ -105,6 +111,12 @@ static void *get_def(module *probe, void *probe_res)
 
     if (mysql_num_rows(result) == 0) { // DEF RECORD NOT FOUND
       mysql_free_result(result);
+#ifdef UW_NOTIFY
+      LOG(LOG_NOTICE, "pr_%s_def ip %s not found - skipped",
+                       res->name, res->ipaddress);
+      return(NULL);
+#endif
+#ifdef UW_PROCESS
       if (!trust(res->name)) {
         LOG(LOG_NOTICE, "pr_%s_def ip %s not found and not trusted - skipped",
                          res->name, res->ipaddress);
@@ -143,6 +155,7 @@ static void *get_def(module *probe, void *probe_res)
                         "from   pr_%s_def "
                         "where  ipaddress = '%s'", res->name, res->ipaddress);
       if (!result) return(NULL);
+#endif /* UW_PROCESS */
     }
   
     row = mysql_fetch_row(result);
@@ -235,6 +248,7 @@ static void *get_def(module *probe, void *probe_res)
   return(def);
 }
 
+#ifdef UW_PROCESS
 //*******************************************************************
 // STORE RAW RESULTS
 //*******************************************************************
@@ -349,6 +363,7 @@ static void summarize(module *probe, void *probe_def, void *probe_res, char *fro
                     avg_yellow, avg_red, slot);
   mysql_free_result(result);
 }
+#endif /* UW_PROCESS */
 
 module iptraf_module  = {
   STANDARD_MODULE_STUFF(iptraf),
@@ -361,8 +376,10 @@ module iptraf_module  = {
   get_from_xml,
   NO_FIX_RESULT,
   get_def,
+#ifdef UW_PROCESS
   store_raw_result,
   summarize,
+#endif
   NO_END_PROBE,
   iptraf_end_run 
 };
