@@ -27,7 +27,7 @@ conf_DATA = $(program).conf
 init_DATA = $(INITFILES)
 
 uw_process_SOURCES = run.c process.c generic_ct.c cmd_options.c cmd_options.h \
- uw_process.h modules.inc $(SPECFILES) $(INITFILES) \
+ insertcache.c uw_process.h modules.inc $(SPECFILES) $(INITFILES) \
  ping.c httpget.c iptraf.c sysstat.c mysql.c bb_cpu.c bb.c pop3.c $(USE_LIBPQ) \
  $(USE_LIBSNMP) $(USE_LIBTDS) imap.c
 uw_process_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ \

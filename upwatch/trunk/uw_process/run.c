@@ -48,7 +48,7 @@ void resfile_remove(struct resfile *rf, int ondisk)
   g_static_rec_mutex_lock (&resfile_mutex);
   if (ondisk) { 
     unlink(rf->filename);
-    //fprintf(stderr, "%s: deleted\n", rf->filename);
+    if (debug > 3) fprintf(stderr, "%s: deleted\n", rf->filename);
   }
   g_ptr_array_remove(resfile_arr, rf);
   resfile_free(rf);
@@ -84,7 +84,7 @@ static void modules_end_run(void)
   for (i = 0; modules[i]; i++) {
     char wrk[50];
     if (modules[i]->end_run) {
-      modules[i]->end_run();
+      modules[i]->end_run(modules[i]);
     }
     if (modules[i]->db) {
       close_database(modules[i]->db);
@@ -134,6 +134,10 @@ extern void free_res(void *res);
 #endif
       g_queue_free(modules[i]->queue);
     }
+    if (modules[i]->insertc) {
+      g_ptr_array_free(modules[i]->insertc, TRUE);
+      modules[i]->insertc = NULL;
+    }
     if (modules[i]->cache) {
       g_hash_table_destroy(modules[i]->cache);
       modules[i]->cache = NULL;
@@ -150,7 +154,7 @@ static void modules_start_run(void)
                                      OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
                                      OPT_VALUE_DBCOMPRESS);
     if (modules[i]->start_run) {
-      modules[i]->start_run();
+      modules[i]->start_run(modules[i]);
     }
   }
 }
@@ -166,6 +170,9 @@ static void modules_init(void)
     if (modules[i]->cache == NULL) {
       modules[i]->cache = g_hash_table_new_full(g_int_hash, g_int_equal, g_free, 
                             modules[i]->free_def ? modules[i]->free_def : g_free);
+    }
+    if (modules[i]->insertc == NULL) {
+      modules[i]->insertc =  g_ptr_array_new();
     }
     if (modules[i]->queue == NULL) {
       modules[i]->queue = g_queue_new();
@@ -286,6 +293,7 @@ extern int forever;
     return;
   }
   g_ptr_array_sort(arr, mystrcmp);
+  if (debug > 3) { fprintf(stderr, "%u files in directory\n", files); sleep(3); }
 
   // now we have a sorted list of files 
   // walk the list, and add resfile descriptions for files we aren't processing yet
@@ -294,6 +302,12 @@ extern int forever;
     struct resfile *rf;
     int j, found = 0;
 
+    if (resfile_arr->len >= OPT_VALUE_BATCH_SIZE) {
+      free(g_ptr_array_index(arr,i));
+      if (debug > 3) fprintf(stderr, "%u ", i);
+      continue;
+    }
+    if (debug > 3) fprintf(stderr, "%u: %s: ", i, g_ptr_array_index(arr,i));
     for (j=0; j < resfile_arr->len; j++) { // are we already working on this file?
       rf = g_ptr_array_index(resfile_arr, j);
       if (!strcmp(rf->filename, g_ptr_array_index(arr,i))) {
@@ -302,20 +316,15 @@ extern int forever;
       }
     }
     if (found) {
-      //fprintf(stderr, "%s: already working on that one\n", g_ptr_array_index(arr,i));
+      fprintf(stderr, "already working on it\n");
       free(g_ptr_array_index(arr,i));
-      continue;
-    }
-    if (resfile_arr->len >= 10000) {
-      free(g_ptr_array_index(arr,i));
-      //fprintf(stderr, "we already have 10000 files in memory\n");
       continue;
     }
     rf = g_malloc0(sizeof(struct resfile));
     rf->filename = g_ptr_array_remove_index(arr,i);
     uw_setproctitle("reading %s", rf->filename);
     g_ptr_array_add(resfile_arr, rf); 
-    //fprintf(stderr, "%s: imported\n", rf->filename);
+    if (debug > 3) fprintf(stderr, "IMPORTED\n");
     handle_file(rf, NULL); // extract probe results and queue them
     count++;
   }
@@ -429,7 +438,7 @@ extern int forever;
                                      OPT_VALUE_DBCOMPRESS);
     if (modules[i]->db == NULL) return;
     if (modules[i]->start_run) {
-      modules[i]->start_run();
+      modules[i]->start_run(modules[i]);
     }
     buf[0] = 0;
     while (forever) {
@@ -457,7 +466,7 @@ extern int forever;
       g_free(t);
     }
     if (modules[i]->end_run) { 
-      modules[i]->end_run();
+      modules[i]->end_run(modules[i]);
     }
     close_database(modules[i]->db);
     modules[i]->db = NULL;

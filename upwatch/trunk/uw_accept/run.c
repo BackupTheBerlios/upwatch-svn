@@ -14,6 +14,7 @@
 #include "cmd_options.h"
 
 int thread_count;
+int spooldir_strlen; // strlen of spooldir
 
 static char *chop(char *s, int i)
 {
@@ -65,6 +66,7 @@ static int uw_password_ok(char *user, char *passwd)
 
 int init(void)
 {
+  spooldir_strlen = strlen(OPT_ARG(SPOOLDIR))+1;
   daemonize = TRUE;
   every = ONE_SHOT;
   st_init();
@@ -161,7 +163,7 @@ extern int forever;
       continue;
     }
     remote = strdup(inet_ntoa(from.sin_addr));
-    LOG(LOG_NOTICE, "New connection from: %s", remote);
+    LOG(LOG_NOTICE, "%s: new connection", remote);
     handle_session(cli_nfd, remote);
     free(remote);
     st_netfd_close(cli_nfd);
@@ -187,8 +189,8 @@ login:
   if (debug > 3) fprintf(stderr, "%s[%u] > %s", remotehost, st_netfd_fileno(rmt_nfd), buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
   if (len == -1) {
-    if (errno == ETIME) LOG(LOG_WARNING, "timeout on greeting string");
-    else LOG(LOG_WARNING, "%m");
+    if (errno == ETIME) LOG(LOG_WARNING, "%s: timeout on greeting string", remotehost);
+    else LOG(LOG_WARNING, "%s: %m", remotehost);
     return;
   }
 
@@ -196,8 +198,8 @@ login:
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
   if (len == -1) {
-    if (errno == ETIME) LOG(LOG_WARNING, "timeout reading USER string");
-    else LOG(LOG_WARNING, "%m");
+    if (errno == ETIME) LOG(LOG_WARNING, "%s: timeout reading USER string", remotehost);
+    else LOG(LOG_WARNING, "%s: %m", remotehost);
     return;
   }
   if (debug > 3) fprintf(stderr, "%s[%u] < %s", remotehost, st_netfd_fileno(rmt_nfd), buffer);
@@ -212,8 +214,8 @@ login:
   if (debug > 3) fprintf(stderr, "%s[%u] > %s", remotehost, st_netfd_fileno(rmt_nfd), buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
   if (len == -1) {
-    if (errno == ETIME) LOG(LOG_WARNING, "timeout writing password string");
-    else LOG(LOG_WARNING, "%m");
+    if (errno == ETIME) LOG(LOG_WARNING, "%s: timeout writing password string", remotehost);
+    else LOG(LOG_WARNING, "%s: %m", remotehost);
     return;
   }
 
@@ -221,8 +223,8 @@ login:
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
   if (len == -1) {
-    if (errno == ETIME) LOG(LOG_WARNING, "timeout reading PASS response");
-    else LOG(LOG_WARNING, "%m");
+    if (errno == ETIME) LOG(LOG_WARNING, "%s: timeout reading PASS response", remotehost);
+    else LOG(LOG_WARNING, "%s: %m", remotehost);
     return;
   }
   if (debug > 3) fprintf(stderr, "%s[%u] < %s", remotehost, st_netfd_fileno(rmt_nfd), buffer);
@@ -233,7 +235,7 @@ login:
   chop(buffer, len);
   strncpy(passwd, buffer+5, sizeof(passwd)); passwd[sizeof(passwd)-1] = 0;
   if (!uw_password_ok(user, passwd)) {
-    LOG(LOG_WARNING, "Login error: %s/%s", user, passwd);
+    LOG(LOG_WARNING, "%s: Login error: %s/%s", remotehost, user, passwd);
     st_sleep(2);
     sprintf(buffer, "-ERR Please login\n");
     goto login;
@@ -245,8 +247,8 @@ logged_in:
   if (debug > 3) fprintf(stderr, "%s[%u] > %s", remotehost, st_netfd_fileno(rmt_nfd), buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
   if (len == -1) {
-    if (errno == ETIME) LOG(LOG_WARNING, "timeout writing ENTER COMMAND");
-    else LOG(LOG_WARNING, "%m");
+    if (errno == ETIME) LOG(LOG_WARNING, "%s: timeout writing ENTER COMMAND", remotehost);
+    else LOG(LOG_WARNING, "%s: %m", remotehost);
     return;
   }
 
@@ -254,8 +256,8 @@ logged_in:
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
   if (len == -1) {
-    if (errno == ETIME) LOG(LOG_WARNING, "timeout reading DATA statement");
-    else LOG(LOG_WARNING, "%m");
+    if (errno == ETIME) LOG(LOG_WARNING, "%s: timeout reading DATA statement", remotehost);
+    else LOG(LOG_WARNING, "%s: %m", remotehost);
     return;
   }
   if (debug > 3) fprintf(stderr, "%s[%u] < %s", remotehost, st_netfd_fileno(rmt_nfd), buffer);
@@ -282,43 +284,46 @@ logged_in:
   if (debug > 3) fprintf(stderr, "%s[%u] > %s", remotehost, st_netfd_fileno(rmt_nfd), buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
   if (len == -1) {
-    if (errno == ETIME) LOG(LOG_WARNING, "timeout writing %s", buffer);
-    else LOG(LOG_WARNING, "%m");
+    if (errno == ETIME) LOG(LOG_WARNING, "%s: timeout writing %s", remotehost, buffer);
+    else LOG(LOG_WARNING, "%s: %m", remotehost);
     return;
   }
 
+  targ = strdup(spool_tmpfilename(sp_info));
   while (filesize > 0) {
     memset(buffer, 0, sizeof(buffer));
     length = filesize > sizeof(buffer) ? sizeof(buffer) : filesize;
     //fprintf(stderr, "reading %u bytes", length);
     len = st_read(rmt_nfd, buffer, length, TIMEOUT);
     if (len == -1) {
-      if (errno == ETIME) LOG(LOG_WARNING, "timeout reading fileblock");
-      else LOG(LOG_WARNING, "%m");
+      if (errno == ETIME) LOG(LOG_WARNING, "%s: timeout reading fileblock", remotehost);
+      else LOG(LOG_WARNING, "%s: %m", remotehost);
       spool_close(sp_info, FALSE);
       goto end;
     }
     if (spool_write(sp_info, buffer, len) == -1) {
-      LOG(LOG_NOTICE, "spoolfile write error");
+      LOG(LOG_NOTICE, "%s: %s write error writing %u bytes, %u bytes to go", 
+                      targ+spooldir_strlen, remotehost, len, filesize);
       spool_close(sp_info, FALSE);
       goto end;
     }
     filesize -= len;
   }
+  free(targ);
 
   targ = strdup(spool_targfilename(sp_info));
   if (!spool_close(sp_info, TRUE)) {
-    LOG(LOG_NOTICE, "spoolfile close error");
+    LOG(LOG_NOTICE, "%s: %s close error", remotehost, targ+spooldir_strlen);
     goto end;
   }
-  if (debug) LOG(LOG_DEBUG, "spooled to %s", targ);
+  if (debug) LOG(LOG_DEBUG, "%s: spooled to %s", remotehost, targ+spooldir_strlen);
   free(targ);
 
   sprintf(buffer, "+OK Thank you. Enter command\n");
   goto logged_in;
 
 syntax:
-  LOG(LOG_WARNING, buffer);
+  LOG(LOG_WARNING, "%s: %s", remotehost, buffer);
   sprintf(buffer, "-ERR unknown command\n");
   goto login;
 

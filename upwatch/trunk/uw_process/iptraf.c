@@ -30,6 +30,11 @@ struct iptraf_def {
 
 extern module iptraf_module;
 
+static void iptraf_end_run(module *probe)
+{
+  mod_ic_flush(probe, "pr_iptraf_raw");
+}
+
 //*******************************************************************
 // GET THE INFO FROM THE XML FILE
 // Caller must free the pointer it returns
@@ -205,7 +210,7 @@ static void *get_def(module *probe, void *probe_res)
 //*******************************************************************
 static gint store_raw_result(struct _module *probe, void *probe_def, void *probe_res, guint *seen_before)
 {
-  MYSQL_RES *result;
+  char buf[256];
   struct iptraf_result *res = (struct iptraf_result *)probe_res;
   struct iptraf_def *def = (struct iptraf_def *)probe_def;
     
@@ -215,18 +220,22 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
   if (res->color > def->slotday_max_color) {
     def->slotday_max_color = res->color;
   }
+  sprintf(buf, "(DEFAULT, '%u', '%f', '%f', '0', '%u', '%u', '%f', '%f', '')",
+               def->probeid, def->yellow, def->red, res->stattime, res->color,
+               res->in_total, res->out_total);
 
-  result = my_query(probe->db, 0,
-                    "insert into pr_iptraf_raw "
-                    "set    probe = '%u', yellow = '%f', red = '%f', stattime = '%u', color = '%u', "
-                    "       in = '%f', out = '%f'",
-                    def->probeid, def->yellow, def->red, res->stattime, res->color, 
-                    res->in, res->out);
-  if (result) mysql_free_result(result);
-  if (mysql_errno(probe->db) == ER_DUP_ENTRY) {
-    *seen_before = TRUE;
-  } else if (mysql_errno(probe->db)) {
-    return 0; // other failure
+  if (HAVE_OPT(MULTI_VALUE_INSERTS)) {
+    mod_ic_add(probe, "pr_iptraf_raw", strdup(buf));
+  } else {
+    MYSQL_RES *result;
+
+    result = my_query(probe->db, 0, "insert into pr_iptraf_raw values %s", buf);
+    if (result) mysql_free_result(result);
+    if (mysql_errno(probe->db) == ER_DUP_ENTRY) {
+      *seen_before = TRUE;
+    } else if (mysql_errno(probe->db)) {
+      return 0; // other failure
+    }
   }
   return 1; // success
 }

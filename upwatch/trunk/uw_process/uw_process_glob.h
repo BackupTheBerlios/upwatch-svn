@@ -42,7 +42,7 @@ struct probe_def {
 };
 
 #define STANDARD_MODULE_STUFF(a) PROBE_##a, #a, NULL, NULL, G_STATIC_MUTEX_INIT, \
-  NULL, sizeof(struct a##_result), -1, 0, 0
+  NULL, NULL, sizeof(struct a##_result), -1, 0, 0
 
 typedef struct _module {
   int class; 		// numberic probe class (id of record in probe table)
@@ -51,6 +51,7 @@ typedef struct _module {
   GHashTable *cache;	// cached definition records
   GStaticMutex queue_mutex;
   GQueue *queue;	// queued result record 
+  GPtrArray *insertc;	// cache for doing multi value insert statements 
   int res_size;		// size of a result record
   int sep;		// group number for separate thread
   int count;		// stats: total handles in this run
@@ -62,7 +63,7 @@ typedef struct _module {
 #define NO_INIT NULL
   int (*init)(void);
 #define NO_START_RUN NULL
-  void (*start_run)(void);
+  void (*start_run)(struct _module *probe);
 #define NO_ACCEPT_PROBE NULL
   int (*accept_probe)(struct _module *probe, const char *name);
 #define NO_XML_RESULT_NODE NULL
@@ -81,7 +82,7 @@ typedef struct _module {
 #define NO_END_PROBE NULL
   void (*end_probe)(struct _module *probe, void *def, void *res);
 #define NO_END_RUN NULL
-  void (*end_run)(void);
+  void (*end_run)(struct _module *probe);
 } module;
 
 extern module *modules[];
@@ -100,6 +101,9 @@ typedef struct transaction {
   void *loc;			// local data ptr
   struct probe_result *res;	// probe result pointer
 } trx;
+
+void mod_ic_add(module *probe, const char *table, const char *str);
+void mod_ic_flush(module *probe, const char *table);
 
 /* generic functions */
 extern void ct_get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res);

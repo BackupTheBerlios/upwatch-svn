@@ -9,7 +9,7 @@ endif
 if CYGWIN
 MYCFLAGS = -DCYGWIN
 endif
-CFLAGS = ${MYCFLAGS}
+AM_CFLAGS = ${MYCFLAGS}
 
 EXTRA_DIST = osguess.sh
 

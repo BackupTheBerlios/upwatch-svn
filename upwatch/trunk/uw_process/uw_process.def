@@ -94,6 +94,17 @@ This is useful is you want to run uw_process under cron or for debugging.';
 };
 
 flag = {
+    name      = batch_size;
+    arg_type  = number;
+    arg-default = 10000;
+    arg-range = '1->100000';
+    descrip   = "How much resultfiles to process at once";
+    doc       =
+'How many result files should be read into memory before processing. This
+also denotes the amount of entries processed by -q';
+};
+
+flag = {
     name      = serverquery;
     arg_type  = string;
     arg_default = "select id from server where name like '%%%s%%' or names like '%%%s%%'";
@@ -116,6 +127,18 @@ with the probename. For example `uw_process --summarize ping,1041679172`  will
 read all data from the pr_ping_raw table starting at Sat Jan  4 12:19:37 CET 2003
 and re-summarize it.  You can use the `ctime` and `slot` programs to help in 
 determining the exact values. Use -d3 if you want to run in the foreground.';
+};
+
+flag = {
+    name      = multi_value_inserts;
+    arg_type  = bool;
+    descrip   = "combine single inserts into multi value inserts for speed";
+    doc       =
+'When you need to do high-volume processing, the turn-around time of repeatedly
+sending queries, and reading the results increasingly becomes a performance
+bottleneck. With this flag you can combine multiple insert queries into
+one long statement. You loose some reliability in this case because the
+process can crash with some pending values still in memory';
 };
 
 flag = { 

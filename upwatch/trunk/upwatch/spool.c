@@ -249,19 +249,23 @@ int spool_close(void *sp_info, int complete)
   struct spoolinfo *si = (struct spoolinfo *)sp_info;
 
   if (!complete) { // abort spooling
+    LOG(LOG_ERR, "%s: spooling aborted", si->temp_filename);
     fclose(si->fd);
     ok = FALSE;
   }
   
   if (ok && fflush(si->fd) != 0) {  // flushing fails 
+    LOG(LOG_ERR, "%s: flush failed (%m)", si->temp_filename);
     fclose(si->fd);
     ok = FALSE;
   }
   if (ok && fsync(fileno(si->fd)) != 0) { // syncing fails
+    LOG(LOG_ERR, "%s: sync failed (%m)", si->temp_filename);
     fclose(si->fd);
     ok = FALSE;
   }
   if (ok && fclose(si->fd) != 0) { // fclose fails
+    LOG(LOG_ERR, "%s: close failed (%m)", si->temp_filename);
     ok = FALSE;
   }
 

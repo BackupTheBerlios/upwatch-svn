@@ -3,7 +3,7 @@ Summary: UpWatch - A High performance monitoring framwork
 Vendor: http://www.upwatch.com
 Name: upwatch
 Version: [+ version +]
-Release: 4
+Release: 5
 Source: http://www.upwatch.com/%{name}-%{version}.tar.gz
 Packager: Ron Arts <raarts@upwatch.com>
 Copyright: Proprietary - Redistribution Prohibited
@@ -276,8 +276,10 @@ fi
 %attr(0755,root,root) /usr/bin/uwsaidar
 %attr(0755,root,root) /usr/bin/ctime
 %attr(0755,root,root) /usr/bin/slot
+%attr(0755,root,root) /usr/bin/uwq
 /usr/share/man/man1/ctime.1.gz
 /usr/share/man/man1/slot.1.gz
+/usr/share/man/man1/uwq.1.gz
 [+ FOR clientprog +][+ include (string-append (get "clientprog") "/" (get "clientprog") ".spec-files") ;+]
 [+ ENDFOR +]
 
