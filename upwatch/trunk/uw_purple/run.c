@@ -47,7 +47,8 @@ int find_expired_probes(struct dbspec *dbspec)
                            "from   pr_status, probe "
                            "where  probe.id = pr_status.class and color <> 400 "
                            "       and expires < UNIX_TIMESTAMP()-30 "
-                           "       and expires < probe.lastseen");
+                           "       and expires < probe.lastseen"
+                           "       and probe.expiry = 'yes'");
   if (!result) goto errexit;
 
   while ((row = mysql_fetch_row(result)) != NULL) {
@@ -64,11 +65,13 @@ int find_expired_probes(struct dbspec *dbspec)
     xmlNewChild(probe, NULL, "color", "400");  // PURPLE
     xmlNewChild(probe, NULL, "prevcolor", row[3]);
 
+    LOG(LOG_NOTICE, "%s: purpled %s %s", dbspec->domain, row[0], row[1]);
     count++;
   }
   if (count) {
     xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
     spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc, NULL);
+    LOG(LOG_NOTICE, "%s: purpled %u probes", dbspec->domain, count);
   }
 
 errexit:
@@ -97,9 +100,9 @@ int run(void)
   uw_setproctitle("reading info from database");
   result = my_query(upwatch, 0, "select pr_domain.id, pr_domain.name, pr_domain.host, "
                                 "       pr_domain.port, pr_domain.db, pr_domain.user, "
-                                "       pr_domain.password, probe.name as tbl "
-                                "from   probe, pr_domain "
-                                "where  probe.id > 1 and pr_domain.id > 1");
+                                "       pr_domain.password "
+                                "from   pr_domain "
+                                "where  pr_domain.id > 1");
   if (result) {
     while ((row = mysql_fetch_row(result)) != NULL) {
       struct dbspec db;

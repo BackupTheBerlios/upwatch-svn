@@ -1,0 +1,465 @@
+# ignore the following entries in the log
+
+# first general syslogd & klogd messages
+syslog-ignore syslogd [-0-9.]*: restart.
+syslog-ignore last message repeated [0-9]* times
+syslog-ignore Kernel logging \(proc\) stopped
+syslog-ignore Kernel log daemon terminating
+syslog-ignore exiting on signal 15
+syslog-ignore Inspecting /boot/System.map.*
+syslog-ignore Loaded [0-9]* symbols from /boot/System.map.*
+syslog-ignore Symbols match kernel version [0-9.]*
+syslog-ignore Loaded [0-9]* symbols from [0-9]* modules
+syslog-ignore exiting on SIGTERM
+
+# postfix
+syslog-ignore dupelim: eliminated duplicate message to
+syslog-ignore postfix:
+
+# cyrus
+syslog-ignore unable to change limit of file descriptors available
+syslog-ignore (S|s)tarted
+syslog-ignore (S|s)tarting
+syslog-ignore ready for work
+syslog-ignore pidof:
+syslog-ignore started
+syslog-ignore duplicate_prune
+syslog-ignore checkpointing mboxlist
+syslog-ignore imapd\[[0-9]*\]: login:
+syslog-ignore idle for too long, closing connection
+syslog-ignore Connection reset by peer, closing connection
+syslog-ignore saslpasswd: PLAIN: set secret for
+syslog-ignore saslpasswd: DIGEST-MD5: set secret for
+syslog-ignore saslpasswd: CRAM-MD5: set secret for
+syslog-ignore master\[[0-9]*\]: about to exec /usr/cyrus/bin
+syslog-ignore master\[[0-9]*\]: process [0-9]* exited, status [0-9]*
+syslog-ignore service-pop3\[[0-9]*\]: executed
+syslog-ignore service-lmtp\[[0-9]*\]: executed
+syslog-ignore service-imap\[[0-9]*\]: executed
+
+# cron
+syslog-ignore crond\[[0-9]*\]: \(CRON\) STARTUP
+syslog-ignore run-parts
+syslog-ignore CMD
+syslog-ignore anacron\[[0-9]*\]: Updated timestamp for job
+syslog-ignore anacron\[[0-9]*\]: Will run job
+
+# vhost
+syslog-ignore connection from
+syslog-ignore chroot to
+syslog-ignore ttloop: peer died:
+syslog-ignore ttloop:  peer died:
+syslog-ignore exit status 1
+syslog-ignore vhost\[[0-9]*\]: in.ftpd attempt to [-0-9a-zA-Z.]* rejected
+syslog-ignore vhost\[[0-9]*\]: in.telnetd attempt to [-0-9a-zA-Z.]* rejected
+syslog-ignore vhost\[[0-9]*\]: ipop3d attempt to [-0-9a-zA-Z.]* rejected
+
+# named
+syslog-ignore starting BIND [0-9.]*
+syslog-ignore using [0-9] CPU.*
+syslog-ignore loading configuration from
+syslog-ignore no IPv6 interfaces found
+syslog-ignore listening on IPv[0-9] interface
+syslog-ignore command channel listening on
+syslog-ignore no TTL specified
+syslog-ignore loaded serial
+syslog-ignore running
+syslog-ignore lame server resolving
+syslog-ignore error sending response
+syslog-ignore shutting down
+syslog-ignore stopping command channel
+syslog-ignore no longer listening on
+syslog-ignore exiting
+syslog-ignore points to a CNAME
+syslog-ignore points to CNAME
+syslog-ignore No default TTL set using SOA minimum instead
+syslog-ignore named\[[0-9]*\]: USAGE [0-9]* [0-9]* 
+syslog-ignore named\[[0-9]*\]: STATS [0-9]* [0-9]* 
+syslog-ignore named\[[0-9]*\]: NSTATS [0-9]* [0-9]* 
+syslog-ignore named\[[0-9]*\]: XSTATS [0-9]* [0-9]* 
+syslog-ignore named\[[0-9]*\]: hint zone
+syslog-ignore named\[[0-9]*\]: master zone
+syslog-ignore named\[[0-9]*\]: listening on
+syslog-ignore named\[[0-9]*\]: Forwarding source address is
+syslog-ignore named\[[0-9]*\]: group =
+syslog-ignore named\[[0-9]*\]: user =
+syslog-ignore named\[[0-9]*\]: Lame server on
+syslog-ignore named\[[0-9]*\]: bad referral
+syslog-ignore named\[[0-9]*\]: Malformed response from
+syslog-ignore named\[[0-9]*\]: Ready to answer queries.
+syslog-ignore named\[[0-9]*\]: Cleaned cache of [0-9]* RRset
+syslog-ignore named\[[0-9]*\]: reloading nameserver
+syslog-ignore named\[[0-9]*\]: drained [0-9]* queries
+syslog-ignore named\[[0-9]*\]: MAXQUERIES exceeded, possible data loop in resolving
+syslog-ignore named\[[0-9]*\]: sysquery: sendto\(\[[0-9.]*\][0-9.]*\):
+
+# kernel iptables
+syslog-ignore INFO
+syslog-ignore TTL=
+syslog-ignore messages suppressed
+
+# sshd
+syslog-ignore session opened for user
+syslog-ignore session closed for user
+syslog-ignore Accepted keyboard-interactive/pam for 
+syslog-ignore sshd\[[0-9]*\]: Postponed keyboard-interactive for
+syslog-ignore sshd\[[0-9]*\]: Failed keyboard-interactive/pam for
+syslog-ignore sshd\[[0-9]*\]: Failed password for
+syslog-ignore sshd\[[0-9]*\]: Generating
+syslog-ignore sshd\[[0-9]*\]: RSA key generation complete
+syslog-ignore sshd\[[0-9]*\]: Disconnecting: Too many authentication failures for
+syslog-ignore authentication failure;
+syslog-ignore error: PAM: Authentication failure
+syslog-ignore Accepted password for
+syslog-ignore Connection closed by
+syslog-ignore sshd\[[0-9]*\]: log: Connection to [-0-9a-zA-Z.]* from 
+syslog-ignore but this does not map back to the address
+syslog-ignore scanned from [0-9.]* with .*.  Don't panic
+syslog-ignore Did not receive identification string from
+syslog-ignore sshd:
+syslog-ignore Server listening on
+syslog-ignore sshd\[[0-9]*\]: Received signal [0-9]*; terminating
+syslog-ignore sshd\[[0-9]*\]: log: RhostsRsa authentication not available for connections from unprivileged port
+syslog-ignore sshd\[[0-9]*\]: log: Password authentication for root accepted.
+syslog-ignore sshd\[[0-9]*\]: log: ROOT LOGIN as 'root' from [-0-9a-zA-Z.]*
+syslog-ignore sshd\[[0-9]*\]: log: Generating 
+syslog-ignore sshd\[[0-9]*\]: log: RSA key generation complete
+syslog-ignore sshd\[[0-9]*\]: log: Closing connection to [-0-9a-zA-Z.]*
+syslog-ignore sshd\[[0-9]*\]: error: accept: Connection timed out
+syslog-ignore sshd\[[0-9]*\]: error: accept: Connection reset by peer
+syslog-ignore sshd\[[0-9]*\]: WARNING: /etc/ssh/moduli does not exist, using old modulus
+syslog-ignore sshd\[[0-9]*\]: WARNING: /etc/ssh/primes does not exist, using old prime
+syslog-ignore sshd\[[0-9]*\]: Accepted publickey for
+syslog-ignore sshd\[[0-9]*\]: log: Could not reverse map address
+syslog-ignore sshd\[[0-9]*\]: Could not reverse map address
+syslog-ignore sshd\[[0-9]*\]: fatal: Did not receive ident string
+syslog-ignore sshd\[[0-9]*\]: fatal: Read error from remote host
+
+# initscripts
+syslog-ignore succeeded
+syslog-ignore executing: './network
+syslog-ignore executing: 'modprobe
+syslog-ignore dhcpcd\[[0-9]*\]: terminating on signal
+syslog-ignore Trying to free nonexistent resource
+syslog-ignore unloading Kernel Card Services
+syslog-ignore Linux Kernel Card Services [0-9.]*
+syslog-ignore options:  \[pci\] \[cardbus\] \[pm\]
+syslog-ignore Intel PCIC probe
+syslog-ignore ISA-to-PCMCIA
+syslog-ignore NETDEV WATCHDOG:
+syslog-ignore host opts
+syslog-ignore ISA irqs
+syslog-ignore IO port probe
+syslog-ignore cs: memory probe
+syslog-ignore initializing socket
+syslog-ignore watching [0-9] sockets
+syslog-ignore cardmgr\[[0-9]*\]: socket
+syslog-ignore Determining IP information for
+
+# modprobe
+syslog-ignore modprobe: (C|c)an't locate module
+
+# httpd ignore all messages
+syslog-ignore httpd:
+
+# hylafax
+syslog-ignore HylaFAX \(tm\) Version [0-9a-z.]*
+syslog-ignore HylaFAX INET: bind \(port 4559\): Address already in use
+syslog-ignore HylaFAX INET: Unable to init server, trying again
+syslog-ignore Copyright
+syslog-ignore is not listed for host name
+syslog-ignore ANSWER: FAX CONNECTION
+syslog-ignore ANSWER: DATA CONNECTION
+syslog-ignore OPEN
+syslog-ignore GETTY
+syslog-ignore CLOSE
+syslog-ignore HELLO
+syslog-ignore QUIT
+syslog-ignore RECV FAX
+syslog-ignore SUBMIT JOB
+syslog-ignore SEND FAX: JOB
+syslog-ignore MODEM MULTI-TECH SYSTEMS
+syslog-ignore Warning, no inverse address mapping for client host name
+syslog-ignore Filesystem has SysV-style file creation semantics
+syslog-ignore ANSWER: Can not lock modem device
+syslog-ignore NOTIFY: bin/notify.*"done"
+syslog-ignore FIFO: open: Device not configured
+
+# isdn and modem
+syslog-ignore pppd\[[0-9]*\]: Connect\[[0-9]\]: /dev/ippp[0-9], fd: [0-9]*
+syslog-ignore pppd\[[0-9]*\]: Local number: [0-9]*, Remote number: 
+syslog-ignore pppd\[[0-9]*\]: PHASE_WAIT -> PHASE_ESTABLISHED, ifunit: [0-9], linkunit: [0-9], fd: [0-9]*
+syslog-ignore pppd\[[0-9]*\]: Remote message:
+syslog-ignore pppd\[[0-9]*\]: MPPP negotiation, 
+syslog-ignore pppd\[[0-9]*\]: local  IP address [0-9.]*
+syslog-ignore pppd\[[0-9]*\]: remote IP address [0-9.]*
+syslog-ignore pppd\[[0-9]*\]: ppp not replacing existing default route to 
+syslog-ignore pppd\[[0-9]*\]: isdn_net: local hangup ippp[0-9]
+syslog-ignore kernel: ippp[0-9]: Chargesum is [0-9]
+syslog-ignore pppd\[[0-9]*\]: Modem hangup
+syslog-ignore pppd\[[0-9]*\]: Connection terminated.
+syslog-ignore pppd\[[0-9]*\]: taking down PHASE_DEAD link [0-9], linkunit: [0-9]
+syslog-ignore pppd\[[0-9]*\]: closing fd [0-9]* from unit [0-9]
+syslog-ignore pppd\[[0-9]*\]: link [0-9] closed , linkunit: [0-9]
+syslog-ignore pppd\[[0-9]*\]: reinit_unit: [0-9]
+syslog-ignore pppd\[[0-9]*\]: LCP: timeout sending Config-Requests
+syslog-ignore pppd\[[0-9]*\]: LCP terminated by peer
+syslog-ignore pppd\[[0-9]*\]: CCP enabled! Trying CCP
+syslog-ignore pppd\[[0-9]*\]: CCP terminated by peer
+syslog-ignore pppd\[[0-9]*\]: Compression disabled by peer
+syslog-ignore pppd\[[0-9]*\]: Hangup \(SIGHUP\)
+syslog-ignore pppd\[[0-9]*\]: Connect time
+syslog-ignore pppd\[[0-9]*\]: Sent [0-9]* bytes, received [0-9]* bytes
+syslog-ignore pppd\[[0-9]*\]: ccp_resetci
+syslog-ignore pppd\[[0-9]*\]: Exit
+syslog-ignore pppd\[[0-9]*\]: CCP: got ccp-unit [0-9] for link [0-9]
+syslog-ignore pppd\[[0-9]*\]: Found [0-9] device
+syslog-ignore pppd\[[0-9]*\]: init_unit: [0-9]
+syslog-ignore pppd\[[0-9]*\]: LCP is down
+syslog-ignore ibod\[[0-9]*\]: Parameter ENABLE reconfigured to
+syslog-ignore ibod\[[0-9]*\]: Parameter INTERVAL reconfigured to
+syslog-ignore ibod\[[0-9]*\]: Parameter FILTER reconfigured to
+syslog-ignore ibod\[[0-9]*\]: select: Interrupted system call
+syslog-ignore ibod\[[0-9]*\]: unable to attach additional link
+syslog-ignore ibod\[[0-9]*\]: added new link
+
+# VPN
+syslog-ignore Stopping FreeS/WAN IPsec...
+syslog-ignore ipsec_setup: ...FreeS/WAN IPsec stopped
+syslog-ignore Starting FreeS/WAN IPsec [0-9.]*..
+syslog-ignore IPSEC EVENT: KLIPS device ipsec0 shut down
+syslog-ignore dev_mc_discard: multicast leakage
+syslog-ignore klips_info:cleanup_module: ipsec module unloaded
+syslog-ignore klips_info:ipsec_init: KLIPS startup
+syslog-ignore ipsec_setup: KLIPS debug `none'
+syslog-ignore invoke ifup
+syslog-ignore ipsec_setup: KLIPS ipsec0 on
+syslog-ignore initiate
+syslog-ignore ipsec_setup: doing cleanup anyway...
+syslog-ignore SA established
+syslog-ignore sent MI2, expecting MR2
+syslog-ignore sent MI3, expecting MR3
+syslog-ignore retransmission; will wait
+syslog-ignore regenerating DH private secret
+syslog-ignore ipsec_setup: Using
+
+# nbs
+syslog-ignore firewall_start: Creating firewall lock
+syslog-ignore firewall_start: removing lock file
+syslog-ignore WARNING: NO MX HOSTS FOUND
+syslog-ignore firewall_start: ipchains: Chain already exists
+syslog-ignore iptables v[0-9.]*:
+syslog-ignore sudo:   nobody : TTY=unknown
+syslog-ignore ipop3d\[[0-9]*\]: Login failure user=
+syslog-ignore ipop3d\[[0-9]*\]: Command stream end of file while reading line
+syslog-ignore pop3d\[[0-9]*\]: login:
+syslog-ignore ftpd\[[0-9]*\]: ANONYMOUS FTP LOGIN FROM
+syslog-ignore ftpd\[[0-9]*\]: FTP LOGIN FROM
+syslog-ignore ftpd\[[0-9]*\]: USER
+syslog-ignore ftpd\[[0-9]*\]: PASS
+syslog-ignore ftpd\[[0-9]*\]: PORT
+syslog-ignore ftpd\[[0-9]*\]: LIST
+syslog-ignore ftpd\[[0-9]*\]: CWD
+syslog-ignore ftpd\[[0-9]*\]: PWD
+syslog-ignore ftpd\[[0-9]*\]: TYPE
+syslog-ignore ftpd\[[0-9]*\]: STOR
+syslog-ignore ftpd\[[0-9]*\]: TYPE ASCII
+syslog-ignore ftpd\[[0-9]*\]: User [-0-9a-zA-Z.]* timed out after [0-9]* seconds
+syslog-ignore ftpd\[[0-9]*\]: FTP session closed
+syslog-ignore ftpd\[[0-9]*\]: lost connection to
+
+# various
+syslog-ignore backup done
+syslog-ignore login failed
+syslog-ignore Promiscuous mode enabled
+syslog-ignore promiscuous mode
+syslog-ignore delete user
+syslog-ignore remove group
+syslog-ignore new group
+syslog-ignore new user
+syslog-ignore WARNING: Changing user id to user sweep
+syslog-ignore InterCheck Server virus detection utility
+syslog-ignore icheckd: Version [0-9.]*
+syslog-ignore icheckd: Includes detection for [0-9]* viruses, trojans and worms
+syslog-ignore icheckd:
+syslog-ignore setting the libwrap uid to 0 is not recommended
+syslog-ignore created new negotiatorchild
+syslog-ignore created new requestchild
+syslog-ignore created new iochild
+syslog-ignore bad username
+syslog-ignore ntpdate\[[0-9]*\]: step time server
+syslog-ignore login\[[0-9]*\]: FAILED LOGIN [0-9]* FROM
+syslog-ignore login\[[0-9]*\]: FAILED LOGIN SESSION FROM
+syslog-ignore console-logging: Shutting down
+syslog-ignore console-logging: Show kernel messages on
+syslog-ignore console-logging: Show ISDN line status information on
+syslog-ignore ROOT LOGIN ON tty[0-9a-z]*
+syslog-ignore dd: 
+syslog-ignore error parsing the configuration file
+syslog-ignore can not read settings from /etc/security/limits.conf
+syslog-ignore apmd\[[0-9]*\]: Version 
+syslog-ignore apmd\[[0-9]*\]: Charge
+syslog-ignore apmd\[[0-9]*\]: Exiting
+syslog-ignore PAM_pwdb\[[0-9]*\]: check pass; user unknown
+syslog-ignore xntpd\[[0-9]*\]: time reset 
+syslog-ignore xntpd\[[0-9]*\]: tickadj =
+syslog-ignore xntpd\[[0-9]*\]: precision =
+syslog-ignore xntpd\[[0-9]*\]: read drift of
+syslog-ignore xntpd\[[0-9]*\]: xntpd
+syslog-ignore xntpd\[[0-9]*\]: synchronisation lost
+syslog-ignore xntpd\[[0-9]*\]: synchronized to
+syslog-ignore xntpd\[[0-9]*\]: kernel pll status change
+syslog-ignore pppd\[[0-9]*\]: Using interface ppp
+syslog-ignore pppd\[[0-9]*\]: Connect: ppp[0-9] <--> /dev/ttyS[0-9]
+syslog-ignore init: Re-reading inittab
+
+# squid
+syslog-ignore squid:
+
+# boot
+syslog-ignore kernel: Linux version
+syslog-ignore kernel: BIOS-provided physical RAM map
+syslog-ignore kernel:  BIOS-[0-9a-f]*: [0-9a-f]* - [0-9a-f]*
+syslog-ignore kernel: On node [0-9] totalpages: [0-9]*
+syslog-ignore kernel: zone\([0-9]\): [0-9]* pages.
+syslog-ignore kernel: Kernel command line:
+syslog-ignore kernel: Initializing CPU#[0=9]
+syslog-ignore kernel: Working around Cyrix MediaGX virtual DMA bugs.
+syslog-ignore kernel: Detected [0-9.]* MHz processor.
+syslog-ignore kernel: Console: 
+syslog-ignore kernel: Calibrating delay loop... [0-9.]* BogoMIPS
+syslog-ignore kernel: Memory: [0-9k/]* available
+syslog-ignore kernel: Checking if this processor honours the WP bit even in supervisor mode... Ok.
+syslog-ignore kernel: [-a-zA-Z ]* hash table entries:
+syslog-ignore kernel: Intel machine check architecture supported.
+syslog-ignore kernel: Intel machine check reporting enabled on CPU#[0-9]
+syslog-ignore kernel: CPU: Intel Pentium [IV4]*
+syslog-ignore kernel: Enabling fast FPU save and restore... done.
+syslog-ignore kernel: CPU:
+syslog-ignore kernel: Checking 'hlt' instruction... OK.
+syslog-ignore kernel: Checking for popad bug... OK.
+syslog-ignore kernel: POSIX conformance testing by UNIFIX
+syslog-ignore kernel: mtrr: v[0-9.]*
+syslog-ignore kernel: mtrr: detected mtrr type:
+syslog-ignore kernel: PCI: PCI BIOS revision
+syslog-ignore kernel: PCI: Using configuration type
+syslog-ignore kernel: PCI: Probing PCI hardware
+syslog-ignore kernel: Unknown bridge resource [0-9]: assuming transparent
+syslog-ignore kernel: PCI: Using IRQ router 
+syslog-ignore kernel: PCI: Found IRQ [0-9]* for device [0-9:.]*
+syslog-ignore kernel: PCI: Sharing IRQ [0-9]* with [0-9:.]*
+syslog-ignore kernel: Limiting direct PCI/PCI transfers.
+syslog-ignore kernel: isapnp: Scanning for PnP cards...
+syslog-ignore kernel: isapnp: No Plug & Play device found
+syslog-ignore kernel: Linux NET4.0 for Linux [0-9.]*
+syslog-ignore kernel: Based upon Swansea University Computer Society NET[0-9.]*
+syslog-ignore kernel: Initializing RT netlink socket
+syslog-ignore kernel: apm: BIOS version
+syslog-ignore kernel: Starting kswapd
+syslog-ignore kernel: kinoded started
+syslog-ignore kernel: VFS: Diskquotas version dquot_[0-9.]* initialized
+syslog-ignore kernel: Detected PS/2 Mouse Port.
+syslog-ignore kernel: pty: [0-9]* Unix98 ptys configured
+syslog-ignore kernel: Serial driver version
+syslog-ignore kernel: ttyS[0-9a-z]* at 0x[0-9a-f]*
+syslog-ignore kernel: Real Time Clock Driver v[0-9a-z]*
+syslog-ignore kernel: block: [0-9]* slots per queue
+syslog-ignore kernel: Uniform Multi-Platform E-IDE driver Revision: [0-9.]*
+syslog-ignore kernel: ide: Assuming 33MHz system bus speed for PIO modes; override with idebus=xx
+syslog-ignore kernel: [A-Z0-9]*: IDE controller on PCI bus
+syslog-ignore kernel: [A-Z0-9]*: chipset revision [0-9]
+syslog-ignore kernel: [A-Z0-9]*: not 100%% native mode: will probe irqs later
+syslog-ignore kernel: hd[a-z]: 
+syslog-ignore kernel: ide[0-9] at [-0-9a-fx,]* on irq [0-9]
+syslog-ignore kernel: ide-floppy driver
+syslog-ignore kernel: SCSI subsystem driver Revision: [0-9.]*
+syslog-ignore kernel: scsi[0-9] : Adaptec 
+syslog-ignore kernel:   
+syslog-ignore kernel: scsi[0-9]:[A-Z]:[0-9]:[0-9]: Tagged Queuing enabled.
+syslog-ignore kernel: Attached scsi disk sd[a-z] at scsi[0-9], channel [0-9], id [0-9], lun [0-9]
+syslog-ignore kernel: \(scsi[0-9]:[A-Z]:[0-9]): [0-9MB/s.]* transfers
+syslog-ignore kernel: SCSI device sd[a-z]: [0-9]* 512-byte hdwr sectors
+syslog-ignore kernel: \(scsi[0-9]:[A-Z]:[0-9]:[0-9]\): Locking max tag count at [0-9]*
+syslog-ignore kernel: Partition check:
+syslog-ignore kernel:  (s|h)d[a-z]: 
+syslog-ignore kernel: floppy0: no floppy controllers found
+syslog-ignore kernel: Floppy drive\(s\): fd[0-9] is 
+syslog-ignore kernel: FDC [0-9] is a post-1991
+syslog-ignore kernel: RAMDISK driver initialized: 
+syslog-ignore kernel: md: md driver [0-9.]*
+syslog-ignore kernel: md: Autodetecting RAID arrays.
+syslog-ignore kernel: md: autorun ...
+syslog-ignore kernel: md: ... autorun DONE.
+syslog-ignore kernel: NET4: Linux TCP/IP [0-9.]* for NET[0-9.]*
+syslog-ignore kernel: IP Protocols: ICMP, UDP, TCP, IGMP
+syslog-ignore kernel: IP: routing cache hash table
+syslog-ignore kernel: TCP: Hash tables configured
+syslog-ignore kernel: Linux IP multicast router
+syslog-ignore kernel: NET4: Unix domain sockets [0-9.]*/SMP for Linux NET[0-9.]*
+syslog-ignore kernel: RAMDISK: Compressed image found at
+syslog-ignore kernel: Freeing initrd memory: 
+syslog-ignore kernel: VFS: Mounted root
+syslog-ignore kernel: Journalled Block Device driver loaded
+syslog-ignore kernel: EXT3-fs: INFO: recovery required on readonly filesystem.
+syslog-ignore kernel: EXT3-fs: write access will be enabled during recovery.
+syslog-ignore kernel: kjournald starting.  Commit interval
+syslog-ignore kernel: EXT3-fs: 
+syslog-ignore kernel: Freeing unused kernel memory:
+syslog-ignore kernel: Adding Swap: 
+syslog-ignore kernel: EXT3 FS [-0-9.]*
+syslog-ignore kernel: kjournald starting.  Commit interval
+syslog-ignore kernel: parport[0-9]: 
+syslog-ignore kernel: ip_tables: \(C\) [-0-9]* Netfilter core team
+syslog-ignore kernel: ip_conntrack \([0-9]* buckets, [0-9]* max\)
+syslog-ignore kernel: NET4: Linux IPX [0-9.]* for NET[0-9.]*
+syslog-ignore kernel: IPX Portions Copyright
+syslog-ignore kernel: NET[0-9]: AppleTalk [0-9a-z.]* for Linux NET[0-9]*
+syslog-ignore kernel: 8139too Fast Ethernet driver [0-9.]*
+syslog-ignore kernel: PCI: Assigned IRQ
+syslog-ignore kernel: eth[0-9]: RealTek RTL8139 Fast Ethernet at
+syslog-ignore rc.sysinit: Mounting proc filesystem:  succeeded
+syslog-ignore rc.sysinit: Unmounting initrd:  succeeded
+syslog-ignore rc.sysinit: Configuring kernel parameters:  succeeded
+syslog-ignore date:
+syslog-ignore rc.sysinit: Setting clock
+syslog-ignore rc.sysinit: Loading default keymap succeeded
+syslog-ignore random: Initializing random number generator:  succeeded
+syslog-ignore rc.sysinit: Setting default font
+syslog-ignore rc.sysinit: Activating swap partitions:  succeeded
+syslog-ignore rc.sysinit: Setting hostname
+syslog-ignore fsck: [a-z0-9/]*: clean, 
+syslog-ignore rc.sysinit: Checking root filesystem succeeded
+syslog-ignore rc.sysinit: Remounting root filesystem in read-write mode:  succeeded
+syslog-ignore rc.sysinit: Finding module dependencies:  succeeded
+syslog-ignore fsck: [a-z/]*: recovering journal
+syslog-ignore fsck: Deleted inode [0-9]* has zero dtime.  FIXED.
+syslog-ignore fsck: [a-z0-9/]* 
+syslog-ignore pcmcia: Starting PCMCIA services:
+syslog-ignore pcmcia:  modules
+syslog-ignore pcmcia:  cardmgr
+syslog-ignore rc.sysinit: Checking filesystems succeeded
+syslog-ignore rc.sysinit: Mounting local filesystems:  succeeded
+syslog-ignore rc.sysinit: Enabling local filesystem quotas:  succeeded
+syslog-ignore n010080 rc.sysinit: Enabling swap space:  succeeded
+syslog-ignore init: Entering runlevel: [0-6]
+syslog-ignore modprobe: modprobe: Can't locate module
+syslog-ignore quotaon: quotaon: using [0-9a-z/.]* on
+syslog-ignore kudzu: Updating /etc/fstab succeeded
+syslog-ignore kudzu: unlinked /dev/modem
+syslog-ignore kudzu:  succeeded
+syslog-ignore iptables: (Flushing|Clearing) all current rules and user defined chains: succeeded
+syslog-ignore iptables: Applying iptables firewall rules succeeded
+syslog-ignore keytable: Loading 
+
+
+syslog-ignore sysctl:
+syslog-ignore Setting [0-9]*mbps full-duplex based on
+syslog-ignore Setting half-duplex based on
+syslog-ignore ifup:  done
+
+# the following entries will be flagged as RED
+syslog-red hd[a-z]: packet command error: status=
+syslog-red end_request: I/O error, dev
+syslog-red lmtpd\[[0-9]*\]: DBERROR:
+syslog-red Too many open files
+

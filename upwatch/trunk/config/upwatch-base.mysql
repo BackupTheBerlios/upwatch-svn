@@ -6,6 +6,7 @@ CREATE TABLE probe (
   id int unsigned NOT NULL auto_increment,
   name varchar(24) NOT NULL default '',
   description varchar(128) NOT NULL default '',
+  expiry enum('yes','no') NOT NULL default 'yes',
   addbyhand enum('yes','no') NOT NULL default 'yes',
   fuse enum('yes','no') NOT NULL default 'no',
   addbycust enum('yes','no') NOT NULL default 'no',

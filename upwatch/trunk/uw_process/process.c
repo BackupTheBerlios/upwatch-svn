@@ -91,31 +91,28 @@ static void set_result_prev_color(trx *t, struct probe_result *prv)
 static struct probe_result *get_following_record(trx *t)
 {
   MYSQL_RES *result;
-  MYSQL_ROW row;
-  struct probe_result *nxt;
+  struct probe_result *nxt = NULL;
 
-  nxt = g_malloc0(sizeof(struct probe_result));
-  if (nxt == NULL) {
-    return(NULL);
-  }
-  nxt->stattime = t->res->stattime;
-  nxt->color = t->res->color;
-
-  if (!t->probe->store_results) return(nxt); // we probably don't have a xxxx_raw table
+  if (!t->probe->store_results) return(NULL); // we probably don't have a xxxx_raw table
 
   result = my_query(t->probe->db, 0,
                     "select   color, stattime "
                     "from     pr_%s_raw use index(probstat) "
-                    "where    probe = '%u' and stattime < '%u' "
-                    "order by stattime desc limit 1", 
+                    "where    probe = '%u' and stattime > '%u' "
+                    "order by stattime asc limit 1", 
                     t->res->name, t->def->probeid, t->res->stattime);
-  if (!result) return(nxt);
-  row = mysql_fetch_row(result);
-  if (row) {
-    nxt->color = atoi(row[0]);
-    nxt->stattime = atoi(row[1]);
+  if (result) {
+    MYSQL_ROW row;
+
+    row = mysql_fetch_row(result);
+    if (row) {
+      nxt = g_malloc0(sizeof(struct probe_result));
+
+      nxt->color = atoi(row[0]);
+      nxt->stattime = atoi(row[1]);
+    }
+    mysql_free_result(result);
   }
-  mysql_free_result(result);
   return(nxt);
 }
 
@@ -125,51 +122,42 @@ static struct probe_result *get_following_record(trx *t)
 static void update_pr_status(trx *t, struct probe_result *prv)
 {
   MYSQL_RES *result;
-  char *escmsg;
-  char color[80];
+  char *qry;
+  int addmsg = TRUE;
 
-  if (t->res->message) {
-    escmsg = g_malloc(strlen(t->res->message) * 2 + 1);
-    mysql_real_escape_string(t->probe->db, escmsg, t->res->message, strlen(t->res->message)) ;
-  } else {
-    escmsg = strdup("");
-  }
+  qry = g_malloc(512 + (t->res->message ? strlen(t->res->message)*2 : 0));
 
-  color[0] = 0;
+  sprintf(qry, "update pr_status "
+               "set    stattime = '%u', expires = '%u', hide = '%s', " 
+               "       yellow = '%f', red = '%f', contact = '%u', server = '%u'", 
+               t->res->stattime, t->res->expires, t->def->hide, 
+               t->def->yellow, t->def->red, t->def->contact, t->def->server);
+
   if (t->probe->fuse) {
-    if (t->res->color > prv->color) {
+    if (t->res->color > prv->color || prv->color == STAT_PURPLE) {
     // if this probe acts like a fuse, only update if new color is higher then old color
     // because colors must be set to green (= fuse replaced) by a human
-      sprintf(color, "color = '%u', ", prv->color);
+      sprintf(&qry[strlen(qry)], ", color = '%u'", t->res->color);
+    } else {
+      addmsg = FALSE; // update everything except the error message that came with the fuse-breaking
     }
   } else {
-    if (t->res->color != prv->color) {
-      sprintf(color, "color = '%u', ", t->res->color);
-    }
+    sprintf(&qry[strlen(qry)], ", color = '%u'", t->res->color);
   }
 
-  result = my_query(t->probe->db, 0,
-                    "update pr_status "
-                    "set    stattime = '%u', expires = '%u', %s hide = '%s', " 
-                    "       message = '%s', yellow = '%f', red = '%f', contact = '%u', server = '%u' "
-                    "where  probe = '%u' and class = '%u'",
-                    t->res->stattime, t->res->expires, color, t->def->hide, 
-                    escmsg, t->def->yellow, t->def->red, t->def->contact, t->def->server, 
-                    t->def->probeid, t->probe->class);
-  mysql_free_result(result);
-  if (mysql_affected_rows(t->probe->db) == 0) { // nothing was actually updated, need to insert new 
-    LOG(LOG_NOTICE, "update_pr_status failed, inserting new record (class=%u, probe=%u)", 
-                    t->probe->class, t->def->probeid);
-    result = my_query(t->probe->db, 0,
-                      "insert into pr_status "
-                      "set    class =  '%u', probe = '%u', stattime = '%u', expires = '%u', "
-                      "       server = '%u', %s message = '%s', yellow = '%f', red = '%f', "
-                      "       contact = '%u', hide = '%s'",
-                      t->probe->class, t->def->probeid, t->res->stattime, t->res->expires, t->def->server, 
-                      color, escmsg, t->def->yellow, t->def->red, t->def->contact, t->def->hide);
-    mysql_free_result(result);
+  if (addmsg && t->res->message) {
+    char *escmsg;
+
+    escmsg = g_malloc(strlen(t->res->message) * 2 + 1);
+    mysql_real_escape_string(t->probe->db, escmsg, t->res->message, strlen(t->res->message));
+    sprintf(&qry[strlen(qry)], ", message = '%s'", escmsg);
+    free(escmsg);
   }
-  g_free(escmsg);
+
+  sprintf(&qry[strlen(qry)], " where probe = '%u' and class = '%u'", t->def->probeid, t->probe->class);
+  result = my_rawquery(t->probe->db, 0, qry);
+  mysql_free_result(result);
+  g_free(qry);
 }
 
 //*******************************************************************
@@ -195,19 +183,6 @@ static void insert_pr_status(trx *t)
                     t->probe->class, t->def->probeid, t->res->stattime, t->res->expires, t->def->color, t->def->server, 
                     escmsg, t->def->yellow, t->def->red, t->def->contact, t->def->hide);
   mysql_free_result(result);
-  if (mysql_affected_rows(t->probe->db) == 0 || (mysql_errno(t->probe->db) == ER_DUP_ENTRY)) { 
-    // nothing was actually inserted, it was probably already there
-    LOG(LOG_NOTICE, "insert_pr_status failed (%s:%u:%u) with %s", 
-                    t->res->name, t->res->stattime, t->def->probeid, mysql_error(t->probe->db));
-    result = my_query(t->probe->db, 0,
-                      "update pr_status "
-                      "set    stattime = '%u', expires = '%u', color = '%d', hide = '%s', "
-                      "       message = '%s', yellow = '%f', red = '%f', contact = '%u', server = '%u' "
-                      "where  probe = '%u' and class = '%u'",
-                      t->res->stattime, t->res->expires, t->res->color, t->def->hide, escmsg, 
-                      t->def->yellow, t->def->red, t->def->contact, t->def->server, t->def->probeid, t->probe->class);
-    mysql_free_result(result);
-  }
   g_free(escmsg);
 }
 
@@ -499,11 +474,11 @@ int process(trx *t)
   }
 
   // IF COLOR DIFFERS FROM PRECEDING RAW RECORD
-  if (t->res->color != prv->color || t->res->received > t->res->expires) {
+  if (t->res->color != prv->color) {
     struct probe_result *nxt;
 
     if (t->probe->fuse) {
-      if (t->res->color > prv->color) {
+      if (t->res->color > prv->color || prv->color == STAT_PURPLE) {
         if (debug > 3) fprintf(stderr, "FUSE WITH HIGHER COLOR - CREATE PR_HIST\n");
         create_pr_hist(t, prv); // CREATE PR_HIST
       }
@@ -511,28 +486,35 @@ int process(trx *t)
       if (debug > 3) fprintf(stderr, "COLOR DIFFERS FROM PRECEDING RAW RECORD - CREATE PR_HIST\n");
       create_pr_hist(t, prv); // CREATE PR_HIST
     }
-    if (debug > 3) fprintf(stderr, "RETRIEVE FOLLOWING RAW RECORD\n");
-    nxt = get_following_record(t); // RETRIEVE FOLLOWING RAW RECORD
-    if (nxt && nxt->color) { // IF FOUND
-      if (debug > 3) fprintf(stderr, "FOLLOWING RECORD IS FOUND\n");
-      if (nxt->color == t->res->color) {  // IF COLOR OF FOLLOWING IS THE SAME AS CURRENT
-        if (debug > 3) fprintf(stderr, "SAME COLOR: DELETE POSSIBLE HISTORY RECORDS\n");
-        delete_history(t, nxt); // DELETE POSSIBLE HISTORY RECORDS FOR FOLLOWING RECORD
-      }
-      g_free(nxt);
-    }
     if (t->res->stattime > t->def->newest) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED
       if (debug > 3) fprintf(stderr, "THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED - UPDATE PR_STATUS\n");
       update_pr_status(t, prv);    // UPDATE PR_STATUS
+      if (mysql_affected_rows(t->probe->db) == 0) { // nothing was actually updated, need to insert new
+        insert_pr_status(t); 
+      }
       if (debug > 3) fprintf(stderr, "UPDATE SERVER COLOR\n");
       update_server_color(t, prv); // UPDATE SERVER COLOR
       must_update_def = TRUE;
+    } else {
+      if (debug > 3) fprintf(stderr, "RETRIEVE FOLLOWING RAW RECORD\n");
+      nxt = get_following_record(t); // RETRIEVE FOLLOWING RAW RECORD
+      if (nxt && nxt->color) { // IF FOUND
+        if (debug > 3) fprintf(stderr, "FOLLOWING RECORD IS FOUND\n");
+        if (nxt->color == t->res->color) {  // IF COLOR OF FOLLOWING IS THE SAME AS CURRENT
+          if (debug > 3) fprintf(stderr, "SAME COLOR: DELETE POSSIBLE HISTORY RECORDS\n");
+          delete_history(t, nxt); // DELETE POSSIBLE HISTORY RECORDS FOR FOLLOWING RECORD
+        }
+        g_free(nxt);
+      }
     }
   } else {
     if (debug > 3) fprintf(stderr, "COLOR SAME AS PRECEDING RAW RECORD\n");
     if (t->res->stattime > t->def->newest) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED
       if (debug > 3) fprintf(stderr, "THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED - UPDATE PR_STATUS\n");
       update_pr_status(t, prv);  // UPDATE PR_STATUS (not for the color, but for the expiry time)
+      if (mysql_affected_rows(t->probe->db) == 0) { // nothing was actually updated, need to insert new
+        insert_pr_status(t); 
+      }
       must_update_def = TRUE;
     }
   }

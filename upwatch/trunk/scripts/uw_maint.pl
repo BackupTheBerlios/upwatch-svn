@@ -281,7 +281,7 @@ sub main {
 
 #  &get_fill_probe_description_lock();
 
-  log_error(__LINE__, 'notice', "start " . @ARGV);
+  log_error(__LINE__, 'notice', "started " . @ARGV);
 
   process_options();
   parse_config("/etc/upwatch.conf");
@@ -300,7 +300,7 @@ sub main {
 
 #  &remove_fill_probe_description_lock();
 
-  log_error(__LINE__, 'notice', "stop");
+  log_error(__LINE__, 'notice', "ended");
 
   exit (0);
 }

@@ -6,18 +6,22 @@ version       = `cat ../VERSION`;
 homerc        = `echo $sysconfdir/upwatch.conf`;
 homerc        = `echo $confdir/uw_sysstat.conf`;
 homerc        = `echo $confdir/uw_sysstat.logexp`;
+homerc        = `echo $confdir/uw_sysstat.logexp.local`;
 homerc        = "$HOME/.upwatchrc";
 homerc        = "$HOME/.uw_sysstatrc";
-homerc        = "$HOME/.uw_sysstat_logexp";
+homerc        = "$HOME/.uw_sysstat.logexp";
+homerc        = "$HOME/.uw_sysstat.logexp.local";
 homerc        = "$$/upwatch.conf";
 homerc        = "$$/uw_sysstat.conf";
 homerc        = "$$/uw_sysstat.logexp";
+homerc        = "$$/uw_sysstat.logexp.local";
 detail        = 
 'uw_sysstat does the following: ';
 
 // this section is for the generated specfile
 spec-requires = "glib2";
 spec-files = `echo "%attr(4770,root,upwatch)" $sbindir/uw_sysstat`;
+spec-files = `echo "%config(noreplace)" $confdir/uw_sysstat.logexp`;
 
 // describe commandline flags
 flag = {

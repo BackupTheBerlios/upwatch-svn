@@ -5,6 +5,7 @@ probe = {
   name = "iptraf";
   id = 4;
   descrip = "Incoming and outgoing traffic to an IP adddress, network or interface";
+  expiry = "no";
   addbyhand = "yes";
   class = "";
   graphgroup = "iptraf";

@@ -41,21 +41,13 @@ MYSQL *open_database(char *dbhost, int dbport, char *dbname, char *dbuser, char 
   return(mysql);
 }
 
-MYSQL_RES *my_query(MYSQL *mysql, int log_dupes, char *fmt, ...)
+MYSQL_RES *my_rawquery(MYSQL *mysql, int log_dupes, char *qry)
 {
   MYSQL_RES *result;
-  char qry[65535];
-  va_list arg;
 
-  if (!mysql) return(NULL);
-
-  va_start(arg, fmt);
-  vsnprintf(qry, sizeof(qry)-1, fmt, arg);
-  va_end(arg);
-  if (debug > 3) {
+  if (debug > 4) {
     LOGRAW(LOG_DEBUG, qry);
   }
-
   if (mysql_query(mysql, qry)) {
     switch (mysql_errno(mysql)) {
     case ER_DUP_ENTRY:
@@ -71,5 +63,18 @@ MYSQL_RES *my_query(MYSQL *mysql, int log_dupes, char *fmt, ...)
     LOG(LOG_WARNING, "%s: [%u] %s", qry, mysql_errno(mysql), mysql_error(mysql));
   }
   return(result);
+}
+
+MYSQL_RES *my_query(MYSQL *mysql, int log_dupes, char *fmt, ...)
+{
+  char qry[65535];
+  va_list arg;
+
+  if (!mysql) return(NULL);
+
+  va_start(arg, fmt);
+  vsnprintf(qry, sizeof(qry)-1, fmt, arg);
+  va_end(arg);
+  return my_rawquery(mysql, log_dupes, qry);
 }
 

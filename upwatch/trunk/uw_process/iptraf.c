@@ -24,7 +24,7 @@ int iptraf_accept_result(trx *t)
   query_server_by_ip = NULL;
 
   if (t->res->domain == NULL) {
-    query_server_by_ip = dblist[1].srvrbyip;
+    query_server_by_ip = dblist[0].srvrbyip;
     return 1;
   }
 
