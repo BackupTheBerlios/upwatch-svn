@@ -105,9 +105,14 @@ static int uw_password_ok(char *user, char *passwd)
 {
   MYSQL *mysql;
   MYSQL_RES *result;
-  char *realm = strrchr(user, '@');
+  char user_realm[256];
+  char *realm;
 
-  if (realm) { *realm = 0; realm++; }
+  strncpy(user_realm, user, sizeof(user_realm));
+  realm = strrchr(user, '@');
+  if (realm) { 
+    *realm++ = 0; 
+  }
   mysql = open_realm(realm);
   if (mysql) {
     gchar buffer[256];
@@ -129,7 +134,7 @@ static int uw_password_ok(char *user, char *passwd)
       int id;
 
       id = atoi(row[0]);
-      LOG(LOG_DEBUG, "user %s, pwd %s resulted in id %d", user, passwd, id);
+      LOG(LOG_DEBUG, "user %s, pwd %s resulted in id %d", user_realm, passwd, id);
     }
     mysql_free_result(result);
     close_database(mysql);
