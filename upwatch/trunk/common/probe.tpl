@@ -242,7 +242,7 @@ ENDIF+]
 == int +][+
 IF unsigned +]unsigned [+
 ENDIF+]
-  char *[+name+];	/* [+descrip+] */[+ ESAC type +][+ ENDFOR def+][+ENDFOR probe+]
+  int [+name+];		/* [+descrip+] */[+ ESAC type +][+ ENDFOR def+][+ENDFOR probe+]
 [+ == res_h
 +]/*
 [+(dne " * ")+]

@@ -36,7 +36,7 @@ flag = {
     name      = begin;
     value     = b;
     arg_type  = numeric;
-    arg-default = 0;
+    arg-default = 2;
     arg-range = '0->59';
     descrip   = "second to begin probing";
     doc       =
@@ -56,17 +56,6 @@ minutes, its color will turn to blue.';
 };
 
 flag = {
-    name      = notify;
-    value     = N;
-    arg_type  = string;
-    arg-default = "uw_notify";
-    descrip   = "name of queue to drop notifications";
-    doc       =
-'The argument is taken to be a maildir under the directory `spooldir`.
-When a probe fails a request to notify the owner is put into this queue.';
-};
-
-flag = {
     name      = output;
     value     = O;
     stack_arg;
@@ -76,17 +65,6 @@ flag = {
 'The argument is taken to be a maildir under the directory `spooldir`.
 All results are placed in this queue.
 This flag may be given multiple times.';
-};
-
-flag = {
-    name      = investigate;
-    value     = V;
-    arg_type  = string;
-    arg-default = "uw_investigate";
-    descrip   = "Queue to drop commands for the investigate process";
-    doc       =
-'The argument is taken to be a maildir under the directory `spooldir`.
-If a probe fails, a request to investigate is put into this queue.';
 };
 
 flag = {

@@ -36,7 +36,7 @@ flag = {
     name      = begin;
     value     = b;
     arg_type  = numeric;
-    arg-default = 0;
+    arg-default = 8;
     arg-range = '0->59';
     descrip   = "second to begin probing";
     doc       =
@@ -77,28 +77,6 @@ flag = {
 Firewalls may exist between them. So probes may be assigned to
 certain groups. This setting tells this probe its group id, so
 it knows which probe to retrieve from the definition table';
-};
-
-flag = {
-    name      = notify;
-    value     = N;
-    arg_type  = string;
-    arg-default = "uw_notify";
-    descrip   = "name of queue to drop notifications";
-    doc       =
-'The argument is taken to be a maildir under the directory `spooldir`.
-When a probe fails a request to notify the owner is put into this queue.';
-};
-
-flag = {
-    name      = investigate;
-    value     = V;
-    arg_type  = string;
-    arg-default = "uw_investigate";
-    descrip   = "Queue to drop commands for the investigate process";
-    doc       =
-'The argument is taken to be a maildir under the directory `spooldir`.
-If a probe fails, a request to investigate is put into this queue.';
 };
 
 flag = {

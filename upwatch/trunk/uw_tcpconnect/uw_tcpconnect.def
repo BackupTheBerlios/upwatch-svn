@@ -1,22 +1,22 @@
 AutoGen Definitions options;
-export        = "#define progOptions uw_mssqlOptions";
-prog-name     = uw_mssql;
-prog-title    = "Upwatch mssql daemon";
+export        = "#define progOptions uw_tcpconnectOptions";
+prog-name     = uw_tcpconnect;
+prog-title    = "Upwatch tcpconnect daemon";
 version       = `cat ../VERSION`;
 homerc        = `echo $sysconfdir/upwatch.conf`;
-homerc        = `echo $confdir/uw_mssql.conf`;
+homerc        = `echo $confdir/uw_tcpconnect.conf`;
 homerc        = "$HOME/.upwatchrc";
 homerc        = "$HOME";
 homerc        = "$$/upwatch.conf";
-homerc        = "$$/uw_mssql.conf";
+homerc        = "$$/uw_tcpconnect.conf";
 detail        = 
-'uw_mssql reads a list of hosts from the database, and 
-performs queries on each host. This happens in parallel, 
-so uw_mssql can process thousands of hosts in a very short period.';
+'uw_tcpconnect reads a list of hosts from the database, and 
+connects to a given TCP port on each host. This happens in parallel, 
+so uw_tcpconnect can process thousands of hosts in a very short period.';
 
 // this section is for the generated specfile
-spec-requires = "/usr/bin/mysql glib2 freetds";
-spec-files = `echo "%attr(0770,root,upwatch)" $sbindir/uw_mssql`;
+spec-requires = "/usr/bin/mysql glib2";
+spec-files = `echo "%attr(0770,root,upwatch)" $sbindir/uw_tcpconnect`;
 
 // describe commandline flags
 flag = {
@@ -33,6 +33,19 @@ Decompression is automatic';
 };
 
 flag = {
+    name      = begin;
+    value     = b;
+    arg_type  = numeric;
+    arg-default = 14;
+    arg-range = '0->59';
+    descrip   = "second to begin probing";
+    doc       =
+'The probing process is started every minute. To prevent the thundering-herd syndrome
+you can configure on which second the probing starts. So set one probe to 0, another to
+10, etcetera.';
+};
+
+flag = {
     name      = expires;
     arg_default  = 5;  /* option argument indication  */
     arg_type  = number;   /* option argument indication  */
@@ -40,19 +53,6 @@ flag = {
     doc       =
 'When no results have been received from a probe after this many
 minutes, its color will turn to blue.';
-};
-
-flag = {
-    name      = begin;
-    value     = b;
-    arg_type  = numeric;
-    arg-default = 9;
-    arg-range = '0->59';
-    descrip   = "second to begin probing";
-    doc       =
-'The probing process is started every minute. To prevent the thundering-herd syndrome
-you can configure on which second the probing starts. So set one probe to 0, another to
-10, etcetera.';
 };
 
 flag = {
