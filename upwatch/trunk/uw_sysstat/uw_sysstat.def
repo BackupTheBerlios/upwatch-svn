@@ -56,10 +56,19 @@ flag = {
 flag = {
     name      = systemp_command;
     arg_type  = string;   /* option argument indication  */
-    descrip   = "command the produces the system temperature";
+    descrip   = "command that produces the system temperature";
     doc       =
 'This command is used to determine the temperature in the box.
 The command should print the termperature in Celsius to standard output';
+};
+
+flag = {
+    name      = top_command;
+    arg_type  = string;   /* option argument indication  */
+    arg_default = "top -b -n 1 | head -30";
+    descrip   = "command for running `top`";
+    doc       =
+'This command is used to run a `top` in batch mode';
 };
 
 // describe commandline flags
