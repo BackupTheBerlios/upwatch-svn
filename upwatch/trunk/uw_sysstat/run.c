@@ -141,7 +141,8 @@ int run(void)
   xmlDocPtr doc;
   xmlNodePtr subtree, sysstat;
   int ret = 0;
-  int color = 200;
+  int color = STAT_GREEN;
+static int prv_color = STAT_GREEN;
   double lavg, dummy;
   time_t now;
   FILE *in;
@@ -238,9 +239,19 @@ int run(void)
   sprintf(buffer, "%d", systemp);		subtree = xmlNewChild(sysstat, NULL, "systemp", buffer);
     subtree = xmlNewChild(sysstat, NULL, "info", info);
 
-  for (i=0; i < ct; i++) {
-    spool_result(OPT_ARG(SPOOLDIR), output[i], doc, NULL);
+  if (HAVE_OPT(HPQUEUE)) {
+    if (color != prv_color) {
+      // if status changed, it needs to be sent immediately. So drop into
+      // the high priority queue. Else just drop in the normal queue where
+      // uw_send in batched mode will pick it up later
+      spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(HPQUEUE), doc, NULL);
+    }
+  } else {
+    for (i=0; i < ct; i++) {
+      spool_result(OPT_ARG(SPOOLDIR), output[i], doc, NULL);
+    }
   }
+  prv_color = color; // remember for next time
   xmlFreeDoc(doc);
   return(ret);
 }

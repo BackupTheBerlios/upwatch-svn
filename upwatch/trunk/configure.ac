@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.20 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.21 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -101,6 +101,13 @@ LIBPCAP_LIBS="-L${PCAP_LIB_PREFIX} -lpcap"
 LIBPCAP_CFLAGS="-I${PCAP_INC_PREFIX}"
 AC_SUBST(LIBPCAP_LIBS)
 AC_SUBST(LIBPCAP_CFLAGS)
+AM_CONDITIONAL(HAVE_PCAP, test -d $PCAP_INC_PREFIX/pcap.h)
+if test -d $PCAP_INC_PREFIX/pcap.h
+then
+HAVE_PCAP=1
+else
+HAVE_PCAP=0
+fi
 
 ################## LIBNET
 # libnet
@@ -109,8 +116,11 @@ LIBNET_CFLAGS="$LIBNET_CFLAGS `libnet-config --defines`"
 LIBNET_LIBS="`libnet-config --libs`"
 if test -z "$LIBNET_LIBS"
 then
-  AC_MSG_ERROR([You really need libnet to compile upwatch])
+  HAVE_LIBNET="0"
+else
+  HAVE_LIBNET="1"
 fi
+AM_CONDITIONAL(HAVE_LIBNET, test $HAVE_LIBNET -eq 0)
 AC_SUBST(LIBNET_CFLAGS)
 AC_SUBST(LIBNET_LIBS)
 
@@ -120,8 +130,11 @@ LIBGTHREAD2_CFLAGS="`pkg-config --cflags gthread-2.0`"
 LIBGTHREAD2_LIBS="`pkg-config --libs gthread-2.0`"
 if test -z "$LIBGTHREAD2_LIBS"
 then
-  AC_MSG_ERROR([You really need libglib2-devel to compile upwatch])
+  HAVE_LIBGTHREAD2="0"
+else
+  HAVE_LIBGTHREAD2="1"
 fi
+AM_CONDITIONAL(HAVE_LIBGTHREAD2, test $HAVE_LIBGTHREAD2 -eq 0)
 AC_SUBST(LIBGTHREAD2_CFLAGS)
 AC_SUBST(LIBGTHREAD2_LIBS)
 
@@ -231,5 +244,22 @@ AC_CONFIG_FILES([Makefile
                  compat/bb/bbhimport/Makefile
                  compat/sometests/Makefile
                  compat/sometests/setproctitle/Makefile])
+
+echo 
+echo "*******************************************************"
+echo "* CONFIGURATION:                                      *"
+echo "*                                                     *"
+
+if test $HAVE_PCAP -eq 0
+then
+echo "* libpcap not found, uw_iptraf will not be built      *"
+fi
+if test $HAVE_LIBNET -eq 0
+then
+echo "* libnet not found, uw_investigate will not be built  *"
+fi
+
+echo "*******************************************************"
+echo 
 
 AC_OUTPUT

@@ -1,4 +1,18 @@
-PROBES = uw_httpget uw_ping uw_iptraf uw_sysstat uw_acceptbb uw_mysql uw_snmpget uw_pop3 \
+PROBES = uw_httpget uw_ping 
+
+if HAVE_PCAP
+USE_PCAP = uw_iptraf
+endif
+
+if HAVE_LIBNET
+USE_LIBNET = uw_investigate
+endif
+
+if HAVE_LIBGTHREAD2
+USE_LIBGTHREAD2 = uw_investigate
+endif
+
+PROBES += $(USE_PCAP) $(USE_LIBNET) $(USE_LIBGTHREAD2) uw_sysstat uw_acceptbb uw_mysql uw_snmpget uw_pop3 \
  uw_mssql uw_postgresql uw_imap
 
 # NOTE: order is important, first the probes, then uw_process, then the rest

@@ -78,5 +78,17 @@ All results are placed in this queue.
 This flag may be given multiple times.';
 };
 
+flag = {      
+    name      = hpqueue;
+    value     = O;
+    arg_type  = string;
+    descrip   = "name of high-priority queue to drop status changes";
+    doc       =
+'The argument is taken to be a maildir under the directory `spooldir`.
+When a probe changes status (color) results should be sent out immediately.
+This denotes the name of the queue to drop results in.
+Mainly used in ISDN situations.';
+};
+
 
 #include generic_options.def

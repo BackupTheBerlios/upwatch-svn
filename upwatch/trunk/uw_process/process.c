@@ -413,7 +413,9 @@ static void update_server_color(module *probe, struct probe_def *def, struct pro
 {
   MYSQL_RES *result;
 
+  if (def->server < 2) return;
   result = my_query(probe->db, 0,
+                    // update server set color = '200' where id = '345'
                     "update %s set %s = '%u' where %s = '%u'",
                      OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_COLOR_FIELD), 
                      res->color, OPT_ARG(SERVER_TABLE_ID_FIELD), def->server);
