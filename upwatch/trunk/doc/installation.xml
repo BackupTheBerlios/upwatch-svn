@@ -4,8 +4,9 @@
     <title>Installation</title>
     <sect1 id="Getting_upwatch">
         <title>Getting upwatch</title>
-        <para> Currently, upwatch is not released, and is not allowed to be distributed. The
-          only way to get it, is through written permission of UpWatch BV.</para>
+        <para> Currently, the UpWatch server and monitoring software are not released, and 
+        are not allowed to be distributed. The only way to get it, is through written 
+        permission of UpWatch BV.</para>
         <para> If you aquired that, you will either receive access to CVS, or will receive a
             tar.gz file, or .RPM's.</para>
 	 <para>Building and installing upwatch is not for the faint of heart. It uses lots of external
@@ -48,7 +49,8 @@
                 compilation tools, and the development versions of the above mentioned packages,
                 you'll need the following on your system to build upwatch:</para>
             <itemizedlist>
-                <listitem><para>autogen 5.3.6 (autogen.sourceforge.net)</para></listitem>
+                <listitem><para>autogen 5.3.6 (autogen.sourceforge.net) which itself requires
+                guile and umb-scheme.</para></listitem>
                 <listitem><para>if you also want to rebuild the manual: lynx 2.8.4, libxslt 1.0.15 and 
                 docbook 1.48, including the entire toolchain: openjade, jadetex, tetex, 
                 netpbm, perl-SGMLSpm.</para></listitem>
@@ -93,8 +95,8 @@
     <sect1 id="php_pages">
        <title>PHP pages</title>
        <para> The PHP pages can just be copied to any directory. There is an include directory. Copy
-          that a some location ouside the web root, and enter its location in the .htaccess file in the web root dir.
-          Also enter the database details in config.php.
+          that a some location ouside the web root, and enter its location in the .htaccess file 
+          in the web root dir. Also enter the database details in config.php.
        </para>
     </sect1>
     <sect1 id="Security_considerations">
@@ -111,10 +113,10 @@
        </para>
        <para><command>uw_access</command>, and  <command>uw_accessbb</command> are
              the programs most vulnerable to crackers, as they wait
-             for incoming connections on a TCP port (1985/1984). If possible, use <command>chroot</command> and
-             firewall rules to limit connections to
-             real probes only. Something similar holds for <command>mysql</command>. Most probes will want
-             access, and passwords can be sniffed. For real security use ssh-tunnels.
+             for incoming connections on a TCP port (1985/1984). If possible, use <command>chroot</command>,
+             NX where available and firewall rules to limit connections to
+             real probes only. Something similar holds for <command>mysql</command>. Most probes 
+             will want access, and passwords can be sniffed. For real security use ssh-tunnels.
        </para>
     </sect1>
     <sect1 id="Database">

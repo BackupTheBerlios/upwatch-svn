@@ -28,6 +28,7 @@ Ron Arts
 
         3.1. Configuration Files
         3.2. Monitoring specific logfiles
+        3.3. Maintenance and Upgrades
 
    4. Utilities
 
@@ -151,7 +152,9 @@ Chapter 2. Installation
    the  normal GNU compilation tools, and the development versions of the
    above  mentioned packages, you'll need the following on your system to
    build upwatch:
+     * lynx
      * autogen 5.3.6 (autogen.sourceforge.net)
+     * autogen needs libguile and umb-scheme
      * RPM tools, if you want to build RPM's
 
    If you run RedHat, Debian or SuSE, don't forget to install the *-devel
@@ -178,10 +181,11 @@ Chapter 3. Configuration
 
    3.1. Configuration Files
    3.2. Monitoring specific logfiles
+   3.3. Maintenance and Upgrades
 
 3.1. Configuration Files
 
-   The  directory  structure for configuration file is as follows. At the
+   The  directory structure for configuration files is as follows. At the
    toplevel is upwatch.conf (usually residing in /etc). This file is read
    by  all  programs,  and contains global parameters, and parameters you
    want  to  make  globally  known.  At  the  same level is the directory
@@ -192,6 +196,7 @@ Chapter 3. Configuration
           # contains defaults for all modules
           # these can be overridden in /etc/upwatch.d/<module>.conf
           #
+          realm neonova
           debug 2
           syslog no
           stderr no
@@ -199,16 +204,18 @@ Chapter 3. Configuration
           spooldir /var/spool/upwatch
 
    All   values   in   this  file  can  be  overridden  or  augmented  in
-   program-specific  files.  debug speaks for itself. Never set it higher
-   than two. Zero suppresses all debugging except the most critical ones,
-   'debug  1'  will  output  only  warnings, 'debug 2' will send progress
-   information  to  the log. syslog yes will enable logging to the system
-   log,  stderr  is  really  not  very  useful  because  the  commandline
-   parameter  -e1  accomplishes  the  same for every program. The logfile
-   value  denotes  where  logging  will  takes place. This file should be
-   writable  by  the  user  upwatch. The same holds for the spooldir base
-   directory.  It  should  contain  subdirectories  of the maildir format
-   (meaning: each having a new and tmp subdirectory).
+   program-specific  files. realm denotes the short name for the database
+   this system belongs to, This usually corresponds to your company name.
+   debug speaks for itself. Never set it higher than two. Zero suppresses
+   all  debugging  except  the  most critical ones, 'debug 1' will output
+   only  warnings,  'debug  2' will send progress information to the log.
+   syslog yes will enable logging to the system log, stderr is really not
+   very  useful  because  the  commandline parameter -e1 accomplishes the
+   same  for  every program. The logfile value denotes where logging will
+   takes  place.  This  file  should be writable by the user upwatch. The
+   same  holds  for  the  spooldir  base  directory.  It  should  contain
+   subdirectories  of  the maildir format (meaning: each having a new and
+   tmp subdirectory).
 
    On  the  average  client  two  processes will be running continuously:
    uw_sysstat  and  uw_send.  The  first  program  collects  info on your
@@ -234,15 +241,12 @@ Chapter 3. Configuration
 
    The uw_sysstat.conf file is comparable:
 
-          realm netland
           serverid 381
           output uw_send
           hwstats on
           errlog syslog /var/log/messages
           errlog maillog /var/log/maillog
 
-   The  realm  is  basically  a short name for your company. It tells the
-   central  processor  in  which database to store data from this server.
    The  serverid  is  the  numerical id of this server in that particular
    database.  Without  output  it  would  not know where to store the XML
    result  file.  hwstats determines (where supported) if uw_sysstat will
@@ -313,7 +317,22 @@ Chapter 3. Configuration
        uw_sysstat. Repeat steps until you are satisfied
      * Finally  tell  uw_sysstat  that  you  want it to start scanning by
        adding  errlog  timtim  /var/log/timtim.log  to  its configuration
-       file. That's it.
+       file.  That's  it. Occasionally you may see loglines showing up as
+       yellow,  but  they  should  in fact be ignored. You can always add
+       regular  expressions  for  such  lines.  You don't need to restart
+       uw_sysstat, it will notice the file was modified.
+
+3.3. Maintenance and Upgrades
+
+   The  RPM  files  contain  logrotate.d  files  to  rotate  the  upwatch
+   logfiles, other platforms should supply their own.
+
+   If  the uw_send daemon for some reason is not running, probing results
+   will  stack  up  in  the  queue. They will be sent out when uw_send is
+   restarted.
+
+   Upgrades  with  yum  or  apt-get are automatic. There are repositories
+   available, please ask our helpdesk for the proper addresses.
 
 Chapter 4. Utilities
 

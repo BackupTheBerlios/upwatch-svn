@@ -1,13 +1,13 @@
-<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="Content-Type"><title>Upwatch User Guide</title><meta name="generator" content="DocBook XSL Stylesheets V1.50.0"><style type="text/css">
-body { background-image: url(&quot;http://docbook.sourceforge.net/release/images/draft.png&quot;);
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Upwatch User Guide</title><meta name="generator" content="DocBook XSL Stylesheets V1.58.1"><style type="text/css">
+body { background-image: url('http://docbook.sourceforge.net/release/images/draft.png');
        background-repeat: no-repeat;
        background-position: top left;
-       /* The following properties make the watermark &quot;fixed&quot; on the page. */
+       /* The following properties make the watermark "fixed" on the page. */
        /* I think that's just a bit too distracting for the reader... */
        /* background-attachment: fixed; */
        /* background-position: center center; */
-</style></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book"><div class="titlepage"><div><h1 class="title"><a name="upwatch"></a>Upwatch User Guide</h1></div><div><div class="author"><h3 class="author">Ron Arts</h3></div></div><div><p class="copyright">Copyright © 2002-2004 UpWatch BV, The Netherlands</p></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#id2805066">Preface</a></dt><dt>1. <a href="#About_UpWatch">About UpWatch</a></dt><dd><dl><dt>1.1. <a href="#Upwatch_History">History</a></dt><dt>1.2. <a href="#Upwatch_features">Features</a></dt></dl></dd><dt>2. <a href="#id2757326">Installation</a></dt><dd><dl><dt>2.1. <a href="#Getting_upwatch">Getting upwatch</a></dt><dt>2.2. <a href="#Requirements">Requirements</a></dt><dd><dl><dt>2.2.1. <a href="#Run-time_requirements">Run-time requirements</a></dt><dt>2.2.2. <a href="#Build_requirements">Build requirements</a></dt></dl></dd><dt>2.3. <a href="#Compiling_upwatch">Compiling upwatch</a></dt></dl></dd><dt>3. <a href="#Configuration">Configuration</a></dt><dd><dl><dt>3.1. <a href="#Configuration_Files">Configuration Files</a></dt><dt>3.2. <a href="#Monitoring_specific_logfiles">Monitoring specific logfiles</a></dt></dl></dd><dt>4. <a href="#Utilities">Utilities</a></dt><dd><dl><dt>4.1. <a href="#mbmon">mbmon</a></dt><dt>4.2. <a href="#chklog">chklog</a></dt><dt>4.3. <a href="#uwq">uwq</a></dt><dt>4.4. <a href="#uwregexp">uwregexp</a></dt><dt>4.5. <a href="#uwsaidar">uwsaidar</a></dt></dl></dd><dt><a href="#id2757258">Index</a></dt></dl></div><div class="preface"><div class="titlepage"><div><h2 class="title"><a name="id2805066"></a>Preface</h2></div></div><p>This book describes the client side installation and configuration
-        of UpWatch.</p></div><div class="chapter"><div class="titlepage"><div><h2 class="title"><a name="About_UpWatch"></a>Chapter 1. About UpWatch</h2></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt>1.1. <a href="#Upwatch_History">History</a></dt><dt>1.2. <a href="#Upwatch_features">Features</a></dt></dl></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="Upwatch_History"></a>1.1. History</h2></div></div><p>UpWatch is born from the loins of Netland Internet Services BV, Amsterdam, 
+</style></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book" lang="en"><div class="titlepage"><div><h1 class="title"><a name="upwatch"></a>Upwatch User Guide</h1></div><div><div class="author"><h3 class="author">Ron Arts</h3></div></div><div><p class="copyright">Copyright © 2002-2004 UpWatch BV, The Netherlands</p></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><a href="#id5428290">Preface</a></dt><dt>1. <a href="#About_UpWatch">About UpWatch</a></dt><dd><dl><dt>1.1. <a href="#Upwatch_History">History</a></dt><dt>1.2. <a href="#Upwatch_features">Features</a></dt></dl></dd><dt>2. <a href="#id5366466">Installation</a></dt><dd><dl><dt>2.1. <a href="#Getting_upwatch">Getting upwatch</a></dt><dt>2.2. <a href="#Requirements">Requirements</a></dt><dd><dl><dt>2.2.1. <a href="#Run-time_requirements">Run-time requirements</a></dt><dt>2.2.2. <a href="#Build_requirements">Build requirements</a></dt></dl></dd><dt>2.3. <a href="#Compiling_upwatch">Compiling upwatch</a></dt></dl></dd><dt>3. <a href="#Configuration">Configuration</a></dt><dd><dl><dt>3.1. <a href="#Configuration_Files">Configuration Files</a></dt><dt>3.2. <a href="#Monitoring_specific_logfiles">Monitoring specific logfiles</a></dt><dt>3.3. <a href="#Client_Maintenance_and_Upgrades">Maintenance and Upgrades</a></dt></dl></dd><dt>4. <a href="#Utilities">Utilities</a></dt><dd><dl><dt>4.1. <a href="#mbmon">mbmon</a></dt><dt>4.2. <a href="#chklog">chklog</a></dt><dt>4.3. <a href="#uwq">uwq</a></dt><dt>4.4. <a href="#uwregexp">uwregexp</a></dt><dt>4.5. <a href="#uwsaidar">uwsaidar</a></dt></dl></dd><dt><a href="#id5368843">Index</a></dt></dl></div><div class="preface" lang="en"><div class="titlepage"><div><h2 class="title"><a name="id5428290"></a>Preface</h2></div></div><p>This book describes the client side installation and configuration
+        of UpWatch.</p></div><div class="chapter" lang="en"><div class="titlepage"><div><h2 class="title"><a name="About_UpWatch"></a>Chapter 1. About UpWatch</h2></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt>1.1. <a href="#Upwatch_History">History</a></dt><dt>1.2. <a href="#Upwatch_features">Features</a></dt></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="Upwatch_History"></a>1.1. History</h2></div></div><p>UpWatch is born from the loins of Netland Internet Services BV, Amsterdam, 
     The Netherlands. We are a hosting company which started in 1993 (when even Bill Gates knew
     nothing of the internet). We started doing managed hosting in 1995, and that's when
     we found out about monitoring. The hard way.</p><p>It became clear that customers can easily bring down their own server on impossible
@@ -18,25 +18,25 @@ body { background-image: url(&quot;http://docbook.sourceforge.net/release/images
     geek-like look, we felt we couldn't give the URL to our customers. Third problem
     was integration with our backoffice.</p><p>At the same time yours truly was thinking about setting up a commercial
     service for monitoring servers remotely. All this culminated into UpWatch. So lets get 
-    straight to the ..</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="Upwatch_features"></a>1.2. Features</h2></div></div><p>This is the full list of relevant upwatch features:</p><div class="itemizedlist"><ul type="disc"><li><p>OS support: clients available for Linux, Windows, FreeBSD, Solaris</p></li><li><p>GUI is multi-language enabled (uses gettext)</p></li><li><p>GUI has mobile client support</p></li><li><p>GUI is brandable, you can give it your own look &amp; feel</p></li><li><p>Generates realtime graphs from the database</p></li><li><p>Notifications by email or SMS.</p></li><li><p>Clients for: HTTP GET, IMAP, MSSQL, MySQL, PING, POP3, PostgreSQL, SMTP, 
+    straight to the ..</p></div><div class="sect1" lang="en"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="Upwatch_features"></a>1.2. Features</h2></div></div><p>This is the full list of relevant upwatch features:</p><div class="itemizedlist"><ul type="disc"><li><p>OS support: clients available for Linux, Windows, FreeBSD, Solaris</p></li><li><p>GUI is multi-language enabled (uses gettext)</p></li><li><p>GUI has mobile client support</p></li><li><p>GUI is brandable, you can give it your own look &amp; feel</p></li><li><p>Generates realtime graphs from the database</p></li><li><p>Notifications by email or SMS.</p></li><li><p>Clients for: HTTP GET, IMAP, MSSQL, MySQL, PING, POP3, PostgreSQL, SMTP, 
     SNMP GET, TCP connect (any port)</p></li><li><p>Local client detects: CPU load, loadavg, swap use, I/O use, memory use, and
     where supported hardware info like CPU temperature, fan speed and Power voltages. Also you can
     set it up to scan any logfile using regular expressions you supply.</p></li><li><p>Scalable: designed for monitoring tens of thousands of hosts</p></li><li><p>Multi-tenanting: multiple companies can run monitoring services for network
     of multiple client-companies using the same backend+probe serverpark</p></li><li><p>Extensive and complete documentation, partly generated from source</p></li><li><p>Secure: run as ordinary user, developed with security in mind</p></li><li><p>Fully opensource: GUI built on Apache/PHP, Backend on C/Perl, 
-    Database is MySQL. Uses GNU configure.</p></li><li><p>SuSE, RedHat and Fedora RPM's generated from sourcetree for easy installation</p></li></ul></div></div></div><div class="chapter"><div class="titlepage"><div><h2 class="title"><a name="id2757326"></a>Chapter 2. Installation</h2></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt>2.1. <a href="#Getting_upwatch">Getting upwatch</a></dt><dt>2.2. <a href="#Requirements">Requirements</a></dt><dd><dl><dt>2.2.1. <a href="#Run-time_requirements">Run-time requirements</a></dt><dt>2.2.2. <a href="#Build_requirements">Build requirements</a></dt></dl></dd><dt>2.3. <a href="#Compiling_upwatch">Compiling upwatch</a></dt></dl></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="Getting_upwatch"></a>2.1. Getting upwatch</h2></div></div><p> The UpWatch clients can be download from www.upwatch.com. They are available in the
-          following formats:</p><div class="itemizedlist"><ul type="disc"><li><p>as a tar.gz file, including sources for every supported platform</p></li><li><p>SuSE, RedHat of Fedora .rpm files</p></li><li><p>A windows installer</p></li></ul></div><p>If you want, you can inspect the code for security issues.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="Requirements"></a>2.2. Requirements</h2></div></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="Run-time_requirements"></a>2.2.1. Run-time requirements</h3></div></div><p>First ensure that the time/date on all hosts is correctly set. </p><p>Here's a list of everything we expect (I'll also list the version we use ourselves):</p><div class="itemizedlist"><ul type="disc"><li><p>glib2 &gt;= 2.0.4</p></li><li><p>xml2 (any version will do)</p></li><li><p>libpcre 3.9.10</p></li><li><p>libncurses 5.2</p></li><li><p>libreadline 4.3</p></li></ul></div><p>Delivered with upwatch are 
+    Database is MySQL. Uses GNU configure.</p></li><li><p>SuSE, RedHat and Fedora RPM's generated from sourcetree for easy installation</p></li></ul></div></div></div><div class="chapter" lang="en"><div class="titlepage"><div><h2 class="title"><a name="id5366466"></a>Chapter 2. Installation</h2></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt>2.1. <a href="#Getting_upwatch">Getting upwatch</a></dt><dt>2.2. <a href="#Requirements">Requirements</a></dt><dd><dl><dt>2.2.1. <a href="#Run-time_requirements">Run-time requirements</a></dt><dt>2.2.2. <a href="#Build_requirements">Build requirements</a></dt></dl></dd><dt>2.3. <a href="#Compiling_upwatch">Compiling upwatch</a></dt></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="Getting_upwatch"></a>2.1. Getting upwatch</h2></div></div><p> The UpWatch clients can be download from www.upwatch.com. They are available in the
+          following formats:</p><div class="itemizedlist"><ul type="disc"><li><p>as a tar.gz file, including sources for every supported platform</p></li><li><p>SuSE, RedHat of Fedora .rpm files</p></li><li><p>A windows installer</p></li></ul></div><p>If you want, you can inspect the code for security issues.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="Requirements"></a>2.2. Requirements</h2></div></div><div class="sect2" lang="en"><div class="titlepage"><div><h3 class="title"><a name="Run-time_requirements"></a>2.2.1. Run-time requirements</h3></div></div><p>First ensure that the time/date on all hosts is correctly set. </p><p>Here's a list of everything we expect (I'll also list the version we use ourselves):</p><div class="itemizedlist"><ul type="disc"><li><p>glib2 &gt;= 2.0.4</p></li><li><p>xml2 (any version will do)</p></li><li><p>libpcre 3.9.10</p></li><li><p>libncurses 5.2</p></li><li><p>libreadline 4.3</p></li></ul></div><p>Delivered with upwatch are 
             <a href="http://www.i-scream.org/libstatgrab/" target="_top">libstatgrab (0.10)</a>, to retrieve
             critical operating system values, 
             <a href="http://www.nt.phys.kyushu-u.ac.jp/shimizu/download/download.html" target="_top">xmbmon 2.03</a> 
             for harware statistics, 
             and the <a href="http://state-threads.sourceforge.net/" target="_top">State Threads Library (1,4)</a> for
-            fast and efficient multithreading.</p></div><div class="sect2"><div class="titlepage"><div><h3 class="title"><a name="Build_requirements"></a>2.2.2. Build requirements</h3></div></div><p>You probably don't want to build upwatch yourself. Most likely you'll 
+            fast and efficient multithreading.</p></div><div class="sect2" lang="en"><div class="titlepage"><div><h3 class="title"><a name="Build_requirements"></a>2.2.2. Build requirements</h3></div></div><p>You probably don't want to build upwatch yourself. Most likely you'll 
             grab the RPM packages and issue rpm -Uvh upwatch*rpm. Then skip to 
-            <a href="#Configuration" title="Chapter 3. Configuration">Configuration</a>.
+            <a href="#Configuration" title="Chapter 3. Configuration">Configuration</a>.
             </p><p> But on the other hand: you can build the software yourself. Apart from the normal GNU
                 compilation tools, and the development versions of the above mentioned packages,
-                you'll need the following on your system to build upwatch:</p><div class="itemizedlist"><ul type="disc"><li><p>autogen 5.3.6 (autogen.sourceforge.net)</p></li><li><p>RPM tools, if you want to build RPM's</p></li></ul></div><p>If you run RedHat, Debian or SuSE, don't forget to install the *-devel packages
-                if there are any.</p></div></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="Compiling_upwatch"></a>2.3. Compiling upwatch</h2></div></div><p>Just in case you really want to (or need to) compile upwatch yourself, it's
+                you'll need the following on your system to build upwatch:</p><div class="itemizedlist"><ul type="disc"><li><p>lynx</p></li><li><p>autogen 5.3.6 (autogen.sourceforge.net)</p></li><li><p>autogen needs libguile and umb-scheme</p></li><li><p>RPM tools, if you want to build RPM's</p></li></ul></div><p>If you run RedHat, Debian or SuSE, don't forget to install the *-devel packages
+                if there are any.</p></div></div><div class="sect1" lang="en"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="Compiling_upwatch"></a>2.3. Compiling upwatch</h2></div></div><p>Just in case you really want to (or need to) compile upwatch yourself, it's
            pretty easy:
         </p><div class="literallayout"><p><br>
               $ tar xzvf upwatch-x.x.tar.gz<br>
@@ -46,7 +46,7 @@ body { background-image: url(&quot;http://docbook.sourceforge.net/release/images
               $ make install<br>
            </p></div><p> Nothing to it... In case of problems, you're probably missing some library or
             header files, or they are in unexpected places. Look at the last parts
-            of config.log.</p></div></div><div class="chapter"><div class="titlepage"><div><h2 class="title"><a name="Configuration"></a>Chapter 3. Configuration</h2></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt>3.1. <a href="#Configuration_Files">Configuration Files</a></dt><dt>3.2. <a href="#Monitoring_specific_logfiles">Monitoring specific logfiles</a></dt></dl></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="Configuration_Files"></a>3.1. Configuration Files</h2></div></div><p>The directory structure for configuration file is as follows. At
+            of config.log.</p></div></div><div class="chapter" lang="en"><div class="titlepage"><div><h2 class="title"><a name="Configuration"></a>Chapter 3. Configuration</h2></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt>3.1. <a href="#Configuration_Files">Configuration Files</a></dt><dt>3.2. <a href="#Monitoring_specific_logfiles">Monitoring specific logfiles</a></dt><dt>3.3. <a href="#Client_Maintenance_and_Upgrades">Maintenance and Upgrades</a></dt></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="Configuration_Files"></a>3.1. Configuration Files</h2></div></div><p>The directory structure for configuration files is as follows. At
        the toplevel is <tt>upwatch.conf</tt> (usually residing in /etc). This
        file is read by all programs, and contains global parameters, and parameters
        you want to make globally known. At the same level is the directory 
@@ -57,6 +57,7 @@ body { background-image: url(&quot;http://docbook.sourceforge.net/release/images
        # these can be overridden in /etc/upwatch.d/&lt;module&gt;.conf<br>
        #<br>
 <br>
+       realm neonova<br>
        debug 2<br>
        syslog no<br>
        stderr no<br>
@@ -65,7 +66,9 @@ body { background-image: url(&quot;http://docbook.sourceforge.net/release/images
 <br>
        spooldir /var/spool/upwatch<br>
        </p></div><p>All values in this file can be overridden or augmented in program-specific
-       files. <b>debug</b> speaks for itself. Never set it higher than two. Zero
+       files. <b>realm</b> denotes the short name for the database this system
+       belongs to, This usually corresponds to your company name. 
+       <b>debug</b> speaks for itself. Never set it higher than two. Zero
        suppresses all debugging except the most critical ones, 'debug 1' will output
        only warnings, 'debug 2' will send progress information to the log.
        <b>syslog yes</b> will enable logging to the system log, 
@@ -96,21 +99,18 @@ body { background-image: url(&quot;http://docbook.sourceforge.net/release/images
        logging that the program does, <b>threads</b> how many files to send
        at the same time, and finally, the <b>input</b> tells <b>uw_send</b>
        where to find its XML files to send out. Pretty straightforward.</p><p>The <tt>uw_sysstat.conf</tt> file is comparable:</p><div class="literallayout"><p><br>
-       realm netland<br>
        serverid 381<br>
        output uw_send<br>
        hwstats on<br>
        errlog syslog /var/log/messages<br>
        errlog maillog /var/log/maillog<br>
-       </p></div><p>The <b>realm</b> is basically a short name for your company. It
-       tells the central processor in which database to store data from this server. The 
-       <b>serverid</b> is the numerical id of this server in that particular 
+       </p></div><p>The <b>serverid</b> is the numerical id of this server in that particular 
        database. Without <b>output</b> it would not know where to store
        the XML result file. <b>hwstats</b> determines (where supported) if 
        <b>uw_sysstat</b> will try to talk to the motherboard to get
        hardware values like temperature and fanspeed (run <b>mbmon</b> first
        to test if this is supported) and the <b>errlog</b> parameters tell 
-       <b>uw_sysstat</b> which files to monitor and their format.</p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="Monitoring_specific_logfiles"></a>3.2. Monitoring specific logfiles</h2></div></div><p>uw_sysstat is special in that it allows you to scan every (line-oriented) logfile
+       <b>uw_sysstat</b> which files to monitor and their format.</p></div><div class="sect1" lang="en"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="Monitoring_specific_logfiles"></a>3.2. Monitoring specific logfiles</h2></div></div><p>uw_sysstat is special in that it allows you to scan every (line-oriented) logfile
        you want. It uses regular expressions to set a yellow or red state. It works as follows:</p><p>On startup it reads <tt>/etc/upwatch.d/uw_sysstat.conf</tt>, and
        searches for <b>logfile</b> statements. Say it encounters the statement:</p><div class="literallayout"><p><br>
        logfile errlog /var/log/messages<br>
@@ -149,7 +149,13 @@ body { background-image: url(&quot;http://docbook.sourceforge.net/release/images
        </p></div><p>Now you should only see the lines you want to be reported by uw_sysstat. Repeat
        steps until you are satisfied</p></li><li><p>Finally tell uw_sysstat that you want it to start scanning by
        adding <b>errlog timtim /var/log/timtim.log</b> to its configuration
-       file. That's it.</p></li></ul></div></div></div><div class="chapter"><div class="titlepage"><div><h2 class="title"><a name="Utilities"></a>Chapter 4. Utilities</h2></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt>4.1. <a href="#mbmon">mbmon</a></dt><dt>4.2. <a href="#chklog">chklog</a></dt><dt>4.3. <a href="#uwq">uwq</a></dt><dt>4.4. <a href="#uwregexp">uwregexp</a></dt><dt>4.5. <a href="#uwsaidar">uwsaidar</a></dt></dl></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="mbmon"></a>4.1. mbmon</h2></div></div><p>On x86 architectures and some operating systems hardware readouts may be
+       file. That's it. Occasionally you may see loglines showing up as yellow, but they should
+       in fact be ignored. You can always add regular expressions for such lines. You
+       don't need to restart <b>uw_sysstat</b>, it will notice the file was modified.</p></li></ul></div></div><div class="sect1" lang="en"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="Client_Maintenance_and_Upgrades"></a>3.3. Maintenance and Upgrades</h2></div></div><p>The RPM files contain logrotate.d files to rotate the upwatch logfiles, 
+       other platforms should supply their own.</p><p>If the <b>uw_send</b> daemon for some reason is not running,
+       probing results will stack up in the queue. They will be sent out when 
+       <b>uw_send</b> is restarted.</p><p>Upgrades with yum or apt-get are automatic. There are repositories available,
+       please ask our helpdesk for the proper addresses.</p></div></div><div class="chapter" lang="en"><div class="titlepage"><div><h2 class="title"><a name="Utilities"></a>Chapter 4. Utilities</h2></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt>4.1. <a href="#mbmon">mbmon</a></dt><dt>4.2. <a href="#chklog">chklog</a></dt><dt>4.3. <a href="#uwq">uwq</a></dt><dt>4.4. <a href="#uwregexp">uwregexp</a></dt><dt>4.5. <a href="#uwsaidar">uwsaidar</a></dt></dl></div><div class="sect1" lang="en"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="mbmon"></a>4.1. mbmon</h2></div></div><p>On x86 architectures and some operating systems hardware readouts may be
        obtained. We use 
        <a href="http://www.nt.phys.kyushu-u.ac.jp/shimizu/download/download.html" target="_top">xmbmon</a> 
        to get these values, so wherever that's supported, we can do it. But before switching on
@@ -158,22 +164,22 @@ body { background-image: url(&quot;http://docbook.sourceforge.net/release/images
        anyway, also look if the values given by mbmon are meaningful.
        </p><p> Each program has a manual page that documents options. Every long commandine option
           can also be entered in a configuration file.
-       </p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="chklog"></a>4.2. chklog</h2></div></div><p>This utility makes it simpler to create your own set of regular expressions
+       </p></div><div class="sect1" lang="en"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="chklog"></a>4.2. chklog</h2></div></div><p>This utility makes it simpler to create your own set of regular expressions
         for a particular logfile you want to be monitored by <b>uw_sysstat</b>.
         It can both scan a test logfile and output regular expressions, as scan a logfile
         and outputs lines that are suspicious, and to which uw_sysstat should repond
-        by flagging a yellow or red condition. See <a href="#Monitoring_specific_logfiles" title="3.2. Monitoring specific logfiles">
+        by flagging a yellow or red condition. See <a href="#Monitoring_specific_logfiles" title="3.2. Monitoring specific logfiles">
         Monitoring specific logfiles</a> for the procedure.
-        </p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="uwq"></a>4.3. uwq</h2></div></div><p>You can show all queues on the cureent system with <b>uwq</b>.
+        </p></div><div class="sect1" lang="en"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="uwq"></a>4.3. uwq</h2></div></div><p>You can show all queues on the cureent system with <b>uwq</b>.
         We regularly use <b>watch uwq</b> to monitor queue status.
-        </p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="uwregexp"></a>4.4. uwregexp</h2></div></div><p>While creating a regular expression for an application specific logfile, sometimes
+        </p></div><div class="sect1" lang="en"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="uwregexp"></a>4.4. uwregexp</h2></div></div><p>While creating a regular expression for an application specific logfile, sometimes
         you get problems creating a regular expressions that fits really well. This is
         where <b>uwregexp</b> comes in handy. You feed it the line to match,
         and the logfile type, can it gives you a prompt where you can try various
         regular expressions. Use up and down arrows the circle through previous expressions.
-        </p></div><div class="sect1"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="uwsaidar"></a>4.5. uwsaidar</h2></div></div><p>this is a general handy tool, a bit like <b>top</b>, it gives
+        </p></div><div class="sect1" lang="en"><div class="titlepage"><div><h2 class="title" style="clear: both"><a name="uwsaidar"></a>4.5. uwsaidar</h2></div></div><p>this is a general handy tool, a bit like <b>top</b>, it gives
         you an ongoing system status screen with CPU, memory, and I/O usage and vaious
         other parameters. It actually comes straight out of the 
         <a href="http://www.i-scream.org/libstatgrab/" target="_top">libstatgrab</a>
         library, that accompanies the Upwatch client.
-        </p></div></div><div class="index"><div class="titlepage"><div><h2 class="title"><a name="id2757258"></a>Index</h2></div></div><div class="index"></div></div></div></body></html>
+        </p></div></div><div class="index"><div class="titlepage"><div><h2 class="title"><a name="id5368843"></a>Index</h2></div></div><div class="index"></div></div></div></body></html>
