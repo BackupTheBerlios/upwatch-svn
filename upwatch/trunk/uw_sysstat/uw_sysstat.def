@@ -27,6 +27,8 @@ spec-files = `echo "%dir" $confdir/uw_sysstat.d/maillog`;
 spec-files = `for i in \`find uw_sysstat.d/maillog -type f | grep -v CVS\` ; do echo $confdir/$i; done`;
 spec-files = `echo "%dir" $confdir/uw_sysstat.d/mysql`;
 spec-files = `for i in \`find uw_sysstat.d/mysql -type f | grep -v CVS\` ; do echo $confdir/$i; done`;
+spec-files = `echo "%dir" $confdir/uw_sysstat.d/upwatch`;
+spec-files = `for i in \`find uw_sysstat.d/upwatch -type f | grep -v CVS\` ; do echo $confdir/$i; done`;
 
 // describe commandline flags
 flag = {
