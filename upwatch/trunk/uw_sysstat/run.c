@@ -4,11 +4,16 @@
 #include "cmd_options.h"
 #include "sysinfo.h"
 
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
 #include <ctype.h>
 #include <fcntl.h>
+#include <ifaddrlist.h>
 
 #define BUFFSIZE 8192
 static char buff[BUFFSIZE]; /* used in the procedures */
@@ -18,6 +23,7 @@ unsigned long cpu_idl[2];
 unsigned int pgpgin[2], pgpgout[2], pswpin[2], pswpout[2];
 unsigned int inter[2],ticks[2],ctxt[2];
 int tog = 0;
+char ipaddress[24];
 
 void getstat(unsigned *cuse, unsigned *cice, unsigned *csys, unsigned long *cide,
              unsigned *pin, unsigned *pout, unsigned *sin, unsigned *sout,
@@ -104,10 +110,19 @@ void getmeminfo(unsigned *memfree, unsigned *membuff, unsigned *swapused, unsign
 
 int init(void)
 {
+  int n;
+  struct ifaddrlist *al, *allist;
+  struct in_addr in;
+  char errbuf[256];
+
   if (OPT_VALUE_SERVERID == 0) {
     fprintf(stderr, "Please set serverid first\n");
     return 0;
   }
+/*
+  strcpy(ipaddress, inet_ntoa(al->addr)); 
+  LOG(LOG_DEBUG, "using ipaddress %s", ipaddress);
+*/
   daemonize = TRUE;
   every = EVERY_MINUTE;
   xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);

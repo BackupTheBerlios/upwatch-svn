@@ -35,7 +35,7 @@ struct probe_result {
   guint color; \
   guint newest; \
 
-struct probe_def{
+struct probe_def {
   STANDARD_PROBE_DEF;
 #include "../common/common.h"
 };
@@ -88,9 +88,9 @@ struct summ_spec {
 }; 
 
 typedef struct transaction {
-  module *mod;		// point to the module processing this transaction
+  module *probe;	// point to the module processing this transaction
   xmlDocPtr doc; 	// the Xml doc structure
-  xmlNodePtr node;	// current node in the Xml doc
+  xmlNodePtr cur;	// current node in the Xml doc
   xmlNsPtr ns;		// current namespace
   void *def;		// probe definition data
   void *loc;		// local data ptr

@@ -28,6 +28,14 @@ minutes, its color will turn to blue.';
 
 flag = {
     must-set; 
+    name      = ipaddress;
+    arg_type  = string;   /* option argument indication  */
+    arg_default = "127.0.0.1";
+    descrip   = "Use this ipaddress in the XML result";
+};
+
+flag = {
+    must-set; 
     name      = serverid;
     value     = S;        /* flag style option character */
     arg_type  = number;   /* option argument indication  */

@@ -193,7 +193,9 @@ void add_to_xml_document(char *hostname, char *probename, char *colorstr, struct
   xmlNodePtr subtree, probe, host;
   time_t date = mktime(probedate);
   char buffer[1024];
+  char ipaddress[20];
   int color = STAT_GREEN;
+  struct hostent *hp;
 
   if (doc == NULL) doc = UpwatchXmlDoc("result");
   if (!strcmp(colorstr, "red")) {
@@ -204,6 +206,15 @@ void add_to_xml_document(char *hostname, char *probename, char *colorstr, struct
     color = STAT_YELLOW;
   }
 
+  if ((hp = gethostbyname(hostname)) != NULL) {
+    struct sockaddr_in serv_addr;
+
+    memcpy(&serv_addr.sin_addr, hp->h_addr, hp->h_length);
+    strcpy(ipaddress, inet_ntoa(serv_addr.sin_addr));
+  } else {
+    ipaddress[0] = 0;
+  }
+
   if (strcmp(probename, "cpu") == 0) {
     probe = xmlNewChild(xmlDocGetRootElement(doc), NULL, "bb_cpu", NULL);
   } else {
@@ -212,7 +223,8 @@ void add_to_xml_document(char *hostname, char *probename, char *colorstr, struct
   }
 
   sprintf(buffer, "%d", (int) date);          xmlSetProp(probe, "date", buffer);
-  sprintf(buffer, "%d", ((int)date)+(OPT_VALUE_EXPIRES*60));
+  xmlSetProp(probe, "ipaddress", ipaddress);
+  sprintf(buffer, "%d", ((int)date)+((unsigned)OPT_VALUE_EXPIRES*60));
   xmlSetProp(probe, "expires", buffer); // 200 minutes
   host = xmlNewChild(probe, NULL, "host", NULL);
   sprintf(buffer, "%s", hostname);     subtree = xmlNewChild(host, NULL, "hostname", buffer);

@@ -1,4 +1,5 @@
 #include <string.h>
+#include <netinet/in.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <unistd.h>
@@ -36,6 +37,7 @@ char *uw_gmtime(time_t *now);
 long timeval_diff(struct timeval *a,struct timeval *b);
 guint *guintdup(guint val);
 int uw_rand(float maxval);
+void setsin(struct sockaddr_in *, u_int32_t);
 
 extern int debug;
 extern int startsec;

@@ -32,6 +32,7 @@ static void xml_result_node(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsP
   struct bb_result *res = (struct bb_result *)probe_res;
 
   res->bbname = xmlGetProp(cur, (const xmlChar *) "bbname");
+  res->ipaddress = xmlGetProp(cur, (const xmlChar *) "ipaddress");
 }
 
 //*******************************************************************
@@ -91,9 +92,10 @@ static void *get_def(module *probe, void *probe_res)
   if (mysql_num_rows(result) == 0) { // DEF RECORD NOT FOUND
     mysql_free_result(result);
     result = my_query(probe->db, 0,
-                      "insert into pr_%s_def set server = '%u', " 
+                      "insert into pr_%s_def set server = '%u', ipaddress = '%s', " 
                       "       description = '%s', bbname = '%s'", 
-                       res->name, res->server, res->hostname, res->bbname);
+                       res->name, res->server, res->ipaddress ? res->ipaddress : "", 
+                       res->hostname, res->bbname);
     mysql_free_result(result);
     def->probeid = mysql_insert_id(probe->db);
     LOG(LOG_NOTICE, "pr_bb_def %s created for %s, id = %u", res->bbname, res->hostname, def->probeid);
