@@ -22,17 +22,17 @@
                 <listitem><para>gnet 1.1.2</para></listitem>
                 <listitem><para>mysql 3.23.49</para></listitem>
                 <listitem><para>cURL 7.9.5</para></listitem>
-                <listitem><para>libnet 1.0.2a</para></listitem>
+                <listitem><para>libnet 1.0.2a (www.packetfactory.net/libnet/)</para></listitem>
                 <listitem><para>libpcap 0.6.2</para></listitem>
             </itemizedlist>
         </sect2>
         <sect2 id="Build_requirements">
             <title>Build requirements</title>
             <para> Of course you can build the software yourself. Apart from the normal GNU
-                compilation tools, and the aforementioned packages, you'll need the following on
-                your system to build upwatch:</para>
+                compilation tools, and the development versions of the aforementioned packages, 
+                you'll need the following on your system to build upwatch:</para>
             <itemizedlist>
-                <listitem><para>autogen 5.3.6</para></listitem>
+                <listitem><para>autogen 5.3.6 (autogen.sourceforge.net)</para></listitem>
                 <listitem><para>libxslt 1.0.15</para></listitem>
                 <listitem><para>docbook 1.48</para></listitem>
                 <listitem><para>lynx 2.8.4</para></listitem>

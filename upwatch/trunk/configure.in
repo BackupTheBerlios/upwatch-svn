@@ -86,7 +86,7 @@ LIBGLIB2_CFLAGS="`pkg-config --cflags gthread-2.0`"
 LIBGLIB2_LIBS="`pkg-config --libs gthread-2.0`"
 if test -z "$LIBGLIB2_LIBS"
 then
-  AC_MSG_ERROR([You really need libglib-2 to compile upwatch])
+  AC_MSG_ERROR([You really need libglib2-devel to compile upwatch])
 fi
 AC_SUBST(LIBGLIB2_CFLAGS)
 AC_SUBST(LIBGLIB2_LIBS)
