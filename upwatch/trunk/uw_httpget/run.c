@@ -1,14 +1,14 @@
 #include "config.h"
-#include <math.h>
 #include <generic.h>
+#include <st.h>
 #include <sys/time.h>
-#include <netdb.h>
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include "curl/curl.h"
 
 #include "cmd_options.h"
+#define TIMEOUT	50000000L
 
 struct probedef {
   int		id;             /* server probe id */
@@ -17,19 +17,21 @@ struct probedef {
 #include "probe.def_h"
 #include "../common/common.h"
 #include "probe.res_h"
-  char		*info;          /* HTTP GET result */
-  size_t        info_curlen;    /* HTTP GET result length */
-  size_t        info_maxlen;    /* HTTP GET result length */
   char		*msg;           /* last error message */
+  char		*info;          /* HTTP GET result */
 };
 GHashTable *cache;
+int thread_count;
 
 void free_probe(void *probe)
 {
   struct probedef *r = (struct probedef *)probe;
 
-  if (r->hostname) g_free(r->hostname);
+  if (r->ipaddress) g_free(r->ipaddress);
   if (r->uri) g_free(r->uri);
+  if (r->hostname) g_free(r->hostname);
+  if (r->msg) g_free(r->msg);
+  if (r->info) g_free(r->info);
   g_free(r);
 }
 
@@ -52,13 +54,13 @@ int init(void)
   daemonize = TRUE;
   every = EVERY_MINUTE;
   startsec = OPT_VALUE_BEGIN;
-  g_thread_init(NULL);
+  st_init(); 
   xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
   return(1);
 }
 
 void refresh_database(MYSQL *mysql);
-void run_actual_probes(int probecount);
+void run_actual_probes(void);
 void write_results(void);
 
 int run(void)
@@ -81,12 +83,13 @@ int run(void)
   if (g_hash_table_size(cache) > 0) {
     if (debug > 0) LOG(LOG_DEBUG, "running %d probes", g_hash_table_size(cache));
     uw_setproctitle("running %d probes", g_hash_table_size(cache));
-    run_actual_probes(g_hash_table_size(cache)); /* this runs the actual probes */
+    run_actual_probes(); /* this runs the actual probes */
 
     if (debug > 0) LOG(LOG_DEBUG, "writing results");
     uw_setproctitle("writing results");
     write_results();
   }
+
   return(g_hash_table_size(cache));
 }
 
@@ -96,15 +99,17 @@ void refresh_database(MYSQL *mysql)
   MYSQL_ROW row;
   char qry[1024];
 
-  sprintf(qry,  "SELECT pr_httpget_def.id, pr_httpget_def.ipaddress, "
-                "       pr_httpget_def.hostname, pr_httpget_def.uri, "
+  sprintf(qry,  "SELECT pr_httpget_def.id, "
+                "       pr_httpget_def.ipaddress, pr_httpget_def.uri, "
+                "       pr_httpget_def.hostname, "
                 "       pr_httpget_def.yellow,  pr_httpget_def.red "
                 "FROM   pr_httpget_def "
-                "WHERE  pr_httpget_def.id > 1 and pr_httpget_def.pgroup = '%d'", 
-		OPT_VALUE_GROUPID);
+                "WHERE  pr_httpget_def.id > 1 and pr_httpget_def.pgroup = '%u'",
+                (unsigned) OPT_VALUE_GROUPID);
 
   result = my_query(mysql, 1, qry);
   if (!result) {
+    LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql)); 
     return;
   }
     
@@ -122,14 +127,16 @@ void refresh_database(MYSQL *mysql)
 
     if (probe->ipaddress) g_free(probe->ipaddress);
     probe->ipaddress = strdup(row[1]);
-    if (probe->hostname) g_free(probe->hostname);
-    probe->hostname = strdup(row[2]);
     if (probe->uri) g_free(probe->uri);
-    probe->uri = strdup(row[3]);
+    probe->uri = strdup(row[2]);
+    if (probe->hostname) g_free(probe->hostname);
+    probe->hostname = strdup(row[3]);
     probe->yellow = atof(row[4]);
     probe->red = atof(row[5]);
     if (probe->msg) g_free(probe->msg);
     probe->msg = NULL;
+    if (probe->info) g_free(probe->info);
+    probe->info = NULL;
     probe->seen = 1;
   }
   mysql_free_result(result);
@@ -140,30 +147,22 @@ void refresh_database(MYSQL *mysql)
   }
 }
 
-void probe(gpointer data, gpointer user_data);
+void *probe(void *user_data); 
 void add_probe(gpointer key, gpointer value, gpointer user_data)
 {
-  GThreadPool *gtpool = (GThreadPool *) user_data;
-
-  g_thread_pool_push(gtpool, value, NULL);
-//probe(value, user_data);
+  if (st_thread_create(probe, value, 0, 0) == NULL) {
+    LOG(LOG_DEBUG, "couldn't create thread");
+  } else {
+    thread_count++;
+  }
 }
 
-void run_actual_probes(int probecount)
+void run_actual_probes(void)
 {
-  GThreadPool *gtpool = NULL;
-  GError *gerror;
-
-  gtpool = g_thread_pool_new(probe, NULL, probecount < 30 ? 10 : (10 * (int) log(probecount)), 
-                            TRUE, &gerror);
-  if (gtpool == NULL) {
-    LOG(LOG_ERR, gerror->message);
-    fprintf(stderr, "could not create threadpool\n");
-    return;
+  g_hash_table_foreach(cache, add_probe, NULL);
+  while (thread_count) {
+    st_sleep(1);
   }
-
-  g_hash_table_foreach(cache, add_probe, gtpool);
-  g_thread_pool_free (gtpool, FALSE, TRUE);
 }
 
 void write_probe(gpointer key, gpointer value, gpointer user_data)
@@ -200,6 +199,11 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   sprintf(buffer, "%f", probe->connect);      subtree = xmlNewChild(httpget, NULL, "connect", buffer);
   sprintf(buffer, "%f", probe->pretransfer);  subtree = xmlNewChild(httpget, NULL, "pretransfer", buffer);
   sprintf(buffer, "%f", probe->total);        subtree = xmlNewChild(httpget, NULL, "total", buffer);
+  if (probe->info) {
+    subtree = xmlNewTextChild(httpget, NULL, "info", probe->info);
+    free(probe->info);
+    probe->info = NULL;
+  }
   if (probe->msg) {
     subtree = xmlNewTextChild(httpget, NULL, "info", probe->msg);
     free(probe->msg);
@@ -215,84 +219,86 @@ void write_results(void)
   xmlFreeDoc(doc);
 }
 
-static size_t write_function(void *ptr, size_t size, size_t nmemb, void *stream)
-{
-  struct probedef *host = (struct probedef *)stream;
-  int len = size * nmemb;
+void *probe(void *data) 
+{ 
+  int sock, len;
+  struct sockaddr_in rmt;
+  st_netfd_t rmt_nfd;
+  struct probedef *probe = (struct probedef *)data;
+  char buffer[1024];
+  st_utime_t start, now;
 
-  if (host->info_curlen + len > host->info_maxlen) {
-    host->info = realloc(host->info, host->info_maxlen + len + 512);
-    host->info_maxlen += (len + 512);
+  memset(&rmt, 0, sizeof(struct sockaddr_in));
+  rmt.sin_family = AF_INET;
+  rmt.sin_port = htons(80);
+  rmt.sin_addr.s_addr = inet_addr(probe->ipaddress);
+  if (rmt.sin_addr.s_addr == INADDR_NONE) {
+    char buf[50];
+
+    sprintf(buf, "Illegal IP address '%s'", probe->ipaddress);
+    probe->msg = strdup(buf);
+    goto done;
   }
-  memcpy(host->info + host->info_curlen, ptr, len);
-  host->info_curlen += len;
-  *(host->info + host->info_curlen) = 0;
-  return(len);
+
+
+  /* Connect to remote host */
+  if ((sock = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
+    probe->msg = strdup(strerror(errno));
+    goto done;
+  }
+  if ((rmt_nfd = st_netfd_open_socket(sock)) == NULL) {
+    probe->msg = strdup(strerror(errno));
+    close(sock);
+    goto done;
+  }
+  start = st_utime();
+  probe->lookup = 0.0;
+  if (st_connect(rmt_nfd, (struct sockaddr *)&rmt, sizeof(rmt), -1) < 0) {
+    probe->msg = strdup(strerror(errno));
+    st_netfd_close(rmt_nfd);
+    goto done;
+  }
+  now = st_utime();
+  probe->connect = ((float) (now - start)) * 0.000001;
+
+  sprintf(buffer, "GET %s HTTP/1.0\nHost: %s\n\n", probe->uri, probe->hostname);
+  if (debug > 3) fprintf(stderr, "> %s", buffer);
+  len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
+  if (len == ETIME) {
+    char buf[256];
+
+    sprintf(buf, "Timeout in writing to host after %u seconds", 
+                  (unsigned) (TIMEOUT / 1000000L));
+    probe->msg = strdup(buf);
+    goto close;
+  }
+  if (len == -1) {
+    probe->msg = strdup(strerror(errno));
+    goto close;
+  }
+  now = st_utime();
+  probe->pretransfer = ((float) (now - start)) * 0.000001;
+
+  // Now read the response
+  memset(buffer, 0, sizeof(buffer));
+  len = st_read(rmt_nfd, buffer, 512, TIMEOUT); 
+  if (len == ETIME) {
+    char buf[256];
+
+    sprintf(buf, "Timeout in reading result after %u seconds", 
+                  (unsigned) (TIMEOUT / 1000000L));
+    probe->msg = strdup(buf);
+    goto close;
+  }
+  if (debug > 3) fprintf(stderr, "< %s", buffer);
+  probe->info = strdup(buffer);
+
+close:
+  now = st_utime();
+  probe->total = ((float) (now - start)) * 0.000001;
+  st_netfd_close(rmt_nfd);
+
+done:
+  thread_count--;
+  return NULL;
 }
-
-void probe(gpointer data, gpointer user_data)
-{
-  struct probedef *host = (struct probedef *)data;
-  CURL *curl;
-  char buffer[BUFSIZ];
-  double result;
-
-  if (!host) return;
-
-  if (host->ipaddress == NULL) {
-    struct hostent ret, *result;
-    int h_errno;
-
-    if (gethostbyname_r (host->hostname, &ret, buffer, sizeof(buffer), &result, &h_errno) == 0) {
-      int **addresslist = (int **)ret.h_addr_list;
-      struct in_addr myaddr;
-
-      myaddr.s_addr = **addresslist;
-      host->ipaddress = strdup(inet_ntoa(myaddr));
-    } else {
-      host->info = strdup(buffer);
-      return;
-    }
-  }
-  sprintf(buffer, "http://%s", host->hostname);
-  if (host->uri[0] != '/') {
-    strcat(buffer, "/");
-  }
-  strcat(buffer, host->uri);
-
-  curl = curl_easy_init();
-  curl_easy_setopt(curl, CURLOPT_FILE, host);
-  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, write_function);
-  curl_easy_setopt(curl, CURLOPT_URL, buffer);
-  curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, host->msg);
-  curl_easy_setopt(curl, CURLOPT_NOPROGRESS, TRUE);
-  curl_easy_setopt(curl, CURLOPT_TIMEOUT, 50L);
-  curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 10L);
-  curl_easy_perform(curl);
-
-  // Pass a pointer to a double to receive the time, in seconds, it took from the start
-  // until the name resolving was completed.
-  curl_easy_getinfo(curl, CURLINFO_NAMELOOKUP_TIME, &result);
-  host->lookup = (float) result;
-
-  // Pass a pointer to a double to receive the time, in seconds, it took from the start
-  // until the connect to the remote host (or proxy) was completed.
-  curl_easy_getinfo(curl, CURLINFO_CONNECT_TIME, &result);
-  host->connect = (float) result;
-
-  // Pass a pointer to a double to receive the time, in seconds, it  took from the start
-  // until the file transfer is just about to begin. This includes all pre-transfer com­
-  // mands and negotiations that are specific to the particular protocol(s) involved.
-  curl_easy_getinfo(curl, CURLINFO_PRETRANSFER_TIME, &result);
-  host->pretransfer = (float) result;
-
-  // Pass a pointer to a double to receive the total transaction time in seconds for the
-  // previous transfer.
-  curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &result);
-  host->total = (float) result;
-
-  if (host->info) host->info[512] = 0; // limit amount of data
-
-  curl_easy_cleanup(curl);
-}
-

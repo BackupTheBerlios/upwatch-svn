@@ -86,9 +86,12 @@ static void every_5secs(void)
 
   while (forever) {
     struct timeval start;
+    int i;
 
     uw_setproctitle("sleeping");
-    sleep(5);
+    for (i=0; i < 5 && forever; i++) {
+      sleep(1);
+    }
     if (!forever) break; // kill -TERM ?
     gettimeofday(&start, NULL);
     ++runcounter;
@@ -214,6 +217,7 @@ int sleep_seconds = 0;
 static void wait_to_start(void)
 {
   int now = cur_second();
+  int i;
   
   if (debug > 3) { 
     sleep_seconds = 3;
@@ -226,7 +230,9 @@ static void wait_to_start(void)
     }
     if (debug > 1) LOG(LOG_DEBUG, "sleeping for %d seconds", sleep_seconds);
   }
-  sleep(sleep_seconds);
+  for (i=0; i < sleep_seconds && forever; i++) {
+    sleep(1);
+  }
 }
 
 /* compute time diff in microsecs */

@@ -223,8 +223,6 @@ void probe(gpointer data, gpointer user_data)
   TDSCONTEXT *context;
   int rc;
 
-  gettimeofday(&start, NULL);
-
   /* grab a login structure */
   login = (void *) tds_alloc_login();
 
@@ -250,7 +248,9 @@ void probe(gpointer data, gpointer user_data)
   tds_set_packet(login, 512);
   tds_set_passwd(login, probe->dbpasswd);
 
-  /* Try to open a connection*/
+  gettimeofday(&start, NULL);
+
+  /* open a connection*/
   tds = tds_connect(login, context, NULL);
 
   gettimeofday(&now, NULL);

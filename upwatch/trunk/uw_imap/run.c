@@ -217,7 +217,6 @@ void *probe(void *data)
   char buffer[1024];
   st_utime_t start, now;
 
-
   memset(&rmt, 0, sizeof(struct sockaddr_in));
   rmt.sin_family = AF_INET;
   rmt.sin_port = htons(143);
