@@ -63,6 +63,31 @@ static int uw_password_ok(char *user, char *passwd)
   return(TRUE);
 }
 
+static int uw_set_ip(char *user, char *ip) 
+{
+  MYSQL *mysql;
+  MYSQL_RES *result;
+
+  mysql = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
+			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD), OPT_VALUE_DBCOMPRESS);
+  if (mysql) {
+    gchar buffer[256];
+
+    sprintf(buffer, OPT_ARG(SETIPQUERY), ip, user);
+    if (debug > 1) LOG(LOG_DEBUG, buffer);
+    if (mysql_query(mysql, buffer)) {
+      LOG(LOG_ERR, "buffer: %s", mysql_error(mysql));
+      close_database(mysql);
+      return(FALSE);
+    }
+    close_database(mysql);
+  } else {
+    close_database(mysql);
+    return(FALSE); // couldn't open database
+  }
+  return(TRUE);
+}
+
 int init(void)
 {
   daemonize = TRUE;
@@ -208,6 +233,7 @@ void handle_session(st_netfd_t rmt_nfd, char *remotehost)
     LOG(LOG_WARNING, "Login error: %s/%s", user, passwd);
     return;
   }
+  uw_set_ip(user, ip);
 
   sprintf(buffer, "+OK Arrivederci\n");
   uw_setproctitle("%s: %s", remotehost, buffer);
