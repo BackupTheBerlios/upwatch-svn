@@ -232,8 +232,6 @@ void probe(gpointer data, gpointer user_data)
   }
   strcat(buffer, host->uri);
 
-  uw_setproctitle("%s: %s", host, buffer);
-
   curl = curl_easy_init();
 
   curl_easy_setopt(curl, CURLOPT_FILE, host);

@@ -156,6 +156,7 @@ int run(void)
 
   tm = gmtime(&now);
   if (debug > 0) LOG(LOG_DEBUG, "reading ping info from database");
+  uw_setproctitle("reading ping info from database");
   while (open_database() == 0) {
     MYSQL_RES *result;
     MYSQL_ROW row;
@@ -245,10 +246,12 @@ int run(void)
     LOG(LOG_ERR, "no database, no cached info - bailing out");
     return 0;
   }
+  uw_setproctitle("running %d probes", num_hosts);
   run_actual_probes(num_hosts); /* this runs the actual probes */
   if (debug > 0) LOG(LOG_DEBUG, "done running probes");
 
   now = time(NULL);
+  uw_setproctitle("writing results");
   doc = UpwatchXmlDoc("result"); 
   red = UpwatchXmlDoc("result"); 
   for (id=0; hosts[id]; id++) {

@@ -112,11 +112,9 @@ extern int forever;
     count_ipnets = ct;
     g_static_mutex_unlock (&m_ipnets);
    
-    uw_setproctitle("writing results");
     if (oldnet) {
       writeXMLresult(oldnet, oldcount_ipnets);
     }
-    uw_setproctitle("waiting");
     for (i=0; i < 60; i++) { // wait 1 minute
       sleep(1);
       if (!forever)  {
@@ -149,7 +147,6 @@ extern int forever;                // will be set to zero by TERM signal
     return 0;
   }
   if (debug) LOG(LOG_INFO, "capturing on %s", dev);
-  uw_setproctitle("capturing on %s", dev);
   free(dev);
 
   while (forever) {

@@ -152,6 +152,7 @@ int run(void)
   if (lavg > 5.0) color = STAT_RED;
 
   if (color >= STAT_RED) {
+    uw_setproctitle("running top");
     system("top -b -n 1 > /tmp/.uw_sysstat.tmp");
     in = fopen("/tmp/.uw_sysstat.tmp", "r");
     if (in) {
@@ -171,6 +172,7 @@ int run(void)
     char cmd[1024];
 
     sprintf(cmd, "%s > /tmp/.uw_sysstat.tmp", OPT_ARG(SYSTEMP_COMMAND));
+    uw_setproctitle("running %s", OPT_ARG(SYSTEMP_COMMAND));
     system(cmd);
     in = fopen("/tmp/.uw_sysstat.tmp", "r");
     if (in) {
