@@ -7,7 +7,7 @@ PROGNAMES = ${PROBES} uw_process uw_send uw_accept uw_notify uw_investigate
 export PROGNAMES
 export TOP_SRCDIR = $(top_srcdir)
 
-SUBDIRS = upwatch st-1.4 ${PROGNAMES} util compat doc
+SUBDIRS = upwatch st-1.4 ${PROGNAMES} util scripts compat doc
 
 EXTRA_DIST = Makefile.am.common Makefile.am.libs VERSION libtool ChangeLog \
   upwatch-spec.def upwatch-spec.tpl upwatch.spec templates upwatch.mysql probes.enum \

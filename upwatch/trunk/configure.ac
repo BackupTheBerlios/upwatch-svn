@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.17 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.18 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -210,6 +210,7 @@ AC_CONFIG_FILES([Makefile
                  upwatch/Makefile
                  st-1.4/Makefile
                  util/Makefile
+                 scripts/Makefile
                  uw_accept/Makefile
                  uw_acceptbb/Makefile
                  uw_httpget/Makefile

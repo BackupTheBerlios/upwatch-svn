@@ -27,6 +27,24 @@ history, graphs, and notification.
 This package contains all upwatch documentation, plus supporting files
 like the database schema.
 
+%package utils
+Summary: UpWatch - utilities and supporting files
+Group: Application/Monitoring
+Requires: upwatch libxml2 >= 2.4.19 mysql-client glib2 
+
+%description utils
+This package contains utilities, maintenance scripts and other
+files.
+
+%files utils
+%attr(0755,root,root) /usr/bin/bbhimport
+%attr(0755,root,root) /usr/bin/ctime
+%attr(0755,root,root) /usr/bin/slot
+%attr(0755,root,root) /usr/bin/fill_probe_description.pl
+/usr/share/man/man1/ctime.1.gz
+/usr/share/man/man1/slot.1.gz
+/usr/share/man/man1/bbhimport.1.gz
+
 [+ FOR program +]
 [+ include (string-append (get "program") "/" (get "program") ".spec-generic") ;+]
 [+ ENDFOR +]
@@ -103,14 +121,8 @@ install -m 660 [+program+]/[+program+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+prog
 %defattr(0660,root,upwatch,0770)
 %attr(0644,root,root) %doc AUTHORS COPYING ChangeLog NEWS README upwatch.mysql doc/upwatch.html doc/upwatch.txt doc/upwatch.pdf
 %attr(0755,root,root) /etc/rc.d/init.d/upwatch
-%attr(0755,root,root) /usr/bin/bbhimport
-%attr(0755,root,root) /usr/bin/ctime
-%attr(0755,root,root) /usr/bin/slot
 %attr(0755,root,root) /usr/lib/libopts.so
 %attr(0755,root,root) /usr/lib/libopts.so.9
-/usr/share/man/man1/ctime.1.gz
-/usr/share/man/man1/slot.1.gz
-/usr/share/man/man1/bbhimport.1.gz
 %attr(0770,upwatch,upwatch) /usr/lib/upwatch
 /etc/logrotate.d/upwatch
 /etc/cron.daily/upwatch
