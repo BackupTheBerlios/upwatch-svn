@@ -15,9 +15,8 @@ struct probedef {
   char          *realm;        /* database realm */
   int		seen;           /* seen */
   struct snmp_session *sess;    /* snmp_session */
-  char		*ipaddress;     /* server name */
-#include "probe.def_h"
 #include "../common/common.h"
+#include "probe.def_h"
 #include "probe.res_h"
   float          prev_val;      /* previous value for relative results */
   int            firsttime;     /* true if this is our first result */

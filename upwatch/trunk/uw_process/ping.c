@@ -9,6 +9,28 @@
 #endif
 
 //*******************************************************************
+// Get the results of the MySQL query into our probe_def structure
+//*******************************************************************
+static void ping_set_def_fields(trx *t, struct probe_def *probedef, MYSQL_RES *result)
+{
+  struct ping_def *def = (struct ping_def *) probedef;
+  MYSQL_ROW row = mysql_fetch_row(result);
+
+  if (row) {
+    if (row[0]) def->ipaddress   = strdup(row[0]);
+    if (row[1]) def->description = strdup(row[1]);
+    if (row[2]) def->server   = atoi(row[2]);
+    if (row[3]) def->yellow   = atof(row[3]);
+    if (row[4]) def->red      = atof(row[4]);
+    if (row[5]) def->contact  = atof(row[5]);
+    strcpy(def->hide, row[6] ? row[6] : "no");
+    strcpy(def->email, row[7] ? row[7] : "");
+    if (row[8]) def->delay = atoi(row[8]);
+    if (row[9]) def->count = atoi(row[9]);
+  }
+}
+
+//*******************************************************************
 // STORE RAW RESULTS
 //*******************************************************************
 static gint ping_store_raw_result(trx *t)
@@ -41,6 +63,27 @@ static gint ping_store_raw_result(trx *t)
     return 0; // other failure
   }
   return 1; // success
+}
+
+//*******************************************************************
+// Format the probe definition fields for inclusion in the notification body
+//*******************************************************************
+static void ping_notify_mail_body_probe_def(trx *t, char *buf, size_t buflen)
+{
+  struct ping_def *def = (struct ping_def *)t->def;
+  struct ping_result *res = (struct ping_result *)t->res;
+
+  sprintf(buf, "%-20s: %s\n"
+               "%-20s: %s\n"
+               "%-20s: %u\n"
+               "%-20s: %f\n"
+               "%-20s: %f\n",
+  "IP Address", def->ipaddress,
+  "Description", def->description,
+  "# packets", def->count,
+  "Lowest", res->lowest,
+  "Average", res->value,
+  "Highest", res->highest);
 }
 
 //*******************************************************************
@@ -120,8 +163,9 @@ module ping_module  = {
   NO_XML_RESULT_NODE,
   ping_get_from_xml,
   NO_ACCEPT_RESULT,
-  NO_GET_DEF_FIELDS,
-  NO_SET_DEF_FIELDS,
+  "ipaddress, description, server, yellow, red, contact, hide, email, delay, "
+  "count ",
+  ping_set_def_fields,
   NO_GET_DEF,
   NO_ADJUST_RESULT,
   NO_END_RESULT,
@@ -130,7 +174,7 @@ module ping_module  = {
   NO_FIND_DOMAIN,
   ping_store_raw_result,
   NO_NOTIFY_MAIL_SUBJECT_EXTRA,
-  NO_NOTIFY_MAIL_BODY_PROBE_DEF,
+  ping_notify_mail_body_probe_def,
   ping_summarize
 };
 

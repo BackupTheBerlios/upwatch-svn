@@ -8,6 +8,24 @@
 #include "dmalloc.h"
 #endif
 
+//*******************************************************************
+// Format the probe definition fields for inclusion in the notification body
+//*******************************************************************
+static void smtp_notify_mail_body_probe_def(trx *t, char *buf, size_t buflen)
+{
+  struct smtp_def *def = (struct smtp_def *)t->def;
+  struct smtp_result *res = (struct smtp_result *)t->res;
+
+  sprintf(buf, "%-20s: %s\n"
+               "%-20s: %s\n"
+               "%-20s: %f\n"
+               "%-20s: %f\n",
+  "IP Address", def->ipaddress,
+  "Description", def->description,
+  "Connect time", res->connect,
+  "Total time", res->total);
+}
+
 module smtp_module  = {
   STANDARD_MODULE_STUFF(smtp),
   NO_FREE_DEF,
@@ -28,7 +46,7 @@ module smtp_module  = {
   NO_FIND_DOMAIN,
   ct_store_raw_result,
   NO_NOTIFY_MAIL_SUBJECT_EXTRA,
-  NO_NOTIFY_MAIL_BODY_PROBE_DEF,
+  smtp_notify_mail_body_probe_def,
   ct_summarize
 };
 

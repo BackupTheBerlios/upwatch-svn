@@ -3,6 +3,8 @@
  * and their results
  * Currently only yellow and red
  */
-  float yellow; /* value for yellow alert */
-  float red;    /* value for red alert */
+  char *ipaddress;       /* target ip address for this probe */
+  char *description;     /* textual description for this probe */
+  float yellow;          /* value for yellow alert */
+  float red;             /* value for red alert */
 

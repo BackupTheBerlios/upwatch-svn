@@ -285,6 +285,15 @@ static void modules_start_run(void)
   }
 }
 
+static void free_def(void *p)
+{
+  struct probe_def *def = (struct probe_def *) p;
+
+  if (def->ipaddress) g_free(def->ipaddress);
+  if (def->description) g_free(def->description);
+  g_free(def);
+}
+
 static void modules_init(void)
 {
   int i;
@@ -295,7 +304,7 @@ static void modules_init(void)
     }
     if (modules[i]->cache == NULL) {
       modules[i]->cache = g_hash_table_new_full(g_int_hash, g_int_equal, g_free, 
-                            modules[i]->free_def ? modules[i]->free_def : g_free);
+                            modules[i]->free_def ? modules[i]->free_def : free_def);
     }
     if (modules[i]->insertc == NULL) {
       modules[i]->insertc =  g_ptr_array_new();

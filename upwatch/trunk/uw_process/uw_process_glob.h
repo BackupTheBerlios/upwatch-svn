@@ -20,9 +20,9 @@ struct _module {
 #define NO_STORE_RESULTS NULL
   gint (*store_results)(trx *t);
 #define NO_NOTIFY_MAIL_SUBJECT_EXTRA NULL
-  gint (*notify_mail_subject_extra)(trx *t, char *buf, size_t buflen);
+  void (*notify_mail_subject_extra)(trx *t, char *buf, size_t buflen);
 #define NO_NOTIFY_MAIL_BODY_PROBE_DEF NULL
-  gint (*notify_mail_body_probe_def)(trx *t, char *buf, size_t buflen);
+  void (*notify_mail_body_probe_def)(trx *t, char *buf, size_t buflen);
 #define NO_SUMMARIZE NULL
   void (*summarize)(trx *t, char *from, char *into, 
                     guint slot, guint slotlow, guint slothigh, gint ignoredupes);

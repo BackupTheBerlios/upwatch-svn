@@ -193,6 +193,7 @@ struct imap_result {
 struct imap_def {
   STANDARD_PROBE_DEF;
 #include "../common/common.h"
+#include "../uw_imap/probe.def_h"
 };
 
 /****************************** probe iptraf ************************/
@@ -248,6 +249,7 @@ struct ping_result {
 struct ping_def {
   STANDARD_PROBE_DEF;
 #include "../common/common.h"
+#include "../uw_ping/probe.def_h"
 };
 
 void ping_get_from_xml(trx *t);
@@ -260,6 +262,7 @@ struct pop3_result {
 struct pop3_def {
   STANDARD_PROBE_DEF;
 #include "../common/common.h"
+#include "../uw_pop3/probe.def_h"
 };
 
 /****************************** probe smtp ************************/
@@ -280,6 +283,7 @@ struct tcpconnect_result {
 struct tcpconnect_def {
   STANDARD_PROBE_DEF;
 #include "../common/common.h"
+#include "../uw_tcpconnect/probe.def_h"
 };
 
 /****************************** probe postgresql ************************/
@@ -290,6 +294,7 @@ struct postgresql_result {
 struct postgresql_def {
   STANDARD_PROBE_DEF;
 #include "../common/common.h"
+#include "../uw_postgresql/probe.def_h"
 };
 
 /****************************** probe snmpget ************************/

@@ -15,9 +15,8 @@ struct probedef {
   int           probeid;        /* server probe id */
   char          *realm;        /* database realm */
   int		seen;           /* seen */
-  char		*ipaddress;     /* server name */
-#include "probe.def_h"
 #include "../common/common.h"
+#include "probe.def_h"
 #include "probe.res_h"
   char		*msg;           /* last error message */
 };

@@ -169,7 +169,7 @@ void *get_def(trx *t, int create)
   MYSQL_RES *result;
   MYSQL_ROW row;
   time_t now = time(NULL);
-  char *def_fields = "server, yellow, red, contact, hide, email, delay";
+  char *def_fields = "ipaddress, description, server, yellow, red, contact, hide, email, delay";
 
   def = g_hash_table_lookup(t->probe->cache, &res->probeid);
   if (def && def->stamp < now - (120 + uw_rand(240))) { // older then 2 - 6 minutes?
@@ -244,13 +244,15 @@ void *get_def(trx *t, int create)
     } else {
       row = mysql_fetch_row(result);
       if (row) {
-        if (row[0]) def->server   = atoi(row[0]);
-        if (row[1]) def->yellow   = atof(row[1]);
-        if (row[2]) def->red      = atof(row[2]);
-        if (row[3]) def->contact  = atof(row[3]);
-        strcpy(def->hide, row[4] ? row[4] : "no");
-        strcpy(def->email, row[5] ? row[5] : "");
-        if (row[6]) def->delay = atoi(row[6]);
+        if (row[0]) def->ipaddress   = strdup(row[0]);
+        if (row[1]) def->description = strdup(row[1]);
+        if (row[2]) def->server    = atoi(row[2]);
+        if (row[3]) def->yellow    = atof(row[3]);
+        if (row[4]) def->red       = atof(row[4]);
+        if (row[5]) def->contact   = atof(row[5]);
+        strcpy(def->hide, row[6] ? row[6] : "no");
+        strcpy(def->email, row[7] ? row[7] : "");
+        if (row[8]) def->delay = atoi(row[8]);
       }
     }
     mysql_free_result(result);
