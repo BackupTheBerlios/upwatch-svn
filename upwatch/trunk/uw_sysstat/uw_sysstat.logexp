@@ -110,6 +110,7 @@ syslog-ignore sshd\[[0-9]*\]: Postponed keyboard-interactive for
 syslog-ignore sshd\[[0-9]*\]: Failed keyboard-interactive/pam for
 syslog-ignore sshd\[[0-9]*\]: Failed password for
 syslog-ignore sshd\[[0-9]*\]: Generating
+syslog-ignore sshd\[[0-9]*\]: subsystem request for sftp
 syslog-ignore sshd\[[0-9]*\]: RSA key generation complete
 syslog-ignore sshd\[[0-9]*\]: Disconnecting: Too many authentication failures for
 syslog-ignore sshd(pam_unix)\[[0-9]*\]: check pass; user unknown

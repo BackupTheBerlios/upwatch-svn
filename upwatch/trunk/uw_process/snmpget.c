@@ -49,8 +49,8 @@ static gint snmpget_store_raw_result(trx *t)
 //*******************************************************************
 static int snmpget_notify_mail_subject(trx *t, FILE *fp, char *servername)
 {
-  fprintf(fp, "Subject: %s: %s (%s) %s (was %s)\n", servername,
-                 t->probe->module_name, t->def->dispname, 
+  fprintf(fp, "Subject: %s: %s %s (was %s)\n", servername,
+                 t->probe->module_name, /* t->def->dispname, */
                  color2string(t->res->color),
                  color2string(t->res->prevhistcolor));
 }
