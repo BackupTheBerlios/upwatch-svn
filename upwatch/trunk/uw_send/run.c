@@ -106,6 +106,7 @@ int init(void)
   }
   if (HAVE_OPT(ONCE)) {
     every = ONE_SHOT;
+    daemonize = FALSE;
   } else {
     daemonize = TRUE;
     every = EVERY_5SECS;
