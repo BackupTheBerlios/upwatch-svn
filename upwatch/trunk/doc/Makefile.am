@@ -1,11 +1,12 @@
-docdir = $(datadir)/doc/$(PACKAGE)-$(VERSION)
+include $(top_srcdir)/Makefile.am.path
+
 doc_DATA = upwatch.html upwatch.txt upwatch.pdf
 
 XMLSOURCE = upwatch.xml addingaprobe.xml administration.xml configuration.xml \
   howitallworks.xml installation.xml interfaces.xml iptraf-specs.xml ping-specs.xml \
   probesspecs.xml upwatch.xml
 
-EXTRA_DIST = ${XMLSOURCE}
+EXTRA_DIST = ${XMLSOURCE} upwatch.xsl jadetex.cfg style.dsl style.xsl style.css
 
 upwatch.html: ${XMLSOURCE}
 	xmllint --valid --noout upwatch.xml
@@ -23,4 +24,5 @@ upwatch.pdf: ${XMLSOURCE}
 	touch upwatch.pdf
 
 CLEANFILES = upwatch.pdf upwatch.txt upwatch.html Makefile.in
+
 

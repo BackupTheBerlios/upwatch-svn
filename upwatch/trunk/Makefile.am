@@ -1,3 +1,5 @@
+include $(top_srcdir)/Makefile.am.path
+
 #if HAVE_LIBNET
 #USE_LIBNET = uw_investigate
 #endif
@@ -36,19 +38,14 @@ PROGNAMES = ${CLIENTPROG} ${MONITORPROG} ${EXTRAPROG} ${SERVERPROG}
 export PROGNAMES MONITORPROG CLIENTPROG SERVERPROG EXTRAPROG
 export TOP_SRCDIR = $(top_srcdir)
 
-SUBDIRS = upwatch st-1.4 libstatgrab-0.6 ${PROGNAMES} util scripts compat doc
+SUBDIRS = upwatch st-1.4 libstatgrab-0.6 ${PROGNAMES} util scripts compat doc config common
 DIST_SUBDIRS = ${SUBDIRS}
 
-EXTRA_DIST = Makefile.am.common Makefile.am.libs VERSION libtool ChangeLog \
+doc_DATA = AUTHORS COPYING ChangeLog NEWS README upwatch.mysql
+
+EXTRA_DIST = Makefile.am.common Makefile.am.libs Makefile.am.path VERSION libtool ChangeLog \
   upwatch-spec.def upwatch-spec.tpl upwatch.spec templates upwatch.mysql probes.enum \
-  config/upwatch.conf config/upwatch-base.mysql config/result.dtd config/logrotate \
-  config/cron.daily config/upwatch.init config/upwatch.init-suse \
   patches/libpcap-linux-timeout.patch patches/libstatgrab-configure.gnu \
-  common/db.c common/generic_options.def common/dbase_options.def common/init.tpl \
-  common/main.c common/man1.tpl common/spec.tpl common/minimal_options.def \
-  common/probe.tpl common/probe_generic.def common/common.h \
-  doc/upwatch.xml doc/Makefile doc/upwatch.xsl doc/jadetex.cfg doc/style.dsl \
-  doc/style.xsl doc/style.css \
   cfg/install-sh cfg/config.sub cfg/mkinstalldirs cfg/depcomp cfg/cvs2cl.pl
 
 upwatch.spec: upwatch-spec.def upwatch-spec.tpl common/spec.tpl \
@@ -66,6 +63,25 @@ ChangeLog: force-changelog
 	rm -f force-changelog
 
 CLEANFILES = upwatch.mysql upwatch.spec upwatch-*.tar.gz
+
+install-data-local:
+	if test `id -u` -eq 0; then \
+	  ${INSTALL} -d -m 770  -o upwatch -g upwatch ${DESTDIR}${confdir} ;\
+	  ${INSTALL} -d -m 770  -o upwatch -g upwatch ${DESTDIR}${upwatchdir} ;\
+	  ${INSTALL} -d -m 770  -o upwatch -g upwatch ${DESTDIR}${dtddir} ;\
+	  ${INSTALL} -d -m 770  -o upwatch -g upwatch ${DESTDIR}${redhatdir} ;\
+	  ${INSTALL} -d -m 770  -o upwatch -g upwatch ${DESTDIR}${susedir} ;\
+	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${localstatedir}/log/upwatch ;\
+	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTRIR}${localstatedir}/spool/upwatch ;\
+	else \
+	  mkdir -p ${DESTDIR}${confdir} ;\
+	  mkdir -p ${DESTDIR}${upwatchdir} ;\
+	  mkdir -p ${DESTDIR}${dtddir} ;\
+	  mkdir -p ${DESTDIR}${redhatdir} ;\
+	  mkdir -p ${DESTDIR}${susedir} ;\
+	  mkdir -p ${DESTDIR}${localstatedir}/log/upwatch ;\
+	  mkdir -p ${DESTRIR}${localstatedir}/spool/upwatch ;\
+	fi
 
 rpm: dist
 	$(RPMBUILD) -ta upwatch-${VERSION}.tar.gz

@@ -94,51 +94,25 @@ make check
 mkdir -p $RPM_BUILD_ROOT
 make DESTDIR=$RPM_BUILD_ROOT install
 
-mkdir -p $RPM_BUILD_ROOT/etc/upwatch.d
-mkdir -p $RPM_BUILD_ROOT/var/lib/upwatch
-mkdir -p $RPM_BUILD_ROOT/var/log/upwatch
-mkdir -p $RPM_BUILD_ROOT/var/spool/upwatch
-mkdir -p $RPM_BUILD_ROOT/var/run/upwatch
-mkdir -p $RPM_BUILD_ROOT/usr/bin
-mkdir -p $RPM_BUILD_ROOT/usr/lib
-install -m 660 config/upwatch.conf $RPM_BUILD_ROOT/etc/
-mkdir -p $RPM_BUILD_ROOT/usr/lib/upwatch/dtd
-install -m 660 config/result.dtd $RPM_BUILD_ROOT/usr/lib/upwatch/dtd
-mkdir -p $RPM_BUILD_ROOT/usr/lib/upwatch/redhat
-mkdir -p $RPM_BUILD_ROOT/usr/lib/upwatch/suse
+# linux only 
 mkdir -p $RPM_BUILD_ROOT/etc/logrotate.d
 install -m 660 config/logrotate $RPM_BUILD_ROOT/etc/logrotate.d/upwatch
 mkdir -p $RPM_BUILD_ROOT/etc/cron.daily
 install -m 700 config/cron.daily $RPM_BUILD_ROOT/etc/cron.daily/upwatch
 
-mkdir -p $RPM_BUILD_ROOT/etc/init.d
-install -m 770 config/upwatch.init $RPM_BUILD_ROOT/usr/lib/upwatch/redhat/upwatch
-install -m 770 config/upwatch.init-suse $RPM_BUILD_ROOT/usr/lib/upwatch/suse/upwatch
-
 [+ FOR monitorprog +]# package specific files for [+monitorprog+]
-install -m 770 [+monitorprog+]/[+monitorprog+].init $RPM_BUILD_ROOT/usr/lib/upwatch/redhat/[+monitorprog+]
-install -m 770 [+monitorprog+]/[+monitorprog+].init-suse $RPM_BUILD_ROOT/usr/lib/upwatch/suse/[+monitorprog+]
-install -m 660 [+monitorprog+]/[+monitorprog+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+monitorprog+].conf
 [+ include (string-append (get "monitorprog") "/" (get "monitorprog") ".spec-install") ;+]
 [+ ENDFOR +]
 [+ FOR clientprog +]# package specific files for [+clientprog+]
-install -m 770 [+clientprog+]/[+clientprog+].init $RPM_BUILD_ROOT/usr/lib/upwatch/redhat/[+clientprog+]
-install -m 770 [+clientprog+]/[+clientprog+].init-suse $RPM_BUILD_ROOT/usr/lib/upwatch/suse/[+clientprog+]
-install -m 660 [+clientprog+]/[+clientprog+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+clientprog+].conf
 [+ include (string-append (get "clientprog") "/" (get "clientprog") ".spec-install") ;+]
 [+ ENDFOR +]
 [+ FOR serverprog +]# package specific files for [+serverprog+]
-install -m 770 [+serverprog+]/[+serverprog+].init $RPM_BUILD_ROOT/usr/lib/upwatch/redhat/[+serverprog+]
-install -m 770 [+serverprog+]/[+serverprog+].init-suse $RPM_BUILD_ROOT/usr/lib/upwatch/suse/[+serverprog+]
-install -m 660 [+serverprog+]/[+serverprog+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+serverprog+].conf
 [+ include (string-append (get "serverprog") "/" (get "serverprog") ".spec-install") ;+]
 [+ ENDFOR +]
 [+ FOR extraprog +]# package specific files for [+extraprog+]
-install -m 770 [+extraprog+]/[+extraprog+].init $RPM_BUILD_ROOT/usr/lib/upwatch/redhat/[+extraprog+]
-install -m 770 [+extraprog+]/[+extraprog+].init-suse $RPM_BUILD_ROOT/usr/lib/upwatch/suse/[+extraprog+]
-install -m 660 [+extraprog+]/[+extraprog+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+extraprog+].conf
 [+ include (string-append (get "extraprog") "/" (get "extraprog") ".spec-install") ;+]
 [+ ENDFOR +]
+
 %if %{strip_binaries}
 { cd $RPM_BUILD_ROOT
   strip .%{__prefix}/bin/* || /bin/true
@@ -173,19 +147,20 @@ mv $RPM_BUILD_ROOT/usr/bin/saidar $RPM_BUILD_ROOT/usr/bin/uwsaidar
 if [ -f /etc/redhat-release ]
 then
   DISTR=redhat
-  ln -sf /etc/init.d/upwatch /usr/lib/upwatch/$DISTR/upwatch
-  ln -sf /etc/init.d/upwatch /usr/sbin/rcupwatch
+  ln -sf /usr/lib/upwatch/$DISTR/upwatch.$DISTR /etc/init.d/upwatch
 [+ FOR clientprog +]  ln -sf /usr/lib/upwatch/$DISTR/[+clientprog+] /etc/init.d/[+clientprog+]
 [+ ENDFOR +]fi
+
 if [ -f /etc/SuSE-release ]
 then
   DISTR=suse
-  ln -sf /etc/init.d/upwatch /usr/lib/upwatch/$DISTR/upwatch
+  ln -sf /usr/lib/upwatch/$DISTR/upwatch.$DISTR /etc/init.d/upwatch
 [+ FOR clientprog +]  ln -sf /usr/lib/upwatch/$DISTR/[+clientprog+] /etc/init.d/[+clientprog+]
 [+ ENDFOR +]  pushd /usr/sbin
 [+ FOR clientprog +]  ln -sf ../../etc/init.d/[+clientprog+] rc[+clientprog+]
 [+ ENDFOR +]  popd
 fi
+
 if [ -x /sbin/chkconfig ]; then
 [+ FOR clientprog +]  /sbin/chkconfig --add [+clientprog+] 2>/dev/null || true
 [+ ENDFOR +]fi
@@ -199,6 +174,7 @@ fi
 
 %postun
 if [ "$1" -eq "0" ]; then
+  rm -f /etc/init.d/upwatch
 [+ FOR clientprog +]  rm -f /etc/init.d/[+clientprog+]
   rm -f /usr/sbin/rc[+clientprog+]
 [+ ENDFOR +]fi
@@ -208,12 +184,12 @@ if [ "$1" -eq "0" ]; then
 if [ -f /etc/redhat-release ]
 then
   DISTR=redhat
-[+ FOR monitorprog +]  ln -sf /usr/lib/upwatch/$DISTR/[+monitorprog+] /etc/init.d/[+monitorprog+]
+[+ FOR monitorprog +]  ln -sf /usr/lib/upwatch/$DISTR/[+monitorprog+].$DISTR /etc/init.d/[+monitorprog+]
 [+ ENDFOR +]fi
 if [ -f /etc/SuSE-release ]
 then
   DISTR=suse
-[+ FOR monitorprog +]  ln -sf /usr/lib/upwatch/$DISTR/[+monitorprog+] /etc/init.d/[+monitorprog+]
+[+ FOR monitorprog +]  ln -sf /usr/lib/upwatch/$DISTR/[+monitorprog+].$DISTR /etc/init.d/[+monitorprog+]
 [+ ENDFOR +]  pushd /usr/sbin
 [+ FOR monitorprog +]  ln -sf ../../etc/init.d/[+monitorprog+] rc[+monitorprog+]
 [+ ENDFOR +]  popd
@@ -240,12 +216,12 @@ if [ "$1" -eq "0" ]; then
 if [ -f /etc/redhat-release ]
 then
   DISTR=redhat
-[+ FOR serverprog +]  ln -sf /usr/lib/upwatch/$DISTR/[+serverprog+] /etc/init.d/[+serverprog+]
+[+ FOR serverprog +]  ln -sf /usr/lib/upwatch/$DISTR/[+serverprog+].$DISTR /etc/init.d/[+serverprog+]
 [+ ENDFOR +]fi
 if [ -f /etc/SuSE-release ]
 then
   DISTR=suse
-[+ FOR serverprog +]  ln -sf /usr/lib/upwatch/$DISTR/[+serverprog+] /etc/init.d/[+serverprog+]
+[+ FOR serverprog +]  ln -sf /usr/lib/upwatch/$DISTR/[+serverprog+].$DISTR /etc/init.d/[+serverprog+]
 [+ ENDFOR +]  pushd /usr/sbin
 [+ FOR serverprog +]  ln -sf ../../etc/init.d/[+serverprog+] rc[+serverprog+]
 [+ ENDFOR +]  popd
@@ -272,12 +248,12 @@ if [ "$1" -eq "0" ]; then
 if [ -f /etc/redhat-release ]
 then
   DISTR=redhat
-  ln -sf /usr/lib/upwatch/$DISTR/uw_iptraf /etc/init.d/uw_iptraf
+  ln -sf /usr/lib/upwatch/$DISTR/uw_iptraf.$DISTR /etc/init.d/uw_iptraf
 fi
 if [ -f /etc/SuSE-release ]
 then
   DISTR=suse
-  ln -sf /usr/lib/upwatch/$DISTR/uw_iptraf /etc/init.d/uw_iptraf
+  ln -sf /usr/lib/upwatch/$DISTR/uw_iptraf.$DISTR /etc/init.d/uw_iptraf
   pushd /usr/sbin
   ln -sf ../../etc/init.d/uw_iptraf rcuw_iptraf
   popd
@@ -301,21 +277,21 @@ fi
 
 %files
 %defattr(0660,root,upwatch,0770)
-%attr(0644,root,root) %doc AUTHORS COPYING ChangeLog NEWS README upwatch.mysql doc/upwatch.html doc/upwatch.txt doc/upwatch.pdf
+/usr/share/doc/%{name}-%{version}
 #%attr(0755,root,root) /usr/lib/libopts.so
 #%attr(0755,root,root) /usr/lib/libopts.so.9
-%attr(0770,upwatch,upwatch) %dir /usr/lib/upwatch
-%attr(0770,upwatch,upwatch) %dir /usr/lib/upwatch/redhat
-%attr(0770,upwatch,upwatch) %dir /usr/lib/upwatch/suse
-%attr(0770,upwatch,upwatch) %dir /usr/lib/upwatch/dtd
-/usr/lib/upwatch/dtd/result.dtd
-/usr/lib/upwatch/redhat/upwatch
-/usr/lib/upwatch/suse/upwatch
+%attr(0770,upwatch,upwatch) %dir /etc/upwatch.d
+%attr(0770,upwatch,upwatch) %dir /usr/share/upwatch
+%attr(0770,upwatch,upwatch) %dir /usr/share/upwatch/redhat
+%attr(0770,upwatch,upwatch) %dir /usr/share/upwatch/suse
+%attr(0770,upwatch,upwatch) %dir /usr/share/upwatch/dtd
+/usr/share/upwatch/dtd/result.dtd
+/usr/share/upwatch/redhat/upwatch.redhat
+/usr/share/upwatch/suse/upwatch.suse
 %config(noreplace) /etc/upwatch.conf
 /etc/logrotate.d/upwatch
 /etc/cron.daily/upwatch
 %attr(2770,upwatch,upwatch) %dir /var/log/upwatch
-%attr(2770,upwatch,upwatch) %dir /var/run/upwatch
 %attr(2770,upwatch,upwatch) %dir /var/spool/upwatch
 %attr(0755,root,root) /usr/bin/uwsaidar
 %attr(0755,root,root) /usr/bin/ctime
@@ -324,6 +300,7 @@ fi
 /usr/share/man/man1/slot.1.gz
 [+ FOR clientprog +][+ include (string-append (get "clientprog") "/" (get "clientprog") ".spec-files") ;+]
 [+ ENDFOR +]
+
 %files monitor
 %defattr(0660,root,upwatch,0770)
 [+ FOR monitorprog +][+ include (string-append (get "monitorprog") "/" (get "monitorprog") ".spec-files") ;+]

@@ -33,14 +33,16 @@
 
 #ifndef lint
 static const char rcsid[] =
-    "@(#) $Id: ifaddrlist.c,v 1.1 2003/02/19 22:49:28 raarts Exp $ (LBL)";
+    "@(#) $Id: ifaddrlist.c,v 1.2 2003/10/19 15:13:22 raarts Exp $ (LBL)";
 #endif
 
+#include "config.h"
+#include "generic.h"
 #include <sys/param.h>
 #include <sys/file.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
-#ifdef HAVE_SYS_SOCKIO_H
+#ifdef HAVE_SYS_SOCKIO_H 
 #include <sys/sockio.h>
 #endif
 #include <sys/time.h>				/* concession to AIX */
@@ -176,7 +178,7 @@ ifaddrlist(register struct ifaddrlist **ipaddrp, register char *errbuf)
 			return (-1);
 		}
 
-		sin = (struct sockaddr_in *)&ifr.ifr_netmask;
+		sin = (struct sockaddr_in *)&ifr.ifr_addr;
 		al->mask = sin->sin_addr.s_addr;
 		al->device = strdup(device);
 		++al;

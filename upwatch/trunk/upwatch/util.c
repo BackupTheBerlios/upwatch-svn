@@ -1,4 +1,5 @@
-#include <generic.h>
+#include "config.h"
+#include "generic.h"
 #include <sys/types.h>
 
 #ifdef DMALLOC 

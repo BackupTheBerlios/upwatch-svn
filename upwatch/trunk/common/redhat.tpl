@@ -1,4 +1,4 @@
-[+ AutoGen5 template init +]
+[+ AutoGen5 template redhat +]
 #! /bin/sh
 #
 # [+prog-name+]	       [+prog-title+]

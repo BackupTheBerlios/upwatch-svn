@@ -2,8 +2,8 @@
 [+ CASE (suffix) +][+
    == spec-files
 +][= AutoGen5 template spec =]
-%attr(0755,upwatch,upwatch) /usr/lib/upwatch/redhat/[+prog-name+]
-%attr(0755,upwatch,upwatch) /usr/lib/upwatch/suse/[+prog-name+]
+%attr(0755,upwatch,upwatch) /usr/share/upwatch/redhat/[+prog-name+].redhat
+%attr(0755,upwatch,upwatch) /usr/share/upwatch/suse/[+prog-name+].suse
 %config(noreplace) /etc/upwatch.d/[+prog-name+].conf
 %attr(0444,upwatch,upwatch) /usr/share/man/man1/[+prog-name+].1.gz
 [+ FOR spec-files +][+ 

@@ -1,4 +1,4 @@
-[+ AutoGen5 template init-suse +]
+[+ AutoGen5 template suse +]
 #! /bin/sh
 #
 # [+prog-name+]        [+prog-title+]

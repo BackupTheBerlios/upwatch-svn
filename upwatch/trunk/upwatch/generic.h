@@ -36,6 +36,12 @@ extern int init(void);
 
 #include "spool.h"
 
+#ifndef HAVE_U_INT32_T
+#if HAVE_UINT32_T
+#define u_int32_t uint32_t
+#endif
+#endif
+
 char *uw_gmtime(time_t *now);
 long timeval_diff(struct timeval *a,struct timeval *b);
 guint *guintdup(guint val);

@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.30 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.31 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -26,14 +26,19 @@ AM_WITH_DMALLOC
 # ----------------------------------------------------------------------
 # Set some global things based on os type
 # ----------------------------------------------------------------------
+AM_CONDITIONAL([LINUX], false)
+AM_CONDITIONAL([SOLARIS], false)
+
 case $host in
   *-*-linux*) 
+    echo "This is a linux system"
     LINUX=yes
-    AC_SUBST([LINUX])
+    AM_CONDITIONAL([LINUX], true)
     ;;
   *-*-solaris*)
+    echo "This is a Solaris system"
     SOLARIS=yes
-    AC_SUBST([SOLARIS])
+    AM_CONDITIONAL([SOLARIS], true)
     ;;
   *)
     HOST="generic"
@@ -108,7 +113,7 @@ AC_ARG_WITH(mysql-libs,
 )
 AC_SUBST(MYSQL_LIB_PREFIX)
 
-for libpath in /usr/lib/mysql $MYSQL_LIB_PREFIX /usr/local/lib/mysql
+for libpath in /usr/lib/mysql $MYSQL_LIB_PREFIX /usr/local/lib/mysql /usr/lib
 do
   if test -f $libpath/libmysqlclient.so
   then
@@ -294,7 +299,7 @@ AC_SUBST(LIBPQ_CFLAGS)
 # Checks for header files.
 AC_HEADER_DIRENT
 AC_HEADER_STDC
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h malloc.h memory.h netdb.h netinet/in.h stdlib.h string.h strings.h sys/fs/s5param.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h syslog.h unistd.h])
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h malloc.h memory.h netdb.h netinet/in.h stdlib.h string.h strings.h sys/fs/s5param.h sys/ioctl.h sys/sockio.h sys/param.h sys/socket.h sys/time.h syslog.h unistd.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -303,6 +308,7 @@ AC_TYPE_PID_T
 AC_TYPE_SIZE_T
 AC_HEADER_TIME
 AC_STRUCT_TM
+AC_CHECK_TYPES([u_int32_t, uint32_t])
 
 # Checks for library functions.
 #LIBOPTS_CHECK
@@ -361,6 +367,8 @@ echo
 
 AC_CONFIG_FILES([Makefile
                  doc/Makefile
+                 config/Makefile
+                 common/Makefile
                  upwatch/Makefile
                  st-1.4/Makefile
                  util/Makefile

@@ -33,11 +33,13 @@
 
 #ifndef lint
 static const char rcsid[] =
-    "@(#) $Id: findsaddr-linux.c,v 1.3 2003/10/17 12:33:28 raarts Exp $ (LBL)";
+    "@(#) $Id: findsaddr-linux.c,v 1.4 2003/10/19 15:13:22 raarts Exp $ (LBL)";
 #endif
 
 /* XXX linux is different (as usual) */
 
+#include "config.h"
+#include "generic.h"
 #include <sys/param.h>
 #include <sys/file.h>
 #include <sys/ioctl.h>

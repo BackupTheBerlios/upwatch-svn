@@ -1,3 +1,4 @@
+#include "config.h"
 #include "generic.h"
 #include <unistd.h>
 
