@@ -156,7 +156,13 @@ int run(void)
     sprintf(buffer, "%.3f", hosts[id]->pretransfer_time); subtree = xmlNewChild(httpget, NULL, "pretransfer", buffer);
     sprintf(buffer, "%.3f", hosts[id]->total_time); subtree = xmlNewChild(httpget, NULL, "total", buffer);
     if (hosts[id]->info) {
-      subtree = xmlNewChild(httpget, NULL, "info", hosts[id]->info);
+      // remove non-ASCII characters as the xml library chokes on some
+      char *s;
+
+      for (s = hosts[id]->info; *s; s++) {
+        if (*s < 0) *s = ' ';
+      }
+      subtree = xmlNewTextChild(httpget, NULL, "info", hosts[id]->info);
       free(hosts[id]->info);
       hosts[id]->info = NULL;
       hosts[id]->info_curlen = 0;
