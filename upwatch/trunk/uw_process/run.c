@@ -554,7 +554,7 @@ int master_checks(void)
   while (ct--) {
     pid_t pid;
 
-    if (childpid[ct] > 0) continue;
+    if (childpid[ct] > 0) continue; // child still running
 
     sprintf(path, "%s/%s", OPT_ARG(SPOOLDIR), pn[ct]);
     chdir(path); // for coredumps

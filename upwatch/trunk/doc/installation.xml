@@ -10,7 +10,8 @@
             tar.gz file, or .RPM's.</para>
 	 <para>Building and installing upwatch is not for the faint of heart. It uses lots of external
           libraries which may or may not be available on your platform. I myself use Redhat 8/9
-          for development, and test compilation on RH7, SuSE8.2, Solaris, and Yellowdog Linux 2.3.
+          for development, and test compilation on RH7, Fedora Core 1/2, SuSE8.2, Solaris, 
+          FreeBSD, and Yellowdog Linux 3.0.
        </para>
     </sect1>
     <sect1 id="Requirements">
@@ -29,25 +30,31 @@
                 <listitem><para>postgreSQL 7.1.0</para></listitem>
                 <listitem><para>net-snmp 5.0.6</para></listitem>
                 <listitem><para>-lcrypto</para></listitem>
-                <listitem><para>libnet 1.0.2a (www.packetfactory.net/libnet/)</para></listitem>
                 <listitem><para>libpcap 0.6.2</para></listitem>
+                <listitem><para>libpcre 3.9.10</para></listitem>
+                <listitem><para>libncurses 5.2</para></listitem>
+                <listitem><para>libesmtp 1.0.1</para></listitem>
+                <listitem><para>libreadline 4.3</para></listitem>
             </itemizedlist>
-            <para>Delivered with upwatch are libstatgrab and the State Threads Library.</para>
+            <para>Delivered with upwatch are libstatgrab (0.7), xmbmon 2.03, and the State Threads Library (1,4).</para>
         </sect2>
         <sect2 id="Build_requirements">
             <title>Build requirements</title>
-            <para> Of course you can build the software yourself. Apart from the normal GNU
-                compilation tools, and the development versions of the aforementioned packages,
+            <para>You probably don't want to build upwatch yourself. Most likely you'll 
+            grab the RPM packages and issue rpm -Uvh upwatch*rpm. Then skip to 
+            <link linkend="Configuration">Configuration</link>.
+            </para>
+            <para> But on the other hand: you can build the software yourself. Apart from the normal GNU
+                compilation tools, and the development versions of the above mentioned packages,
                 you'll need the following on your system to build upwatch:</para>
             <itemizedlist>
                 <listitem><para>autogen 5.3.6 (autogen.sourceforge.net)</para></listitem>
-                <listitem><para>libxslt 1.0.15</para></listitem>
-                <listitem><para>docbook 1.48, including the entire toolchain: openjade, jadetex, tetex, netpbm, perl-SGMLSpm
-                          </para></listitem>
-                <listitem><para>lynx 2.8.4</para></listitem>
+                <listitem><para>if you also want to rebuild the manual: lynx 2.8.4, libxslt 1.0.15 and 
+                docbook 1.48, including the entire toolchain: openjade, jadetex, tetex, 
+                netpbm, perl-SGMLSpm.</para></listitem>
                 <listitem><para>RPM tools, if you want to build RPM's</para></listitem>
             </itemizedlist>
-            <para>If you run redhat, debian or SuSe, don't forget to install the devel packages
+            <para>If you run RedHat, Debian or SuSE, don't forget to install the *-devel packages
                 if there are any.</para>
         </sect2>
     </sect1>
@@ -63,9 +70,10 @@
               $ make
            </literallayout>
         <para> Nothing to it... In case of problems, you're probably missing some library or
-            header files, or they are in unexpected places. Look in config.log.</para>
-         <para>You can optionally specify --enable-monitors, --enable-iptraf and/or --enable-server to
-         configure. Default configure only builds the client, docs, and utils.</para>
+            header files, or they are in unexpected places. Look at the last parts
+            of config.log.</para>
+         <para>You can optionally specify --enable-monitors, --enable-iptraf --enable-server 
+         or --enable-all to configure. Default configure only builds the client, docs, and utils.</para>
     </sect1>
     <sect1 id="Actual_Installation">
         <title>Actual Installation</title>
@@ -75,8 +83,7 @@
             There may be more reasons to do that. Consult <link linkend="Scaling_up">Scaling
             up</link> and <link linkend="How_it_all_works">How it all works</link>
         </para>
-        <para> For simplicity we assume you run everything on the same host. In this case just
-           install all rpm's on this host. What if you can't use RPM's? Then type the following
+        <para> For simplicity we assume you run everything on the same host. Type the following
            command as root:
         </para>
         <literallayout>
@@ -103,7 +110,7 @@
        <para> The PHP web user should have SELECT, UPDATE, DELETE access to all tables.
        </para>
        <para><command>uw_access</command>, and  <command>uw_accessbb</command> are
-            the programs most vulnerable to crackers, as they wait
+             the programs most vulnerable to crackers, as they wait
              for incoming connections on a TCP port (1985/1984). If possible, use <command>chroot</command> and
              firewall rules to limit connections to
              real probes only. Something similar holds for <command>mysql</command>. Most probes will want
@@ -112,30 +119,29 @@
     </sect1>
     <sect1 id="Database">
         <title>Database</title>
-        <para> First things first. Depending on the size of your installation you may
-           run out of database or record space. It happened to me on the iptraf probe.
-           I was measuring traffic for 4000 IP addresses and ran out of space after a month
-           on the pr_iptraf_raw table - it hit the max_data_length limit. 
-           I had to issue the following commands:
-        <literallayout>
-           $ mysql -u root --password=PASSWORD
-           mysql> alter table pr_iptraf_raw max_rows = 1000000000;
-        </literallayout>
-           and this took almost two hours! So you better look at your own situation and
-           adjust the settings MAX_ROWS and AVG_RECORD_SIZE accordingly for each table.
-        </para>
-        <para> Create the database as follows. You DO have a root password set for mysql don't you?</para>
+        <para>You actually need to create two databases, one for the probes to read from, and one 
+        for the results to be written to. The first database should be called upwatch, the other
+        one can be any name (we use netland). Create the databases as follows. (You DO have a root 
+        password set for mysql don't you?)</para>
         <literallayout>
            $ mysqladmin -u root --password=PASSWORD create upwatch
-           $ mysql -u root --password=PASSWORD &lt; upwatch.mysql
+           $ mysql -u root --password=PASSWORD upwatch &lt; upwatch-base.mysql
+           $ mysqladmin -u root --password=PASSWORD create netland
+           $ mysql -u root --password=PASSWORD netland &lt; upwatch-full.mysql
         </literallayout>
-        <para> Of course you need to assign users and GRANT them access. Note that mosts probes will
-           want read access to their definition table. In many situations you can use just
-           one user for that. Give that user access with:
+        <para>Of course you need to assign users and GRANT them access. We start with 
+           the probes. Mosts probes need read access to their definition table. 
+           In many situations you can use just one user for that. Give that user access with:
         </para>
         <literallayout>
            $ mysql -u root --PASSWORD=PASSWORD mysql
-           mysql> GRANT SELECT ON upwatch.pr_ping_def TO user@'192.168.170.23' IDENTIFIED BY 'PASSWD'
+           mysql> GRANT SELECT ON upwatch.% TO probe@'192.168.1.23' IDENTIFIED BY 'PASSWD'
+        </literallayout>
+        <para>Do this for every host that runs probes.</para>
+        <para>Next user is for the background processing and the php access:</para>
+        <literallayout>
+           $ mysql -u root --PASSWORD=PASSWORD mysql
+           mysql> GRANT SELECT, INSERT, UPDATE, DELETE ON `netland`.* TO 'upwatch'@'localhost' IDENTIFIED BY 'PASSWD'
         </literallayout>
     </sect1>
 </chapter>

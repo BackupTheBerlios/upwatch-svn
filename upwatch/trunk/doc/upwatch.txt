@@ -9,48 +9,53 @@ Ron Arts
    Table of Contents
 
    Preface
-   1. Installation
+   1. About UpWatch
 
-        1.1. Getting upwatch
-        1.2. Requirements
+        1.1. History
+        1.2. Features
 
-              1.2.1. Run-time requirements
-              1.2.2. Build requirements
+   2. Installation
 
-        1.3. Compiling upwatch
-        1.4. Actual Installation
-        1.5. PHP pages
-        1.6. Security considerations
-        1.7. Database
+        2.1. Getting upwatch
+        2.2. Requirements
 
-   2. Configuration
+              2.2.1. Run-time requirements
+              2.2.2. Build requirements
 
-        2.1. Probe configuration
-        2.2. Database configuration
+        2.3. Compiling upwatch
+        2.4. Actual Installation
+        2.5. PHP pages
+        2.6. Security considerations
+        2.7. Database
 
-   3. Administration
+   3. Configuration
 
-        3.1. Logging
-        3.2. Managing daemons
-        3.3. Queues
+        3.1. Probe configuration
+        3.2. Database configuration
 
-   4. How it all works
+   4. Administration
 
-        4.1. General Overview
+        4.1. Logging
+        4.2. Managing daemons
+        4.3. Queues
 
-              4.1.1. The Upwatch client
-              4.1.2. The Upwatch server
-              4.1.3. The Upwatch monitors
-              4.1.4. Special programs
+   5. How it all works
 
-        4.2. A Detailed Description
+        5.1. General Overview
 
-              4.2.1. Database Layout
-              4.2.2. What a probe does
-              4.2.3. What happens to the probe results?
-              4.2.4. uw_process: storing results in the database
+              5.1.1. The Upwatch client
+              5.1.2. The Upwatch server
+              5.1.3. The Upwatch monitors
+              5.1.4. Special programs
 
-        4.3. Scaling up
+        5.2. A Detailed Description
+
+              5.2.1. Database Layout
+              5.2.2. What a probe does
+              5.2.3. What happens to the probe results?
+              5.2.4. uw_process: storing results in the database
+
+        5.3. Scaling up
 
    A. Interfaces and file layouts
 
@@ -113,26 +118,42 @@ Ron Arts
               B.10.1. postgresql result record layout
               B.10.2. postgresql database layout
 
-        B.11. snmpget - Query an SNMP variable using an SNMP GET
+        B.11. smtp - Test an SMTP server
 
-              B.11.1. snmpget result record layout
-              B.11.2. snmpget database layout
+              B.11.1. smtp result record layout
+              B.11.2. smtp database layout
 
-        B.12. sysstat - System information like load average, CPU/MEM
+        B.12. snmpget - Query an SNMP variable using an SNMP GET
+
+              B.12.1. snmpget result record layout
+              B.12.2. snmpget database layout
+
+        B.13. sysstat - System information like load average, CPU/MEM
                 usage etc
 
-              B.12.1. sysstat result record layout
-              B.12.2. sysstat database layout
+              B.13.1. sysstat result record layout
+              B.13.2. sysstat database layout
 
-        B.13. errlog - System error log analysis
+        B.14. hwstat - Hardware information like CPU temperature, fan
+                speed
 
-              B.13.1. errlog result record layout
-              B.13.2. errlog database layout
+              B.14.1. hwstat result record layout
+              B.14.2. hwstat database layout
 
-        B.14. diskfree - Free disk space
+        B.15. errlog - System error log analysis
 
-              B.14.1. diskfree result record layout
-              B.14.2. diskfree database layout
+              B.15.1. errlog result record layout
+              B.15.2. errlog database layout
+
+        B.16. diskfree - Free disk space
+
+              B.16.1. diskfree result record layout
+              B.16.2. diskfree database layout
+
+        B.17. tcpconnect - Connect to a TCP port
+
+              B.17.1. tcpconnect result record layout
+              B.17.2. tcpconnect database layout
 
    C. Adding a probe
 
@@ -195,6 +216,10 @@ Ron Arts
           layout
 
    postgresql result record layout. postgresql result record layout
+   smtp attributes. smtp attributes
+   smtp elements. smtp elements
+   smtp definition record layout. smtp definition record layout
+   smtp result record layout. smtp result record layout
    snmpget attributes. snmpget attributes
    snmpget elements. snmpget elements
    snmpget definition record layout. snmpget definition record layout
@@ -203,6 +228,10 @@ Ron Arts
    sysstat elements. sysstat elements
    sysstat definition record layout. sysstat definition record layout
    sysstat result record layout. sysstat result record layout
+   hwstat attributes. hwstat attributes
+   hwstat elements. hwstat elements
+   hwstat definition record layout. hwstat definition record layout
+   hwstat result record layout. hwstat result record layout
    errlog attributes. errlog attributes
    errlog elements. errlog elements
    errlog definition record layout. errlog definition record layout
@@ -211,6 +240,12 @@ Ron Arts
    diskfree elements. diskfree elements
    diskfree definition record layout. diskfree definition record layout
    diskfree result record layout. diskfree result record layout
+   tcpconnect attributes. tcpconnect attributes
+   tcpconnect elements. tcpconnect elements
+   tcpconnect definition record layout. tcpconnect definition record
+          layout
+
+   tcpconnect result record layout. tcpconnect result record layout
 
 Preface
 
@@ -221,32 +256,96 @@ Preface
    performance,  or  just  want to know current and past CPU load, you've
    come to the right place.
 
-   UpWatch   is   very  scalable  (built  for  hundres  of  thousands  of
-   measurements per minute), fast, extensible, built on proven opensource
-   tools, and tries very hard not to loose data.
-
-   Building and installing upwatch is not for the faint of heart. It uses
-   lots  of  external libraries which may or may not be available on your
-   platform.  I myself use Redhat 8 for development, and test compilation
-   on RH7, and Yellowdog Linux 2.3.
-
-Chapter 1. Installation
+Chapter 1. About UpWatch
 
    Table of Contents
 
-   1.1. Getting upwatch
-   1.2. Requirements
+   1.1. History
+   1.2. Features
 
-        1.2.1. Run-time requirements
-        1.2.2. Build requirements
+1.1. History
 
-   1.3. Compiling upwatch
-   1.4. Actual Installation
-   1.5. PHP pages
-   1.6. Security considerations
-   1.7. Database
+   UpWatch  originated  from  the  loins of Netland Internet Services BV,
+   located  in  Amsterdam, The Netherlands. It is a hosting company which
+   started business in 1993.
 
-1.1. Getting upwatch
+   We  started  to  offer  managed hosting services in 1995. Very soon we
+   found out that our customers managed to bring down their own server at
+   impossible  times, and requested immediate support to bring it back up
+   again.  We weren't happy with this, but so weren't our customers. They
+   demanded uptime and response time guarantees. We on our hand wanted to
+   find out if downtime was our fault or the customers doing.
+
+   We  started  doing  Service  Level Agreements, and started monitoring.
+   Also  we started to limits our customers' access to their own servers.
+   If they want guarantees, they should give us some power.
+
+   The   monitoring   system   we   initially   chose   was  Big  Brother
+   (http://bb4.com).  This  really  is  a  great package, but it had some
+   problems for us. It didn't look professional (we felt we couldn't give
+   the URL to our customers), it wasn't opensource, it was absolutely not
+   scalable, and it was hard to integrate with our backoffice.
+
+   Also  the  CEO  of  Netland (yours truly) was considering setting up a
+   internet service company for monitoring servers over the internet. And
+   that  needed  scalable  software. So in 2000 we started designing, and
+   programming. All this resulted in UpWatch.
+
+1.2. Features
+
+   With Upwatch you can both monitor various parameters continuously, and
+   built  a  history  of  output  values.  So  when  for  example you get
+   complaints that you website was slow on Saturday evening, you can look
+   back and find out if it was true, and even pinpoint a cause. So here's
+   the full feature list:
+     * opensource: Apache/PHP/MySQL frontend, C/Perl backend
+     * fully documented, manpages and part of the docs are auto-generated
+     * efficient: supports more then 10s of thousands of probes
+     * reliable: forgiving towards database and network failures
+     * scalable: processing can be spread out over multiple machines
+     * multitenanting support: monitor more than one company
+     * supports multiple monitoring locations
+     * clients available for Linux, *BDS, Windows
+     * clients know about dialup
+     * notifications by email and SMS
+     * Big  Brother  support:  can  run with BB clients, imports bb-hosts
+       file
+     * Probes can be added through the web interface
+     * remote   probes:   HTTP  GET,  IMAP,  MSSQL,  MySQL,  ping,  POP3,
+       PostgreSQL, SMTP, SNMP, TCP Connect any port
+     * local  probes:  CPU,  loadavg,  memory,  blockio, swap, diskspace,
+       temperature,  fanspeed,  line  voltages,  analyse any logfile with
+       regular expressions.
+     * special probe iptraf, you can install that on your core routers to
+       measure  IP  traffic  to/from  every  IP  address on your internal
+       network
+     * results are XML format, and can be pre/post processed
+     * uses store/forward in maildir queues for monitoring results
+     * OS  support:  clients  for Linux, FreeBSD, Windows. Server runs on
+       Linux  or freeBSD, monitors run on linux. SuSE/Redhat/Fedora RPM's
+       can be generated from the source tree.
+     * generates   realtime  raw,  daily,  weekly,  monthly,  yearly  and
+       5-yearly graphical reports
+     * overview screens for server statuses
+     * you can temporarily hide or disable probes
+
+Chapter 2. Installation
+
+   Table of Contents
+
+   2.1. Getting upwatch
+   2.2. Requirements
+
+        2.2.1. Run-time requirements
+        2.2.2. Build requirements
+
+   2.3. Compiling upwatch
+   2.4. Actual Installation
+   2.5. PHP pages
+   2.6. Security considerations
+   2.7. Database
+
+2.1. Getting upwatch
 
    Currently,  upwatch  is  not  released,  and  is  not  allowed  to  be
    distributed.  The only way to get it, is through written permission of
@@ -258,11 +357,12 @@ Chapter 1. Installation
    Building and installing upwatch is not for the faint of heart. It uses
    lots  of  external libraries which may or may not be available on your
    platform.   I   myself  use  Redhat  8/9  for  development,  and  test
-   compilation on RH7, SuSE8.2, Solaris, and Yellowdog Linux 2.3.
+   compilation  on  RH7,  Fedora Core 1/2, SuSE8.2, Solaris, FreeBSD, and
+   Yellowdog Linux 3.0.
 
-1.2. Requirements
+2.2. Requirements
 
-1.2.1. Run-time requirements
+2.2.1. Run-time requirements
 
    First ensure that the time/date on all hosts is correctly set.
 
@@ -280,9 +380,10 @@ Chapter 1. Installation
      * libnet 1.0.2a (www.packetfactory.net/libnet/)
      * libpcap 0.6.2
 
-   Delivered with upwatch are libstatgrab and the State Threads Library.
+   Delivered  with upwatch are libstatgrab, xmbmon, and the State Threads
+   Library.
 
-1.2.2. Build requirements
+2.2.2. Build requirements
 
    Of  course  you can build the software yourself. Apart from the normal
    GNU   compilation   tools,   and   the  development  versions  of  the
@@ -298,7 +399,7 @@ Chapter 1. Installation
    If  you  run redhat, debian or SuSe, don't forget to install the devel
    packages if there are any.
 
-1.3. Compiling upwatch
+2.3. Compiling upwatch
 
    Just in case you really want to (or need to) compile upwatch yourself,
    it's pretty easy:
@@ -316,7 +417,7 @@ Chapter 1. Installation
    --enable-server  to  configure.  Default  configure  only  builds  the
    client, docs, and utils.
 
-1.4. Actual Installation
+2.4. Actual Installation
 
    Before  you  install  the  software decide on the architecture. If you
    know  in  advance  you'll  have  to monitor thousands of hosts, or the
@@ -330,14 +431,14 @@ Chapter 1. Installation
 
              $ make install
 
-1.5. PHP pages
+2.5. PHP pages
 
    The PHP pages can just be copied to any directory. There is an include
    directory.  Copy  that  a some location ouside the web root, and enter
    its location in the .htaccess file in the web root dir. Also enter the
    database details in config.php.
 
-1.6. Security considerations
+2.6. Security considerations
 
    All  upwatch  directories  are readable and writable by members of the
    group  upwatch.  Most all executables run as user upwatch. Some probes
@@ -357,7 +458,7 @@ Chapter 1. Installation
    Most  probes  will want access, and passwords can be sniffed. For real
    security use ssh-tunnels.
 
-1.7. Database
+2.7. Database
 
    First things first. Depending on the size of your installation you may
    run  out  of database or record space. It happened to me on the iptraf
@@ -387,14 +488,14 @@ Chapter 1. Installation
               mysql> GRANT SELECT ON upwatch.pr_ping_def TO user@'192.168
    .170.23' IDENTIFIED BY 'PASSWD'
 
-Chapter 2. Configuration
+Chapter 3. Configuration
 
    Table of Contents
 
-   2.1. Probe configuration
-   2.2. Database configuration
+   3.1. Probe configuration
+   3.2. Database configuration
 
-2.1. Probe configuration
+3.1. Probe configuration
 
    Each    probe    first    reads   the   general   configuration   file
    /etc/upwatch.conf and then its own configurationfile in /etc/upwatch.d
@@ -406,17 +507,17 @@ Chapter 2. Configuration
    Each  program  has  a  manual  page that documents options. Every long
    commandine option can also be entered in a configuration file.
 
-2.2. Database configuration
+3.2. Database configuration
 
-Chapter 3. Administration
+Chapter 4. Administration
 
    Table of Contents
 
-   3.1. Logging
-   3.2. Managing daemons
-   3.3. Queues
+   4.1. Logging
+   4.2. Managing daemons
+   4.3. Queues
 
-3.1. Logging
+4.1. Logging
 
    The  upwatch  package  contains  various  ways  of logging errors. The
    standard way is to its own logfile /var/log/upwatch/upwatch.log. Other
@@ -429,14 +530,14 @@ Chapter 3. Administration
 
    The website has its own logfile in log/error.log
 
-3.2. Managing daemons
+4.2. Managing daemons
 
    In  most  Linux  distributions  you  can  start/stop daemons using the
    scripts in /etc/init.d. Don't forget: you will miss sample data in the
    database  if  a  probe  is  not running. You can watch what a probe is
    running if you run ps ax.
 
-3.3. Queues
+4.3. Queues
 
    Queues  play  an  important  part in upwatch. The queues are so-called
    maildir  queues. This means that while the queuefile is written, it is
@@ -446,27 +547,27 @@ Chapter 3. Administration
    and  nobody  has  the file open. Only one process reads from the queue
    and deletes the file when done.
 
-Chapter 4. How it all works
+Chapter 5. How it all works
 
    Table of Contents
 
-   4.1. General Overview
+   5.1. General Overview
 
-        4.1.1. The Upwatch client
-        4.1.2. The Upwatch server
-        4.1.3. The Upwatch monitors
-        4.1.4. Special programs
+        5.1.1. The Upwatch client
+        5.1.2. The Upwatch server
+        5.1.3. The Upwatch monitors
+        5.1.4. Special programs
 
-   4.2. A Detailed Description
+   5.2. A Detailed Description
 
-        4.2.1. Database Layout
-        4.2.2. What a probe does
-        4.2.3. What happens to the probe results?
-        4.2.4. uw_process: storing results in the database
+        5.2.1. Database Layout
+        5.2.2. What a probe does
+        5.2.3. What happens to the probe results?
+        5.2.4. uw_process: storing results in the database
 
-   4.3. Scaling up
+   5.3. Scaling up
 
-4.1. General Overview
+5.1. General Overview
 
    The  system  primary  function  is to fill lots of database tables, to
    offer  views  on those tables, and to page operators in case things go
@@ -481,7 +582,7 @@ Chapter 4. How it all works
      * monitors, contains software for remotely monitoring.
      * special software, like iptraf
 
-4.1.1. The Upwatch client
+5.1.1. The Upwatch client
 
    The   client   consists  of  two  programs:  uw_sysstat  and  uw_send.
    uw_sysstat  every minute collects information like CPU load, disk I/O,
@@ -491,7 +592,7 @@ Chapter 4. How it all works
    uw_send  has  a  commandline  option  (--once) to let it be started by
    cronjobs, or for example when an ISDN connection has become online.
 
-4.1.2. The Upwatch server
+5.1.2. The Upwatch server
 
    The  server  consists  of  three  programs:  uw_accept,  uw_setip  and
    uw_process.  The  monitoring  results  are  accept  by uw_accept which
@@ -504,21 +605,21 @@ Chapter 4. How it all works
    uw_tellip script, which should be started by clients whenever their IP
    address changes.
 
-4.1.3. The Upwatch monitors
+5.1.3. The Upwatch monitors
 
    The  monitors  are daemons that run on some central monitoring server,
    and  run checks on servers remotely, such as POP3, HTTP, SNMP or other
    services. Alll their results are sent by uw_send, as usual.
 
-4.1.4. Special programs
+5.1.4. Special programs
 
    Their  are  special  programs that don't fall into any other category,
    for  example  uw_iptraf.  This is a daemon that should run on a border
    gateway router, and that measures IP traffic on a per-IP basis.
 
-4.2. A Detailed Description
+5.2. A Detailed Description
 
-4.2.1. Database Layout
+5.2.1. Database Layout
 
    Things  start  at  the  database.  For  every  probe  it  contains the
    following tables:
@@ -533,7 +634,7 @@ Chapter 4. How it all works
    contains  usually  contains  the target ip address. We'll see what the
    other tables are for later on.
 
-4.2.2. What a probe does
+5.2.2. What a probe does
 
    There are actually three kinds of probes:
      * Probes with database access, that measure a remote server
@@ -558,7 +659,7 @@ Chapter 4. How it all works
    20  seconds.  Other  probes use pools of threads (like httpget) or are
    build using the State Threads library.
 
-4.2.3. What happens to the probe results?
+5.2.3. What happens to the probe results?
 
    First,   all   results  with  status  non-green  are  handed  over  to
    uw_examine, which tries to find out why the probe failed, and attaches
@@ -576,7 +677,7 @@ Chapter 4. How it all works
    host.  It  attaches  this  report to the probe result, and in its turn
    puts everything in an uw_process or uw_send queue.
 
-4.2.4. uw_process: storing results in the database
+5.2.4. uw_process: storing results in the database
 
    When  the probe results arrive in the uw_process queue it is picked up
    by  the  workhorse  of the lot, uw_process. It fills the result tables
@@ -685,7 +786,7 @@ Chapter 4. How it all works
                ENDIF
             ENDIF
 
-4.3. Scaling up
+5.3. Scaling up
 
    Various  parts  of the system may need more resources. Luckily Upwatch
    is  designed  to  scale  up  considerably.  Of  course it cannot scale
@@ -796,26 +897,41 @@ Appendix B. Probe specifications
         B.10.1. postgresql result record layout
         B.10.2. postgresql database layout
 
-   B.11. snmpget - Query an SNMP variable using an SNMP GET
+   B.11. smtp - Test an SMTP server
 
-        B.11.1. snmpget result record layout
-        B.11.2. snmpget database layout
+        B.11.1. smtp result record layout
+        B.11.2. smtp database layout
 
-   B.12. sysstat - System information like load average, CPU/MEM usage
+   B.12. snmpget - Query an SNMP variable using an SNMP GET
+
+        B.12.1. snmpget result record layout
+        B.12.2. snmpget database layout
+
+   B.13. sysstat - System information like load average, CPU/MEM usage
           etc
 
-        B.12.1. sysstat result record layout
-        B.12.2. sysstat database layout
+        B.13.1. sysstat result record layout
+        B.13.2. sysstat database layout
 
-   B.13. errlog - System error log analysis
+   B.14. hwstat - Hardware information like CPU temperature, fan speed
 
-        B.13.1. errlog result record layout
-        B.13.2. errlog database layout
+        B.14.1. hwstat result record layout
+        B.14.2. hwstat database layout
 
-   B.14. diskfree - Free disk space
+   B.15. errlog - System error log analysis
 
-        B.14.1. diskfree result record layout
-        B.14.2. diskfree database layout
+        B.15.1. errlog result record layout
+        B.15.2. errlog database layout
+
+   B.16. diskfree - Free disk space
+
+        B.16.1. diskfree result record layout
+        B.16.2. diskfree database layout
+
+   B.17. tcpconnect - Connect to a TCP port
+
+        B.17.1. tcpconnect result record layout
+        B.17.2. tcpconnect database layout
 
 B.1. bb - Big Brother generic probe
 
@@ -1437,7 +1553,7 @@ B.2.2. bb_cpu database layout
 
    user
 
-   tinyint
+   tinyint unsigned
 
    NO
 
@@ -1447,7 +1563,7 @@ B.2.2. bb_cpu database layout
 
    system
 
-   tinyint
+   tinyint unsigned
 
    NO
 
@@ -1457,7 +1573,7 @@ B.2.2. bb_cpu database layout
 
    idle
 
-   tinyint
+   tinyint unsigned
 
    NO
 
@@ -1467,7 +1583,7 @@ B.2.2. bb_cpu database layout
 
    swapped
 
-   int
+   int unsigned
 
    NO
 
@@ -1477,7 +1593,7 @@ B.2.2. bb_cpu database layout
 
    free
 
-   int
+   int unsigned
 
    NO
 
@@ -1487,7 +1603,7 @@ B.2.2. bb_cpu database layout
 
    buffered
 
-   int
+   int unsigned
 
    NO
 
@@ -1497,7 +1613,7 @@ B.2.2. bb_cpu database layout
 
    cached
 
-   int
+   int unsigned
 
    NO
 
@@ -1507,7 +1623,7 @@ B.2.2. bb_cpu database layout
 
    used
 
-   int
+   int unsigned
 
    NO
 
@@ -1609,7 +1725,7 @@ B.3.1. httpget result record layout
 
 B.3.2. httpget database layout
 
-   Table  httpget  definition  record  layout.  httpget definition record
+   Table httpget  definition  record  layout. httpget  definition  record
    layout
 
    Field
@@ -1747,6 +1863,16 @@ B.3.2. httpget database layout
    NO
 
                                           Hostname for the HTTP request
+
+   port
+
+   int unsigned
+
+   NO
+
+   80
+
+   Port for the HTTP request
 
    uri
 
@@ -3888,7 +4014,7 @@ B.10.1. postgresql result record layout
 
 B.10.2. postgresql database layout
 
-   Table  postgresql  definition  record  layout.  postgresql  definition
+   Table postgresql   definition   record  layout. postgresql  definition
    record layout
 
    Field
@@ -4145,9 +4271,311 @@ B.10.2. postgresql database layout
 
    total time needed
 
-B.11. snmpget - Query an SNMP variable using an SNMP GET
+B.11. smtp - Test an SMTP server
 
-B.11.1. snmpget result record layout
+B.11.1. smtp result record layout
+
+   Table smtp attributes. smtp attributes
+
+   Name
+
+   Type
+
+   Required
+
+   Default
+
+   Description
+
+   connect
+
+   NMTOKEN
+
+   NO
+
+   time for connection to complete
+
+   total
+
+   NMTOKEN
+
+   NO
+
+   total time needed
+
+   Table smtp elements. smtp elements
+
+   Name
+
+   Optional
+
+   Description
+
+   id
+
+   NO
+
+   id of this probe in the database
+
+   ipaddress
+
+   NO
+
+   target ip address
+
+   date
+
+   NO
+
+   date/time for this result
+
+   expires
+
+   NO
+
+   when this result expires
+
+   color
+
+   NO
+
+   color as this probe thinks it should be
+
+   received
+
+   NO
+
+   date/time this result was received by the upwatch server
+
+B.11.2. smtp database layout
+
+   Table smtp definition record layout. smtp definition record layout
+
+   Field
+
+   Type
+
+   Key
+
+   Default
+
+   Extra
+
+   Description
+
+   id
+
+   int
+
+   PRI
+
+   auto_increment
+
+   probe unique numerical id
+
+   pgroup
+
+   int unsigned
+
+   NO
+
+   2
+
+   group id
+
+   server
+
+   int
+
+   NO
+
+   1
+
+   server id
+
+   contact
+
+   int unsigned
+
+   YES
+
+   1
+
+   user field: pointer to contact database
+
+   notify
+
+   int unsigned
+
+   YES
+
+   1
+
+   notifier id
+
+   ipaddress
+
+   varchar(15)
+
+   YES
+
+                                          target ipaddress
+
+   description
+
+   text
+
+   NO
+
+                                          description
+
+   freq
+
+   smallint unsigned
+
+   NO
+
+   1
+
+   frequency in minutes
+
+   yellow
+
+   float
+
+   NO
+
+   3
+
+   value for yellow alert
+
+   red
+
+   float
+
+   NO
+
+   5
+
+   value for red alert
+
+   disable
+
+   enum('yes', 'no')
+
+   NO
+
+   no
+
+   disable this probe
+
+   hide
+
+   enum('yes', 'no')
+
+   NO
+
+   no
+
+   hide probe results from viewing
+
+   Table smtp result record layout. smtp result record layout
+
+   Field
+
+   Type
+
+   Key
+
+   Default
+
+   Extra
+
+   Description
+
+   id
+
+   bigint unsigned
+
+   PRI
+
+   auto_increment
+
+   unique id for result
+
+   probe
+
+   int unsigned
+
+   YES
+
+   1
+
+   probe identifier
+
+   yellow
+
+   float
+
+   NO
+
+   3
+
+   value for yellow alert
+
+   red
+
+   float
+
+   NO
+
+   5
+
+   value for red alert
+
+   stattime
+
+   int unsigned
+
+   YES
+
+   0
+
+   time when result was generated
+
+   color
+
+   smallint unsigned
+
+   YES
+
+   200
+
+   color value
+
+   connect
+
+   float
+
+   NO
+
+   0
+
+   time for connection to complete
+
+   total
+
+   float
+
+   NO
+
+   0
+
+   total time needed
+
+B.12. snmpget - Query an SNMP variable using an SNMP GET
+
+B.12.1. snmpget result record layout
 
    Table snmpget attributes. snmpget attributes
 
@@ -4213,9 +4641,9 @@ B.11.1. snmpget result record layout
 
    date/time this result was received by the upwatch server
 
-B.11.2. snmpget database layout
+B.12.2. snmpget database layout
 
-   Table  snmpget  definition  record  layout.  snmpget definition record
+   Table snmpget  definition  record  layout. snmpget  definition  record
    layout
 
    Field
@@ -4483,9 +4911,9 @@ B.11.2. snmpget database layout
 
    Value of OID queried
 
-B.12. sysstat - System information like load average, CPU/MEM usage etc
+B.13. sysstat - System information like load average, CPU/MEM usage etc
 
-B.12.1. sysstat result record layout
+B.13.1. sysstat result record layout
 
    Table sysstat attributes. sysstat attributes
 
@@ -4649,15 +5077,21 @@ B.12.1. sysstat result record layout
 
    color as this probe thinks it should be
 
+   interval
+
+   NO
+
+   time between measurements
+
    received
 
    NO
 
    date/time this result was received by the upwatch server
 
-B.12.2. sysstat database layout
+B.13.2. sysstat database layout
 
-   Table  sysstat  definition  record  layout.  sysstat definition record
+   Table sysstat  definition  record  layout. sysstat  definition  record
    layout
 
    Field
@@ -4874,7 +5308,7 @@ B.12.2. sysstat database layout
 
    user
 
-   tinyint
+   tinyint unsigned
 
    NO
 
@@ -4884,7 +5318,7 @@ B.12.2. sysstat database layout
 
    system
 
-   tinyint
+   tinyint unsigned
 
    NO
 
@@ -4894,7 +5328,7 @@ B.12.2. sysstat database layout
 
    idle
 
-   tinyint
+   tinyint unsigned
 
    NO
 
@@ -4904,7 +5338,7 @@ B.12.2. sysstat database layout
 
    swapin
 
-   int
+   int unsigned
 
    NO
 
@@ -4914,7 +5348,7 @@ B.12.2. sysstat database layout
 
    swapout
 
-   int
+   int unsigned
 
    NO
 
@@ -4924,7 +5358,7 @@ B.12.2. sysstat database layout
 
    blockin
 
-   int
+   int unsigned
 
    NO
 
@@ -4934,7 +5368,7 @@ B.12.2. sysstat database layout
 
    blockout
 
-   int
+   int unsigned
 
    NO
 
@@ -4944,7 +5378,7 @@ B.12.2. sysstat database layout
 
    swapped
 
-   int
+   int unsigned
 
    NO
 
@@ -4954,7 +5388,7 @@ B.12.2. sysstat database layout
 
    free
 
-   int
+   int unsigned
 
    NO
 
@@ -4964,7 +5398,7 @@ B.12.2. sysstat database layout
 
    buffered
 
-   int
+   int unsigned
 
    NO
 
@@ -4974,7 +5408,7 @@ B.12.2. sysstat database layout
 
    cached
 
-   int
+   int unsigned
 
    NO
 
@@ -4984,7 +5418,7 @@ B.12.2. sysstat database layout
 
    used
 
-   int
+   int unsigned
 
    NO
 
@@ -5002,9 +5436,515 @@ B.12.2. sysstat database layout
 
    System temperature in Celsius
 
-B.13. errlog - System error log analysis
+B.14. hwstat - Hardware information like CPU temperature, fan speed
 
-B.13.1. errlog result record layout
+B.14.1. hwstat result record layout
+
+   Table hwstat attributes. hwstat attributes
+
+   Name
+
+   Type
+
+   Required
+
+   Default
+
+   Description
+
+   temp1
+
+   NMTOKEN
+
+   NO
+
+   First temperature sensor - usually CPU temp
+
+   temp2
+
+   NMTOKEN
+
+   NO
+
+   Second temperature sensor - usually motherboard
+
+   temp3
+
+   NMTOKEN
+
+   NO
+
+   Third temperature sensor - usually enclosure
+
+   rot1
+
+   NMTOKEN
+
+   NO
+
+   First fan rotation speed - usually CPU fan
+
+   rot2
+
+   NMTOKEN
+
+   NO
+
+   Second fan rotation speed
+
+   rot3
+
+   NMTOKEN
+
+   NO
+
+   Third fan rotation speed
+
+   vc0
+
+   NMTOKEN
+
+   NO
+
+   CPU core voltage #1
+
+   vc1
+
+   NMTOKEN
+
+   NO
+
+   CPU core voltage #2
+
+   v33
+
+   NMTOKEN
+
+   NO
+
+   Voltage of 3.3V line
+
+   v50p
+
+   NMTOKEN
+
+   NO
+
+   Voltage of 5V line
+
+   v12p
+
+   NMTOKEN
+
+   NO
+
+   Voltage of 12V line
+
+   v12n
+
+   NMTOKEN
+
+   NO
+
+   Voltage of -12V line
+
+   v50n
+
+   NMTOKEN
+
+   NO
+
+   Voltage of -5V line
+
+   Table hwstat elements. hwstat elements
+
+   Name
+
+   Optional
+
+   Description
+
+   server
+
+   NO
+
+   id of this server in the database
+
+   ipaddress
+
+   NO
+
+   target ip address
+
+   date
+
+   NO
+
+   date/time for this result
+
+   expires
+
+   NO
+
+   when this result expires
+
+   color
+
+   NO
+
+   color as this probe thinks it should be
+
+   interval
+
+   NO
+
+   time between measurements
+
+   received
+
+   NO
+
+   date/time this result was received by the upwatch server
+
+B.14.2. hwstat database layout
+
+   Table hwstat definition record layout. hwstat definition record layout
+
+   Field
+
+   Type
+
+   Key
+
+   Default
+
+   Extra
+
+   Description
+
+   id
+
+   int
+
+   PRI
+
+   auto_increment
+
+   probe unique numerical id
+
+   pgroup
+
+   int unsigned
+
+   NO
+
+   2
+
+   group id
+
+   server
+
+   int
+
+   NO
+
+   1
+
+   server id
+
+   contact
+
+   int unsigned
+
+   YES
+
+   1
+
+   user field: pointer to contact database
+
+   notify
+
+   int unsigned
+
+   YES
+
+   1
+
+   notifier id
+
+   ipaddress
+
+   varchar(15)
+
+   YES
+
+                                          target ipaddress
+
+   description
+
+   text
+
+   NO
+
+                                          description
+
+   freq
+
+   smallint unsigned
+
+   NO
+
+   1
+
+   frequency in minutes
+
+   yellow
+
+   float
+
+   NO
+
+   40
+
+   value for yellow alert
+
+   red
+
+   float
+
+   NO
+
+   50
+
+   value for red alert
+
+   disable
+
+   enum('yes', 'no')
+
+   NO
+
+   no
+
+   disable this probe
+
+   hide
+
+   enum('yes', 'no')
+
+   NO
+
+   no
+
+   hide probe results from viewing
+
+   Table hwstat result record layout. hwstat result record layout
+
+   Field
+
+   Type
+
+   Key
+
+   Default
+
+   Extra
+
+   Description
+
+   id
+
+   bigint unsigned
+
+   PRI
+
+   auto_increment
+
+   unique id for result
+
+   probe
+
+   int unsigned
+
+   YES
+
+   1
+
+   probe identifier
+
+   yellow
+
+   float
+
+   NO
+
+   40
+
+   value for yellow alert
+
+   red
+
+   float
+
+   NO
+
+   50
+
+   value for red alert
+
+   stattime
+
+   int unsigned
+
+   YES
+
+   0
+
+   time when result was generated
+
+   color
+
+   smallint unsigned
+
+   YES
+
+   200
+
+   color value
+
+   temp1
+
+   float
+
+   NO
+
+   0
+
+   First temperature sensor - usually CPU temp
+
+   temp2
+
+   float
+
+   NO
+
+   0
+
+   Second temperature sensor - usually motherboard
+
+   temp3
+
+   float
+
+   NO
+
+   0
+
+   Third temperature sensor - usually enclosure
+
+   rot1
+
+   int
+
+   NO
+
+   0
+
+   First fan rotation speed - usually CPU fan
+
+   rot2
+
+   int
+
+   NO
+
+   0
+
+   Second fan rotation speed
+
+   rot3
+
+   int
+
+   NO
+
+   0
+
+   Third fan rotation speed
+
+   vc0
+
+   float
+
+   NO
+
+   0
+
+   CPU core voltage #1
+
+   vc1
+
+   float
+
+   NO
+
+   0
+
+   CPU core voltage #2
+
+   v33
+
+   float
+
+   NO
+
+   0
+
+   Voltage of 3.3V line
+
+   v50p
+
+   float
+
+   NO
+
+   0
+
+   Voltage of 5V line
+
+   v12p
+
+   float
+
+   NO
+
+   0
+
+   Voltage of 12V line
+
+   v12n
+
+   float
+
+   NO
+
+   0
+
+   Voltage of -12V line
+
+   v50n
+
+   float
+
+   NO
+
+   0
+
+   Voltage of -5V line
+
+B.15. errlog - System error log analysis
+
+B.15.1. errlog result record layout
 
    Table errlog attributes. errlog attributes
 
@@ -5064,7 +6004,7 @@ B.13.1. errlog result record layout
 
    date/time this result was received by the upwatch server
 
-B.13.2. errlog database layout
+B.15.2. errlog database layout
 
    Table errlog definition record layout. errlog definition record layout
 
@@ -5262,9 +6202,9 @@ B.13.2. errlog database layout
 
    color value
 
-B.14. diskfree - Free disk space
+B.16. diskfree - Free disk space
 
-B.14.1. diskfree result record layout
+B.16.1. diskfree result record layout
 
    Table diskfree attributes. diskfree attributes
 
@@ -5324,9 +6264,9 @@ B.14.1. diskfree result record layout
 
    date/time this result was received by the upwatch server
 
-B.14.2. diskfree database layout
+B.16.2. diskfree database layout
 
-   Table  diskfree  definition  record layout. diskfree definition record
+   Table diskfree  definition  record  layout. diskfree definition record
    layout
 
    Field
@@ -5522,6 +6462,319 @@ B.14.2. diskfree database layout
    200
 
    color value
+
+B.17. tcpconnect - Connect to a TCP port
+
+B.17.1. tcpconnect result record layout
+
+   Table tcpconnect attributes. tcpconnect attributes
+
+   Name
+
+   Type
+
+   Required
+
+   Default
+
+   Description
+
+   connect
+
+   NMTOKEN
+
+   NO
+
+   time for connection to complete
+
+   total
+
+   NMTOKEN
+
+   NO
+
+   total time needed
+
+   Table tcpconnect elements. tcpconnect elements
+
+   Name
+
+   Optional
+
+   Description
+
+   id
+
+   NO
+
+   id of this probe in the database
+
+   ipaddress
+
+   NO
+
+   target ip address
+
+   date
+
+   NO
+
+   date/time for this result
+
+   expires
+
+   NO
+
+   when this result expires
+
+   color
+
+   NO
+
+   color as this probe thinks it should be
+
+   received
+
+   NO
+
+   date/time this result was received by the upwatch server
+
+B.17.2. tcpconnect database layout
+
+   Table tcpconnect   definition   record  layout. tcpconnect  definition
+   record layout
+
+   Field
+
+   Type
+
+   Key
+
+   Default
+
+   Extra
+
+   Description
+
+   id
+
+   int
+
+   PRI
+
+   auto_increment
+
+   probe unique numerical id
+
+   pgroup
+
+   int unsigned
+
+   NO
+
+   2
+
+   group id
+
+   server
+
+   int
+
+   NO
+
+   1
+
+   server id
+
+   contact
+
+   int unsigned
+
+   YES
+
+   1
+
+   user field: pointer to contact database
+
+   notify
+
+   int unsigned
+
+   YES
+
+   1
+
+   notifier id
+
+   ipaddress
+
+   varchar(15)
+
+   YES
+
+                                          target ipaddress
+
+   description
+
+   text
+
+   NO
+
+                                          description
+
+   freq
+
+   smallint unsigned
+
+   NO
+
+   1
+
+   frequency in minutes
+
+   yellow
+
+   float
+
+   NO
+
+   3
+
+   value for yellow alert
+
+   red
+
+   float
+
+   NO
+
+   5
+
+   value for red alert
+
+   disable
+
+   enum('yes', 'no')
+
+   NO
+
+   no
+
+   disable this probe
+
+   hide
+
+   enum('yes', 'no')
+
+   NO
+
+   no
+
+   hide probe results from viewing
+
+   port
+
+   int
+
+   NO
+
+   25
+
+   port to connect to
+
+   Table tcpconnect result record layout. tcpconnect result record layout
+
+   Field
+
+   Type
+
+   Key
+
+   Default
+
+   Extra
+
+   Description
+
+   id
+
+   bigint unsigned
+
+   PRI
+
+   auto_increment
+
+   unique id for result
+
+   probe
+
+   int unsigned
+
+   YES
+
+   1
+
+   probe identifier
+
+   yellow
+
+   float
+
+   NO
+
+   3
+
+   value for yellow alert
+
+   red
+
+   float
+
+   NO
+
+   5
+
+   value for red alert
+
+   stattime
+
+   int unsigned
+
+   YES
+
+   0
+
+   time when result was generated
+
+   color
+
+   smallint unsigned
+
+   YES
+
+   200
+
+   color value
+
+   connect
+
+   float
+
+   NO
+
+   0
+
+   time for connection to complete
+
+   total
+
+   float
+
+   NO
+
+   0
+
+   total time needed
 
 Appendix C. Adding a probe
 

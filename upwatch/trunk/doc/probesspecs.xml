@@ -11,6 +11,8 @@
    &ping-specs;
    &pop3-specs;
    &postgresql-specs;
+   &smtp-specs;
    &snmpget-specs;
    &sysstat-specs;
+   &tcpconnect-specs;
 </appendix>

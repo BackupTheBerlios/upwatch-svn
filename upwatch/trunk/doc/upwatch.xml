@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE book PUBLIC "-//OASIS//DTD Docbook XML V4.1.2//EN" 
                       "/usr/share/sgml/docbook/xml-dtd-4.1.2-1.0-14/docbookx.dtd" [
+<!ENTITY about SYSTEM "about.xml">
 <!ENTITY installation SYSTEM "installation.xml">
 <!ENTITY configuration SYSTEM "configuration.xml">
 <!ENTITY administration SYSTEM "administration.xml">
@@ -17,8 +18,10 @@
 <!ENTITY ping-specs SYSTEM "../uw_ping/probe.xml">
 <!ENTITY pop3-specs SYSTEM "../uw_pop3/probe.xml">
 <!ENTITY postgresql-specs SYSTEM "../uw_postgresql/probe.xml">
+<!ENTITY smtp-specs SYSTEM "../uw_smtp/probe.xml">
 <!ENTITY snmpget-specs SYSTEM "../uw_snmpget/probe.xml">
 <!ENTITY sysstat-specs SYSTEM "../uw_sysstat/probe.xml">
+<!ENTITY tcpconnect-specs SYSTEM "../uw_tcpconnect/probe.xml">
 ]>
 
 <book id="upwatch" lang="en" status="draft">
@@ -40,14 +43,9 @@
             prove your website (or switch, or basically any other device) was available, showed the
             proper performance, or just want to know current and past CPU load, you've come to the
             right place.</para>
-        <para> UpWatch is very scalable (built for hundres of thousands of measurements per minute),
-            fast, extensible, built on proven opensource tools, and tries
-            very hard not to loose data.</para>
-       <para>Building and installing upwatch is not for the faint of heart. It uses lots of external
-          libraries which may or may not be available on your platform. I myself use Redhat 8
-          for development, and test compilation on RH7, and Yellowdog Linux 2.3.
-       </para>
+
     </preface>
+    &about;
     &installation;
     &configuration;
     &administration;
