@@ -1,23 +1,19 @@
 #include "config.h"
-#include <netinet/in_systm.h>
+#include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+
 #include <signal.h>
 #include <string.h>
 #include <malloc.h>
 #include <ctype.h>
 
 #include <generic.h>
-#define GNET_EXPERIMENTAL
-#include <gnet/gnet.h>
+#include <st.h>
 #include "cmd_options.h"
 
-static GServer* ob_server = NULL;
-static void ob_server_func(GServer* server, GServerStatus status,
-                            GConn* conn, gpointer user_data);
-static gboolean ob_client_func (GConn* conn, GConnStatus status,
-                                gchar* buffer, gint length,
-                                gpointer user_data);
-static void ob_sig_term (int signum);
+int thread_count;
 
 static char *chop(char *s, int i)
 {
@@ -71,292 +67,265 @@ int init(void)
 {
   daemonize = TRUE;
   every = ONE_SHOT;
-  g_thread_init(NULL);
+  st_init();
   xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
   return(1);
 }
 
+void *handle_connections(void *arg);
+
 int run(void)
 {
-  GMainLoop* main_loop;
-  GInetAddr* addr;
-  GServer* server;
-
-  /* Create the main loop */
-  main_loop = g_main_new(FALSE);
-
-  /* Create the interface */
-  addr = gnet_inetaddr_new_any ();
-  gnet_inetaddr_set_port (addr, OPT_VALUE_LISTEN);
-
-  /* Create the server */
-  server = gnet_server_new (addr, TRUE, ob_server_func, "hallo");
-  if (!server)
-    {
-      fprintf (stderr, "Error: Could not start server\n");
-      return(0);
-    }
-
-  ob_server = server;
-  signal (SIGTERM, ob_sig_term);
-  signal (SIGINT, ob_sig_term);
+  int n, sock;
+  struct sockaddr_in serv_addr;
+  st_netfd_t nfd;
 
   /* Start the main loop */
   uw_setproctitle("accepting connections");
-  g_main_run(main_loop);
+  
+  /* Create server socket */
+  if ((sock = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
+    LOG(LOG_NOTICE, "socket: %m");
+    return 0;
+  }
+  n = 1;
+  if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char *)&n, sizeof(n)) < 0) {
+    LOG(LOG_NOTICE, "setsockopt(REUSEADDR): %m");
+    close(sock);
+    return 0;
+  }
+  memset(&serv_addr, 0, sizeof(serv_addr));
+  serv_addr.sin_family = AF_INET;
+  serv_addr.sin_port = htons(OPT_VALUE_LISTEN);
+  serv_addr.sin_addr.s_addr = INADDR_ANY;
+  if (serv_addr.sin_addr.s_addr == INADDR_NONE) {
+    struct hostent *hp;
+    /* not dotted-decimal */
+    if ((hp = gethostbyname("0.0.0.0")) == NULL) {
+      LOG(LOG_NOTICE, "0.0.0.0: %m");
+      close(sock);
+      return 0;
+    }
+    memcpy(&serv_addr.sin_addr, hp->h_addr, hp->h_length);
+  }
 
+  /* Do bind and listen */
+  if (bind(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
+    LOG(LOG_NOTICE, "bind: %m");
+    close(sock);
+    return 0;
+  }
+  if (listen(sock, 10) < 0) {
+    LOG(LOG_NOTICE, "listen: %m");
+    close(sock);
+    return 0;
+  }
+
+  /* Create file descriptor object from OS socket */
+  if ((nfd = st_netfd_open_socket(sock)) == NULL) {
+    LOG(LOG_NOTICE, "st_netfd_open_socket: %m");
+    close(sock);
+    return 0;
+  }
+
+  for (n = 0; n < 10; n++) {
+    if (st_thread_create(handle_connections, (void *)&nfd, 0, 0) != NULL) {
+      thread_count++;
+    } else {
+      LOG(LOG_NOTICE, "st_thread_create: %m");
+    }
+  }
+
+  while (thread_count) {
+    st_usleep(10000);
+  }
   return(1);
 }
 
-static void ob_sig_term (int signum)
+void handle_session(st_netfd_t cli_nfd, char *remotehost);
+
+void *handle_connections(void *arg)
 {
-  gnet_server_delete (ob_server);
-  exit (1);
+extern int forever;
+  st_netfd_t srv_nfd, cli_nfd;
+  struct sockaddr_in from;
+  int fromlen = sizeof(from);
+
+  srv_nfd = *(st_netfd_t *) arg;
+
+  while (forever) {
+    char *remote;
+    cli_nfd = st_accept(srv_nfd, (struct sockaddr *)&from, &fromlen, -1);
+    if (cli_nfd == NULL) {
+      LOG(LOG_NOTICE, "st_accept: %m");
+      continue;
+    }
+    remote = strdup(inet_ntoa(from.sin_addr));
+    LOG(LOG_NOTICE, "New connection from: %s", remote);
+    handle_session(cli_nfd, remote);
+    free(remote);
+    st_netfd_close(cli_nfd);
+  }
+  return NULL;
 }
 
-struct conn_stat {
-#define STATE_INIT 0
-#define STATE_USER 1
-#define STATE_PWD  2
-#define STATE_CMD  3
-#define STATE_DATA 4
-#define STATE_EXIT 5
-#define STATE_ERROR 6	/* only for errors while spooling!! */
-  int state;
-  char user[16];
-  char pwd[16];
-  int length;
+#define TIMEOUT 10000000L
+
+void handle_session(st_netfd_t rmt_nfd, char *remotehost)
+{
+  char user[64], passwd[18];
+  char buffer[BUFSIZ];
+  int filesize;
   void *sp_info;
-  void *buffer;
-};
-
-static char *hello = "+OK UpWatch Acceptor v0.3. Please login\n";
-static char *errhello = "+ERR Please login first\n";
-static char *bye = "+OK Nice talking to you. Bye!\n";
-static char *errbye = "+ERR Nice talking to you. Bye!\n";
-static char *askpwd = "+OK Please enter password\n";
-static char *erraskpwd = "+ERR Please enter password\n";
-static char *erraskcmd = "+ERR unknown command\n";
-static char *askcmd = "+OK logged in, enter command\n";
-static char *askdata = "+OK start sending your file\n";
-static char *datain = "+OK Thank you. Enter command\n";
-static char *spoolerr = "-ERR Sorry, error spooling file - please try later\n";
-
-static void ob_server_func (GServer* server, GServerStatus status, struct _GConn* conn, gpointer user_data)
-{
-  struct conn_stat *st;
-
-  switch (status)
-    {
-    case GNET_SERVER_STATUS_CONNECT:
-      {
-        if (debug) {
-          LOG(LOG_DEBUG, "New connection from %s", gnet_inetaddr_get_canonical_name(conn->inetaddr));
-        }
-        uw_setproctitle("connection from %s", gnet_inetaddr_get_canonical_name(conn->inetaddr));
-        conn->func = ob_client_func;
-        st = calloc(1, sizeof(struct conn_stat));
-        st->buffer = malloc(4192);
-        conn->user_data = st;
-        gnet_conn_write (conn, strdup(hello), strlen(hello), 0);
-        gnet_conn_readline (conn, st->buffer, 4192, 30000 /* 30 seconds */);
-        break;
-      }
-
-    case GNET_SERVER_STATUS_ERROR:
-      {
-        gnet_server_delete (server);
-        exit (1);
-        break;
-      }
-    }
-}
-
-int ob_client_func (GConn* conn, GConnStatus status,
-                gchar* buffer, gint length, gpointer user_data)
-{
-  struct conn_stat *cs = (struct conn_stat *)user_data;
-  int i;
   char *targ;
+  int length, len;
 
-  //LOG(LOG_NOTICE, "state=%d, got buffer(%d): %s", cs->state, length, buffer);
-  switch (status) {
-    case GNET_CONN_STATUS_READ:
-      {
-        //fprintf(stderr, "user_data: %d %s %s\n", cs->state, cs->user, cs->pwd);
-        if (cs->state != STATE_DATA && !strncasecmp(buffer, "QUIT", 4)) {
-          uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), bye);
-          gnet_conn_write (conn, strdup(bye), strlen(bye), 0);
-          cs->state = STATE_EXIT;
-          break;
-        }
+  sprintf(buffer, "+OK UpWatch Acceptor v0.3. Please login\n");
+login:
+  uw_setproctitle("%s: %s", remotehost, buffer);
+  if (debug > 3) fprintf(stderr, "> %s", buffer);
+  len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
+  if (len == ETIME) {
+    LOG(LOG_WARNING, "timeout on greeting string");
+    return;
+  }
+  if (len == -1) {
+    LOG(LOG_WARNING, "%m");
+    return;
+  }
 
-        switch (cs->state) {
-	case STATE_INIT:
-          cs->state = STATE_USER;
-        case STATE_USER:
-          chop(buffer, length);
-          if (strncasecmp(buffer, "USER ", 5)) {
-            if (debug > 1) {
-              LOG(LOG_DEBUG, buffer);
-              LOG(LOG_DEBUG, errhello);
-            }
-            uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), errhello);
-            gnet_conn_write (conn, strdup(errhello), strlen(errhello), 0);
-          } else {
-            strncpy(cs->user, buffer+5, sizeof(cs->user));
-            cs->state = STATE_PWD;
-            uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), askpwd);
-            gnet_conn_write (conn, strdup(askpwd), strlen(askpwd), 0);
-          }
-          break;
-        case STATE_PWD: 
-          chop(buffer, length);
-          if (strncasecmp(buffer, "PASS ", 5)) {
-            if (debug > 1) {
-              LOG(LOG_DEBUG, buffer);
-              LOG(LOG_DEBUG, erraskpwd);
-            }
-            uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), erraskpwd);
-            gnet_conn_write (conn, strdup(erraskpwd), strlen(erraskpwd), 0);
-            break;
-          }
-          strncpy(cs->pwd, buffer+5, sizeof(cs->pwd));
-          /* check the password first */
-          if (!uw_password_ok(cs->user, cs->pwd)) {
-            LOG(LOG_NOTICE, "%s: password failure (%s/%s)", gnet_inetaddr_get_canonical_name(conn->inetaddr), cs->user, cs->pwd);
-            uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), errbye);
-            gnet_conn_write (conn, strdup(errbye), strlen(errbye), 0);
-            cs->state = STATE_EXIT;
-            break;
-          }
-          uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), askcmd);
-          gnet_conn_write (conn, strdup(askcmd), strlen(askcmd), 0);
-          cs->state = STATE_CMD;
-          break;
-        case STATE_CMD:
-          if (strncasecmp(buffer, "DATA ", 5)) {
-            if (debug > 1) {
-              LOG(LOG_DEBUG, buffer);
-              LOG(LOG_DEBUG, erraskcmd);
-            }
-            uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), erraskcmd);
-            gnet_conn_write (conn, strdup(erraskcmd), strlen(erraskcmd), 0);
-            break;
-          }
-          cs->length = atoi(buffer + 5);
-          if (cs->length < 1) {
-            if (debug > 1) {
-              LOG(LOG_DEBUG, buffer);
-              LOG(LOG_DEBUG, erraskcmd);
-            }
-            uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), erraskcmd);
-            gnet_conn_write (conn, strdup(erraskcmd), strlen(erraskcmd), 0);
-            cs->length = 0;
-            break;
-          }
-          cs->sp_info = spool_open(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT));
-          if (cs->sp_info == NULL) {
-            if (debug > 1) {
-              LOG(LOG_DEBUG, buffer);
-              LOG(LOG_DEBUG, spoolerr);
-            }
-            uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), spoolerr);
-            gnet_conn_write (conn, strdup(spoolerr), strlen(spoolerr), 0);
-            cs->state = STATE_EXIT;
-            break;
-          }
-          uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), askdata);
-          gnet_conn_write (conn, strdup(askdata), strlen(askdata), 0);
-          memset(cs->buffer, 0, 4192);
-          gnet_conn_readany (conn, cs->buffer, cs->length > 4192 ? 4192 : cs->length, 10000 /* 10 seconds */);
-          cs->state = STATE_DATA;
-          return FALSE; // stop reading
-          break;
-        case STATE_DATA:
-          if (spool_write(cs->sp_info, buffer, length) == -1) {
-            if (debug > 1) {
-              LOG(LOG_DEBUG, spoolerr);
-            }
-            uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), spoolerr);
-            gnet_conn_write (conn, strdup(spoolerr), strlen(spoolerr), 0);
-            spool_close(cs->sp_info, FALSE);
-            uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), bye);
-            gnet_conn_write (conn, strdup(bye), strlen(bye), 0);
-            cs->state = STATE_EXIT;
-            break;
-          }
-          memset(cs->buffer, 0, length);
-          cs->length -= length;
-          if (cs->length > 0) break; // not totally ready yet?
-          targ = strdup(spool_targfilename(cs->sp_info));
-          if (!spool_close(cs->sp_info, TRUE)) {
-            if (debug > 1) {
-              LOG(LOG_DEBUG, spoolerr);
-            }
-            uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), spoolerr);
-            gnet_conn_write (conn, strdup(spoolerr), strlen(spoolerr), 0);
-          } else {
-            if (debug) LOG(LOG_DEBUG, "spooled to %s", targ);
-          }
-          free(targ);
-          uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), datain);
-          gnet_conn_write (conn, strdup(datain), strlen(datain), 0);
-          cs->state = STATE_CMD;
-          break;
-        case STATE_ERROR:
-          if (!strncasecmp(buffer, ".", 1)) {
-            uw_setproctitle("%s: %s", gnet_inetaddr_get_canonical_name(conn->inetaddr), errbye);
-            gnet_conn_write (conn, strdup(errbye), strlen(errbye), 0);
-            cs->state = STATE_EXIT;
-          }
-        }
-        break;
-      }
+  // expect here: USER xxxxxxx
+  memset(buffer, 0, sizeof(buffer));
+  len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
+  if (len == ETIME) {
+    LOG(LOG_WARNING, "timeout on USER response");
+    return;
+  }
+  if (debug > 3) fprintf(stderr, "< %s", buffer);
+  chop(buffer, len);
+  if (strncasecmp(buffer, "QUIT", 4) == 0) goto end;
+  if (strncasecmp(buffer, "USER ", 5)) goto syntax; 
+  chop(buffer, len);
+  strncpy(user, buffer+5, sizeof(user)); user[sizeof(user)-1] = 0;
 
-    case GNET_CONN_STATUS_WRITE:
-      {
-        g_free(buffer); // free the buffer alloc'ed for conn_write
-        if (cs->state == STATE_EXIT) {
-          if (debug) {
-            LOG(LOG_DEBUG, "%s closed connection", gnet_inetaddr_get_canonical_name(conn->inetaddr));
-          }
-          if (cs->buffer) g_free (cs->buffer);
-          free(cs);
-          uw_setproctitle("accepting connections");
-          gnet_conn_delete (conn, TRUE);
-        }
-        break;
-      }
+  sprintf(buffer, "+OK Please enter password\n");
+  uw_setproctitle("%s: %s", remotehost, buffer);
+  if (debug > 3) fprintf(stderr, "> %s", buffer);
+  len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
+  if (len == ETIME) {
+    LOG(LOG_WARNING, "timeout on password string");
+    return;
+  }
+  if (len == -1) {
+    LOG(LOG_WARNING, "%m");
+    return;
+  }
 
-    case GNET_CONN_STATUS_CLOSE:
-    case GNET_CONN_STATUS_TIMEOUT:
-    case GNET_CONN_STATUS_ERROR:
-      {
-        if (cs->state == STATE_DATA || cs->state == STATE_ERROR) {
-          if (cs->sp_info) spool_close(cs->sp_info, FALSE);
-          if (debug) {
-            LOG(LOG_DEBUG, "%s unexpected end of input", gnet_inetaddr_get_canonical_name(conn->inetaddr));
-          }
-        } else {
-          if (debug && cs->state != STATE_DATA) {
-            LOG(LOG_DEBUG, "%s unexpected close", gnet_inetaddr_get_canonical_name(conn->inetaddr));
-          }
-        }
-        if (cs->buffer) g_free (cs->buffer);
-        free(cs);
-        uw_setproctitle("accepting connections");
-        gnet_conn_delete (conn, TRUE);
-        break;
-      }
+  // expect here: PASS xxxxxxx
+  memset(buffer, 0, sizeof(buffer));
+  len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
+  if (len == ETIME) {
+    LOG(LOG_WARNING, "timeout on PASS response");
+    return;
+  }
+  if (strncasecmp(buffer, "QUIT", 4) == 0) goto end;
+  chop(buffer, len);
+  if (debug > 3) fprintf(stderr, "< %s", buffer);
+  if (strncasecmp(buffer, "QUIT", 4) == 0) goto end;
+  if (strncasecmp(buffer, "PASS ", 5)) goto syntax; 
 
-    default:
-      g_assert_not_reached ();
+  chop(buffer, len);
+  strncpy(passwd, buffer+5, sizeof(passwd)); passwd[sizeof(passwd)-1] = 0;
+  if (!uw_password_ok(user, passwd)) {
+    LOG(LOG_WARNING, "Login error: %s/%s", user, passwd);
+    st_sleep(2);
+    sprintf(buffer, "+ERR Please login\n");
+    goto login;
+  }
+
+  sprintf(buffer, "+OK logged in, enter command\n");
+logged_in:
+  uw_setproctitle("%s: %s", remotehost, buffer);
+  if (debug > 3) fprintf(stderr, "> %s", buffer);
+  len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
+  if (len == ETIME) {
+    LOG(LOG_WARNING, "timeout on password string");
+    return;
+  }
+  if (len == -1) {
+    LOG(LOG_WARNING, "%m");
+    return;
+  }
+
+  // expect here: DATA xxxxx
+  memset(buffer, 0, sizeof(buffer));
+  len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
+  if (len == ETIME) {
+    LOG(LOG_WARNING, "timeout on PASS response");
+    return;
+  }
+  if (debug > 3) fprintf(stderr, "< %s", buffer);
+  chop(buffer, len);
+  if (strncasecmp(buffer, "QUIT", 4) == 0) goto end;
+  if (strncasecmp(buffer, "DATA ", 5)) goto syntax; 
+  filesize = atoi(buffer + 5);
+
+  sp_info = spool_open(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT));
+  if (sp_info == NULL) {
+    sprintf(buffer, "-ERR Sorry, error spooling file - enter command\n");
+    goto logged_in;
+  }
+
+  sprintf(buffer, "+OK start sending your file\n");
+  uw_setproctitle("%s: %s", remotehost, buffer);
+  if (debug > 3) fprintf(stderr, "> %s", buffer);
+  len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
+  if (len == ETIME) {
+    LOG(LOG_WARNING, "timeout on upload command");
+    return;
+  }
+  if (len == -1) {
+    LOG(LOG_WARNING, "%m");
+    return;
+  }
+
+  while (filesize > 0) {
+    memset(buffer, 0, sizeof(buffer));
+    length = filesize > sizeof(buffer) ? sizeof(buffer) : filesize;
+    fprintf(stderr, "reading %u bytes", length);
+    len = st_read(rmt_nfd, buffer, length, TIMEOUT);
+    if (len == ETIME) {
+      LOG(LOG_WARNING, "timeout on PASS response");
+      return;
     }
+    if (spool_write(sp_info, buffer, len) == -1) {
+      LOG(LOG_NOTICE, "spoolfile write error");
+      spool_close(sp_info, FALSE);
+      goto end;
+    }
+    filesize -= len;
+  }
 
-  return TRUE;  /* TRUE means read more if status was read, otherwise
-                   its ignored */
+  targ = strdup(spool_targfilename(sp_info));
+  if (!spool_close(sp_info, TRUE)) {
+    LOG(LOG_NOTICE, "spoolfile close error");
+    goto end;
+  }
+  if (debug) LOG(LOG_DEBUG, "spooled to %s", targ);
+  free(targ);
+
+  sprintf(buffer, "+OK Thank you. Enter command\n");
+  goto logged_in;
+
+syntax:
+  LOG(LOG_WARNING, buffer);
+  sprintf(buffer, "+ERR unknown command\n");
+  goto login;
+
+end:
+  sprintf(buffer, "+OK Arrivederci\n");
+  uw_setproctitle("%s: %s", remotehost, buffer);
+  if (debug > 3) fprintf(stderr, "> %s", buffer);
+  st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
+  uw_setproctitle("accepting connections");
 }
-
-
-

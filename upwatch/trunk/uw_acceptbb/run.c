@@ -1,42 +1,189 @@
 #include "config.h"
-#define _GNU_SOURCE
+#define _XOPEN_SOURCE /* glibc2 needs this for strptime */
 #include <time.h>
-
-#include <netinet/in_systm.h>
+#include <sys/socket.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+
 #include <signal.h>
 #include <string.h>
 #include <malloc.h>
 #include <ctype.h>
 
 #include <generic.h>
-#define GNET_EXPERIMENTAL
-#include <gnet/gnet.h>
+#include <st.h>
 #include "cmd_options.h"
-#include "probe.def_h"
 
-static GServer* ob_server = NULL;
-static void ob_server_func(GServer* server, GServerStatus status,
-                            GConn* conn, gpointer user_data);
-static gboolean ob_client_func (GConn* conn, GConnStatus status,
-                                gchar* buffer, gint length,
-                                gpointer user_data);
-static void ob_sig_term (int signum);
+#define TIMEOUT 10000000L
+int thread_count;
 
-GStaticRecMutex mutex_doc = G_STATIC_REC_MUTEX_INIT;
+static char *chop(char *s, int i)
+{
+  i--;
+  while (i > 0 && isspace(s[i])) {
+    s[i--] = 0;
+  }
+  return(s);
+}
+
+int init(void)
+{
+  daemonize = TRUE;
+  every = ONE_SHOT;
+  st_init();
+  xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
+  return(1);
+}
+
+void *handle_connections(void *arg);
+void *writexmlfile(void *data);
+
+int run(void)
+{
+  int n, sock;
+  struct sockaddr_in serv_addr;
+  st_netfd_t nfd;
+extern int forever;
+
+  /* Start the main loop */
+  uw_setproctitle("accepting connections");
+  
+  /* Create server socket */
+  if ((sock = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
+    LOG(LOG_NOTICE, "socket: %m");
+    return 0;
+  }
+  n = 1;
+  if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char *)&n, sizeof(n)) < 0) {
+    LOG(LOG_NOTICE, "setsockopt(REUSEADDR): %m");
+    close(sock);
+    return 0;
+  }
+  memset(&serv_addr, 0, sizeof(serv_addr));
+  serv_addr.sin_family = AF_INET;
+  serv_addr.sin_port = htons(OPT_VALUE_LISTEN);
+  serv_addr.sin_addr.s_addr = INADDR_ANY;
+  if (serv_addr.sin_addr.s_addr == INADDR_NONE) {
+    struct hostent *hp;
+    /* not dotted-decimal */
+    if ((hp = gethostbyname("0.0.0.0")) == NULL) {
+      LOG(LOG_NOTICE, "0.0.0.0: %m");
+      close(sock);
+      return 0;
+    }
+    memcpy(&serv_addr.sin_addr, hp->h_addr, hp->h_length);
+  }
+
+  /* Do bind and listen */
+  if (bind(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
+    LOG(LOG_NOTICE, "bind: %m");
+    close(sock);
+    return 0;
+  }
+  if (listen(sock, 10) < 0) {
+    LOG(LOG_NOTICE, "listen: %m");
+    close(sock);
+    return 0;
+  }
+
+  /* Create file descriptor object from OS socket */
+  if ((nfd = st_netfd_open_socket(sock)) == NULL) {
+    LOG(LOG_NOTICE, "st_netfd_open_socket: %m");
+    close(sock);
+    return 0;
+  }
+
+  // create timeout thread: write xml file
+  if (st_thread_create(writexmlfile, NULL, 0, 0) != NULL) {
+    thread_count++;
+  } 
+
+  // create connection threads
+  for (n = 0; n < 10; n++) {
+    if (st_thread_create(handle_connections, (void *)&nfd, 0, 0) != NULL) {
+      thread_count++;
+    } else {
+      LOG(LOG_NOTICE, "st_thread_create: %m");
+    }
+  }
+
+  while (thread_count && forever) {
+    st_usleep(10000);
+  }
+  return(1);
+}
+
+void handle_session(st_netfd_t cli_nfd, char *remotehost);
+void runbb(char *cmd);
+
+void *handle_connections(void *arg)
+{
+extern int forever;
+  st_netfd_t srv_nfd, cli_nfd;
+  struct sockaddr_in from;
+  int fromlen = sizeof(from);
+
+  srv_nfd = *(st_netfd_t *) arg;
+
+  while (forever) {
+    char *remote;
+    int len;
+    char buffer[BUFSIZ];
+
+    cli_nfd = st_accept(srv_nfd, (struct sockaddr *)&from, &fromlen, -1);
+    if (cli_nfd == NULL) {
+      LOG(LOG_NOTICE, "st_accept: %m");
+      continue;
+    }
+    remote = strdup(inet_ntoa(from.sin_addr));
+    LOG(LOG_NOTICE, "New connection from: %s", remote);
+
+    memset(buffer, 0, sizeof(buffer));
+    len = st_read(cli_nfd, buffer, sizeof(buffer), TIMEOUT);
+    if (len == ETIME) {
+      LOG(LOG_WARNING, "timeout on BB report");
+      continue;
+    }
+    if (debug > 3) fprintf(stderr, "< %s", buffer);
+    if (len > 1024) {
+      strcpy(&buffer[990], "\n\n... DATA TRUNCATED ...\n\n");
+    } else {
+      buffer[len+1] = 0;
+    }
+    for(;len>=0; len--) {
+      if (buffer[len] & 0x80 || buffer[len] == '\r') {
+        buffer[len] = ' ';
+      }
+    }
+    runbb(buffer);
+    free(remote);
+    st_netfd_close(cli_nfd);
+  }
+  return NULL;
+}
+
+
 xmlDocPtr doc = NULL;
 
-gboolean writexmlfile(gpointer data)
+void *writexmlfile(void *data)
 {
-  if (debug > 2) LOG(LOG_DEBUG, "timeout function");
-  g_static_rec_mutex_lock(&mutex_doc);
-  if (doc) {
-    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc, NULL);
-    xmlFreeDoc(doc);
-    doc = NULL;
+extern int forever;
+
+  while (forever) {
+    int i;
+
+    if (debug > 2) LOG(LOG_DEBUG, "timeout function");
+    if (doc) {
+      spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc, NULL);
+      xmlFreeDoc(doc);
+      doc = NULL;
+    }
+    for (i=0; i < 60 && forever; i++) {
+      st_sleep(1);
+    }
   }
-  g_static_rec_mutex_unlock(&mutex_doc);
-  return 1;
+  return NULL;
 }
 
 void add_to_xml_document(char *hostname, char *probename, char *colorstr, struct tm *probedate, char *message)
@@ -46,7 +193,6 @@ void add_to_xml_document(char *hostname, char *probename, char *colorstr, struct
   char buffer[1024];
   int color = STAT_GREEN;
 
-  g_static_rec_mutex_lock(&mutex_doc);
   if (doc == NULL) doc = UpwatchXmlDoc("result");
   if (!strcmp(colorstr, "red")) {
     color = STAT_RED;
@@ -67,172 +213,7 @@ void add_to_xml_document(char *hostname, char *probename, char *colorstr, struct
   if (message && *message) {
     subtree = xmlNewChild(probe, NULL, "info", message);
   }
-  g_static_rec_mutex_unlock(&mutex_doc);
 }
-
-int init(void)
-{
-  daemonize = TRUE;
-  every = ONE_SHOT;
-  g_thread_init(NULL);
-  xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
-  return(1);
-}
-
-int run(void)
-{
-  GMainLoop* main_loop;
-  GInetAddr* addr;
-  GServer* server;
-
-  /* Create the main loop */
-  main_loop = g_main_loop_new(NULL, FALSE);
-
-  g_timeout_add(60000, writexmlfile, NULL);
-
-  /* Create the interface */
-  addr = gnet_inetaddr_new_any ();
-  gnet_inetaddr_set_port (addr, OPT_VALUE_LISTEN);
-
-  /* Create the server */
-  server = gnet_server_new (addr, TRUE, ob_server_func, "hallo");
-  if (!server)
-    {
-      fprintf (stderr, "Error: Could not start server\n");
-      return(0);
-    }
-
-  ob_server = server;
-  signal (SIGTERM, ob_sig_term);
-
-  /* Start the main loop */
-  uw_setproctitle("accepting connections");
-  g_main_run(main_loop);
-
-  return(1);
-}
-
-static void ob_sig_term (int signum)
-{
-  gnet_server_delete (ob_server);
-  exit (1);
-}
-
-static void ob_server_func (GServer* server, GServerStatus status, struct _GConn* conn, gpointer user_data)
-{
-  switch (status)
-    {
-    case GNET_SERVER_STATUS_CONNECT:
-      {
-        if (debug) {
-          LOG(LOG_DEBUG, "New connection from %s", gnet_inetaddr_get_canonical_name(conn->inetaddr));
-        }
-        uw_setproctitle("connection from %s", gnet_inetaddr_get_canonical_name(conn->inetaddr));
-        conn->func = ob_client_func;
-        conn->user_data = g_malloc(16384);
-        gnet_conn_readany(conn, conn->user_data, 16384, 30000);
-        break;
-      }
-
-    case GNET_SERVER_STATUS_ERROR:
-      {
-        LOG(LOG_DEBUG, "%s error", gnet_inetaddr_get_canonical_name(conn->inetaddr));
-        gnet_server_delete (server);
-        exit (1);
-        break;
-      }
-    }
-}
-
-
-int ob_client_func (GConn* conn, GConnStatus status,
-                gchar* buffer, gint length, gpointer user_data)
-{
-void runbb(char *req);
-
-  switch (status) {
-    case GNET_CONN_STATUS_READ:
-      {
-        if (buffer) {
-          int i = length-1;
-
-          if (debug > 2) LOG(LOG_NOTICE, "GNET_CONN_STATUS_READ: %s", buffer);
-
-          // remove trailing spaces. IS this really a sensible thing to do?
-          while (i > 0 && isspace(buffer[i])) {
-            buffer[i--] = 0;
-          }
-          if (i > 1024) {
-            strcpy(&buffer[990], "\n\n... DATA TRUNCATED ...\n\n");
-          } else {
-            buffer[i+1] = 0;
-          }
-          for(;i>=0; i--) {
-            if (buffer[i] & 0x80 || buffer[i] == '\r') {
-              buffer[i] = ' ';
-            }
-          }
-          runbb(buffer);
-	}
-	break;
-      }
-
-    case GNET_CONN_STATUS_WRITE:
-      {
-        if (buffer) {
-          LOG(LOG_NOTICE, "GNET_CONN_STATUS_WRITE: %s", buffer);
-        }
-        if (debug > 1) {
-          LOG(LOG_DEBUG, "%s closed connection", gnet_inetaddr_get_canonical_name(conn->inetaddr));
-        }
-        g_free (user_data);
-        uw_setproctitle("accepting connections");
-        gnet_conn_delete (conn, TRUE);
-        break;
-      }
-
-    case GNET_CONN_STATUS_CLOSE:
-      {
-        if (buffer) {
-          LOG(LOG_NOTICE, "GNET_CONN_STATUS_CLOSE: %s", buffer);
-        }
-        //LOG(LOG_DEBUG, "%s unexpected close", gnet_inetaddr_get_canonical_name(conn->inetaddr));
-        g_free (user_data);
-        uw_setproctitle("accepting connections");
-        gnet_conn_delete (conn, TRUE);
-        break;
-      }
-    case GNET_CONN_STATUS_TIMEOUT:
-      {
-        if (buffer) {
-          LOG(LOG_NOTICE, "GNET_CONN_STATUS_TIMEOUT: %s", buffer);
-        }
-        LOG(LOG_DEBUG, "%s timeout", gnet_inetaddr_get_canonical_name(conn->inetaddr));
-        g_free (user_data);
-        uw_setproctitle("accepting connections");
-        gnet_conn_delete (conn, TRUE);
-        break;
-      }
-    case GNET_CONN_STATUS_ERROR:
-      {
-        if (buffer) {
-          LOG(LOG_NOTICE, "GNET_CONN_STATUS_ERROR: %s", buffer);
-        }
-        LOG(LOG_DEBUG, "%s error", gnet_inetaddr_get_canonical_name(conn->inetaddr));
-        g_free (user_data);
-        uw_setproctitle("accepting connections");
-        gnet_conn_delete (conn, TRUE);
-        break;
-      }
-
-    default:
-      g_assert_not_reached ();
-    }
-
-  return TRUE;  /* TRUE means read more if status was read, otherwise
-                   its ignored */
-}
-
 
 void runbb(char *cmd)
 {

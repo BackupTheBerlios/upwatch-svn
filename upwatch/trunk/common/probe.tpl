@@ -64,7 +64,6 @@ ENDFOR result +]
   message text NOT NULL default '',
   PRIMARY KEY (id),
   UNIQUE KEY probstat (probe,stattime),
-  KEY probe (probe)
 ) TYPE=MyISAM;
 
 [+ FOR period +]
@@ -91,7 +90,6 @@ ENDFOR result +]
   message text NOT NULL default '',
   PRIMARY KEY (id),
   UNIQUE KEY probstat (probe,stattime),
-  KEY probe (probe)
 ) TYPE=MyISAM;
 [+ ENDFOR period +]
 [+ ENDIF  result +]

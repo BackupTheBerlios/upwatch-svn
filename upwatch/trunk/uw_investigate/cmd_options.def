@@ -13,7 +13,7 @@ detail        =
 'uw_investigate does the following: ';
 
 // this section is for the generated specfile
-spec-requires = "libpcap = 0.6.2-13uw mysql glib2 >= 2.0.4 gnet >= 1.1.2 curl >= 7.9.3 libnet >= 1.0.2";
+spec-requires = "libpcap = 0.6.2-13uw mysql glib2 >= 2.0.4 curl >= 7.9.3 libnet >= 1.0.2";
 spec-install  = "mkdir -p $RPM_BUILD_ROOT/var/spool/upwatch/uw_investigate/tmp";
 spec-install  = "mkdir -p $RPM_BUILD_ROOT/var/spool/upwatch/uw_investigate/new";
 spec-install  = "mkdir -p $RPM_BUILD_ROOT/var/spool/upwatch/uw_investigate_work/tmp";

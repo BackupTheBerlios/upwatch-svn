@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.11 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.12 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -123,18 +123,6 @@ fi
 AC_SUBST(LIBGLIB2_CFLAGS)
 AC_SUBST(LIBGLIB2_LIBS)
 CFLAGS="$CFLAGS $LIBGLIB2_CFLAGS"
-
-################## GNET
-# gnet
-LIBGNET_CFLAGS="`gnet-config --cflags`"
-LIBGNET_LIBS="`gnet-config --libs`"
-if test -z "$LIBGNET_LIBS"
-then
-  AC_MSG_ERROR([You really need libgnet to compile upwatch])
-fi
-AC_SUBST(LIBGNET_CFLAGS)
-AC_SUBST(LIBGNET_LIBS)
-CFLAGS="$CFLAGS $LIBGNET_CFLAGS"
 
 ################## XML2
 # libxml2 - always need XML libraries
