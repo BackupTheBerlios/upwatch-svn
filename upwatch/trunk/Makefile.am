@@ -26,23 +26,36 @@ endif
 # monitor (for monitoring station. All remote probes.)
 # iptraf (uw_iptraf)
 # server (uw_process, uw_accept, uw_acceptbb, uw_setip)
-CLIENTPROG = uw_send uw_sysstat uw_null
+CLIENTLIST = uw_send uw_sysstat uw_null
+# order is important here: uw_process should be last
+SERVERLIST = uw_acceptbb uw_accept uw_purple uw_route uw_syncprobes uw_setip uw_process
+MONITORLIST = uw_httpget uw_dns uw_ping uw_mysql uw_pop3 uw_smtp uw_tcpconnect uw_imap \
+ ${UW_POSTGRESQL} ${UW_SNMPGET} ${UW_MSSQL}
+IPTRAFLIST = uw_iptraf
+EXTRALIST = ${IPTRAFLIST}
+
+CLIENTPROG = ${CLIENTLIST}
 
 if ENABLE_SERVER
-# order is important here: uw_process should be last
-SERVERPROG = uw_acceptbb uw_accept uw_purple uw_route uw_syncprobes uw_setip uw_process 
+SERVERPROG = ${SERVERLIST}
 ENABLE_SERVER = --enable-server
 endif
 
 if ENABLE_MONITORS
-MONITORPROG = uw_httpget uw_dns uw_ping uw_mysql uw_pop3 uw_smtp uw_tcpconnect uw_imap \
+MONITORPROG = ${MONITORLIST}
  ${UW_POSTGRESQL} ${UW_SNMPGET} ${UW_MSSQL}
 ENABLE_MONITOR = --enable-monitors
 endif
 
 if ENABLE_IPTRAF
-EXTRAPROG = ${UW_IPTRAF}
 ENABLE_IPTRAF = --enable-iptraf
+IPTRAFPROG = ${IPTRAFLIST}
+endif
+
+EXTRAPROG = ${IPTRAFPROG}
+
+if XMBMON
+XMBMON = xmbmon203
 endif
 
 CONFARGS = --enable-client $(ENABLE_SERVER) $(ENABLE_MONITOR) $(ENABLE_IPTRAF)
@@ -52,11 +65,6 @@ PROGNAMES = ${CLIENTPROG} ${MONITORPROG} ${EXTRAPROG} ${SERVERPROG}
 
 export PROGNAMES MONITORPROG CLIENTPROG SERVERPROG EXTRAPROG
 export TOP_SRCDIR = $(top_srcdir)
-
-if XMBMON
-XMBMON = xmbmon203
-ag_xmbmon = -DXMBMON
-endif
 
 SUBDIRS = upwatch st-1.4 ${XMBMON} libstatgrab ${PROGNAMES} compat util scripts config common
 DIST_SUBDIRS = ${SUBDIRS} doc
@@ -113,4 +121,23 @@ install-data-local:
 
 rpm: all dist
 	$(RPMBUILD) -ta upwatch-${VERSION}.tar.gz
+
+dist-hook:
+	rm -rf `find $(distdir) -name CVS`
+if !ENABLE_SERVER
+	for i in ${SERVERLIST} ; do \
+	  rm -rf $(distdir)/$i ; \
+	done
+endif
+if !ENABLE_MONITORS
+	for i in ${MONITORLIST} ; do \
+	  rm -rf $(distdir)/$i ; \
+	done
+endif
+if !ENABLE_IPTRAF
+	for i in ${EXTRALIST} ; do \
+	  rm -rf $(distdir)/$i ; \
+	done
+endif
+
 

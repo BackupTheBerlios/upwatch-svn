@@ -20,6 +20,10 @@ else
 GENINCL = -L /usr/share/autogen -L $(top_srcdir)/common
 endif
 
+if XMBMON
+ag_xmbmon = -DXMBMON
+endif
+
 SPECFILES = $(program:%=%.spec-requires) $(program:%=%.spec-buildrequires) $(program:%=%.spec-files)
 INITFILES = $(program:%=%.redhat) $(program:%=%.suse) $(program:%=%.solaris)
 PROBFILES  = probe.def_h probe.res_h probe.enum probe.def_mysql probe.raw_mysql probe.xml probe.dtd probe.dtd-inc

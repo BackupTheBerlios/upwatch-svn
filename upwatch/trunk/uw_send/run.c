@@ -75,6 +75,7 @@ int init(void)
   // read in options for queuing
   for (i=0; input[i] && i < ct && i < 4; i++) {
     struct q_info *q = g_hash_table_lookup(hash, input[i]);
+    char buf[256];
 
     if (q == NULL) {
       q = g_malloc0(sizeof(struct q_info));
@@ -106,7 +107,11 @@ int init(void)
     if (q->pwd)  g_free(q->pwd);
     q->host = strdup(host[i]);
     q->port = atoi(port[i]);
-    q->user = strdup(user[i]);
+    strcpy(buf, user[i]); // preset
+    if (!strchr(user[i], '@') && HAVE_OPT(REALM)) {
+      sprintf(buf, "%s@%s", user[i], OPT_ARG(REALM));
+    }
+    q->user = strdup(buf);
     q->pwd = strdup(pwd[i]);
     q->maxthreads = thr[i] ? atoi(thr[i]) : 1;
   }
