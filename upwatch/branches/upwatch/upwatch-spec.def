@@ -1,0 +1,9 @@
+AutoGen Definitions upwatch-spec;
+
+#shell 
+for i in uw_*
+do
+	echo "program = \""$i"\";"
+done
+#endshell
+
