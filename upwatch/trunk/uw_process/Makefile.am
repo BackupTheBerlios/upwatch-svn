@@ -1,6 +1,6 @@
 program = uw_process
-uw_process_SOURCES = run.c cmd_options.c cmd_options.h $(program).spec-generic $(program).init \
- process_httpget.c process_ping.c process_iptraf.c 
+uw_process_SOURCES = run.c cmd_options.c cmd_options.h uw_process.h modules.inc $(program).spec-generic $(program).init \
+ ping.c httpget.c iptraf.c
 BUILT_SOURCES = cmd_options.h  $(program).spec-generic $(program).init $(program).spec-install
 INCLUDES = -I../upwatch 
 EXTRA_DIST = cmd_options.def

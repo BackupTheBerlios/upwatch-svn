@@ -126,7 +126,7 @@ struct conn_stat {
   void *buffer;
 };
 
-static char *hello = "+OK UpWatch Acceptor v0.1. Please login\n";
+static char *hello = "+OK UpWatch Acceptor v0.3. Please login\n";
 static char *errhello = "+ERR Please login first\n";
 static char *bye = "+OK Nice talking to you. Bye!\n";
 static char *errbye = "+ERR Nice talking to you. Bye!\n";
@@ -301,7 +301,8 @@ int ob_client_func (GConn* conn, GConnStatus status,
             LOG(LOG_DEBUG, "%s closed connection", gnet_inetaddr_get_canonical_name(conn->inetaddr));
           }
           g_free (buffer);
-          free(conn->user_data);
+          if (cs->buffer) g_free (cs->buffer);
+          free(cs);
           gnet_conn_delete (conn, TRUE);
         }
         break;

@@ -1,10 +1,14 @@
 AutoGen Definitions options;
-#include ../common/generic_options.def
 export        = "#define progOptions uw_pingOptions";
 prog-name     = uw_ping;
 prog-title    = "Upwatch parallel ping daemon";
-version       = "0.1";
+version       = "0.3";
+homerc        = "/etc/upwatch.conf";
 homerc        = "/etc/upwatch.d/uw_ping.conf";
+homerc        = "$HOME/.upwatchrc";
+homerc        = "$HOME";
+homerc        = "$$/upwatch.conf";
+homerc        = "$$/uw_ping.conf";
 detail        = 
 'uw_ping reads a list of hosts from the database, and sends ping 
 packets to each host.  This happens in parallel, so uw_ping can 
@@ -191,3 +195,4 @@ flag = {
 };
 
 
+#include ../common/generic_options.def

@@ -1,10 +1,14 @@
 AutoGen Definitions options;
-#include ../common/generic_options.def
 export        = "#define progOptions uw_investigateOptions";
 prog-name     = uw_investigate;
 prog-title    = "Upwatch probe daemon";
-version       = "0.1";
+version       = "0.3";
+homerc        = "/etc/upwatch.conf";
 homerc        = "/etc/upwatch.d/uw_investigate.conf";
+homerc        = "$HOME/.upwatchrc";
+homerc        = "$HOME";
+homerc        = "$$/upwatch.conf";
+homerc        = "$$/uw_investigate.conf";
 detail        = 
 'uw_investigate does the following: ';
 
@@ -54,3 +58,4 @@ flag = {
 Probe results currently being investigated are kept here.';
 };
 
+#include ../common/generic_options.def

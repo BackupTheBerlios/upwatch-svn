@@ -1,10 +1,14 @@
 AutoGen Definitions options;
-#include ../common/generic_options.def
 export        = "#define progOptions uw_sysstatOptions";
 prog-name     = uw_sysstat;
 prog-title    = "Upwatch probe daemon";
-version       = "0.1";
+version       = "0.3";
+homerc        = "/etc/upwatch.conf";
 homerc        = "/etc/upwatch.d/uw_sysstat.conf";
+homerc        = "$HOME/.upwatchrc";
+homerc        = "$HOME";
+homerc        = "$$/upwatch.conf";
+homerc        = "$$/uw_sysstat.conf";
 detail        = 
 'uw_sysstat does the following: ';
 
@@ -46,3 +50,4 @@ All results are placed in this queue.';
 };
 
 
+#include ../common/generic_options.def

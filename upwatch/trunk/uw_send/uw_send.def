@@ -1,10 +1,14 @@
 AutoGen Definitions options;
-#include ../common/generic_options.def
 export        = "#define progOptions uw_sendOptions";
 prog-name     = uw_send;
 prog-title    = "Upwatch parallel probe daemon";
-version       = "0.1";
+version       = "0.3";
+homerc        = "/etc/upwatch.conf";
 homerc        = "/etc/upwatch.d/uw_send.conf";
+homerc        = "$HOME/.upwatchrc";
+homerc        = "$HOME";
+homerc        = "$$/upwatch.conf";
+homerc        = "$$/uw_send.conf";
 detail        = 
 'uw_send sends all files in the queue to a central server using 
 the uw_send protocol. This is a very simple protocol and looks
@@ -83,3 +87,4 @@ flag = {
     descrip   = "UpWatch password";
 };
 
+#include ../common/generic_options.def

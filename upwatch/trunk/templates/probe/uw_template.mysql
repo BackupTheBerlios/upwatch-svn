@@ -3,36 +3,23 @@
 --
 
 CREATE TABLE pr_template_def (
-  id int(8) NOT NULL auto_increment,
-  server int(8) NOT NULL default '0',
-  address varchar(80) NOT NULL default '',
+  id int NOT NULL auto_increment,
+  server int NOT NULL default '0',
+  notify int NOT NULL default '1',
+  ipaddress varchar(80) NOT NULL default '',
   description text NOT NULL default '',
-  freq int(4) NOT NULL default '1',
-  count int(2) unsigned NOT NULL default '5',
-  yellowmiss int(2) unsigned NOT NULL default '1',
-  redmiss int(2) unsigned NOT NULL default '3',
-  stattime int(10) unsigned NOT NULL default '0',
-  expires int(10) unsigned NOT NULL default '0',
-  color smallint(5) unsigned NOT NULL default '0',
-  lasthist int(10) unsigned NOT NULL default '0',
-  message text NOT NULL,
-  PRIMARY KEY  (id)
-) TYPE=MyISAM;
-
---
--- Table structure for table 'pr_template_hist'
---
-
-CREATE TABLE pr_template_hist (
-  id int(10) unsigned NOT NULL auto_increment,
-  probe int(10) unsigned NOT NULL default '0',
-  stattime int(10) unsigned NOT NULL default '0',
-  color smallint(5) unsigned NOT NULL default '0',
-  message text NOT NULL,
+  freq smallint NOT NULL default '1',
+  count smallint unsigned NOT NULL default '5',
+  yellow smallint unsigned NOT NULL default '1',
+  red smallint unsigned NOT NULL default '3',
+  stattime int unsigned NOT NULL default '0',
+  expires int unsigned NOT NULL default '0',
+  color smallint unsigned NOT NULL default '200',
+  raw bigint NOT NULL,
   PRIMARY KEY  (id),
-  UNIQUE KEY probtime (probe,stattime),
-  KEY probe (probe),
-  KEY stattime (stattime)
+  KEY server (server),
+  KEY notify (notify),
+  KEY ipaddress (ipaddress)
 ) TYPE=MyISAM;
 
 --
@@ -40,18 +27,17 @@ CREATE TABLE pr_template_hist (
 --
 
 CREATE TABLE pr_template_raw (
-  id int(10) unsigned NOT NULL auto_increment,
-  probe int(10) unsigned NOT NULL default '0',
-  hist int(10) unsigned NOT NULL default '0',
-  stattime int(10) unsigned NOT NULL default '0',
-  color smallint(5) unsigned NOT NULL default '0',
+  id bigint unsigned NOT NULL auto_increment,
+  probe int unsigned NOT NULL default '0',
+  stattime int unsigned NOT NULL default '0',
+  color smallint unsigned NOT NULL default '200',
   value float NOT NULL default '0',
   lowest float NOT NULL default '0',
   highest float NOT NULL default '0',
-  PRIMARY KEY  (id),
+  message text,
+  PRIMARY KEY (id),
   UNIQUE KEY probtime (probe,stattime),
   KEY probe (probe),
-  KEY hist (hist),
   KEY stattime (stattime)
 ) TYPE=MyISAM;
 
@@ -60,19 +46,17 @@ CREATE TABLE pr_template_raw (
 --
 
 CREATE TABLE pr_template_day (
-  id int(10) unsigned NOT NULL auto_increment,
-  probe int(10) unsigned NOT NULL default '0',
-  hist int(10) unsigned NOT NULL default '0',
-  slot int(4) NOT NULL default '0',
-  stattime int(10) unsigned NOT NULL default '0',
-  color smallint(5) unsigned NOT NULL default '0',
+  id bigint unsigned NOT NULL auto_increment,
+  probe int unsigned NOT NULL default '0',
+  slot int NOT NULL default '0',
+  stattime int unsigned NOT NULL default '0',
+  color smallint unsigned NOT NULL default '200',
   value float NOT NULL default '0',
   lowest float NOT NULL default '0',
   highest float NOT NULL default '0',
-  PRIMARY KEY  (id),
+  PRIMARY KEY (id),
   UNIQUE KEY probtime (probe,stattime),
   KEY probe (probe),
-  KEY hist (hist),
   KEY slot (slot),
   KEY stattime (stattime)
 ) TYPE=MyISAM;
@@ -82,19 +66,17 @@ CREATE TABLE pr_template_day (
 --
 
 CREATE TABLE pr_template_week (
-  id int(10) unsigned NOT NULL auto_increment,
-  probe int(10) unsigned NOT NULL default '0',
-  hist int(10) unsigned NOT NULL default '0',
-  slot int(4) NOT NULL default '0',
-  stattime int(10) unsigned NOT NULL default '0',
-  color smallint(5) unsigned NOT NULL default '0',
+  id bigint unsigned NOT NULL auto_increment,
+  probe int unsigned NOT NULL default '0',
+  slot smallint NOT NULL default '0',
+  stattime int unsigned NOT NULL default '0',
+  color smallint unsigned NOT NULL default '200',
   value float NOT NULL default '0',
   lowest float NOT NULL default '0',
   highest float NOT NULL default '0',
-  PRIMARY KEY  (id),
+  PRIMARY KEY (id),
   UNIQUE KEY probtime (probe,stattime),
   KEY probe (probe),
-  KEY hist (hist),
   KEY slot (slot),
   KEY stattime (stattime)
 ) TYPE=MyISAM;
@@ -104,19 +86,17 @@ CREATE TABLE pr_template_week (
 --
 
 CREATE TABLE pr_template_month (
-  id int(10) unsigned NOT NULL auto_increment,
-  probe int(10) unsigned NOT NULL default '0',
-  hist int(10) unsigned NOT NULL default '0',
-  slot int(4) NOT NULL default '0',
-  stattime int(10) unsigned NOT NULL default '0',
-  color smallint(5) unsigned NOT NULL default '0',
+  id bigint unsigned NOT NULL auto_increment,
+  probe int unsigned NOT NULL default '0',
+  slot smallint NOT NULL default '0',
+  stattime int unsigned NOT NULL default '0',
+  color smallint unsigned NOT NULL default '200',
   value float NOT NULL default '0',
   lowest float NOT NULL default '0',
   highest float NOT NULL default '0',
-  PRIMARY KEY  (id),
+  PRIMARY KEY (id),
   UNIQUE KEY probtime (probe,stattime),
   KEY probe (probe),
-  KEY hist (hist),
   KEY slot (slot),
   KEY stattime (stattime)
 ) TYPE=MyISAM;
@@ -126,19 +106,17 @@ CREATE TABLE pr_template_month (
 --
 
 CREATE TABLE pr_template_year (
-  id int(10) unsigned NOT NULL auto_increment,
-  probe int(10) unsigned NOT NULL default '0',
-  hist int(10) unsigned NOT NULL default '0',
-  slot int(4) NOT NULL default '0',
-  stattime int(10) unsigned NOT NULL default '0',
-  color smallint(5) unsigned NOT NULL default '0',
+  id bigint unsigned NOT NULL auto_increment,
+  probe int unsigned NOT NULL default '0',
+  slot smallint NOT NULL default '0',
+  stattime int unsigned NOT NULL default '0',
+  color smallint unsigned NOT NULL default '200',
   value float NOT NULL default '0',
   lowest float NOT NULL default '0',
   highest float NOT NULL default '0',
-  PRIMARY KEY  (id),
+  PRIMARY KEY (id),
   UNIQUE KEY probtime (probe,stattime),
   KEY probe (probe),
-  KEY hist (hist),
   KEY slot (slot),
   KEY stattime (stattime)
 ) TYPE=MyISAM;
@@ -148,19 +126,17 @@ CREATE TABLE pr_template_year (
 --
 
 CREATE TABLE pr_template_5year (
-  id int(10) unsigned NOT NULL auto_increment,
-  probe int(10) unsigned NOT NULL default '0',
-  hist int(10) unsigned NOT NULL default '0',
-  slot int(4) NOT NULL default '0',
-  stattime int(10) unsigned NOT NULL default '0',
-  color smallint(5) unsigned NOT NULL default '0',
+  id bigint unsigned NOT NULL auto_increment,
+  probe int unsigned NOT NULL default '0',
+  slot smallint NOT NULL default '0',
+  stattime int unsigned NOT NULL default '0',
+  color smallint unsigned NOT NULL default '200',
   value float NOT NULL default '0',
   lowest float NOT NULL default '0',
   highest float NOT NULL default '0',
-  PRIMARY KEY  (id),
+  PRIMARY KEY (id),
   UNIQUE KEY probtime (probe,stattime),
   KEY probe (probe),
-  KEY hist (hist),
   KEY slot (slot),
   KEY stattime (stattime)
 ) TYPE=MyISAM;

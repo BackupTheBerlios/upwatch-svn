@@ -4,6 +4,10 @@
 #include <generic.h>
 #include "cmd_options.h"
 
+#ifdef DMALLOC 
+#include "dmalloc.h"
+#endif
+
 MYSQL *mysql;
 
 /****************************
@@ -12,17 +16,24 @@ MYSQL *mysql;
  ***************************/
 int open_database(void)
 {
+  char *dbhost, *dbuser, *dbpasswd, *dbname;
+
   if (mysql) return(0); // already open
   if ((mysql = (MYSQL *)malloc(sizeof(MYSQL))) == NULL) {
     LOG(LOG_ERR, "malloc: %m");
     return(1);
   }
 
+  dbhost = OPT_ARG(DBHOST);
+  dbuser = OPT_ARG(DBUSER);
+  dbpasswd = OPT_ARG(DBPASSWD);
+  dbname = OPT_ARG(DBNAME);
+
   mysql_init(mysql);
   mysql_options(mysql,MYSQL_OPT_COMPRESS,0);
-  if (!mysql_real_connect(mysql, OPT_ARG(DBHOST), OPT_ARG(DBUSER), OPT_ARG(DBPASSWD), OPT_ARG(DBNAME), 0, NULL, 0)) {
+  if (!mysql_real_connect(mysql, dbhost, dbuser, dbpasswd, dbname, 0, NULL, 0)) {
     LOG(LOG_ERR, "%s dbhost=%s,dbname=%s,dbuser=%s,dbpasswd=%s",
-           mysql_error(mysql), OPT_ARG(DBHOST), OPT_ARG(DBNAME), OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
+           mysql_error(mysql), dbhost, dbname, dbuser, dbpasswd);
     return(1);
   }
   return(0);

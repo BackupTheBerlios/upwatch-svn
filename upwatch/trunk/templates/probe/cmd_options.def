@@ -1,5 +1,4 @@
 AutoGen Definitions options;
-#include ../common/generic_options.def
 export        = "#define progOptions uw_templateOptions";
 prog-name     = uw_template;
 prog-title    = "Upwatch probe daemon";
@@ -30,4 +29,5 @@ removes any files in `tmp` that are older then 36 hours. For some more info
 about maildir see http://www.qmail.org/man/man5/maildir.html.';
 };
 
+#include ../common/generic_options.def
 

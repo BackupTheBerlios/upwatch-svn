@@ -11,6 +11,9 @@
 #include <libxml/parser.h>
 #include <libxml/tree.h>
 
+#ifdef DMALLOC 
+#include "dmalloc.h"
+#endif
 
 /* write a file to a maildir format directory */
 

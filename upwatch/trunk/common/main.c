@@ -12,6 +12,10 @@
 #include "cmd_options.h"
 #include "generic.h"
 
+#ifdef DMALLOC 
+#include "dmalloc.h"
+#endif
+
 static void wait_to_start(void);
 
 int debug;
@@ -132,7 +136,7 @@ int main( int argc, char** argv, char **envp )
   } else {
     progname = argv[0];
   }
-  fprintf(stderr, "%s\n", progname);
+  //fprintf(stderr, "%s\n", progname);
 
   umask(002); // all created files must be group-writable
   arg_ct = optionProcess( &progOptions, argc, argv );

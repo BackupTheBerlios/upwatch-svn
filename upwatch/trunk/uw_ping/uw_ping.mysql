@@ -3,20 +3,15 @@
 --
 
 CREATE TABLE pr_ping_def (
-  id int(8) NOT NULL auto_increment,
-  server int(8) NOT NULL default '0',
-  notify int(11) NOT NULL default '1',
+  id int unsigned NOT NULL auto_increment,
+  server int unsigned NOT NULL default '1',
+  notify int unsigned NOT NULL default '1',
   ipaddress varchar(80) NOT NULL default '',
   description text NOT NULL default '',
-  freq int(4) NOT NULL default '1',
-  count int(2) unsigned NOT NULL default '5',
-  yellowmiss int(2) unsigned NOT NULL default '1',
-  redmiss int(2) unsigned NOT NULL default '3',
-  stattime int(10) unsigned NOT NULL default '0',
-  expires int(10) unsigned NOT NULL default '0',
-  color smallint(5) unsigned NOT NULL default '0',
-  lasthist int(10) unsigned NOT NULL default '0',
-  message text NOT NULL,
+  freq smallint unsigned NOT NULL default '1',
+  count smallint unsigned NOT NULL default '5',
+  yellow smallint unsigned NOT NULL default '1',
+  red smallint unsigned NOT NULL default '3',
   PRIMARY KEY  (id),
   KEY server (server),
   KEY notify (notify),
@@ -24,38 +19,21 @@ CREATE TABLE pr_ping_def (
 ) TYPE=MyISAM;
 
 --
--- Table structure for table 'pr_ping_hist'
---
-
-CREATE TABLE pr_ping_hist (
-  id int(10) unsigned NOT NULL auto_increment,
-  probe int(10) unsigned NOT NULL default '0',
-  stattime int(10) unsigned NOT NULL default '0',
-  color smallint(5) unsigned NOT NULL default '0',
-  message text NOT NULL,
-  PRIMARY KEY  (id),
-  UNIQUE KEY probtime (probe,stattime),
-  KEY probe (probe),
-  KEY stattime (stattime)
-) TYPE=MyISAM;
-
---
 -- Table structure for table 'pr_ping_raw'
 --
 
 CREATE TABLE pr_ping_raw (
-  id int(10) unsigned NOT NULL auto_increment,
-  probe int(10) unsigned NOT NULL default '0',
-  hist int(10) unsigned NOT NULL default '0',
-  stattime int(10) unsigned NOT NULL default '0',
-  color smallint(5) unsigned NOT NULL default '0',
+  id bigint unsigned NOT NULL auto_increment,
+  probe int unsigned NOT NULL default '1',
+  stattime int unsigned NOT NULL default '0',
+  color smallint unsigned NOT NULL default '200',
   value float NOT NULL default '0',
   lowest float NOT NULL default '0',
   highest float NOT NULL default '0',
-  PRIMARY KEY  (id),
+  message text,
+  PRIMARY KEY (id),
   UNIQUE KEY probtime (probe,stattime),
   KEY probe (probe),
-  KEY hist (hist),
   KEY stattime (stattime)
 ) TYPE=MyISAM;
 
@@ -64,19 +42,17 @@ CREATE TABLE pr_ping_raw (
 --
 
 CREATE TABLE pr_ping_day (
-  id int(10) unsigned NOT NULL auto_increment,
-  probe int(10) unsigned NOT NULL default '0',
-  hist int(10) unsigned NOT NULL default '0',
-  slot int(4) NOT NULL default '0',
-  stattime int(10) unsigned NOT NULL default '0',
-  color smallint(5) unsigned NOT NULL default '0',
+  id bigint unsigned NOT NULL auto_increment,
+  probe int unsigned NOT NULL default '1',
+  slot smallint unsigned NOT NULL default '0',
+  stattime int unsigned NOT NULL default '0',
+  color smallint unsigned NOT NULL default '200',
   value float NOT NULL default '0',
   lowest float NOT NULL default '0',
   highest float NOT NULL default '0',
-  PRIMARY KEY  (id),
+  PRIMARY KEY (id),
   UNIQUE KEY probtime (probe,stattime),
   KEY probe (probe),
-  KEY hist (hist),
   KEY slot (slot),
   KEY stattime (stattime)
 ) TYPE=MyISAM;
@@ -86,19 +62,17 @@ CREATE TABLE pr_ping_day (
 --
 
 CREATE TABLE pr_ping_week (
-  id int(10) unsigned NOT NULL auto_increment,
-  probe int(10) unsigned NOT NULL default '0',
-  hist int(10) unsigned NOT NULL default '0',
-  slot int(4) NOT NULL default '0',
-  stattime int(10) unsigned NOT NULL default '0',
-  color smallint(5) unsigned NOT NULL default '0',
+  id bigint unsigned NOT NULL auto_increment,
+  probe int unsigned NOT NULL default '1',
+  slot smallint unsigned NOT NULL default '0',
+  stattime int unsigned NOT NULL default '0',
+  color smallint unsigned NOT NULL default '200',
   value float NOT NULL default '0',
   lowest float NOT NULL default '0',
   highest float NOT NULL default '0',
-  PRIMARY KEY  (id),
+  PRIMARY KEY (id),
   UNIQUE KEY probtime (probe,stattime),
   KEY probe (probe),
-  KEY hist (hist),
   KEY slot (slot),
   KEY stattime (stattime)
 ) TYPE=MyISAM;
@@ -108,19 +82,17 @@ CREATE TABLE pr_ping_week (
 --
 
 CREATE TABLE pr_ping_month (
-  id int(10) unsigned NOT NULL auto_increment,
-  probe int(10) unsigned NOT NULL default '0',
-  hist int(10) unsigned NOT NULL default '0',
-  slot int(4) NOT NULL default '0',
-  stattime int(10) unsigned NOT NULL default '0',
-  color smallint(5) unsigned NOT NULL default '0',
+  id bigint unsigned NOT NULL auto_increment,
+  probe int unsigned NOT NULL default '1',
+  slot smallint unsigned NOT NULL default '0',
+  stattime int unsigned NOT NULL default '0',
+  color smallint unsigned NOT NULL default '200',
   value float NOT NULL default '0',
   lowest float NOT NULL default '0',
   highest float NOT NULL default '0',
-  PRIMARY KEY  (id),
+  PRIMARY KEY (id),
   UNIQUE KEY probtime (probe,stattime),
   KEY probe (probe),
-  KEY hist (hist),
   KEY slot (slot),
   KEY stattime (stattime)
 ) TYPE=MyISAM;
@@ -130,19 +102,17 @@ CREATE TABLE pr_ping_month (
 --
 
 CREATE TABLE pr_ping_year (
-  id int(10) unsigned NOT NULL auto_increment,
-  probe int(10) unsigned NOT NULL default '0',
-  hist int(10) unsigned NOT NULL default '0',
-  slot int(4) NOT NULL default '0',
-  stattime int(10) unsigned NOT NULL default '0',
-  color smallint(5) unsigned NOT NULL default '0',
+  id bigint unsigned NOT NULL auto_increment,
+  probe int unsigned NOT NULL default '1',
+  slot smallint unsigned NOT NULL default '0',
+  stattime int unsigned NOT NULL default '0',
+  color smallint unsigned NOT NULL default '200',
   value float NOT NULL default '0',
   lowest float NOT NULL default '0',
   highest float NOT NULL default '0',
-  PRIMARY KEY  (id),
+  PRIMARY KEY (id),
   UNIQUE KEY probtime (probe,stattime),
   KEY probe (probe),
-  KEY hist (hist),
   KEY slot (slot),
   KEY stattime (stattime)
 ) TYPE=MyISAM;
@@ -152,19 +122,17 @@ CREATE TABLE pr_ping_year (
 --
 
 CREATE TABLE pr_ping_5year (
-  id int(10) unsigned NOT NULL auto_increment,
-  probe int(10) unsigned NOT NULL default '0',
-  hist int(10) unsigned NOT NULL default '0',
-  slot int(4) NOT NULL default '0',
-  stattime int(10) unsigned NOT NULL default '0',
-  color smallint(5) unsigned NOT NULL default '0',
+  id bigint unsigned NOT NULL auto_increment,
+  probe int unsigned NOT NULL default '1',
+  slot smallint unsigned NOT NULL default '0',
+  stattime int unsigned NOT NULL default '0',
+  color smallint unsigned NOT NULL default '200',
   value float NOT NULL default '0',
   lowest float NOT NULL default '0',
   highest float NOT NULL default '0',
-  PRIMARY KEY  (id),
+  PRIMARY KEY (id),
   UNIQUE KEY probtime (probe,stattime),
   KEY probe (probe),
-  KEY hist (hist),
   KEY slot (slot),
   KEY stattime (stattime)
 ) TYPE=MyISAM;

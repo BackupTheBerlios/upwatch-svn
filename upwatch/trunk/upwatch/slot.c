@@ -4,6 +4,10 @@
 #include <glib.h>
 #include "slot.h"
 
+#ifdef DMALLOC 
+#include "dmalloc.h"
+#endif
+
 static int month_len_in_days(struct tm *tm)
 {
   int days_in_month;
@@ -53,6 +57,10 @@ static int five_year_len_in_days(struct tm *tm)
   return(five_year_days);
 }
 
+/*
+ * return the slot number in the given period for the timestamp `when`
+ * also compute the slot start and end time
+ */
 int uw_slot(int type, gulong when, gulong *lowest, gulong *highest)
 {
   struct tm *tm;
@@ -97,7 +105,7 @@ int uw_slot(int type, gulong when, gulong *lowest, gulong *highest)
     seconds_per_period = 86400;
     break;
   }
-  seconds_per_slot = seconds_per_period / 200;
+  seconds_per_slot = seconds_per_period / 100;
 
   *lowest = (gulong) mktime(tm);          // period start time
   diff = difftime(when, (time_t)*lowest); // # of seconds since period started

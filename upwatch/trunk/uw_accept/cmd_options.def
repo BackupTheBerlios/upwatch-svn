@@ -1,10 +1,15 @@
 AutoGen Definitions options;
-#include ../common/generic_options.def
 export        = "#define progOptions uw_acceptOptions";
 prog-name     = uw_accept;
 prog-title    = "Upwatch daemon for accepting reports";
-version       = "0.1";
+version       = "0.3";
+homerc        = "/etc/upwatch.conf";
 homerc        = "/etc/upwatch.d/uw_accept.conf";
+homerc        = "$HOME/.upwatchrc";
+homerc        = "$HOME";
+homerc        = "$$/upwatch.conf";
+homerc        = "$$/uw_accept.conf";
+
 detail        = 
 'uw_accept listen on port 1985 for incoming upwatch reports.
 Using a POP3-like protocol it asks for a username and password
@@ -127,3 +132,4 @@ flag = {
 };
 
 
+#include ../common/generic_options.def

@@ -1,10 +1,14 @@
 AutoGen Definitions options;
-#include ../common/generic_options.def
 export        = "#define progOptions uw_iptrafOptions";
 prog-name     = uw_iptraf;
 prog-title    = "Upwatch probe daemon";
-version       = "0.1";
+version       = "0.3";
+homerc        = "/etc/upwatch.conf";
 homerc        = "/etc/upwatch.d/uw_iptraf.conf";
+homerc        = "$HOME/.upwatchrc";
+homerc        = "$HOME";
+homerc        = "$$/upwatch.conf";
+homerc        = "$$/uw_iptraf.conf";
 detail        = 
 'uw_iptraf does the following: ';
 
@@ -60,3 +64,4 @@ specificy thosr with one or more -n options. Note only CIDR format is supported
 (192.168.170.0/24)';
 };
 
+#include ../common/generic_options.def

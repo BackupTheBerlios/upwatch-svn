@@ -1,10 +1,14 @@
 AutoGen Definitions options;
-#include ../common/generic_options.def
 export        = "#define progOptions uw_httpgetOptions";
 prog-name     = uw_httpget;
 prog-title    = "Upwatch parallel probe daemon";
-version       = "0.1";
+version       = "0.3";
+homerc        = "/etc/upwatch.conf";
 homerc        = "/etc/upwatch.d/uw_httpget.conf";
+homerc        = "$HOME/.upwatchrc";
+homerc        = "$HOME";
+homerc        = "$$/upwatch.conf";
+homerc        = "$$/uw_httpget.conf";
 detail        = 
 'uw_httpget reads a list of hosts from the database, and 
 sends http GET requests to each host. This happens in parallel, 
@@ -179,3 +183,4 @@ flag = {
 };
 
 
+#include ../common/generic_options.def

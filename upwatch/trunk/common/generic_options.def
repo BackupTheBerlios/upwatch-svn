@@ -3,7 +3,6 @@ export        = "#include <limits.h>";
 export        = "#include <stdio.h>";
 export        = "#include <stdlib.h>";
 
-homerc        = "/etc/upwatch.conf";
 explain;
 long-opts;
 

@@ -1,10 +1,14 @@
 AutoGen Definitions options;
-#include ../common/generic_options.def
 export        = "#define progOptions uw_processOptions";
 prog-name     = uw_process;
 prog-title    = "Upwatch parallel probe daemon";
-version       = "0.1";
+version       = "0.3";
+homerc        = "/etc/upwatch.conf";
 homerc        = "/etc/upwatch.d/uw_process.conf";
+homerc        = "$HOME/.upwatchrc";
+homerc        = "$HOME";
+homerc        = "$$/upwatch.conf";
+homerc        = "$$/uw_process.conf";
 detail        = 
 'uw_process reads probe resultfiles, and stores them in the database';
 
@@ -24,10 +28,23 @@ flag = {
     descrip   = "maildir-type spooldirectory for result files";
     doc       =
 'This parameter denotes the basedirectory for reading input files. Inside
-this directory a directory `tmp` and `new` should exist. All files
+this directory another directory is expected named by the `input` parameter.
+Inside this directory directories called `tmp` and `new` should exist. All files
 will be read from `new`. You should set up some cron job that
 removes any files in `tmp` that are older then 36 hours. For some more info
 about maildir see http://www.qmail.org/man/man5/maildir.html.';
+};
+
+// describe commandline flags
+flag = {
+    name      = input;
+    value     = I;
+    arg_type  = string;
+    arg-default = uw_process;
+    descrip   = "name of queue to read from";
+    doc       =
+'The argument is taken to be a maildir under the directory `spooldir`.
+Everything placed in this queue is transferred.';
 };
 
 flag = {
@@ -136,3 +153,4 @@ flag = {
     descrip   = "Name of the color-field in the servertable";
 };
 
+#include ../common/generic_options.def

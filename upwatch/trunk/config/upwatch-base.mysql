@@ -3,7 +3,7 @@
 --
 
 CREATE TABLE probe (
-  id int(11) NOT NULL auto_increment,
+  id int NOT NULL auto_increment,
   name varchar(24) NOT NULL default '',
   description varchar(128) NOT NULL default '',
   comment text NOT NULL,
@@ -21,15 +21,15 @@ insert into probe set id = 5, name = 'cpuload', description = 'cpuload - User, s
 --
 
 CREATE TABLE pr_hist (
-  id int(10) unsigned NOT NULL auto_increment,
-  server int(10) unsigned NOT NULL default '1',
-  class int(10) unsigned NOT NULL default '0',
-  probe int(10) unsigned NOT NULL default '0',
-  stattime int(10) unsigned NOT NULL default '0',
-  prv_color smallint(5) unsigned NOT NULL default '0',
-  prv_hist int(10) unsigned NOT NULL default '0',
-  color smallint(5) unsigned NOT NULL default '0',
-  hist int(10) unsigned NOT NULL default '0',
+  id int unsigned NOT NULL auto_increment,
+  server int unsigned NOT NULL default '1',
+  class smallint unsigned NOT NULL default '0',
+  probe int unsigned NOT NULL default '0',
+  stattime int unsigned NOT NULL default '0',
+  prv_color smallint unsigned NOT NULL default '0',
+  prv_raw bigint unsigned NOT NULL default '0',
+  color smallint unsigned NOT NULL default '0',
+  raw bigint unsigned NOT NULL default '0',
   message text NOT NULL,
   PRIMARY KEY  (id),
   UNIQUE KEY probtime (probe,stattime),
@@ -42,11 +42,11 @@ CREATE TABLE pr_hist (
 --
 
 CREATE TABLE pr_status (
-  id int(10) unsigned NOT NULL auto_increment,
-  class int(10) unsigned NOT NULL default '0',
-  probe int(10) unsigned NOT NULL default '0',
-  server int(10) unsigned NOT NULL default '0',
-  color smallint(5) unsigned NOT NULL default '0',
+  id int unsigned NOT NULL auto_increment,
+  class int unsigned NOT NULL default '0',
+  probe int unsigned NOT NULL default '0',
+  server int unsigned NOT NULL default '0',
+  color smallint unsigned NOT NULL default '0',
   PRIMARY KEY  (id),
   UNIQUE KEY uprobe (class,probe),
   KEY class (class),
@@ -72,11 +72,11 @@ CREATE TABLE server (
 --
 
 CREATE TABLE notify (
-  id int(11) NOT NULL auto_increment,
+  id int NOT NULL auto_increment,
   name varchar(128) NOT NULL default '',
-  contact int(11) NOT NULL default 1,
-  mail int(11) NOT NULL default 1,
-  sms int(11) NOT NULL default 1,
+  contact int NOT NULL default 1,
+  mail int NOT NULL default 1,
+  sms int NOT NULL default 1,
   status enum('enabled', 'disabled', 'ok') NOT NULL default 'enabled',
   comment text NOT NULL,
   PRIMARY KEY  (id),
@@ -90,18 +90,18 @@ INSERT INTO notify set id = '1', name = 'empty', status = 'disabled', comment = 
 --
 
 CREATE TABLE notifycond (
-  id int(11) NOT NULL auto_increment,
-  notify int(11) NOT NULL default 1,
+  id int NOT NULL auto_increment,
+  notify int NOT NULL default 1,
   bycolor enum('yes', 'no') NOT NULL default 'yes',
-  atcolor int(3) NOT NULL default '400',
-  consecutive int(2) NOT NULL default 1,
+  atcolor smallint NOT NULL default '400',
+  consecutive smallint NOT NULL default 1,
   bydate enum('yes', 'no') NOT NULL default 'no',
-  fromwday int(1) NOT NULL default 0,
-  fromhour int(2) NOT NULL default 0,
-  frommin int(2) NOT NULL default 0,
-  towday int(1) NOT NULL default 0,
-  tohour int(2) NOT NULL default 0,
-  tomin int(2) NOT NULL default 0,
+  fromwday tinyint NOT NULL default 0,
+  fromhour tinyint NOT NULL default 0,
+  frommin tinyint NOT NULL default 0,
+  towday tinyint NOT NULL default 0,
+  tohour tinyint NOT NULL default 0,
+  tomin tinyint NOT NULL default 0,
   persist enum('yes', 'no') NOT NULL default 'no',
   comment text NOT NULL,
   PRIMARY KEY  (id),

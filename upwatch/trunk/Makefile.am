@@ -17,7 +17,7 @@ upwatch.mysql: config/upwatch-base.mysql uw_*/uw_*.mysql
 	cat $+ > upwatch.mysql
 
 rpm: dist
-	rpmbuild -ta upwatch-0.2.tar.gz
+	rpmbuild -ta upwatch-${VERSION}.tar.gz
 
 
 ACLOCAL_AMFLAGS = -I m4

@@ -1,10 +1,14 @@
 AutoGen Definitions options;
-#include ../common/generic_options.def
 export        = "#define progOptions uw_acceptbbOptions";
 prog-name     = uw_acceptbb;
 prog-title    = "Upwatch daemon for accepting reports from Big Brother clients";
-version       = "0.1";
+version       = "0.3";
+homerc        = "/etc/upwatch.conf";
 homerc        = "/etc/upwatch.d/uw_acceptbb.conf";
+homerc        = "$HOME/.upwatchrc";
+homerc        = "$HOME";
+homerc        = "$$/upwatch.conf";
+homerc        = "$$/uw_acceptbb.conf";
 detail        = 
 'uw_acceptbb listen on port 1984 for incoming reports from clients of the infamous 
 Big Brother package (www.bb4.com)';
@@ -114,3 +118,4 @@ flag = {
 };
 
 
+#include ../common/generic_options.def

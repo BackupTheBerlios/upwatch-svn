@@ -5,6 +5,10 @@
 #include <unistd.h>
 #include <generic.h>
 
+#ifdef DMALLOC 
+#include "dmalloc.h"
+#endif
+
 int uw_stat_open(char *file)
 {
   int fh;

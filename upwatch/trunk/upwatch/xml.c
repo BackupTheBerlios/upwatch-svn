@@ -1,5 +1,9 @@
 #include "generic.h"
 
+#ifdef DMALLOC 
+#include "dmalloc.h"
+#endif
+
 void UpwatchXmlGenericErrorFunc(void *ctx, const char *fmt, ...)
 {
   char buffer[BUFSIZ];
@@ -61,6 +65,18 @@ glong xmlNodeListGetLong(xmlDocPtr doc, xmlNodePtr list, int inLine)
 
   if (tmp) {
     ret = atol(tmp);
+    xmlFree(tmp);
+  }
+  return(ret);
+}
+
+guint xmlGetPropUnsigned(xmlNodePtr node, const xmlChar *name)
+{
+  guint ret = 0;
+  xmlChar *tmp = xmlGetProp(node, name);
+
+  if (tmp) {
+    ret = strtoul(tmp, (char **)NULL, 10);;
     xmlFree(tmp);
   }
   return(ret);
