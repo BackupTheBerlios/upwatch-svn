@@ -246,6 +246,9 @@ int init(void)
 
 #if USE_XMBMON
   if (OPT_VALUE_HWSTATS) {
+    if (OPT_VALUE_TYAN_TIGER_MP) {
+      TyanTigerMP_flag = 1;
+    }
     if ((i = InitMBInfo(' ')) != 0) {
       LOG(LOG_ERR, "InitMBInfo: %m");
       if (i < 0) {

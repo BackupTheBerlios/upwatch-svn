@@ -55,6 +55,16 @@ will be stored';
 };
 
 flag = {
+    name      = tyan-tiger-mp;
+    value     = Y;
+    arg_type  = bool;
+    descrip   = "Set this to on if this is a Tyan Tiger MP/MPX motherboard";
+    doc       =
+'These motherboards are Dual Athlon, and temperatures will be off if you don\'t
+specify this flag.';
+};
+
+flag = {
     name      = compress;
     value     = C;
     arg_type  = number;
