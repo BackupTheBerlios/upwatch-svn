@@ -1,6 +1,6 @@
 include $(top_srcdir)/Makefile.am.path
 
-AM_CFLAGS += -I$(INCL_ST)
+AM_CFLAGS += -I$(INCL_ST) -DUSE_ST
 program = uw_tcpconnect
 sbin_PROGRAMS = $(program)
 man_MANS = uw_tcpconnect.1

@@ -672,3 +672,4 @@ red [LOGDATE] kernel: hd[a-z]: dma_intr: status=[NUM] \{ DriveReady SeekComplete
 red [LOGDATE] kernel: hd[a-z]: packet command error:
 red [LOGDATE] kernel: SCSI disk error : host [NUM] channel [NUM] id [NUM] lun [NUM] return code = [NUM]
 red [LOGDATE] kernel: scsi[HEX]:[HEX]:[HEX]:[HEX]: Attempting to abort cmd
+red [LOGDATE] kernel: Out of Memory: Killed process

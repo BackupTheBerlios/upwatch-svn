@@ -71,6 +71,10 @@ int main( int argc, char** argv, char **envp )
   newArgv[ ix ] = NULL;
 
   uw_initsetproctitle(argc, argv, envp);
+
+#ifdef USE_ST
+  st_init();
+#endif
   
   if ((progname = strrchr(newArgv[0], '/')) != NULL) {
     progname++;

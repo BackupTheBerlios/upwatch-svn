@@ -65,7 +65,6 @@ int init(void)
   if (gethostname(myhostname, sizeof(myhostname))) {
     strcpy(myhostname, "localhost");
   }
-  st_init(); 
   xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
   return(1);
 }

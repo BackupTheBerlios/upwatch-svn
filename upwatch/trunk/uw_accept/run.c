@@ -159,7 +159,6 @@ int init(void)
   spooldir_strlen = strlen(OPT_ARG(SPOOLDIR))+1;
   daemonize = TRUE;
   every = ONE_SHOT;
-  st_init();
   xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
   return(1);
 }

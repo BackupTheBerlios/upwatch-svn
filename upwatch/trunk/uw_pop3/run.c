@@ -63,7 +63,6 @@ int init(void)
   daemonize = TRUE;
   every = EVERY_MINUTE;
   startsec = OPT_VALUE_BEGIN;
-  st_init(); 
   xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
   return(1);
 }

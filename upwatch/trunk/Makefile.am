@@ -90,10 +90,10 @@ upwatch.spec: force upwatch-spec.def upwatch-spec.tpl common/spec.tpl \
 	autogen -b upwatch -Dconfargs="$(CONFARGS)" upwatch-spec.def
 	rm -f force
 
-upwatch-base.mysql: config/upwatch-probe.mysql config/upwatch-realm.mysql uw_*/probe.def_mysql
+upwatch-base.mysql: config/upwatch-realm.mysql config/upwatch-probe.mysql uw_*/probe.def_mysql
 	cat $+ > upwatch-base.mysql
 
-upwatch-full.mysql: config/upwatch-probe.mysql config/upwatch-full.mysql uw_*/probe.def_mysql uw_*/probe.raw_mysql
+upwatch-full.mysql: config/upwatch-full.mysql config/upwatch-probe.mysql uw_*/probe.def_mysql uw_*/probe.raw_mysql
 	cat $+ > upwatch-full.mysql
 
 force:

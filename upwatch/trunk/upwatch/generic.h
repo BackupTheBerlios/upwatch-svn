@@ -12,6 +12,11 @@
 #include <db.h>
 #endif
 
+#ifdef USE_ST
+#include <st.h>
+#define sleep st_sleep
+#endif
+
 #include <options.h>
 
 #define max(x,y) ((x) > (y) ? (x) : (y))

@@ -1,5 +1,6 @@
 include $(top_srcdir)/Makefile.am.path
 
+AM_CFLAGS += -DUSE_ST
 program = uw_dns
 sbin_PROGRAMS = $(program)
 man_MANS = uw_dns.1
@@ -7,7 +8,7 @@ conf_DATA = $(program:%=%.conf)
 init_DATA = $(INITFILES)
 
 uw_dns_SOURCES = run.c uw_dns.h uw_dns.c $(PROBFILES) $(SPECFILES) $(INITFILES)
-uw_dns_CFLAGS = @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ $(AM_CFLAGS)
+uw_dns_CFLAGS = @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ $(AM_CFLAGS) 
 uw_dns_LDADD = uw_dns_$(DB_O) uw_dns_$(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) $(LIBST) @MYSQL_LIBS@ @LIBGLIB2_LIBS@
 
 BUILT_SOURCES = $(program:%=%.1) $(program:%=%.h) $(program:%=%.c) $(PROBFILES) $(SPECFILES) $(INITFILES)

@@ -122,7 +122,6 @@ int init(void)
     daemonize = TRUE;
     every = EVERY_5SECS;
   }
-  st_init();
   xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
   return(1);
 }

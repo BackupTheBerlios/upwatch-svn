@@ -174,7 +174,6 @@ int init(void)
 {
   daemonize = TRUE;
   every = ONE_SHOT;
-  st_init();
   xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
   return(1);
 }

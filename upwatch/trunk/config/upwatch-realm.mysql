@@ -19,3 +19,37 @@ CREATE TABLE pr_realm (
 
 INSERT INTO pr_realm set id = '1', name = 'empty', comment = 'do NOT delete!';
 
+CREATE TABLE pr_regex (
+  id int unsigned NOT NULL auto_increment,
+  logtype varchar(24) NOT NULL default '',
+  package varchar(24) NOT NULL default '',
+  action enum('ignore', 'red', 'yellow', 'green') NOT NULL default 'green',
+  regex varchar(255) NOT NULL,
+  PRIMARY KEY  (id),
+  UNIQUE KEY packex (package,regex)
+) TYPE=MyISAM;
+
+INSERT INTO pr_regex set id = '1', logtype = 'none', package = 'none', action = 'green', regex = 'do NOT delete!';
+
+CREATE TABLE pr_macros (
+  id int unsigned NOT NULL auto_increment,
+  logtype varchar(24) NOT NULL default '',
+  name varchar(24) NOT NULL default '',
+  regex varchar(255) NOT NULL,
+  PRIMARY KEY  (id),
+  UNIQUE KEY typename (logtype,name)
+) TYPE=MyISAM;
+INSERT INTO pr_macros set id = '1', logtype = 'none', name = 'empty', regex = 'do NOT delete!';
+
+CREATE TABLE pr_rmacros (
+  id int unsigned NOT NULL auto_increment,
+  logtype varchar(24) NOT NULL default '',
+  regex varchar(255) NOT NULL,
+  name varchar(24) NOT NULL default '',
+  PRIMARY KEY  (id),
+  UNIQUE KEY typex (logtype,regex)
+) TYPE=MyISAM;
+INSERT INTO pr_rmacros set id = '1', logtype = 'none', name = 'empty', regex = 'do NOT delete!';
+
+
+
