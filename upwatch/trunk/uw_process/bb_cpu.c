@@ -236,7 +236,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   MYSQL_RES *result;
   MYSQL_ROW row;
   struct bb_cpu_result *def = (struct bb_cpu_result *)probe_def;
-  gint avg_yellow, avg_red;
+  float avg_yellow, avg_red;
   gfloat avg_loadavg;
   guint avg_user, avg_system, avg_idle, avg_swapin, avg_swapout, avg_blockin;
   guint avg_blockout, avg_swapped, avg_free, avg_buffered, avg_cached, avg_used;

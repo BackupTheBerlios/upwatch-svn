@@ -128,7 +128,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   MYSQL_RES *result;
   MYSQL_ROW row;
   struct ping_result *def = (struct ping_result *)probe_def;
-  gint avg_yellow, avg_red;
+  float avg_yellow, avg_red;
   float avg_value, min_lowest, max_highest; 
   guint stattime;
   guint max_color;

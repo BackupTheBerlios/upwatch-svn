@@ -204,7 +204,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   MYSQL_ROW row;
   struct iptraf_def *def = (struct iptraf_def *)probe_def;
   struct iptraf_result *res = (struct iptraf_result *)probe_res;
-  gint avg_yellow, avg_red;
+  float avg_yellow, avg_red;
   float in_total, out_total;
   guint stattime;
   guint max_color;

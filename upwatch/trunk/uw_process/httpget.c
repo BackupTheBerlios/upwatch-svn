@@ -100,7 +100,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   MYSQL_RES *result;
   MYSQL_ROW row;
   struct httpget_result *def = (struct httpget_result *)probe_def;
-  gint avg_yellow, avg_red;
+  float avg_yellow, avg_red;
   float avg_lookup, avg_connect, avg_pretransfer, avg_total;
   guint stattime;
   guint max_color;
