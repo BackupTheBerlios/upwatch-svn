@@ -65,8 +65,8 @@ int run(void)
   
   if (debug > 0) LOG(LOG_DEBUG, "reading info from database");
   uw_setproctitle("reading info from database");
-  mysql = open_database(OPT_ARG(DBHOST), OPT_ARG(DBNAME), OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
-                        OPT_VALUE_DBCOMPRESS);
+  mysql = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
+			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD), OPT_VALUE_DBCOMPRESS);
   if (mysql) {
     refresh_database(mysql);
     close_database(mysql);
@@ -89,15 +89,14 @@ void refresh_database(MYSQL *mysql)
   MYSQL_ROW row;
   char qry[1024];
 
-  sprintf(qry,  "SELECT pr_mssql_def.id, %s.%s, "
+  sprintf(qry,  "SELECT pr_mssql_def.id, "
                 "       pr_mssql_def.ipaddress, pr_mssql_def.dbname, "
                 "       pr_mssql_def.dbuser, pr_mssql_def.dbpasswd,"
                 "       pr_mssql_def.query, "
                 "       pr_mssql_def.yellow,  pr_mssql_def.red "
-                "FROM   pr_mssql_def, server "
-                "WHERE  pr_mssql_def.server = %s.%s and pr_mssql_def.id > 1",
-          OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_NAME_FIELD),
-          OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_ID_FIELD));
+                "FROM   pr_mssql_def "
+                "WHERE  pr_mssql_def.id > 1 and pr_mssql_def.pgroup = '%d'",
+                OPT_VALUE_GROUPID);
 
   result = my_query(mysql, 1, qry);
   if (!result) {
@@ -117,17 +116,17 @@ void refresh_database(MYSQL *mysql)
     }
 
     if (probe->ipaddress) g_free(probe->ipaddress);
-    probe->ipaddress = strdup(row[2]);
+    probe->ipaddress = strdup(row[1]);
     if (probe->dbname) g_free(probe->dbname);
-    probe->dbname = strdup(row[3]);
+    probe->dbname = strdup(row[2]);
     if (probe->dbuser) g_free(probe->dbuser);
-    probe->dbuser = strdup(row[4]);
+    probe->dbuser = strdup(row[3]);
     if (probe->dbpasswd) g_free(probe->dbpasswd);
-    probe->dbpasswd = strdup(row[5]);
+    probe->dbpasswd = strdup(row[4]);
     if (probe->query) g_free(probe->query);
-    probe->query = strdup(row[6]);
-    probe->yellow = atof(row[7]);
-    probe->red = atof(row[8]);
+    probe->query = strdup(row[5]);
+    probe->yellow = atof(row[6]);
+    probe->red = atof(row[7]);
     if (probe->msg) g_free(probe->msg);
     probe->msg = NULL;
     probe->seen = 1;

@@ -67,7 +67,7 @@ static void modules_start_run(void)
   int i;
 
   for (i = 0; modules[i]; i++) {
-    modules[i]->db = open_database(OPT_ARG(DBHOST), OPT_ARG(DBNAME),
+    modules[i]->db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
                                      OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
                                      OPT_VALUE_DBCOMPRESS);
     if (modules[i]->start_run) {
@@ -419,8 +419,8 @@ extern int forever;
     return 0;
   }
 
-  mysql = open_database(OPT_ARG(DBHOST), OPT_ARG(DBNAME), OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
-                        OPT_VALUE_DBCOMPRESS);
+  mysql = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
+			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD), OPT_VALUE_DBCOMPRESS);
   if (!mysql) {
     return 0;
   }

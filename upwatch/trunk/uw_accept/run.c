@@ -29,8 +29,8 @@ static int uw_password_ok(char *user, char *passwd)
   MYSQL *mysql;
   MYSQL_RES *result;
 
-  mysql = open_database(OPT_ARG(DBHOST), OPT_ARG(DBNAME), OPT_ARG(DBUSER), OPT_ARG(DBPASSWD), 
-                        OPT_VALUE_DBCOMPRESS);
+  mysql = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
+			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD), OPT_VALUE_DBCOMPRESS);
   if (mysql) {
     gchar buffer[256];
     MYSQL_ROW row;

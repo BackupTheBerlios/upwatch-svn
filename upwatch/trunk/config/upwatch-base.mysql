@@ -16,6 +16,20 @@ CREATE TABLE probe (
 INSERT INTO probe set id = '1', name = 'empty', addbyhand = 'no', comment = 'do NOT delete!';
 
 --
+-- Table structure for table 'pr_group'
+--
+
+CREATE TABLE pr_group (
+  id int unsigned NOT NULL auto_increment,
+  name varchar(24) NOT NULL default '',
+  description varchar(128) NOT NULL default '',
+  PRIMARY KEY  (id)
+) TYPE=MyISAM;
+
+INSERT INTO pr_group set id = '1', name = 'empty', description = 'do NOT delete!';
+INSERT INTO pr_group set id = '2', name = 'Default';
+
+--
 -- Table structure for table 'pr_hist'
 --
 

@@ -67,8 +67,8 @@ int run(void)
   
   if (debug > 0) LOG(LOG_DEBUG, "reading info from database");
   uw_setproctitle("reading info from database");
-  mysql = open_database(OPT_ARG(DBHOST), OPT_ARG(DBNAME), OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
-                        OPT_VALUE_DBCOMPRESS);
+  mysql = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
+			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD), OPT_VALUE_DBCOMPRESS);
   if (mysql) {
     refresh_database(mysql);
     close_database(mysql);
@@ -91,14 +91,13 @@ void refresh_database(MYSQL *mysql)
   MYSQL_ROW row;
   char qry[1024];
 
-  sprintf(qry,  "SELECT pr_snmpget_def.id, %s.%s, "
+  sprintf(qry,  "SELECT pr_snmpget_def.id, "
                 "       pr_snmpget_def.ipaddress, pr_snmpget_def.community, "
                 "       pr_snmpget_def.passwd, pr_snmpget_def.OID, "
                 "       pr_snmpget_def.yellow,  pr_snmpget_def.red "
-                "FROM   pr_snmpget_def, server "
-                "WHERE  pr_snmpget_def.server = %s.%s and pr_snmpget_def.id > 1",
-          OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_NAME_FIELD),
-          OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_ID_FIELD));
+                "FROM   pr_snmpget_def "
+                "WHERE  pr_snmpget_def.id > 1 and pr_snmpget_def.pgroup = '%d'",
+                OPT_VALUE_GROUPID);
 
   result = my_query(mysql, 1, qry);
   if (!result) {
@@ -118,15 +117,15 @@ void refresh_database(MYSQL *mysql)
     }
 
     if (probe->ipaddress) g_free(probe->ipaddress);
-    probe->ipaddress = strdup(row[2]);
+    probe->ipaddress = strdup(row[1]);
     if (probe->community) g_free(probe->community);
-    probe->community = strdup(row[3]);
+    probe->community = strdup(row[2]);
     if (probe->passwd) g_free(probe->passwd);
-    probe->passwd = strdup(row[4]);
+    probe->passwd = strdup(row[3]);
     if (probe->OID) g_free(probe->OID);
-    probe->OID = strdup(row[5]);
-    probe->yellow = atof(row[6]);
-    probe->red = atof(row[7]);
+    probe->OID = strdup(row[4]);
+    probe->yellow = atof(row[5]);
+    probe->red = atof(row[6]);
     if (probe->msg) g_free(probe->msg);
     probe->msg = NULL;
     probe->seen = 1;

@@ -9,6 +9,7 @@
 
 CREATE TABLE pr_[+name+]_def (
   id int NOT NULL auto_increment,  		-- probe unique numerical id
+  pgroup int unsigned NOT NULL default '2', 	-- group id 
   server int unsigned NOT NULL default '1', 	-- server id
   notify int unsigned NOT NULL default '1',	-- notifier id
   ipaddress varchar(15) NOT NULL default '',	-- target ipaddress 

@@ -17,7 +17,6 @@
 
 struct hostinfo {
   int 			id;		/* server probe id */
-  char 			*name;		/* server name */
   char 			*ipaddress;	/* server name */
   int			count;		/* amount of packets to send */
   int			yellow;	        /* amount to miss before turning yellow */
@@ -157,21 +156,19 @@ int run(void)
   tm = gmtime(&now);
   if (debug > 0) LOG(LOG_DEBUG, "reading ping info from database");
   uw_setproctitle("reading ping info from database");
-  mysql = open_database(OPT_ARG(DBHOST), OPT_ARG(DBNAME), OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
-                        OPT_VALUE_DBCOMPRESS);
+  mysql = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
+			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD), OPT_VALUE_DBCOMPRESS);
   while (mysql) {
     MYSQL_RES *result;
     MYSQL_ROW row;
     char qry[256]; 
 
     sprintf(qry, "SELECT pr_ping_def.id, pr_ping_def.count, pr_ping_def.yellow, " 
-                 "       pr_ping_def.red, %s.%s, pr_ping_def.ipaddress as ip, "
+                 "       pr_ping_def.red, pr_ping_def.ipaddress as ip, "
                  "       pr_ping_def.freq "
-                 "FROM   pr_ping_def, %s "
-                 "WHERE  pr_ping_def.server = %s.%s and pr_ping_def.id > 1", 
-            OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_NAME_FIELD),
-            OPT_ARG(SERVER_TABLE_NAME),
-            OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_ID_FIELD));
+                 "FROM   pr_ping_def "
+                 "WHERE  pr_ping_def.id > 1 and pr_ping_def.pgroup = '%d'",
+                OPT_VALUE_GROUPID);
 
     if (mysql_query(mysql, qry)) {
       LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql));
@@ -189,17 +186,16 @@ int run(void)
       u_int ip;
       struct in_addr *ipa = (struct in_addr *)&ip;
 
-      char *name = row[4];
-      char *ipaddress = row[5];
+      char *ipaddress = row[4];
       int probeid = atoi(row[0]);
       int count = atoi(row[1]);
       int yellow = atoi(row[2]);
       int red = atoi(row[3]);
-      int freq = atoi(row[6]); // every # minutes
+      int freq = atoi(row[5]); // every # minutes
 
       if (tm->tm_min % freq != 0) continue;
       if ((ip = inet_addr(ipaddress)) == -1) {
-        LOG(LOG_NOTICE, "illegal ip address for %s: %s", name, ipaddress);
+        LOG(LOG_NOTICE, "illegal ip address %s", ipaddress);
         continue;
       }
       if (count < 1) count = 1;
@@ -212,7 +208,6 @@ int run(void)
 
       newh[id] = calloc(1, sizeof(struct hostinfo));
       newh[id]->id = probeid;
-      newh[id]->name = strdup(name);
       newh[id]->count = count;
       newh[id]->yellow = yellow;
       newh[id]->red = red;
@@ -235,7 +230,6 @@ int run(void)
           //printf("%s\n", hosts[id]->msg);
           free(hosts[id]->msg);
         }
-        free(hosts[id]->name);
         free(hosts[id]);
       }
       free(hosts);
@@ -300,10 +294,6 @@ int run(void)
     sprintf(buffer, "%s", inet_ntoa(hosts[id]->saddr.sin_addr)); xmlSetProp(ping, "ipaddress", buffer);
     sprintf(buffer, "%d", ((int)now)+(2*60)); 	xmlSetProp(ping, "expires", buffer);
     if (color == STAT_RED) xmlSetProp(ping, "investigate", "icmptraceroute");
-    host = xmlNewChild(ping, NULL, "host", NULL);
-    sprintf(buffer, "%s", hosts[id]->name);	subtree = xmlNewChild(host, NULL, "hostname", buffer);
-    sprintf(buffer, "%s", inet_ntoa(hosts[id]->saddr.sin_addr));	
-      subtree = xmlNewChild(host, NULL, "ipaddress", buffer);
     sprintf(buffer, "%d", color); 		subtree = xmlNewChild(ping, NULL, "color", buffer);
     sprintf(buffer, "%f", ((float) hosts[id]->min_reply) * 0.000001);
       subtree = xmlNewChild(ping, NULL, "min", buffer);
@@ -401,7 +391,7 @@ static int send_ping(int id, struct hostinfo *host)
 
   icp->icmp_cksum = in_cksum( (u_short *)icp, ping_pkt_size );
 
-  sprintf(buf, "sending [%d] to %s (%s)", host->num_sent, host->name, inet_ntoa(host->saddr.sin_addr));
+  sprintf(buf, "sending [%d] to %s", host->num_sent, inet_ntoa(host->saddr.sin_addr));
   if (debug > 2) LOG(LOG_DEBUG, buf);
 
   n = sendto(sock, buffer, ping_pkt_size, 0, (struct sockaddr *)&host->saddr,
@@ -479,7 +469,7 @@ static int wait_for_reply()
   sent_time = pdp->ping_ts;
   this_count = pdp->ping_count;
 #ifdef DEBUG
-  printf("received [%d] from %s\n", this_count, host->name);
+  printf("received [%d]\n", this_count);
 #endif
 
   this_reply = timeval_diff(&now, &sent_time);

@@ -71,8 +71,8 @@ int run(void)
   
   if (debug > 0) LOG(LOG_DEBUG, "reading info from database");
   uw_setproctitle("reading info from database");
-  mysql = open_database(OPT_ARG(DBHOST), OPT_ARG(DBNAME), OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
-                        OPT_VALUE_DBCOMPRESS);
+  mysql = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
+			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD), OPT_VALUE_DBCOMPRESS);
   if (mysql) {
     refresh_database(mysql);
     close_database(mysql);
@@ -95,14 +95,13 @@ void refresh_database(MYSQL *mysql)
   MYSQL_ROW row;
   char qry[1024];
 
-  sprintf(qry,  "SELECT pr_imap_def.id, %s.%s, "
+  sprintf(qry,  "SELECT pr_imap_def.id, "
                 "       pr_imap_def.ipaddress, pr_imap_def.username, "
                 "       pr_imap_def.password, "
                 "       pr_imap_def.yellow,  pr_imap_def.red "
-                "FROM   pr_imap_def, server "
-                "WHERE  pr_imap_def.server = %s.%s and pr_imap_def.id > 1",
-          OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_NAME_FIELD),
-          OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_ID_FIELD));
+                "FROM   pr_imap_def "
+                "WHERE  pr_imap_def.id > 1 and pr_imap_def.pgroup = '%d'",
+                OPT_VALUE_GROUPID);
 
   result = my_query(mysql, 1, qry);
   if (!result) {
@@ -123,13 +122,13 @@ void refresh_database(MYSQL *mysql)
     }
 
     if (probe->ipaddress) g_free(probe->ipaddress);
-    probe->ipaddress = strdup(row[2]);
+    probe->ipaddress = strdup(row[1]);
     if (probe->username) g_free(probe->username);
-    probe->username = strdup(row[3]);
+    probe->username = strdup(row[2]);
     if (probe->password) g_free(probe->password);
-    probe->password = strdup(row[4]);
-    probe->yellow = atof(row[5]);
-    probe->red = atof(row[6]);
+    probe->password = strdup(row[3]);
+    probe->yellow = atof(row[4]);
+    probe->red = atof(row[5]);
     if (probe->msg) g_free(probe->msg);
     probe->msg = NULL;
     probe->seen = 1;

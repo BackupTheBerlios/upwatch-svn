@@ -80,6 +80,19 @@ about maildir see http://www.qmail.org/man/man5/maildir.html.';
 };
 
 flag = {
+    name      = groupid;
+    value     = g;
+    arg_type  = numeric;
+    arg_default = 2;
+    descrip   = "Id of the group this station belongs to";
+    doc       =
+'Various probe stations can exists in multiple physical places.
+Firewalls may exist between them. So probes may be assigned to
+certain groups. This setting tells this probe its group id, so
+it knows which probe to retrieve from the definition table';
+};
+
+flag = {
     must-set;
     name      = statfile;
     value     = K;

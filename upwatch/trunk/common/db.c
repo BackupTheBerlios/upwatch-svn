@@ -20,15 +20,15 @@ void close_database(MYSQL *mysql)
   }
 }
 
-MYSQL *open_database(char *dbhost, char *dbname, char *dbuser, char *dbpasswd, int options)
+MYSQL *open_database(char *dbhost, int dbport, char *dbname, char *dbuser, char *dbpasswd, int options)
 {
   MYSQL *mysql;
 
   mysql = mysql_init(NULL);
   mysql_options(mysql, options, 0);
-  if (!mysql_real_connect(mysql, dbhost, dbuser, dbpasswd, dbname, 0, NULL, 0)) {
-    LOG(LOG_ERR, "%s dbhost=%s,dbname=%s,dbuser=%s,dbpasswd=%s",
-           mysql_error(mysql), dbhost, dbname, dbuser, dbpasswd);
+  if (!mysql_real_connect(mysql, dbhost, dbuser, dbpasswd, dbname, dbport, NULL, 0)) {
+    LOG(LOG_ERR, "%s dbhost=%s,dbport=%d,dbname=%s,dbuser=%s,dbpasswd=%s",
+           mysql_error(mysql), dbhost, dbport, dbname, dbuser, dbpasswd);
     return(NULL);
   }
   return(mysql);

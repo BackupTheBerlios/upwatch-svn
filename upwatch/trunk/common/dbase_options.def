@@ -17,7 +17,6 @@ flag = {
     value     = C;        /* flag style option character */
     arg-default = 1;
     arg_type  = numeric;   /* option argument indication  */
-/*    max       = NOLIMIT;  /* occurrence limit (none)     */
     descrip   = "Use compression on database connection";
     doc       =
 'If set, this option compresses all communication with the database server';
@@ -28,12 +27,22 @@ flag = {
     name      = dbhost;
     value     = h;        /* flag style option character */
     arg_type  = string;   /* option argument indication  */
-/*    max       = NOLIMIT;  /* occurrence limit (none)     */
     descrip   = "Database host to connect to";
     doc       = 
 'This option denotes the internet hostname where the database resides. For MySQL this
-means the programs connects to port 3306 on this host. This hostname should be DNS
+means the programs connects to port 3306 on this host (can be changed by --dbport). 
+This hostname should be DNS
 resolvable of course, but an IP address may be specified';
+};  
+    
+flag = {
+    must-set;
+    name      = dbport;
+    arg_type  = numeric;   /* option argument indication  */
+    arg-default = 3306;
+    descrip   = "Port number on database host";
+    doc       = 
+'Port number to connect to';
 };  
     
 flag = {

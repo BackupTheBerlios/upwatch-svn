@@ -71,8 +71,8 @@ int run(void)
   
   if (debug > 0) LOG(LOG_DEBUG, "reading info from database");
   uw_setproctitle("reading info from database");
-  mysql = open_database(OPT_ARG(DBHOST), OPT_ARG(DBNAME), OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
-                        OPT_VALUE_DBCOMPRESS);
+  mysql = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
+			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD), OPT_VALUE_DBCOMPRESS);
   if (mysql) {
     refresh_database(mysql);
     close_database(mysql);
@@ -99,7 +99,8 @@ void refresh_database(MYSQL *mysql)
                 "       pr_httpget_def.hostname, pr_httpget_def.uri, "
                 "       pr_httpget_def.yellow,  pr_httpget_def.red "
                 "FROM   pr_httpget_def "
-                "WHERE  pr_httpget_def.id > 1");
+                "WHERE  pr_httpget_def.id > 1 and pr_httpget_def.pgroup = '%d'", 
+		OPT_VALUE_GROUPID);
 
   result = my_query(mysql, 1, qry);
   if (!result) {
