@@ -28,10 +28,10 @@ flag = {
     name      = no-stat;
     value     = n;
     arg_type  = bool;
-    arg_default = false;
     descrip   = "Don't stat() every file for date/time";
     doc       =
 'For really long queues, this option speeds up display';
 };
 
 #include generic_options.def
+

@@ -36,7 +36,7 @@ int main (int argc, char *argv[])
     GDir *qdir;
     char *ctim;
     int qcount = 0;
-    time_t oldest=time(NULL), newest=NULL;
+    time_t oldest=time(NULL), newest=(time_t)NULL;
     G_CONST_RETURN gchar *qfilename;
 
     if (filename[0] == '.') continue;  // skip hidden files
