@@ -4,14 +4,14 @@
    <title>Interfaces and file layouts</title>
    <sect1 id="Probe_result_file">
    <title>Probe result file</title>
-   <para> Every probe result is written into a queue file. This file will be picked up by the process
+   <para> Every probe result is written in XML format into a queue file. This file will be picked up by the process
       emptying the queue, usually uw_send, or uw_process. The file must have a specific name,
       and a specific layout.
    </para>
    <sect2>
        <title id="Probe_file_name">Probe file name</title>
        <para> The name of the file is composed of the current epoch time in seconds, microseconds, process
-           id, and hostname, all separated by dots. An example would be:
+           id, and hostname on which the queue resides, all separated by dots. An example would be:
        </para>
        <itemizedlist>
           <listitem><para>1031601982.341878.27470.ron-ibook.nbs.arts-betel.org</para></listitem>
@@ -20,98 +20,17 @@
    </sect2>
    <sect2>
       <title id="Generic_probe_file_layout">Generic probe file layout</title>
-      <para> The probe result file consists of ASCII lines, separated by linefeeds. The first line has a special format,
-         any following lines are free format, can contain an error text, or some detail text like the HTTP
-         header on a HTTP probe. The format of the first line is:
-      </para>
-      <table label="Header record layout" pgwide="1"><title>Header record layout</title>
-         <tgroup cols = "2">
-            <colspec colname = "1" colnum = "1" colwidth = "1.0in"/>
-            <colspec colname = "2" colnum = "2" colwidth = "4.0in"/>
-            <tbody>
-               <row>
-                  <entry colname = "1"><para><emphasis>Field:</emphasis></para></entry>
-                  <entry colname = "2"><para><emphasis>Type</emphasis></para></entry>
-               </row>
-               <row>
-                  <entry colname = "1">
-                     <indexterm><primary>probe</primary><secondary>method</secondary></indexterm>
-                     <para>method</para>
-                  </entry>
-                  <entry colname = "2"><para>Probe name (for example 'ping')</para></entry>
-               </row>
-               <row>
-                  <entry colname = "1">
-                     <indexterm><primary>probe</primary><secondary>lines in result</secondary></indexterm>
-                     <para>lines</para>
-                  </entry>
-                  <entry colname = "2"><para>Total number of lines including this one</para></entry>
-               </row>
-               <row>
-                  <entry colname = "1">
-                     <indexterm><primary>probe</primary><secondary>id</secondary></indexterm>
-                     <para>probeid</para>
-                  </entry>
-                  <entry colname = "2"><para>Probe id from the database</para></entry>
-               </row>
-               <row>
-                  <entry colname = "1">
-                     <indexterm><primary>probe</primary><secondary>user for login</secondary></indexterm>
-                     <para>user</para>
-                  </entry>
-                  <entry colname = "2"><para>username for logging into uw_accept</para></entry>
-               </row>
-               <row>
-                  <entry colname = "1">
-                     <indexterm><primary>probe</primary><secondary>password for login</secondary></indexterm>
-                     <para>password</para>
-                  </entry>
-                  <entry colname = "2"><para>password for loggin in to uw_accept</para></entry>
-               </row>
-               <row>
-                  <entry colname = "1">
-                     <indexterm><primary>probe</primary><secondary>date</secondary></indexterm>
-                     <para>date</para>
-                  </entry>
-                  <entry colname = "2"><para>current date in seconds since epoch</para></entry>
-               </row>
-               <row>
-                  <entry colname = "1">
-                     <indexterm><primary>probe</primary><secondary>result expiry</secondary></indexterm>
-                     <para>expires</para>
-                  </entry>
-                  <entry colname = "2"><para>When this probe expires (seconds since epoch)</para></entry>
-               </row>
-               <row>
-                  <entry colname = "1">
-                     <indexterm><primary>probe</primary><secondary>ipaddress</secondary></indexterm>
-                     <para>ipaddress</para>
-                  </entry>
-                  <entry colname = "2"><para>Probe target ip address</para></entry>
-               </row>
-               <row>
-                  <entry colname = "1">
-                     <indexterm><primary>probe</primary><secondary>color</secondary></indexterm>
-                     <para>color</para>
-                  </entry>
-                  <entry colname = "2"><para>200 (green), 300 (yellow) or 500 (red)</para></entry>
-               </row>
-               <row>
-                  <entry colname = "1"><para> </para></entry>
-                  <entry colname = "2"><para><emphasis>The following fields are probe specific</emphasis></para></entry>
-               </row>
-            </tbody>
-         </tgroup>
-      </table>
-   </sect2>
-   <sect2>
-      <title id="ping_file_layout">ping file layout</title>
-      <para>
+      <para>The probe result file is in XML format, described in <filename>/usr/lib/upwatch/dtdt/result.dtd</filename>.
       </para>
    </sect2>
-   </sect1>
    <sect1 id="uw_accept_protocol">
       <title>uw_accept protocol</title>
-      <para></para>
+      <para>The protocol used by uw_accept is almost exactly like the POP3 protocol. login with USER and PASS, then
+      enter DATA <&lt;filesize&gt; and start uploading</para>
+   </sect1>
+   <sect1 id="uw_acceptbb_protocol">
+      <title>uw_acceptbb protocol</title>
+      <para>The protocol used by uw_acceptbb is exactly like the Big Brother protocol (see <ulink url="http://www.bb4.com"></ulink>
+      The only BB requesst supported is currently the <varname>status</varname> request.</para>.
    </sect1>
 </appendix>

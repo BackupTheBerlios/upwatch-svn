@@ -8,7 +8,7 @@
           Each probe first reads the general configuration file <filename>/etc/upwatch.conf</filename>
           and then its own configurationfile in <filename>/etc/upwatch.d</filename> if it exists.
           Normally some general things like the debug and logging level, and the database access
-          are specified in the first file, and any probe-specific setting in the second file. You can
+          are specified in the first file, and any probe-specific setting in the second file. You can also
           override settings from the generic file in the probe-specific file.
        </para>
        <para> Each program has a manual page that documents options. Every long commandine option

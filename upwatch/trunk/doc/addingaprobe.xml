@@ -25,22 +25,11 @@
              exactly what it does. Leave room for future probes that do something similar, also think about
              future extension to the probe itself.. Don't be satisfied too soon. For the rest of this small tutorial, we'll
              assume you probe willed be called <varname>cputemp</varname> for monitoring the host CPU
-             temperature.</para>
+             temperature (which in fact already exists as part of the <varname>sysstat</varname> probe).</para>
        </sect2>
-       <sect2 id="Design_the_database_layout">
-          <title>Design the Database Layout</title>
-          <para>Take a close look at the database layout for existing probes. Each probe at least consists of the
-             following tables:</para>
-          <itemizedlist>
-             <listitem><para>A definition table (of course). This contains the probe id, target, last status, when to turn yellow
-             or red</para></listitem>
-             <listitem><para>Table for raw output, all results are kept here</para></listitem>
-             <listitem><para>Tables for hour/day/week/month/year/5year summarisations</para></listitem>
-             <listitem><para>A history table to keep all status changes</para></listitem>
-          </itemizedlist>
-          <para> Design these tables in <filename>uw_cputemp.mysql</filename>. You will copy this file in
-            the next section.</para>
-          <para> Create the database. </para>
+       <sect2 id="Design_the_database_fields">
+          <title>Design the Database Fields</title>
+          <para></para>
           <para> Also a probe needs to enter its status into pr_status, and its history into pr_history and you should
              add code for this in the <application>uw_process</application> part..</para>
        </sect2>

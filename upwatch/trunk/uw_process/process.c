@@ -130,12 +130,11 @@ static void *get_def(module *probe, struct probe_result *res)
   if (def == NULL) {
     def = g_malloc0(sizeof(struct probe_result));
     def->stamp    = time(NULL);
-    def->probeid  = res->probeid;
 
     result = my_query(probe->db, 0,
                       "select server, color, stattime, yellow, red "
                       "from   pr_status "
-                      "where  class = '%u' and probe = '%u'", probe->class, def->probeid);
+                      "where  class = '%u' and probe = '%u'", probe->class, res->probeid);
     if (result) {
       row = mysql_fetch_row(result);
       if (row) {
@@ -145,47 +144,53 @@ static void *get_def(module *probe, struct probe_result *res)
         if (row[3]) def->yellow = atof(row[3]);
         if (row[4]) def->red    = atof(row[4]);
       } else {
-        LOG(LOG_NOTICE, "pr_status record for %s id %u not found", res->name, def->probeid);
+        LOG(LOG_NOTICE, "pr_status record for %s id %u not found", res->name, res->probeid);
       }
       mysql_free_result(result);
     }
 
     if (!def->server) { 
-      // couldn't find pr_status record? Will be created later, 
-      // but get the server and yellow/red info from the def record for now
+      // couldn't find pr_status record? This shouldn't normally happen, as it should
+      // be created when the probe is created by the webpages. Anyway, this is not
+      // a disaster, it'll get added later on in the process.
+      // But get the server and yellow/red info from the def record for now
       result = my_query(probe->db, 0,
                         "select server, yellow, red "
                         "from   pr_%s_def "
-                        "where  id = '%u'", res->name, def->probeid);
+                        "where  id = '%u'", res->name, res->probeid);
       if (!result) return(NULL);
 
       if (mysql_num_rows(result) == 0) { // DEF RECORD NOT FOUND
         mysql_free_result(result);
         if (!trust(res->name)) {
           LOG(LOG_NOTICE, "pr_%s_def id %u not found and not trusted - skipped",
-                           res->name, def->probeid);
+                           res->name, res->probeid);
+          return(NULL);
+        }
+        if (res->server == 0) {
+          LOG(LOG_NOTICE, "pr_%s_def id %u not found trusted but we have no serverid - skipped",
+                           res->name, res->probeid);
           return(NULL);
         }
         // at this point, we have a probe result, but we can't find the _def record
         // for it. We apparantly trust this result, so we can create the definition
         // ourselves. For that we need to fill in the server id and the ipaddress
         // and we look into the result if the is anything useful in there.
-/*
         result = my_query(probe->db, 0,
                           "insert into pr_%s_def set server = '%d', "
                           "        ipaddress = '%s', description = 'auto-added by system'",
-                          res->name, res->server, res->ipaddress);
+                          res->name, res->server, res->ipaddress?res->ipaddress:"");
         mysql_free_result(result);
+        res->probeid = mysql_last_insert_id(probe->db);
         if (mysql_affected_rows(mysql) == 0) { // nothing was actually inserted
           LOG(LOG_NOTICE, "insert missing pr_%s_def id %u: %s", 
-                           res->name, def->probeid, mysql_error(mysql));
+                           res->name, res->probeid, mysql_error(mysql));
         }
         result = my_query(probe->db, 0,
-                          "select id, yellow, red "
+                          "select server, yellow, red "
                           "from   pr_%s_def "
-                          "where  server = '%u'", res->name, res->server);
+                          "where  id = '%u'", res->name, res->probeid);
         if (!result) return(NULL);
-*/
       }
       row = mysql_fetch_row(result);
       if (row) {
@@ -199,7 +204,7 @@ static void *get_def(module *probe, struct probe_result *res)
     result = my_query(probe->db, 0,
                       "select stattime from pr_%s_raw use index(probstat) "
                       "where probe = '%u' order by stattime desc limit 1",
-                       res->name, def->probeid);
+                       res->name, res->probeid);
     if (result) {
       row = mysql_fetch_row(result);
       if (row && mysql_num_rows(result) > 0) {
@@ -208,6 +213,7 @@ static void *get_def(module *probe, struct probe_result *res)
       mysql_free_result(result);
     }
 
+    def->probeid = res->probeid;
     g_hash_table_insert(probe->cache, guintdup(def->probeid), def);
   }
   return(def);

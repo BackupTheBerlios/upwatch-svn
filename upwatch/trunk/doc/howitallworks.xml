@@ -5,7 +5,7 @@
     <sect1 id="General_Overview">
         <title>General Overview</title>
         <para> The system primary function is to fill lots of database tables, to offer views on
-            those tables, and to page operators in case things go wrong. To enable this it
+            those tables, and to page operators in case things go wrong. To enable this upwatch
             consists of a MySQL database, lots of probe daemons (one daemon per probe, usually one probe
             per daemon), some supporting daemons, a PHP website, and other software, like SMS and mail interfaces.</para>
         <para> Things start at the database. For every probe it contains the following tables:</para>
@@ -16,22 +16,30 @@
             <listitem><para>A table with an overview of state changes</para></listitem>
         </itemizedlist>
         <para> The definition table contains, of course, the definition of this particular
-            probe, this is of course probe specific but in practive usually contains frequency,
-            target ip address, port number, current status. We'll see what the other tables are for later on.</para>
+            probe, this is of course probe specific but at a minimum it contains usually contains the target ip address.
+            We'll see what the other tables are for later on.</para>
     </sect1>
     <sect1 id="What_a_probe_does">
         <title>What a probe does</title>
-        <para>Every probe performs a repetetive task: measuring some specific function on a specific host.
-          So first step is to know what to measure and on which host. For this it reads from the probe definition
-          table. It creates a local - in memory - copy of that table just in case the database becomes unreachable
-          for a period of time. It routinely walks this list and performs its task. The result are written in XML format
-          to a queue which is specified in the probe configuration (note: all queues reside in
+        <para>There are actually three kinds of probes:
+        <itemizedlist>
+           <listitem><para>Probes with database access, that measure a remote server</para></listitem>
+           <listitem><para>Probes without database access the measure remote servers</para></listitem>
+           <listitem><para>Probes without database access thatg measure localhost</para></listitem>
+        </itemizedlist>
+	   Every probe performs a repetative task: measuring some specific function on a specific host.
+           So first step is to know what to measure and on which host. For this it reads from the probe definition
+           table, or from its configfile if it does not depend on database access It creates a local - in memory -
+           copy of that table just in case the database becomes unreachable
+           for a period of time. It routinely walks this list and performs its task. The result are written in XML format
+           to a queue which is specified in the probe configuration (note: all queues normally reside in
           <filename>/var/spool/upwatch</filename>). After that the probe just waits for the next round.
        </para>
        <para> Many probes have to do a lot of work. They are programmed to do this as efficient as possible.
           For example: the uw_ping probe is coded as a tight loop around a single select statement. This is the
           most efficient way (as far as I know) to ping thousands of hosts in, say, 20 seconds.
-          Other probes use pools of threads (like <varname>httpget</varname>).</para>
+          Other probes use pools of threads (like <varname>httpget</varname>) or are build using the
+          State Threads library.</para>
     </sect1>
     <sect1 id="What_happens_to_the_probe_results">
         <title>What happens to the probe results?</title>
@@ -39,7 +47,7 @@
            find out why the probe failed, and attaches a report to the probe. After this the results are put in
            the same queue as every other probe: <varname>uw_notify</varname>.
            <varname>uw_notify</varname> reads the result, looks at the probe status, and at previous statuses, and
-           decides if someone should be notified by sms, email, or by just putting it into a high-priority queue.
+           decides if someone should be notified by sms, email, or if it should be put into a high-priority queue.
         </para>
         <para> The outgoing queue may be either the <varname>uw_process</varname> queue, or an
            <varname>uw_send</varname> queue, which is emptied by the uw_send process which sends
@@ -55,89 +63,85 @@
         <para> When the probe results arrive in the uw_process queue it is picked up by the workhorse
            of the lot, <varname>uw_process</varname>. It fills the result tables for the probes.</para>
         <para> The raw results table contains just that, raw probe results.</para>
-        <para> Raw results are compressed into period tables in the foilowing way (using week as
-            an example): the week is divided into 200 equal timeslots. For computing the plot
-            values for a slot the process averages and takes the minimum and maximum value of
-            all day-values in that timeslot. The same process happens for the month and year
-            tables. This way we ensure that we never have to read more then 200 database records
+        <para> Raw results are compressed into period tables in the following way (using week as
+            an example): a week is divided into 100 equal timeslots. For computing the plot
+            values for a slot the process reads all values from the day table in the same timeslot.
+            These values are averaged and put in the week table. The same process happens for
+            the month and year
+            tables. This way we ensure that we never have to read more then 100 database records
             to produce a graph for a day, week, month, year or 5-year period.
         </para>
-        <para> Status changes are logged in status history tables (pr_probe_hist), in a total overview
-          table (pr_status), and in a total overview history file (pr_hist). The last two
-          accomodate for easy retrieval by the webpages.</para>
+        <para> Status changes are logged in a 'current status' table and in a status history (pr_hist). These
+          two accomodate for easy retrieval by the webpages.</para>
+          <para>The pseudo-code below shows an example of how uw_process takes a probe result
+          and puts this result in the database. as an example I'll take a pop3 result (class = 5, and our example
+          probe has id 25)</para>
       <para>
-         <table pgwide="1"><title>queries make by uw_process</title>
-         <tgroup cols = "2">
-            <colspec colname = "1" colnum = "1" colwidth = "1.0in"/>
-            <colspec colname = "2" colnum = "2" colwidth = "4.0in"/>
-            <tbody>
-               <row>
-                  <entry colname = "1"><para><emphasis>Condition:</emphasis></para></entry>
-                  <entry colname = "2"><para><emphasis>Queries</emphasis></para></entry>
-               </row>
-               <row>
-                  <entry colname = "1">
-                     <para>Always</para>
-                  </entry>
-                  <entry colname = "2">
-                     <para>select server, color, lasthist, stattime from pr_ping_def where id = %d
-                     </para>
-                  </entry>
-               </row>
-              <row>
-                  <entry colname = "1">
-                     <para>First result for this probe</para>
-                  </entry>
-                  <entry colname = "2">
-                     <para>insert into pr_status set class = '%d', probe = '%d', server = '%d', color = '%d'
-                     </para>
-                  </entry>
-               </row>
-              <row>
-                  <entry colname = "1">
-                     <para>Color changed</para>
-                  </entry>
-                  <entry colname = "2">
-                     <para>insert into pr_ping_hist set probe = '%d', stattime = %d, color = '%d', message = '%s'</para>
-                     <para>insert into pr_hist set server = '%d', class = '%d', probe = '%d', stattime = %d,
-                      prv_color = '%d', prv_hist = '%d', color = '%d', hist = '%d', message = '%s'</para>
-                      <para>update pr_status set color = '%d' where  class = '%d' and probe = '%d'</para>
-                      <para>select max(color) as max_color from pr_status where server = '%d'</para>
-                      <para>update server set color = '%d' where id = '%d'</para>
-                  </entry>
-               </row>
-              <row>
-                  <entry colname = "1">
-                     <para>Always</para>
-                  </entry>
-                  <entry colname = "2">
-                     <para>insert into pr_ping_raw set probe = '%d',  hist = '%d', stattime = %d, color = '%d', lowest = '%f', value = '%f', highest = '%f'
-                     </para>
-                  </entry>
-               </row>
-              <row>
-                  <entry colname = "1">
-                     <para>On summarizing</para>
-                  </entry>
-                  <entry colname = "2">
-                     <para>select avg(lowest), avg(value), avg(highest), max(color) from pr_ping_%s where  probe = '%d' and stattime &gt;= %d and stattime &lt; %d
-                     </para>
-                     <para>(do some processing)</para>
-                     <para>insert into pr_ping_%s set value = %f, lowest = %f, highest = %f, probe = %d, color = '%u', stattime = %d</para>
-                  </entry>
-               </row>
-             <row>
-                  <entry colname = "1">
-                     <para>Always</para>
-                  </entry>
-                  <entry colname = "2">
-                     <para>update pr_ping_def set stattime = %d, expires = %d, color = '%d', lasthist = '%d', message = '%s' where  id = '%d'
-                     </para>
-                  </entry>
-               </row>
-            </tbody>
-         </tgroup>
-      </table>
+      <literallayout>
+         IF PROBEDEFINITION NOT IN THE CACHE OR IT'S TOO OLD
+            select server, color, stattime, yellow, red from pr_status where  class = '8' and probe = '25'"
+            IF NOT FOUND IN STATUS FILE
+               select server, yellow, red  from   pr_pop3_def where  id = '25'
+               IF NOT FOUND IN DEFINITION TABLE
+                  SKIP THIS PROBE
+                  probes without id (because they don't have database access) may be added here
+               ENDIF not in definition table
+            ENDIF not in status file
+            GET MOST RECENT PROBE RESULT TIME:
+            select stattime from pr_pop3_raw use index(probstat) where probe = '25' order by stattime desc limit 1
+         ENDIF not in cache
+         STORE RESULT:
+         insert into pr_pop3_raw set probe = '25', yellow = '1', red = '2', stattime = 'xxxxx', color = 'xx',  
+           connect = '1', total = '2', message = 'none'
+         IF CURRENT PROBE IS NEWER THEN ANY WE'VE SEEN SO FAR
+            copy previous record stattime from def record
+         ELSE
+            select   color, stattime from pr_pop3_raw use index(probstat) where probe = '25' and stattime &lt; 'xxxx'
+            order by stattime desc limit 1
+         ENDIF
+
+         IF THIS IS THE FIRST RESULT EVER SEEN FOR THIS PROBE
+            insert into pr_status set class = '8', probe = '25', stattime = 'xxx', expires = 'xxx', color = '200', 
+               server = '2', message = 'none', yellow = '1', red = '2'
+         ELSE IF WE HAVE NOT SEEN THIS PROBE BEFORE
+            IF THE COLOR DIFFERS FROM THE PREVIOUS RECORD
+               CREATE HISTORY RECORD:
+               insert into pr_hist set server = '2', class = '8', probe = '25', stattime = 'xxx', prv_color = '500', color = '200', message = 'none'
+               RETRIEVE FOLLOWING RECORD:
+               select color, stattime from pr_pop3_raw use index(probstat) where probe = '25' and stattime &lt; 'xxxx' 
+               order by stattime desc limit 1
+               IF FOUND AND HAS THE SAME COLOR DELETE ANY HISTORY RECORDS:
+                  delete from pr_hist where stattime = 'xxxx' and probe = '25' and class = '8'
+	          delete from pr_status where stattime = 'xxx' and probe = '25' and class = '8'
+               ENDIF following found and has same color
+               IF CURRENT RECORD IS THE NEWEST UPDATE STATUS AND SERVER STATUS
+                  update pr_status set stattime = 'xxx', expires = 'xxxy', color = '200', message = 'none', yellow = '1', red = '2' 
+                  where probe = '25' and class = '8'
+                  update server set color = '20' where id = '2'
+               ENDIF newest
+            ENDIF color differs
+            IF CURRENT RAW RECORD IS THE MOST RECENT
+               FOR EACH PERIOD
+                  IF WE ENTERED A SLOT TIMESLOT IN THE PERIOD
+                     SUMMARIZE:
+                     select avg(connect), avg(total), max(color), avg(yellow), avg(red) from pr_pop3_day use index(probstat) 
+                     where probe = '25' and stattime &gt;= slotlow and stattime &lt; slothigh
+                     insert into pr_pop3_week set connect = '1', total = '2', probe = 25, color = '200', stattime = slot, 
+                        yellow = '1', red = '2', slot = '34'
+                  ENDIF
+               ENDFOR
+            ELSE
+              FOR EACH PERIOD
+                IF THE FIRST RECORD FOR THE NEXT SLOT HAS BEEN SEEN
+                   RE-SUMMARIZE CURRENT SLOT
+                   select avg(connect), avg(total), max(color), avg(yellow), avg(red) from pr_pop3_day use index(probstat) 
+                   where probe = '25' and stattime &gt;= slotlow and stattime &lt; slothigh
+                   insert into pr_pop3_week set connect = '1', total = '2', probe = 25, color = '200', stattime = slot, yellow = '1', 
+                      red = '2', slot = '34'
+                ENDIF
+            ENDIF
+         ENDIF
+      </literallayout>
       </para>
     </sect1>
     <sect1 id="Scaling_up">
@@ -146,10 +150,11 @@
            to scale up considerably. Of course it cannot scale infinately. The last bottleneck will
            probably be the database. Although MySQL is known for its speed, even that has its limits.
         </para>
-        <para> The probes may be scaled up, by moving them to another host</para>
+        <para> The probes may be scaled up, sometimes by giving them more filehandles, later by moving them to another host</para>
         <para> The website may be scaled up by spreading it out across several hosts</para>
-        <para> The database may be scaled up by putting it on separate hardware, using
+        <para> The database may be scaled up by putting it on separate hardware, using faster CPU and
           more spindles (disks), and ultimately using MySQL mirrorring to divide reading and
-          writing across separate machines. MySQL has lots of info on increasing performance.</para>
+          writing across separate machines, or spreading out the tables across multtiple machines. 
+          MySQL has lots of info on increasing performance..</para>
     </sect1>
 </chapter>

@@ -18,7 +18,8 @@
        <title>Managing daemons</title>
        <para> In most Linux distributions you can start/stop daemons using the scripts
          in <filename>/etc/init.d</filename>. Don't forget: you will miss sample data in the database
-         if a probe is not running.
+         if a probe is not running. You can watch what a probe is running if you run 
+         <command>ps ax</command>.
        </para>
     </sect1>
     <sect1 id="Queues">
