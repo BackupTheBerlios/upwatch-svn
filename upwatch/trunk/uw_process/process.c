@@ -49,7 +49,7 @@ void free_res(void *res)
 // in case of mysql-has-gone-away type errors, we keep on running, 
 // it will be caught later-on.
 //*******************************************************************
-static void *get_def(module *probe, struct probe_result *res)
+static void *get_def(module *probe, struct probe_result *res, int create)
 {
   struct probe_def *def;
   MYSQL_RES *result;
@@ -93,14 +93,8 @@ static void *get_def(module *probe, struct probe_result *res)
 
     if (mysql_num_rows(result) == 0) { // DEF RECORD NOT FOUND
       mysql_free_result(result);
-#ifdef UW_NOTIFY
-      LOG(LOG_NOTICE, "pr_%s_def id %u not found - skipped",
-                       res->name, res->probeid);
-      return(NULL);
-#endif
-#ifdef UW_PROCESS
-      if (!trust(res->name)) {
-        LOG(LOG_NOTICE, "pr_%s_def id %u not found and not trusted - skipped",
+      if (!create) {
+        LOG(LOG_NOTICE, "pr_%s_def id %u not found - skipped",
                          res->name, res->probeid);
         return(NULL);
       }
@@ -128,7 +122,6 @@ static void *get_def(module *probe, struct probe_result *res)
                         "from   pr_%s_def "
                         "where  id = '%u'", res->name, res->probeid);
       if (!result) return(NULL);
-#endif
     }
     row = mysql_fetch_row(result);
     if (row) {
@@ -230,7 +223,6 @@ static struct probe_result *get_following_record(module *probe, struct probe_def
   mysql_free_result(result);
   return(nxt);
 }
-#endif
 
 //*******************************************************************
 // UPDATE PR_STATUS
@@ -421,7 +413,6 @@ static void update_server_color(module *probe, struct probe_def *def, struct pro
   mysql_free_result(result);
 }
 
-#ifdef UW_PROCESS
 //*******************************************************************
 // IS THIS SLOT COMPLETELY FILLED?
 //*******************************************************************
@@ -503,8 +494,10 @@ int slot_is_complete(module *probe, char *name, guint probeid, int i, guint slot
  */
 int process(module *probe, trx *t)
 {
+#ifdef UW_PROCESS
   int seen_before=0, must_update_def=0;
   struct probe_result *prv=NULL;
+#endif
   int err = 1; /* default ok */
 
   if (!probe->db) {
@@ -521,15 +514,21 @@ int process(module *probe, trx *t)
   if (debug > 3) fprintf(stderr, "get_def\n");
   if (probe->get_def) {
     if (debug > 3) fprintf(stderr, "RETRIEVE PROBE DEFINITION RECORD FROM DATABASE\n");
-    t->def = probe->get_def(probe, t->res); // RETRIEVE PROBE DEFINITION RECORD FROM DATABASE
+    t->def = probe->get_def(probe, t->res, trust(t->res->name)); // RETRIEVE PROBE DEFINITION RECORD FROM DATABASE
   } else {
-    t->def = get_def(probe, t->res);
+    t->def = get_def(probe, t->res, trust(t->res->name));
   }
   if (!t->def) {  // Oops, def record not found. Skip this probe
     if (debug > 3) fprintf(stderr, "def NOT found\n");
     err = -1; /* malformed input FIXME should make distinction between db errors and def not found */
     goto exit_with_res;
   }
+
+#ifdef UW_NOTIFY
+  if (probe->notify) {
+    probe->notify(probe, t);
+  }
+#endif
 
 #ifdef UW_PROCESS
   if (debug > 3) fprintf(stderr, "STORE RAW RESULTS\n");

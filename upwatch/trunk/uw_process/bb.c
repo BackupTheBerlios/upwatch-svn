@@ -21,7 +21,7 @@ struct bb_def {
 #include "../common/common.h"
 };
 
-static void free_res(void *res)
+static void bb_free_res(void *res)
 {
   struct bb_result *r = (struct bb_result *)res;
 
@@ -34,7 +34,7 @@ static void free_res(void *res)
 // GET THE INFO FROM THE XML FILE
 // Caller must free the pointer it returns
 //*******************************************************************
-static void xml_result_node(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
+static void bb_xml_result_node(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
 {
   struct bb_result *res = (struct bb_result *)probe_res;
 
@@ -44,7 +44,7 @@ static void xml_result_node(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsP
 //*******************************************************************
 // Only used for debugging
 //*******************************************************************
-static int fix_result(module *probe, void *probe_res)
+static int bb_fix_result(module *probe, void *probe_res)
 {
   struct bb_result *res = (struct bb_result *)probe_res;
 
@@ -62,7 +62,7 @@ static int fix_result(module *probe, void *probe_res)
 // in case of mysql-has-gone-away type errors, we keep on running, 
 // it will be caught later-on.
 //*******************************************************************
-static void *get_def(module *probe, void *probe_res)
+static void *bb_get_def(module *probe, void *probe_res, int create)
 {
   struct probe_def *def;
   struct bb_result *res = (struct bb_result *)probe_res;
@@ -150,7 +150,7 @@ static void *get_def(module *probe, void *probe_res)
   return(def);
 }
 
-static void end_probe(module *probe, void *def, void *res)
+static void bb_end_probe(module *probe, void *def, void *res)
 {
   g_free(def);
 }
@@ -158,19 +158,19 @@ static void end_probe(module *probe, void *def, void *res)
 module bb_module  = {
   STANDARD_MODULE_STUFF(bb),
   NO_FREE_DEF,
-  free_res,
+  bb_free_res,
   NO_INIT,
   NO_START_RUN,
   NO_ACCEPT_PROBE,
-  xml_result_node,
+  bb_xml_result_node,
   NO_GET_FROM_XML,
-  fix_result,
-  get_def,
+  bb_fix_result,
+  bb_get_def,
 #ifdef UW_PROCESS
   NO_STORE_RESULTS,
   NO_SUMMARIZE,
 #endif
-  end_probe,
+  bb_end_probe,
   NO_END_RUN
 };
 

@@ -41,10 +41,10 @@ pkglibdir = $(libdir)/upwatch
 pkgincludedir = $(includedir)/upwatch
 top_builddir = ..
 
-ACLOCAL = ${SHELL} /disk1/home/raarts/upwatch/missing --run aclocal-1.6
-AUTOCONF = ${SHELL} /disk1/home/raarts/upwatch/missing --run autoconf
-AUTOMAKE = ${SHELL} /disk1/home/raarts/upwatch/missing --run automake-1.6
-AUTOHEADER = ${SHELL} /disk1/home/raarts/upwatch/missing --run autoheader
+ACLOCAL = ${SHELL} /home/raarts/upwatch/missing --run aclocal-1.6
+AUTOCONF = ${SHELL} /home/raarts/upwatch/missing --run autoconf
+AUTOMAKE = ${SHELL} /home/raarts/upwatch/missing --run automake-1.6
+AUTOHEADER = ${SHELL} /home/raarts/upwatch/missing --run autoheader
 
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 INSTALL = /usr/bin/install -c
@@ -70,7 +70,7 @@ OBJEXT = o
 PATH_SEPARATOR = :
 
 SHELL = /bin/sh
-AMTAR = ${SHELL} /disk1/home/raarts/upwatch/missing --run tar
+AMTAR = ${SHELL} /home/raarts/upwatch/missing --run tar
 AS = @AS@
 AWK = gawk
 CC = gcc
@@ -122,7 +122,7 @@ VERSION = 0.8
 XSLTPROC = /usr/bin/xsltproc
 am__include = include
 am__quote = 
-install_sh = /disk1/home/raarts/upwatch/install-sh
+install_sh = /home/raarts/upwatch/install-sh
 docdir = $(datadir)/doc/$(PACKAGE)-$(VERSION)
 upwatchdir = $(datadir)/$(PACKAGE)
 confdir = $(sysconfdir)/$(PACKAGE).d

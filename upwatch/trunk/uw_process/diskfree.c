@@ -26,7 +26,7 @@ extern module diskfree_module;
 //*******************************************************************
 // Only used for debugging
 //*******************************************************************
-static int fix_result(module *probe, void *probe_res)
+static int diskfree_fix_result(module *probe, void *probe_res)
 {
   struct diskfree_result *res = (struct diskfree_result *)probe_res;
 
@@ -44,7 +44,7 @@ static int fix_result(module *probe, void *probe_res)
 // in case of mysql-has-gone-away type errors, we keep on running, 
 // it will be caught later-on.
 //*******************************************************************
-static void *get_def(module *probe, void *probe_res)
+static void *diskfree_get_def(module *probe, void *probe_res, int create)
 {
   struct probe_def *def;
   struct diskfree_result *res = (struct diskfree_result *)probe_res;
@@ -126,8 +126,8 @@ module diskfree_module  = {
   NO_ACCEPT_PROBE,
   NO_XML_RESULT_NODE,
   NO_GET_FROM_XML,
-  fix_result,
-  get_def,
+  diskfree_fix_result,
+  diskfree_get_def,
 #ifdef UW_PROCESS
   NO_STORE_RESULTS,
   NO_SUMMARIZE,

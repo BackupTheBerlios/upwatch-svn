@@ -45,7 +45,7 @@ static void iptraf_end_run(module *probe)
 // GET THE INFO FROM THE XML FILE
 // Caller must free the pointer it returns
 //*******************************************************************
-static void xml_result_node(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
+static void iptraf_xml_result_node(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
 {
   struct iptraf_result *res = (struct iptraf_result *)probe_res;
 
@@ -57,7 +57,7 @@ static void xml_result_node(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsP
 // GET THE INFO FROM THE XML FILE
 // Caller must free the pointer it returns
 //*******************************************************************
-static void get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
+static void iptraf_get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
 {
   struct iptraf_result *res = (struct iptraf_result *)probe_res;
 
@@ -83,7 +83,7 @@ static void get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr 
 // find the real probeid from the ip address
 // get it from the cache. if there but too old: delete
 //*******************************************************************
-static void *get_def(module *probe, void *probe_res)
+static void *iptraf_get_def(module *probe, void *probe_res, int create)
 {
   struct iptraf_def *def;
   struct iptraf_result *res = (struct iptraf_result *)probe_res;
@@ -111,14 +111,8 @@ static void *get_def(module *probe, void *probe_res)
 
     if (mysql_num_rows(result) == 0) { // DEF RECORD NOT FOUND
       mysql_free_result(result);
-#ifdef UW_NOTIFY
-      LOG(LOG_NOTICE, "pr_%s_def ip %s not found - skipped",
-                       res->name, res->ipaddress);
-      return(NULL);
-#endif
-#ifdef UW_PROCESS
-      if (!trust(res->name)) {
-        LOG(LOG_NOTICE, "pr_%s_def ip %s not found and not trusted - skipped",
+      if (!create) {
+        LOG(LOG_NOTICE, "pr_%s_def ip %s not found - skipped",
                          res->name, res->ipaddress);
         return(NULL);
       }
@@ -155,7 +149,6 @@ static void *get_def(module *probe, void *probe_res)
                         "from   pr_%s_def "
                         "where  ipaddress = '%s'", res->name, res->ipaddress);
       if (!result) return(NULL);
-#endif /* UW_PROCESS */
     }
   
     row = mysql_fetch_row(result);
@@ -252,7 +245,7 @@ static void *get_def(module *probe, void *probe_res)
 //*******************************************************************
 // STORE RAW RESULTS
 //*******************************************************************
-static gint store_raw_result(struct _module *probe, void *probe_def, void *probe_res, guint *seen_before)
+static gint iptraf_store_raw_result(struct _module *probe, void *probe_def, void *probe_res, guint *seen_before)
 {
   char buf[256];
   struct iptraf_result *res = (struct iptraf_result *)probe_res;
@@ -287,7 +280,7 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
 //*******************************************************************
 // SUMMARIZE A TABLE INTO AN OLDER PERIOD
 //*******************************************************************
-static void summarize(module *probe, void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint resummarize)
+static void iptraf_summarize(module *probe, void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint resummarize)
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
@@ -372,13 +365,13 @@ module iptraf_module  = {
   NO_INIT,
   NO_START_RUN,
   NO_ACCEPT_PROBE,
-  xml_result_node,
-  get_from_xml,
+  iptraf_xml_result_node,
+  iptraf_get_from_xml,
   NO_FIX_RESULT,
-  get_def,
+  iptraf_get_def,
 #ifdef UW_PROCESS
-  store_raw_result,
-  summarize,
+  iptraf_store_raw_result,
+  iptraf_summarize,
 #endif
   NO_END_PROBE,
   iptraf_end_run 

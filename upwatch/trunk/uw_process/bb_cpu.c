@@ -29,7 +29,7 @@ extern module bb_cpu_module;
 // nbslevel: 00229, up: 96 days, 0 users, 90 procs, load=21
 // up: 43 days, 0 users, 88 procs, load=6
 //*******************************************************************
-static int fix_result(module *probe, void *probe_res)
+static int bb_cpu_fix_result(module *probe, void *probe_res)
 {
   struct bb_cpu_result *res = (struct bb_cpu_result *)probe_res;
 
@@ -75,7 +75,7 @@ static int fix_result(module *probe, void *probe_res)
 // in case of mysql-has-gone-away type errors, we keep on running, 
 // it will be caught later-on.
 //*******************************************************************
-static void *get_def(module *probe, void *probe_res)
+static void *bb_cpu_get_def(module *probe, void *probe_res, int create)
 {
   struct probe_def *def;
   struct bb_cpu_result *res = (struct bb_cpu_result *)probe_res;
@@ -182,10 +182,11 @@ static void *get_def(module *probe, void *probe_res)
   return(def);
 }
 
+#ifdef UW_PROCESS
 //*******************************************************************
 // STORE RAW RESULTS
 //*******************************************************************
-static gint store_raw_result(struct _module *probe, void *probe_def, void *probe_res, guint *seen_before)
+static gint bb_cpu_store_raw_result(struct _module *probe, void *probe_def, void *probe_res, guint *seen_before)
 {
   MYSQL_RES *result;
   struct bb_cpu_result *res = (struct bb_cpu_result *)probe_res;
@@ -219,7 +220,7 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
 //*******************************************************************
 // SUMMARIZE A TABLE INTO AN OLDER PERIOD
 //*******************************************************************
-static void summarize(module *probe, void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint resummarize)
+static void bb_cpu_summarize(module *probe, void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint resummarize)
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
@@ -296,6 +297,7 @@ static void summarize(module *probe, void *probe_def, void *probe_res, char *fro
                     avg_yellow, avg_red, slot);
   mysql_free_result(result);
 }
+#endif /* UW_PROCESS */
 
 module bb_cpu_module  = {
   STANDARD_MODULE_STUFF(bb_cpu),
@@ -306,11 +308,11 @@ module bb_cpu_module  = {
   NO_ACCEPT_PROBE,
   NO_XML_RESULT_NODE,
   NO_GET_FROM_XML,
-  fix_result,    
-  get_def,
+  bb_cpu_fix_result,    
+  bb_cpu_get_def,
 #ifdef UW_PROCESS
-  store_raw_result,
-  summarize,
+  bb_cpu_store_raw_result,
+  bb_cpu_summarize,
 #endif
   NO_END_PROBE,
   NO_END_RUN

@@ -37,10 +37,11 @@ void ct_get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, 
   }
 }
 
+#ifdef UW_PROCESS
 //*******************************************************************
 // STORE RAW RESULTS
 //*******************************************************************
-gint ct_store_raw_result(struct _module *probe, void *probe_def, void *probe_res, guint *seen_before)
+gint ct_store_raw_result(module *probe, void *probe_def, void *probe_res, guint *seen_before)
 {
   MYSQL_RES *result;
   struct ct_result *res = (struct ct_result *)probe_res;
@@ -141,5 +142,5 @@ void ct_summarize(module *probe, void *probe_def, void *probe_res, char *from, c
 
   mysql_free_result(result);
 }
-
+#endif /* UW_PROCESS */
 

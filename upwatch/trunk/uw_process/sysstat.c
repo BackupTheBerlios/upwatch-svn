@@ -24,16 +24,11 @@ struct sysstat_def {
 
 extern module sysstat_module;
 
-static int accept_probe(module *probe, const char *name)
-{
-  return(strcmp(name, "sysstat") == 0);
-}
-
 //*******************************************************************
 // GET THE INFO FROM THE XML FILE
 // Caller must free the pointer it returns
 //*******************************************************************
-static void get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
+static void sysstat_get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
 {
   struct sysstat_result *res = (struct sysstat_result *)probe_res;
 
@@ -99,7 +94,7 @@ static void get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr 
 // find the real probeid from the ip address
 // get it from the cache. if there but too old: delete
 //*******************************************************************
-static void *get_def(module *probe, void *probe_res)
+static void *sysstat_get_def(module *probe, void *probe_res, int create)
 { 
   struct probe_def *def;
   struct sysstat_result *res = (struct sysstat_result *)probe_res;
@@ -127,14 +122,8 @@ static void *get_def(module *probe, void *probe_res)
 
     if (mysql_num_rows(result) == 0) { // DEF RECORD NOT FOUND
       mysql_free_result(result);
-#ifdef UW_NOTIFY
-      LOG(LOG_NOTICE, "pr_%s_def id %u not found - skipped", 
-                       res->name, def->probeid);
-      return(NULL);
-#endif
-#ifdef UW_PROCESS
-      if (!trust(res->name)) {
-        LOG(LOG_NOTICE, "pr_%s_def id %u not found and not trusted - skipped", 
+      if (!create) {
+        LOG(LOG_NOTICE, "pr_%s_def id %u not found - skipped", 
                          res->name, def->probeid);
         return(NULL);
       }
@@ -152,7 +141,6 @@ static void *get_def(module *probe, void *probe_res)
                         "from   pr_%s_def "
                         "where  server = '%u'", res->name, res->server);
       if (!result) return(NULL);
-#endif
     }
     row = mysql_fetch_row(result); 
     if (!row || !row[0]) {
@@ -207,11 +195,11 @@ static void *get_def(module *probe, void *probe_res)
   return(def);
 }   
 
-
+#ifdef UW_PROCESS
 //*******************************************************************
 // STORE RAW RESULTS
 //*******************************************************************
-static gint store_raw_result(struct _module *probe, void *probe_def, void *probe_res, guint *seen_before)
+static gint sysstat_store_raw_result(struct _module *probe, void *probe_def, void *probe_res, guint *seen_before)
 {
   MYSQL_RES *result;
   struct sysstat_result *res = (struct sysstat_result *)probe_res;
@@ -251,7 +239,7 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
 //*******************************************************************
 // SUMMARIZE A TABLE INTO AN OLDER PERIOD
 //*******************************************************************
-static void summarize(module *probe, void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint resummarize)
+static void sysstat_summarize(module *probe, void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint resummarize)
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
@@ -337,6 +325,7 @@ static void summarize(module *probe, void *probe_def, void *probe_res, char *fro
                     avg_yellow, avg_red, slot);
   mysql_free_result(result);
 }
+#endif /* UW_PROCESS */
 
 module sysstat_module  = {
   STANDARD_MODULE_STUFF(sysstat),
@@ -344,14 +333,14 @@ module sysstat_module  = {
   NO_FREE_RES,
   NO_INIT,
   NO_START_RUN,
-  accept_probe,
+  NO_ACCEPT_PROBE,
   NO_XML_RESULT_NODE,
-  get_from_xml,
+  sysstat_get_from_xml,
   NO_FIX_RESULT,
-  get_def,
+  sysstat_get_def,
 #ifdef UW_PROCESS
-  store_raw_result,
-  summarize,
+  sysstat_store_raw_result,
+  sysstat_summarize,
 #endif
   NO_END_PROBE,
   NO_END_RUN

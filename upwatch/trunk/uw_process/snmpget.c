@@ -27,7 +27,7 @@ extern module snmpget_module;
 // GET THE INFO FROM THE XML FILE
 // Caller must free the pointer it returns
 //*******************************************************************
-static void get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
+static void snmpget_get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
 {
   struct snmpget_result *res = (struct snmpget_result *)probe_res;
 
@@ -37,10 +37,11 @@ static void get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr 
   }
 }
 
+#ifdef UW_PROCESS
 //*******************************************************************
 // STORE RAW RESULTS
 //*******************************************************************
-static gint store_raw_result(struct _module *probe, void *probe_def, void *probe_res, guint *seen_before)
+static gint snmpget_store_raw_result(struct _module *probe, void *probe_def, void *probe_res, guint *seen_before)
 {
   MYSQL_RES *result;
   struct snmpget_result *res = (struct snmpget_result *)probe_res;
@@ -75,7 +76,7 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
 //*******************************************************************
 // SUMMARIZE A TABLE INTO AN OLDER PERIOD
 //*******************************************************************
-static void summarize(module *probe, void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint resummarize)
+static void snmpget_summarize(module *probe, void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint resummarize)
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
@@ -139,6 +140,7 @@ static void summarize(module *probe, void *probe_def, void *probe_res, char *fro
 
   mysql_free_result(result);
 }
+#endif /* UW_PROCESS */
 
 module snmpget_module  = {
   STANDARD_MODULE_STUFF(snmpget),
@@ -148,12 +150,12 @@ module snmpget_module  = {
   NO_START_RUN,
   NO_ACCEPT_PROBE,
   NO_XML_RESULT_NODE,
-  get_from_xml,
+  snmpget_get_from_xml,
   NO_FIX_RESULT,
   NO_GET_DEF,
 #ifdef UW_PROCESS
-  store_raw_result,
-  summarize,
+  snmpget_store_raw_result,
+  snmpget_summarize,
 #endif
   NO_END_PROBE,
   NO_END_RUN

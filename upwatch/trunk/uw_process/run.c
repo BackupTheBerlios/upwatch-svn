@@ -264,10 +264,10 @@ int init(void)
   return(1);
 }
 
-#ifdef UW_PROCESS
 // return true if the given probename is trusted
 int trust(char *name)
 {
+#ifdef UW_PROCESS
   int trust;
   int     ct  = STACKCT_OPT( TRUST );
   char**  pn = STACKLST_OPT( TRUST );
@@ -283,9 +283,9 @@ int trust(char *name)
       return 1;
     }
   }
+#endif
   return 0;
 }
-#endif
 
 static int mystrcmp(char **a, char **b)
 {
