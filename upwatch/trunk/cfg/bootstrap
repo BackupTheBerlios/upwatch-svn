@@ -1,13 +1,13 @@
 #! /bin/sh
 
 # libstatgrab
-pushd libstatgrab-0.7
+cd libstatgrab-0.7
 if [ ! -f libstatgrab-configure.gnu ]
 then
   cp ../patches/libstatgrab-configure.gnu .
   autoconf
 fi
-popd
+cd ..
 
 aclocal \
 && autoheader \

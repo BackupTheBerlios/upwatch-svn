@@ -1,5 +1,9 @@
 include $(top_srcdir)/Makefile.am.path
 
+if CYGWIN
+MYCFLAGS = -DCYGWIN
+endif
+
 bin_PROGRAMS = ctime slot uwsaidar uwq
 man_MANS = ctime.1 slot.1 uwq.1
 INCLUDES = -I../upwatch 
@@ -8,7 +12,7 @@ EXTRA_DIST = ctime.1 slot.1 uwq.1
 
 uwsaidar_SOURCES = uwsaidar.c
 uwsaidar_LDADD = $(LIBSTATGRAB) @LIBNCURSES_LIBS@
-uwsaidar_CFLAGS = -I$(INCL_STATGRAB)
+uwsaidar_CFLAGS = -I$(INCL_STATGRAB) $(MYCFLAGS)
 
 include $(top_srcdir)/Makefile.am.common
 
