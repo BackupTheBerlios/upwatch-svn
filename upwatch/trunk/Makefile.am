@@ -43,7 +43,7 @@ EXTRA_DIST = Makefile.am.common Makefile.am.libs VERSION libtool ChangeLog \
   upwatch-spec.def upwatch-spec.tpl upwatch.spec templates upwatch.mysql probes.enum \
   config/upwatch.conf config/upwatch-base.mysql config/result.dtd config/logrotate \
   config/cron.daily config/upwatch.init config/upwatch.init-suse \
-  patches/libpcap-linux-timeout.patch \
+  patches/libpcap-linux-timeout.patch patches/libstatgrab-configure.gnu \
   common/db.c common/generic_options.def common/dbase_options.def common/init.tpl \
   common/main.c common/man1.tpl common/spec.tpl common/minimal_options.def \
   common/probe.tpl common/probe_generic.def common/common.h \

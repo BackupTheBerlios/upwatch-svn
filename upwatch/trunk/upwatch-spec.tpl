@@ -78,9 +78,13 @@ This package contains the IP traffic monitor for
 edge/border routers.
 
 %prep
+
 %setup  
 
 %build 
+# so libstatgrab configures with our commandline parameters
+cp patches/libstatgrab-configure.gnu libstatgrab-0.6/configure.gnu 
+
 %configure
 make 
 make check
@@ -158,6 +162,12 @@ install -m 660 [+extraprog+]/[+extraprog+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+
   gzip .%{_mandir}/man1/*.1 
 }
 %endif
+
+# remove files we don't want to package
+for unpackaged in /usr/bin/saidar /usr/bin/statgrab /usr/bin/statgrab-make-mrtg-config /usr/bin/statgrab-make-mrtg-index /usr/include/statgrab.h /usr/lib/libstatgrab.a /usr/lib/libstatgrab.la /usr/lib/libstatgrab.so.1.0.7 /usr/lib/pkgconfig/libstatgrab.pc
+do
+  rm -f $RPM_BUILD_ROOT$unpackaged
+done
 
 %clean
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT

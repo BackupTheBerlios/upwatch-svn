@@ -9,18 +9,13 @@
 # Created:         Sun August 18, 2002
 #            by: bkorb
 # ----------------------------------------------------------------------
-# @(#) $Id: bootstrap.local,v 1.3 2003/09/04 15:23:01 raarts Exp $
+# @(#) $Id: bootstrap.local,v 1.4 2003/10/17 10:35:47 raarts Exp $
 # ----------------------------------------------------------------------
 
 case "${BOOTSTRAP}" in
 pre  )
   set -e ; set -x
-  #rm -rf libopts libopts-*
-  #gunzip -fc `autoopts-config libsrc` | tar -xvf -
-  #tag=`set -- libopts-*.*.*/libopts.m4 ; echo $1 | sed 's,/.*,,'`
-  #cp -f ${tag}/libopts.m4 cfg/. || exit 1
-
-  #mv -f ${tag} libopts
+  cp patches/libstatgrab-configure.gnu libstatgrab-0.6/configure.gnu 
   ;;
 
 post )
