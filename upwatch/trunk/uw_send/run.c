@@ -147,7 +147,7 @@ int pushto(int sock, char *filename)
     fclose(out);
     return(0);
   }
-  if (fwrite(buffer, i, 1, out) != 1) {
+  if (i>0 && fwrite(buffer, i, 1, out) != 1) {
     LOG(LOG_WARNING, "socket write error: %m");
     fclose(in);
     fclose(out);
