@@ -189,6 +189,10 @@ static void *get_def(module *probe, void *probe_res)
 
     g_hash_table_insert(probe->cache, guintdup(res->server), def);
   }
+  // don't trust the color we get from the probe.
+  res->color = STAT_GREEN;
+  if (res->loadavg > def->yellow) res->color = STAT_YELLOW;
+  if (res->loadavg > def->red) res->color = STAT_RED;
   return(def);
 }   
 

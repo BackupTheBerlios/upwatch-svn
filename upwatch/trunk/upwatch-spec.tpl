@@ -3,7 +3,7 @@ Summary: UpWatch - A High performance monitoring framwork
 Vendor: http://www.upwatch.com
 Name: upwatch
 Version: [+ version +]
-Release: 1
+Release: 2
 Source: http://www.upwatch.com/%{name}-%{version}.tar.gz
 Packager: Ron Arts <raarts@upwatch.com>
 Copyright: Proprietary - Redistribution Prohibited
@@ -128,6 +128,7 @@ if [ "$1" -eq "0" ]; then
 /etc/cron.daily/upwatch
 %attr(2770,upwatch,upwatch) %dir /var/log/upwatch
 %attr(2770,upwatch,upwatch) %dir /var/spool/upwatch
+%attr(2770,upwatch,upwatch) %dir /var/run/upwatch
 %attr(0755,root,root) /usr/bin/uwsaidar
 %attr(0755,root,root) /usr/bin/ctime
 %attr(0755,root,root) /usr/bin/slot
@@ -275,30 +276,30 @@ This package contains [+ extraprog +]
 if [ -f /etc/redhat-release ]
 then
   DISTR=redhat
-  ln -sf /usr/share/upwatch/init/uw_[+ extraprog +].$DISTR /etc/init.d/uw_[+ extraprog +]
+  ln -sf /usr/share/upwatch/init/[+ extraprog +].$DISTR /etc/init.d/[+ extraprog +]
 fi
 if [ -f /etc/SuSE-release ]
 then
   DISTR=suse
-  ln -sf /usr/share/upwatch/init/uw_[+ extraprog +].$DISTR /etc/init.d/uw_[+ extraprog +]
+  ln -sf /usr/share/upwatch/init/[+ extraprog +].$DISTR /etc/init.d/[+ extraprog +]
   pushd /usr/sbin
-  ln -sf ../../etc/init.d/uw_[+ extraprog +] rcuw_[+ extraprog +]
+  ln -sf ../../etc/init.d/[+ extraprog +] rc[+ extraprog +]
   popd
 fi
 if [ -x /sbin/chkconfig ]; then
-  /sbin/chkconfig --add uw_[+ extraprog +] 2>/dev/null || true
+  /sbin/chkconfig --add [+ extraprog +] 2>/dev/null || true
 fi
 
 %postun [+ extraprog +]
 if [ "$1" -eq "0" ]; then
-  rm -f /etc/init.d/uw_[+ extraprog +]
-  rm -f /usr/sbin/rcuw_[+ extraprog +]
+  rm -f /etc/init.d/[+ extraprog +]
+  rm -f /usr/sbin/rc[+ extraprog +]
 fi
 
 %preun [+ extraprog +]
 if [ "$1" = 0 ] ; then
   if [ -x /sbin/chkconfig ]; then
-    /sbin/chkconfig --del uw_[+ extraprog +] 2>/dev/null || true
+    /sbin/chkconfig --del [+ extraprog +] 2>/dev/null || true
   fi
 fi
 

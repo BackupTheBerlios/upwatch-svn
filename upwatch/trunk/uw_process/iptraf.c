@@ -221,13 +221,14 @@ static void *get_def(module *probe, void *probe_res)
     g_hash_table_insert(probe->cache, guintdup(*(unsigned *)&res->ipaddr), def);
   }
   if (res->color == 0) { // no color given in the result?
-    float largest = res->incoming > res->outgoing ? res->incoming : res->outgoing;
-    res->color = 200;
-    if ((largest/8)/res->interval > (def->yellow*1024)) {
+    guint largest = (res->incoming > res->outgoing ? res->incoming : res->outgoing) / 8;
+    res->color = STAT_GREEN;
+    if (largest/(res->interval?res->interval:1) > (def->yellow*1024)) {
       res->color = STAT_YELLOW;
     }
-    if ((largest/8)/res->interval > (def->red*1024)) {
-      LOG(LOG_NOTICE, "%u/8/%u > %u", largest, res->interval, def->red*1024);
+    if (largest/(res->interval?res->interval:1) > (def->red*1024)) {
+      LOG(LOG_NOTICE, "%u(%u): (%u/8)/%u (=%u) > %u", res->probeid, res->stattime, largest, res->interval, 
+          largest/(res->interval?res->interval:1), def->red*1024);
       res->color = STAT_RED;
     }
   }
@@ -363,7 +364,7 @@ module iptraf_module  = {
   store_raw_result,
   summarize,
   NO_END_PROBE,
-  NO_END_RUN
+  iptraf_end_run 
 };
 
 

@@ -48,8 +48,8 @@ void queue_free(void *val)
 
 int init(void)
 {
-  int ct  = STACKCT_OPT( INPUT );
-  char **input = STACKLST_OPT(INPUT);
+  int ct;
+  char **input;
   char **host, **port, **user, **pwd, **thr;
   int i;
 
@@ -59,7 +59,13 @@ int init(void)
     fprintf(stderr, "missing threads option\n");
     return 0;
   }
+  if (!HAVE_OPT(INPUT)) {
+    fprintf(stderr, "missing input option\n");
+    return 0;
+  }
 
+  ct  = STACKCT_OPT( INPUT );
+  input = STACKLST_OPT(INPUT);
   host = STACKLST_OPT(HOST);
   port = STACKLST_OPT(PORT);
   user = STACKLST_OPT(UWUSER);

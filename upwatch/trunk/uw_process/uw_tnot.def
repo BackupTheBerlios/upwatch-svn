@@ -207,13 +207,12 @@ valid when multi_value_inserts is set.';
 };
 
 flag = { 
-    name      = separate; 
+    name      = slave; 
     arg_type  = string;
-    stack_arg;
-    descrip   = "Separate processing for one or more probes into a separate thread";
+    descrip   = "Force this instance to act as a slave for the given queue";
     doc       =
-'For optimalisation reasons you can group processing of specific probes into threads.
-Put the names of these probes into a `separate` option.';
+'Mostly used in debugging. If you want to debug a particular slave on the queue q_iptraf
+then start the debugger and run the program with `-d3 --slave q_iptraf`';
 };
 
 #include dbase_options.def

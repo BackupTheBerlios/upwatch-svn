@@ -195,6 +195,7 @@ void child_termination_handler (int signum)
   }
 }
 
+static char path[PATH_MAX];
 int init(void)
 {
   struct sigaction new_action;
@@ -236,6 +237,11 @@ int init(void)
   if (!HAVE_OPT(INPUT)) {
     LOG(LOG_NOTICE, "Error: no input queue given");
     return(0);
+  }
+
+  if (HAVE_OPT(SLAVE)) {
+    sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), OPT_ARG(SLAVE));
+    master = 0;
   }
 
   /* set up SIGCHLD handler */
@@ -329,7 +335,6 @@ extern int forever;
   return(count);
 }
 
-static char path[PATH_MAX];
 
 int run(void)
 {
