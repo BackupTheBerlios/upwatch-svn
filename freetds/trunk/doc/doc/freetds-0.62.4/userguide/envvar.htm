@@ -1,0 +1,456 @@
+<HTML
+><HEAD
+><TITLE
+>Setting the environment variables</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.57"><LINK
+REL="HOME"
+TITLE="FreeTDS User Guide"
+HREF="index.htm"><LINK
+REL="UP"
+TITLE="Install FreeTDS"
+HREF="install.htm"><LINK
+REL="PREVIOUS"
+TITLE="The locales.conf file"
+HREF="locales.htm"><LINK
+REL="NEXT"
+TITLE="Configurations that Work"
+HREF="configurations.htm"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+><SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> User Guide: A Guide to Installing, Configuring, and Running <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="locales.htm"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 3. Install <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="configurations.htm"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="ENVVAR"
+>Setting the environment variables</A
+></H1
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="WHATFOR"
+>What they're for</A
+></H2
+><P
+>You can use environment variables to 
+<P
+></P
+><UL
+><LI
+><P
+>Advertise the location of the <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> libraries to programs that want them.</P
+></LI
+><LI
+><P
+>Override some of the settings in <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+>'s configuration file.  </P
+></LI
+><LI
+><P
+>Control how logging is done.  </P
+></LI
+></UL
+>
+
+This section covers the first two items.  For information about environment variables that control logging, see <A
+HREF="logging.htm"
+>Logging</A
+>
+			</P
+><P
+>In a typical system, no environment variables need be used.  They're sometimes handy for testing, for instance setting <TT
+CLASS="ENVAR"
+>TDSVER</TT
+> to check if a connection problem is due to using the wrong protocol version.  And they have other uses, described below.  But they're just knobs, so don't feel you have to turn every one, unless you're the sort that likes turning knobs.  
+			</P
+><P
+></P
+><DIV
+CLASS="VARIABLELIST"
+><P
+><B
+>Environment Variables</B
+></P
+><DL
+><DT
+><TT
+CLASS="ENVAR"
+>FREETDS</TT
+></DT
+><DD
+><P
+>may be used to specify the name and location of the <TT
+CLASS="FILENAME"
+>freetds.conf</TT
+> file.  In prior versions of <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+>, this variable was known as <TT
+CLASS="ENVAR"
+>FREETDSCONF</TT
+>. </P
+></DD
+><DT
+><TT
+CLASS="ENVAR"
+>TDSVER</TT
+></DT
+><DD
+><P
+>governs the version of the <SPAN
+CLASS="ACRONYM"
+>TDS</SPAN
+> protocol used to connect to your server.  For a given server, <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> inspects four sources in the following order to determine which <SPAN
+CLASS="ACRONYM"
+>TDS</SPAN
+> protocol version to use, using the first one it finds.  </P
+><P
+></P
+><OL
+TYPE="1"
+><LI
+><P
+>The value specified in <TT
+CLASS="ENVAR"
+>TDSVER</TT
+> 
+					</P
+></LI
+><LI
+><P
+>A <TT
+CLASS="FILENAME"
+>freetds.conf</TT
+> file entry (see below)
+					</P
+></LI
+><LI
+><P
+>The <TT
+CLASS="FILENAME"
+>interfaces</TT
+> file entry (see below)
+					</P
+></LI
+><LI
+><P
+>The <TT
+CLASS="OPTION"
+>--with-tdsver</TT
+> option passed to <B
+CLASS="COMMAND"
+>configure</B
+>
+					</P
+></LI
+></OL
+></DD
+><DT
+><TT
+CLASS="ENVAR"
+>TDSPORT</TT
+></DT
+><DD
+><P
+>specifies a TCP port number at which the dataserver is listening.  It overrides the default port (1433 for TDS 4.2/7.0/8.0, 4000 for TDS 5.0) as well as any port specified in the <TT
+CLASS="FILENAME"
+>freetds.conf</TT
+> file.</P
+></DD
+><DT
+><TT
+CLASS="ENVAR"
+>SYBASE</TT
+></DT
+><DD
+><P
+>points to the <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> run-time directory.  Use of this variable originated with Sybase (the company), and many programs still rely on <TT
+CLASS="ENVAR"
+>SYBASE</TT
+> to discover the location of the <SPAN
+CLASS="QUOTE"
+>"SYBASE"</SPAN
+> libraries.  </P
+><P
+>The primary use of <TT
+CLASS="ENVAR"
+>SYBASE</TT
+> is to advertise the location of the <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> libraries.  A secondary use is to point to the location of the <TT
+CLASS="FILENAME"
+>interfaces</TT
+> file (if used, see the <A
+HREF="interfacesfile.htm"
+>Appendix</A
+>), which some programs examine directly.  </P
+></DD
+><DT
+><TT
+CLASS="ENVAR"
+>TDSQUERY</TT
+>, <TT
+CLASS="ENVAR"
+>DSQUERY</TT
+></DT
+><DD
+><P
+>provides a server name to connect to if none is specified by the application.  <TT
+CLASS="ENVAR"
+>DSQUERY</TT
+> is the historical Sybase name for this variable.
+			</P
+></DD
+><DT
+><TT
+CLASS="ENVAR"
+>TDSHOST</TT
+></DT
+><DD
+><P
+>overrides the host specified in the <TT
+CLASS="FILENAME"
+>freetds.conf</TT
+>.</P
+></DD
+></DL
+></DIV
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="SETTING"
+>Setting environment variables</A
+></H2
+><P
+>Of course, each shell is a little different.  In the Bourne shell and variants such as <SPAN
+CLASS="APPLICATION"
+>ksh</SPAN
+> and <SPAN
+CLASS="APPLICATION"
+>bash</SPAN
+>, to set
+<TT
+CLASS="ENVAR"
+>Sybase</TT
+> and <TT
+CLASS="ENVAR"
+>TDSVER</TT
+> do:
+
+<PRE
+CLASS="SCREEN"
+><TT
+CLASS="PROMPT"
+>$ </TT
+><TT
+CLASS="USERINPUT"
+><B
+>export SYBASE=/usr/local/freetds</B
+></TT
+>  # (or your favorite directory)
+<TT
+CLASS="PROMPT"
+>$ </TT
+><TT
+CLASS="USERINPUT"
+><B
+>export TDSVER=4.2</B
+></TT
+></PRE
+>
+			</P
+><P
+>In <SPAN
+CLASS="APPLICATION"
+>csh</SPAN
+>:
+
+<PRE
+CLASS="SCREEN"
+><TT
+CLASS="PROMPT"
+>$ </TT
+><TT
+CLASS="USERINPUT"
+><B
+>setenv SYBASE /usr/local/freetds</B
+></TT
+>
+<TT
+CLASS="PROMPT"
+>$ </TT
+><TT
+CLASS="USERINPUT"
+><B
+>setenv TDSVER 4.2</B
+></TT
+></PRE
+>
+			</P
+></DIV
+><DIV
+CLASS="SECT2"
+><H2
+CLASS="SECT2"
+><A
+NAME="CHECKING"
+>Checking your work</A
+></H2
+><P
+>When you're done, you should see something very like this:
+
+<PRE
+CLASS="SCREEN"
+><TT
+CLASS="PROMPT"
+>$ </TT
+><TT
+CLASS="USERINPUT"
+><B
+>ls $SYBASE</B
+></TT
+>
+<TT
+CLASS="COMPUTEROUTPUT"
+>etc include interfaces lib</TT
+></PRE
+>
+			</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="locales.htm"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.htm"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="configurations.htm"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>The <TT
+CLASS="FILENAME"
+>locales.conf</TT
+> file</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="install.htm"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Configurations that Work</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

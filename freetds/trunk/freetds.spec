@@ -1,0 +1,113 @@
+%define	name	freetds
+%define	version	0.62.4
+ 
+Name: %{name} 
+Version: %{version} 
+Release: 1 
+Vendor: www.freetds.org 
+Copyright: LGPL 
+Group: System Environment/Libraries 
+Source: ftp://ftp.metalab.unc.edu/pub/Linux/ALPHA/freetds/%{name}-%{version}.tar.gz 
+BuildRoot: %{_tmppath}/%{name}-buildroot 
+Summary: FreeTDS is a free re-implementation of the TDS (Tabular DataStream) protocol that is used by Sybase and Microsoft for their database products. 
+ 
+%description 
+FreeTDS is a project to document and implement the TDS (Tabular DataStream) 
+protocol. TDS is used by Sybase and Microsoft for client to database server 
+communications. FreeTDS includes call level interfaces for DB-Lib, CT-Lib, 
+and ODBC.  
+ 
+%package devel 
+Group: Development/Libraries 
+Summary: Include files needed for development with FreeTDS 
+Requires: freetds = %{version}
+
+%package unixodbc
+Group: System Environment/Libraries
+Summary: Driver ODBC for unixODBC
+Requires: freetds = %{version}, unixODBC >= 2.0.0
+
+%package doc
+Group: Documentation
+Summary: User documentation for FreeTDS
+ 
+%description devel
+The freetds-devel package contains the files necessary for development with 
+the FreeTDS libraries. 
+
+%description unixodbc
+The freetds-unixodbc package contains ODBC driver build for unixODBC.
+
+%description doc
+The freetds-doc package contains the useguide and reference of FreeTDS 
+and can be installed even if FreeTDS main package is not installed
+
+%prep
+%setup 
+ 
+%build 
+%configure --with-tdsver=4.2 --prefix=/usr --with-unixodbc=/usr/local --sysconfdir=%{_sysconfdir}
+make RPM_OPT_FLAGS="$RPM_OPT_FLAGS"
+ 
+%install 
+rm -rf "$RPM_BUILD_ROOT"
+make DESTDIR="$RPM_BUILD_ROOT" install
+rm -rf "$RPM_BUILD_ROOT/%{_docdir}/freetds-%{version}"
+
+%post 
+/sbin/ldconfig 
+ 
+%clean 
+rm -rf $RPM_BUILD_ROOT 
+ 
+%files 
+%defattr(-,root,root) 
+%doc AUTHORS BUGS COPYING ChangeLog INSTALL NEWS README TODO 
+%{_bindir}/*
+%{_mandir}/man1/*
+%{_libdir}/libct.so*
+%{_libdir}/libsybdb.so*
+%{_libdir}/libtds.so*
+%{_libdir}/libtdssrv.so*
+%config %{_sysconfdir}/*
+ 
+%files devel 
+%defattr (-,root,root) 
+%{_includedir}/*
+%{_libdir}/libct.a
+%{_libdir}/libct.la
+%{_libdir}/libsybdb.a
+%{_libdir}/libsybdb.la
+%{_libdir}/libtds.a
+%{_libdir}/libtds.la
+%{_libdir}/libtdsodbc.a
+%{_libdir}/libtdsodbc.la
+%{_libdir}/libtdssrv.a
+%{_libdir}/libtdssrv.la
+
+%files unixodbc
+%defattr(-,root,root)
+%{_libdir}/libtdsodbc.so*
+
+%files doc
+%defattr (-,root,root)
+%doc doc/doc/freetds-%{version}/userguide doc/images doc/doc/freetds-%{version}/reference
+ 
+%changelog 
+* Sun Mar 30 2003 Frediano Ziglio <freddy77@angelfire.com>
+- add reference to doc package
+
+* Wed Feb  5 2003 Ian Grant <Ian.Grant@cl.cam.ac.uk>
+- 0.61 tweaked. Added libtdssrv libraries and tools in /usr/bin + man pages
+
+* Sun Dec 30 2002 David Hollis <dhollis@davehollis.com>
+- 0.60 tweaked.  Move .a & .la files to -devel package
+
+* Thu Dec 20 2001 Brian Bruns <camber@ais.org> 
+- Modifications for 0.53 ver and removing interfaces file
+
+* Wed Jun 28 2001 Brian Bruns <camber@ais.org> 
+- Modifications for 0.52 ver and ODBC drivers 
+
+* Wed Feb 14 2001 David Hollis <dhollis@emagisoft.com> 
+- First stab at RPM for 0.51 ver 

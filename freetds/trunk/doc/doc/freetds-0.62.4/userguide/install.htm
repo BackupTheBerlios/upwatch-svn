@@ -1,0 +1,322 @@
+<HTML
+><HEAD
+><TITLE
+>Install FreeTDS</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.57"><LINK
+REL="HOME"
+TITLE="FreeTDS User Guide"
+HREF="index.htm"><LINK
+REL="PREVIOUS"
+TITLE="OS-specific Issues"
+HREF="osissues.htm"><LINK
+REL="NEXT"
+TITLE="Choosing a TDS protocol version"
+HREF="choosingtdsprotocol.htm"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+><SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> User Guide: A Guide to Installing, Configuring, and Running <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="osissues.htm"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="choosingtdsprotocol.htm"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="INSTALL"
+>Chapter 3. Install <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+></A
+></H1
+><TABLE
+BORDER="0"
+WIDTH="100%"
+CELLSPACING="0"
+CELLPADDING="0"
+CLASS="EPIGRAPH"
+><TR
+><TD
+WIDTH="45%"
+>&nbsp;</TD
+><TD
+WIDTH="45%"
+ALIGN="LEFT"
+VALIGN="TOP"
+><I
+><P
+><I
+>If you install it they will stay?</I
+></P
+></I
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+><A
+HREF="install.htm#LOCALENVIRONMENT"
+>The local environment</A
+></DT
+><DT
+><A
+HREF="choosingtdsprotocol.htm"
+>Choosing a <SPAN
+CLASS="ACRONYM"
+>TDS</SPAN
+> protocol version</A
+></DT
+><DT
+><A
+HREF="freetdsconf.htm"
+>The <TT
+CLASS="FILENAME"
+>freetds.conf</TT
+> file</A
+></DT
+><DT
+><A
+HREF="locales.htm"
+>The <TT
+CLASS="FILENAME"
+>locales.conf</TT
+> file</A
+></DT
+><DT
+><A
+HREF="envvar.htm"
+>Setting the environment variables</A
+></DT
+><DT
+><A
+HREF="configurations.htm"
+>Configurations that Work</A
+></DT
+><DT
+><A
+HREF="confirminstall.htm"
+>Confirm the installation</A
+></DT
+></DL
+></DIV
+><P
+>		</P
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="../images/note.gif"
+HSPACE="5"
+ALT="Note"></TD
+><TH
+ALIGN="LEFT"
+VALIGN="CENTER"
+><B
+>Confusing terminology</B
+></TH
+></TR
+><TR
+><TD
+>&nbsp;</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+><SPAN
+CLASS="QUOTE"
+>"Configuring"</SPAN
+> and <SPAN
+CLASS="QUOTE"
+>"installing"</SPAN
+> 
+don't have absolute, context-free definitions.  In some circles, we install a product and then configure it.  In the <SPAN
+CLASS="ACRONYM"
+>GNU</SPAN
+> world, we <B
+CLASS="COMMAND"
+>configure</B
+> the package (generate the Makefile), then we <B
+CLASS="COMMAND"
+>make install</B
+> the package.  To  <I
+CLASS="EMPHASIS"
+>install the package</I
+> is to copy the binaries to their appropriate run-time directories, copy the documentation to the <TT
+CLASS="FILENAME"
+>doc</TT
+> directory, and maybe let the package manager know what's happened.  That's generally considered part of the <SPAN
+CLASS="PHRASE"
+>build process</SPAN
+>, covered in the last chapter.  
+			</P
+><P
+>For lack of a better term, this chapter describes installing the <I
+CLASS="EMPHASIS"
+>product</I
+>.  Put more specifically, once we're done with the package manager, we still have to tell <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> about your database servers, and we still have to tell your client programs about <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+>.  
+			</P
+></TD
+></TR
+></TABLE
+></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="LOCALENVIRONMENT"
+>The local environment</A
+></H1
+><P
+>After <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> has been built and installed, it still doesn't know where your servers are or what particular version of Sybase or Microsoft software each one is using.  The purpose of this section is to explain how to describe your dataservers to <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+>.  <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> has not one but two ways to do this, in <TT
+CLASS="FILENAME"
+>freetds.conf</TT
+> and <TT
+CLASS="FILENAME"
+>interfaces</TT
+>, described below.  It also can use environment variables to override settings in those configuration files.  One of the more important (and arcane) settings is the <SPAN
+CLASS="ACRONYM"
+>TDS</SPAN
+> protocol version, described next.  
+			</P
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="osissues.htm"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.htm"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="choosingtdsprotocol.htm"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>OS-specific Issues</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Choosing a <SPAN
+CLASS="ACRONYM"
+>TDS</SPAN
+> protocol version</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>
