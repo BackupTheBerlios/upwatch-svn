@@ -27,9 +27,9 @@ struct hostinfo {
   struct timeval	last_send_time;	/* time of last packet sent */
   int			num_sent;	/* number of ping packets sent */
   int			num_recv;	/* number of pings received */
-  int			max_reply;	/* longest response time (ms) */
-  int			min_reply;	/* shortest response time (ms) */
-  int			total_time;	/* total response time (ms) for avg */
+  int			max_reply;	/* longest response time (microseconds) */
+  int			min_reply;	/* shortest response time (microseconds) */
+  int			total_time;	/* total response time (microseconds) for avg */
   char			*msg;		/* last error message */
 } hostinfo;
 
@@ -299,11 +299,11 @@ int run(void)
     sprintf(buffer, "%s", inet_ntoa(hosts[id]->saddr.sin_addr));	
       subtree = xmlNewChild(host, NULL, "ipaddress", buffer);
     sprintf(buffer, "%d", color); 		subtree = xmlNewChild(ping, NULL, "color", buffer);
-    sprintf(buffer, "%f", ((float) hosts[id]->min_reply) / 1000.0);	
+    sprintf(buffer, "%f", ((float) hosts[id]->min_reply) * 0.000001);
       subtree = xmlNewChild(ping, NULL, "min", buffer);
-    sprintf(buffer, "%f", ((float) (hosts[id]->total_time / (hosts[id]->num_recv==0?1:hosts[id]->num_recv))) / 1000.0);	
+    sprintf(buffer, "%f", ((float) (hosts[id]->total_time / (hosts[id]->num_recv==0?1:hosts[id]->num_recv))) * 0.000001);
       subtree = xmlNewChild(ping, NULL, "avg", buffer);
-    sprintf(buffer, "%f", ((float) hosts[id]->max_reply) / 1000.0);	
+    sprintf(buffer, "%f", ((float) hosts[id]->max_reply) * 0.000001);
       subtree = xmlNewChild(ping, NULL, "max", buffer);
     if (info[0]) subtree = xmlNewChild(ping, NULL, "info", info);
 
