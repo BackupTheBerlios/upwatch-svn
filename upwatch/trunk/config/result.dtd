@@ -1,7 +1,4 @@
-<!ELEMENT result	((ping|httpget|iptraf|sysstat|bb_disk|bb_bgp|bb_conn|bb_cpu|bb_dhcp|bb_dns|
-                          bb_ftp|bb_http|bb_hylafax|bb_ismtp|bb_msgs|bb_mysql|bb_pop3|
-                          bb_procs|bb_radius|bb_smtp|bb_squid|bb_svcs|mysql|pop3|mssql|
-                          postgresql|imap)*)>
+<!ELEMENT result	((ping|httpget|iptraf|sysstat|bb|bb_cpu|mysql|pop3|mssql|postgresql|imap)*)>
 <!ATTLIST result	fromhost NMTOKEN #REQUIRED	-- host where this result originated --
 			date NMTOKEN #REQUIRED		-- data/time generated-- 
 > 
@@ -118,93 +115,14 @@
 			expires NMTOKEN #REQUIRED
 			notify NMTOKEN "1" >
 
-<!ELEMENT bb_disk	(host,color,info?)>
-<!ATTLIST bb_disk	hostname NMTOKEN "localhostname"
+<!ELEMENT bb		(host,color,info?)>
+<!ATTLIST bb		hostname NMTOKEN "localhost"
 			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED>
-
-<!ELEMENT bb_bgp	(hostname,color,info?)>
-<!ATTLIST bb_bgp	hostname NMTOKEN "localhostname"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED>
-
-<!ELEMENT bb_conn	(hostname,color,info?)>
-<!ATTLIST bb_conn	hostname NMTOKEN "localhostname"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED>
+			expires NMTOKEN #REQUIRED
+			bbname NMTOKEN #REQUIRED>
 
 <!ELEMENT bb_cpu	(hostname,color,info?)>
-<!ATTLIST bb_cpu	hostname NMTOKEN "localhostname"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED>
-
-<!ELEMENT bb_dhcp	(hostname,color,info?)>
-<!ATTLIST bb_dhcp	hostname NMTOKEN "localhostname"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED>
-
-<!ELEMENT bb_dns	(hostname,color,info?)>
-<!ATTLIST bb_dns	hostname NMTOKEN "localhostname"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED>
-
-<!ELEMENT bb_ftp	(hostname,color,info?)>
-<!ATTLIST bb_ftp	hostname NMTOKEN "localhostname"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED>
-
-<!ELEMENT bb_http	(hostname,color,info?)>
-<!ATTLIST bb_http	hostname NMTOKEN "localhostname"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED>
-
-<!ELEMENT bb_hylafax	(hostname,color,info?)>
-<!ATTLIST bb_hylafax	hostname NMTOKEN "localhostname"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED>
-
-<!ELEMENT bb_ismtp	(hostname,color,info?)>
-<!ATTLIST bb_istmp	hostname NMTOKEN "localhostname"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED>
-
-<!ELEMENT bb_msgs	(hostname,color,info?)>
-<!ATTLIST bb_msgs	hostname NMTOKEN "localhostname"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED>
-
-<!ELEMENT bb_mysql	(hostname,color,info?)>
-<!ATTLIST bb_mysql	hostname NMTOKEN "localhostname"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED>
-
-<!ELEMENT bb_pop3	(hostname,color,info?)>
-<!ATTLIST bb_pop3	hostname NMTOKEN "localhostname"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED>
-
-<!ELEMENT bb_procs	(hostname,color,info?)>
-<!ATTLIST bb_procs	hostname NMTOKEN "localhostname"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED>
-
-<!ELEMENT bb_radius	(hostname,color,info?)>
-<!ATTLIST bb_radius	hostname NMTOKEN "localhostname"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED>
-
-<!ELEMENT bb_smtp	(hostname,color,info?)>
-<!ATTLIST bb_stmp	hostname NMTOKEN "localhostname"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED>
-
-<!ELEMENT bb_squid	(hostname,color,info?)>
-<!ATTLIST bb_squid	hostname NMTOKEN "localhostname"
-			date NMTOKEN #REQUIRED 
-			expires NMTOKEN #REQUIRED>
-
-<!ELEMENT bb_svcs	(hostname,color,info?)>
-<!ATTLIST bb_svcs	hostname NMTOKEN "localhostname"
+<!ATTLIST bb_cpu	hostname NMTOKEN "localhost"
 			date NMTOKEN #REQUIRED 
 			expires NMTOKEN #REQUIRED>
 

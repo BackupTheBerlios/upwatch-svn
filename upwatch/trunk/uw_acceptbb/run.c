@@ -18,6 +18,7 @@
 #define TIMEOUT 10000000L
 int thread_count;
 
+/*
 static char *chop(char *s, int i)
 {
   i--;
@@ -26,6 +27,7 @@ static char *chop(char *s, int i)
   }
   return(s);
 }
+*/
 
 int init(void)
 {
@@ -201,8 +203,14 @@ void add_to_xml_document(char *hostname, char *probename, char *colorstr, struct
   } else if (!strcmp(colorstr, "yellow")) {
     color = STAT_YELLOW;
   }
-  sprintf(buffer, "bb_%s", probename);
-  probe = xmlNewChild(xmlDocGetRootElement(doc), NULL, buffer, NULL);
+
+  if (strcmp(probename, "cpu") == 0) {
+    probe = xmlNewChild(xmlDocGetRootElement(doc), NULL, "bb_cpu", NULL);
+  } else {
+    probe = xmlNewChild(xmlDocGetRootElement(doc), NULL, "bb", NULL);
+    xmlSetProp(probe, "bbname", probename);
+  }
+
   sprintf(buffer, "%d", (int) date);          xmlSetProp(probe, "date", buffer);
   sprintf(buffer, "%d", ((int)date)+(2*60));  xmlSetProp(probe, "expires", buffer);
   host = xmlNewChild(probe, NULL, "host", NULL);
