@@ -2,6 +2,7 @@
 #include <netinet/in_systm.h>
 #include <netinet/in.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
 #include <netdb.h>
@@ -31,6 +32,8 @@ GHashTable *hash;
 void *push(void *data);
 int thread_count;
 int pushto(st_netfd_t rmt_nfd, struct thr_data *td);
+
+int online;
 
 void queue_free(void *val)
 {
@@ -119,7 +122,6 @@ extern int forever;
   char path[PATH_MAX];
   G_CONST_RETURN gchar *filename;
   GDir *dir;
-  int i;
  
   sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), q->name);
   if (debug > 3) LOG(LOG_DEBUG, "reading queue %s", path); 
@@ -166,6 +168,19 @@ int run(void)
   while (thread_count) {
     st_usleep(10000); /* 10 ms */
   }
+  if (HAVE_OPT(HANGUPSCRIPT) && online) {
+    int status;
+
+    status = system(OPT_ARG(HANGUPSCRIPT));
+    if (WIFEXITED(status)) {
+      if (WEXITSTATUS(status) != 0) {
+        LOG(LOG_NOTICE, "%s: error %d", OPT_ARG(HANGUPSCRIPT), WEXITSTATUS(status));
+      }
+    } else {
+      LOG(LOG_NOTICE, "%s exited abnormally", OPT_ARG(HANGUPSCRIPT));
+    }
+  }
+  online = FALSE;
   return 0;
 }
 
@@ -177,6 +192,22 @@ void *push(void *data)
   st_netfd_t rmt_nfd;
   struct thr_data *td = (struct thr_data *)data;
   struct q_info *q = td->q;
+
+  if (HAVE_OPT(DIALSCRIPT) && !online) {
+    int status;
+
+    status = system(OPT_ARG(DIALSCRIPT));
+    if (WIFEXITED(status)) {
+      if (WEXITSTATUS(status) != 0) {
+        LOG(LOG_NOTICE, "%s: error %d", OPT_ARG(DIALSCRIPT), WEXITSTATUS(status));
+        goto quit;
+      }
+    } else {
+      LOG(LOG_NOTICE, "%s exited abnormally", OPT_ARG(DIALSCRIPT));
+      goto quit;
+    }
+    online = TRUE;
+  }
 
   if ((hp = gethostbyname(q->host)) == (struct hostent *) 0) {
     LOG(LOG_NOTICE, "can't resolve %s: %s", q->host, hstrerror(h_errno));

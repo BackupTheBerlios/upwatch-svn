@@ -260,20 +260,50 @@ pthread_mutex_t _logmutex = PTHREAD_MUTEX_INITIALIZER;
 char *_logsrce;
 int _logline;
 char *_logfile;
+static void _ll_lograw(int level, const char *msg);
 
 void _LOGRAW(int level, const char *buffer)
 {
   char *p, *file;
   char msg[2*16384];
+  unsigned now = (unsigned) time(NULL);
+static char prvmsg[512];
+static int rpt;
+static unsigned prv;
 
   if ((p = strrchr(_logsrce, '/')) != NULL) {
     file = ++p;
   } else {
     file = _logsrce;
   }
-  sprintf(msg, "%s[%d] %s(%d): ", progname, getpid(), file, _logline);
+  sprintf(msg, "%s[%u] %s(%d): ", progname, getpid(), file, _logline);
   strcat(msg, buffer);
 
+  //fprintf(stderr, "compare: rpt=%u, msg=%s, prv=%s\n", rpt, msg, prvmsg);
+  // test if the same error happens again and again
+  if (strncmp(prvmsg, msg, sizeof(prvmsg)) == 0) { 
+    //fprintf(stderr, "they are the same\n");
+    if (now - prv < 300) { // but not more then 5 minutes ago
+      //fprintf(stderr, "and not longer than 5 min ago\n");
+      rpt++;
+      return;
+    }
+  }
+  // at this point it is not the same message, or 5 minutes have passed
+  if (rpt) {
+    char buf[256];
+
+    sprintf(buf, "%s[%u]: last message repeated %u times", progname, getpid(), rpt);
+    _ll_lograw(level, buf);
+    rpt = 0;
+  }
+  prv = now;
+  strncpy(prvmsg, msg, sizeof(prvmsg));
+  _ll_lograw(level, msg);
+}
+
+static void _ll_lograw(int level, const char *msg)
+{
   if (OPT_VALUE_STDERR) {
     fprintf(stderr, "%s\n", msg);
   }
