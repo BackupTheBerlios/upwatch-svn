@@ -39,6 +39,7 @@ static void xml_result_node(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsP
   struct iptraf_result *res = (struct iptraf_result *)probe_res;
 
   inet_aton(res->ipaddress, &res->ipaddr);
+  res->interval = xmlGetPropUnsigned(cur, (const xmlChar *) "interval");
 }
 
 //*******************************************************************
@@ -188,10 +189,11 @@ static void *get_def(module *probe, void *probe_res)
   if (res->color == 0) { // no color given in the result?
     float largest = res->in_total > res->out_total ? res->in_total : res->out_total;
     res->color = 200;
-    if ((largest*8)/res->interval > (def->yellow*1024)) {
+    if ((largest/8)/res->interval > (def->yellow*1024)) {
       res->color = STAT_YELLOW;
     }
-    if ((largest*8)/res->interval > (def->red*1024)) {
+    if ((largest/8)/res->interval > (def->red*1024)) {
+      LOG(LOG_NOTICE, "%u/8/%u > %u", largest, res->interval, def->red*1024);
       res->color = STAT_RED;
     }
   }
