@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.32 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.33 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -311,6 +311,7 @@ AC_CHECK_LIB([pthread], [pthread_create],
   [LIBPTHREAD_LIBS=-lpthread],[AC_MSG_ERROR([Sorry, we need -lpthread to continue])] )
 AC_SUBST(LIBPTHREAD_LIBS)
 
+# PCAP
 AC_CHECK_LIB([pcap], [pcap_close], [HAVE_LIBPCAP=1], [HAVE_LIBPCAP=0])
 if test $HAVE_LIBPCAP -eq 1
 then
@@ -319,6 +320,7 @@ fi
 AM_CONDITIONAL(HAVE_LIBPCAP, test $HAVE_LIBPCAP -eq 1)
 AC_SUBST(LIBPCAP_LIBS)
 
+# GDBM
 AC_CHECK_LIB([gdbm], [gdbm_close], [HAVE_LIBGDBM=1], [HAVE_LIBGDBM=0])
 if test $HAVE_LIBGDBM -eq 1
 then
@@ -327,6 +329,7 @@ fi
 AM_CONDITIONAL(HAVE_LIBGDBM, test $HAVE_LIBGDBM -eq 1)
 AC_SUBST(LIBGDBM_LIBS)
 
+# crypto (openSSL)
 AC_CHECK_LIB([crypto], [SSLeay_version], [HAVE_LIBCRYPTO=1], [HAVE_LIBCRYPTO=0])
 if test $HAVE_LIBCRYPTO -eq 1
 then
@@ -335,6 +338,7 @@ fi
 AM_CONDITIONAL(HAVE_LIBCRYPTO, test $HAVE_LIBCRYPTO -eq 1)
 AC_SUBST(LIBCRYPTO_LIBS)
 
+# snmp
 AC_CHECK_LIB([snmp], [snprint_value], [HAVE_LIBSNMP=1], [HAVE_LIBSNMP=0], -lcrypto)
 if test $HAVE_LIBSNMP -eq 1
 then
@@ -343,6 +347,7 @@ fi
 AM_CONDITIONAL(HAVE_LIBSNMP, test $HAVE_LIBSNMP -eq 1)
 AC_SUBST(LIBSNMP_LIBS)
 
+# tds
 AC_CHECK_LIB([tds], [tds_alloc_login], [HAVE_LIBTDS=1], [HAVE_LIBTDS=0])
 if test $HAVE_LIBTDS -eq 1
 then
@@ -351,6 +356,7 @@ fi
 AM_CONDITIONAL(HAVE_LIBTDS, test $HAVE_LIBTDS -eq 1)
 AC_SUBST(LIBTDS_LIBS)
 
+# PostgreSQL
 AC_CHECK_LIB([pq], [PQclear], [HAVE_LIBPQ=1], [HAVE_LIBPQ=0])
 if test $HAVE_LIBPQ -eq 1
 then
@@ -402,7 +408,6 @@ echo "* CONFIGURATION:"
 echo "*"
 echo "* using RPM program: $RPMBUILD"
 
-echo "enable_iptraf=$enable_iptraf"
 if test "$enable_iptraf" = "yes"
 then
   if test $HAVE_LIBPCAP -eq 0

@@ -8,7 +8,57 @@
             those tables, and to page operators in case things go wrong. To enable this upwatch
             consists of a MySQL database, lots of probe daemons (one daemon per probe, usually one probe
             per daemon), some supporting daemons, a PHP website, and other software, like SMS and mail interfaces.</para>
-        <para> Things start at the database. For every probe it contains the following tables:</para>
+        <para>The software can be divided into four parts:</para>
+        <itemizedlist>
+            <listitem><para>upwatch client - runs on a machine</para></listitem>
+            <listitem><para>server, accepts and processes results</para></listitem>
+            <listitem><para>monitors, contains software for remotely monitoring.</para></listitem>
+            <listitem><para>special software, like iptraf</para></listitem>
+        </itemizedlist>        
+        <sect2 id="upwatch_client">
+        <title>The Upwatch client</title>
+        <para>The client consists of two programs: <filename>uw_sysstat</filename> and 
+        <filename>uw_send</filename>. <filename>uw_sysstat</filename> every minute collects
+         information like CPU load, disk I/O, swapping activity and so on, and writes it to an XML file
+         in the spooldirectory. This directory is checked every 5 seconds, and all files appearing there
+         are sent by uw_send to the central repository. <filename>uw_send</filename> has a 
+         commandline option (--once) to let it be started by cronjobs, or for example when an ISDN
+         connection has become online.</para>
+        </sect2>
+        <sect2 id="upwatch_server">
+        <title>The Upwatch server</title>
+        <para>The server consists of three programs: <filename>uw_accept</filename>, 
+        <filename>uw_setip</filename> and 
+        <filename>uw_process</filename>. The monitoring results are accept by 
+        <filename>uw_accept</filename> which listen on port 1985 (configurable), and drop 
+        the XML results into the <filename>uw_process</filename> spool directory, where it
+        is picked up, and stored into the database by <filename>uw_process</filename>.
+        For compatibility with Big Brother (www.bb4.com) clients, there is an <filename>uw_acceptbb</filename>
+        daemon, which listens on the Big Brother port (1984), and converts Big Brother messages into
+        upwatch XML files. Lastly, , <filename>uw_setip</filename> listens to messages from the
+        uw_tellip script, which should be started by clients whenever their IP address changes.
+        </para>
+        </sect2>
+        <sect2 id="upwatch_monitors">
+        <title>The Upwatch monitors</title>
+        <para>The monitors are daemons that run on some central monitoring server, and run checks
+        on servers remotely, such as POP3, HTTP, SNMP or other services. Alll their results are
+        sent by <filename>uw_send</filename>, as usual.
+        </para>
+        </sect2>
+        <sect2 id="upwatch_iptraf">
+        <title>Special programs</title>
+        <para>Their are special programs that don't fall into any other category, for example 
+        <filename>uw_iptraf</filename>. This is a daemon that should run on a border gateway
+        router, and that measures IP traffic on a per-IP basis.
+        </para>
+        </sect2>
+     </sect1>
+     <sect1 id="Detailed_Description">
+        <title>A Detailed Description</title>
+        <sect2 id="Database_Layout">
+        <title>Database Layout</title>        
+        <para>Things start at the database. For every probe it contains the following tables:</para>
         <itemizedlist>
             <listitem><para>Definition table</para></listitem>
             <listitem><para>Raw results table</para></listitem>
@@ -18,8 +68,8 @@
         <para> The definition table contains, of course, the definition of this particular
             probe, this is of course probe specific but at a minimum it contains usually contains the target ip address.
             We'll see what the other tables are for later on.</para>
-    </sect1>
-    <sect1 id="What_a_probe_does">
+       </sect2>
+       <sect2 id="What_a_probe_does">
         <title>What a probe does</title>
         <para>There are actually three kinds of probes:
         <itemizedlist>
@@ -40,8 +90,8 @@
           most efficient way (as far as I know) to ping thousands of hosts in, say, 20 seconds.
           Other probes use pools of threads (like <varname>httpget</varname>) or are build using the
           State Threads library.</para>
-    </sect1>
-    <sect1 id="What_happens_to_the_probe_results">
+       </sect2>
+       <sect2 id="What_happens_to_the_probe_results">
         <title>What happens to the probe results?</title>
         <para>First, all results with status non-green are handed over to <varname>uw_examine</varname>, which tries to
            find out why the probe failed, and attaches a report to the probe. After this the results are put in
@@ -57,8 +107,8 @@
            It attaches this report
            to the probe result, and in its turn puts everything in an <varname>uw_process</varname> or
            <varname>uw_send</varname> queue.</para>
-    </sect1>
-    <sect1 id="uw_process_storing_results_in_the_database">
+       </sect2>
+       <sect2 id="uw_process_storing_results_in_the_database">
         <title>uw_process: storing results in the database</title>
         <para> When the probe results arrive in the uw_process queue it is picked up by the workhorse
            of the lot, <varname>uw_process</varname>. It fills the result tables for the probes.</para>
@@ -143,6 +193,7 @@
          ENDIF
       </literallayout>
       </para>
+    </sect2>
     </sect1>
     <sect1 id="Scaling_up">
         <title>Scaling up</title>

@@ -1,4 +1,4 @@
-[+ AutoGen5 template mysql def_h res_h enum +]
+[+ AutoGen5 template mysql def_h res_h enum xml +]
 [+ CASE (suffix) +][+
    == mysql +]--
 [+(dne "-- ")+]
@@ -251,4 +251,313 @@ ENDIF+]int [+name+];    /* [+descrip+] */[+
 ENDIF+]int [+name+];    /* [+descrip+] */[+ ESAC type +][+ ENDFOR result+][+ ENDFOR probe +]
 [+ == enum +][+ FOR probe 
 +]PROBE_[+name+] = [+id+],
-[+ ENDFOR probe +][+ ESAC +]
+[+ ENDFOR probe +]
+[+ == xml
++]<?xml version="1.0" encoding="UTF-8"?>
+[+ FOR probe +]
+
+<sect1 id="[+name+]">
+   <title>[+name+] - [+descrip+]</title>
+   <sect2 id="[+name+]_result_record">
+      <title>[+name+] result record</title>
+      <table label="[+name+] result record layout" pgwide="1"><title>[+name+] result record layout</title>
+         <tgroup cols = "2">
+            <colspec colname = "1" colnum = "1" colwidth = "1.0in"/>
+            <colspec colname = "2" colnum = "2" colwidth = "4.0in"/>
+            <tbody>
+               <row>
+                  <entry colname = "1"><para><emphasis>Field:</emphasis></para></entry>
+                  <entry colname = "2"><para><emphasis>Type</emphasis></para></entry>
+               </row>
+               <row>
+                  <entry colname = "1"><para><emphasis>.....</emphasis></para></entry>
+                  <entry colname = "2"><para><emphasis>Standard header fields...</emphasis></para></entry>
+               </row>
+               <row>
+                  <entry colname = "1">
+                     <indexterm><primary>fields</primary><secondary>minpingtime</secondary></indexterm>
+                     <para>minpingtime</para>
+                  </entry>
+                  <entry colname = "2"><para>Shortes measured ping time</para></entry>
+               </row>
+               <row>
+                  <entry colname = "1">
+                     <indexterm><primary>fields</primary><secondary>avgpingtime</secondary></indexterm>
+                    <para>avgpingtime</para>
+                  </entry>
+                  <entry colname = "2"><para>Average measured ping time</para></entry>
+               </row>
+               <row>
+                  <entry colname = "1">
+                     <indexterm><primary>fields</primary><secondary>maxpingtime</secondary></indexterm>
+                     <para>maxpingtime</para>
+                  </entry>
+                  <entry colname = "2"><para>Longest measured ping time</para></entry>
+               </row>
+               <row>
+                  <entry colname = "1"><para>hostname</para></entry>
+                  <entry colname = "2"><para>hostname that was pinged</para></entry>
+               </row>
+            </tbody>
+         </tgroup>
+      </table>
+      <para> Any lines following the header record contain error messages.
+      </para>
+   </sect2>
+   <sect2 id="[+name+]_database_layout">
+      <title>[+name+] database layout</title>
+
+      <table label="[+name+] definition record layout" pgwide="1"><title>[+name+] definition record layout</title>
+         <tgroup cols = "6">
+            <colspec colname = "Field" colnum = "1" colwidth = "1.0in"/>
+            <colspec colname = "Type" colnum = "2" colwidth = "1.0in"/>
+            <colspec colname = "Key" colnum = "3" colwidth = "0.4in"/>
+            <colspec colname = "Default" colnum = "4" colwidth = "0.4in"/>
+            <colspec colname = "Extra" colnum = "5" colwidth = "1.0in"/>
+            <colspec colname = "Description" colnum = "6" colwidth = "1.4in"/>
+            <tbody>
+               <row>
+                  <entry colname = "Field"><para>Field </para></entry>
+                  <entry colname = "Type"><para>Type </para></entry>
+                  <entry colname = "Key"><para>Key </para></entry>
+                  <entry colname = "Default"><para>Default </para></entry>
+                  <entry colname = "Extra"><para>Extra </para></entry>
+                  <entry colname = "Description"><para>Description</para></entry>
+               </row>
+               <row>
+                  <entry colname = "Field"><para>id </para></entry>
+                  <entry colname = "Type"><para>int </para></entry>
+                  <entry colname = "Key"><para>PRI </para></entry>
+                  <entry colname = "Default"><para> </para></entry>
+                  <entry colname = "Extra"><para>auto_increment </para></entry>
+                  <entry colname = "Description"><para>probe unique numerical id </para></entry>
+               </row>
+               <row>
+                  <entry colname = "Field"><para>pgroup </para></entry>
+                  <entry colname = "Type"><para>int unsigned </para></entry>
+                  <entry colname = "Key"><para>NO </para></entry>
+                  <entry colname = "Default"><para>2 </para></entry>
+                  <entry colname = "Extra"><para> </para></entry>
+                  <entry colname = "Description"><para>group id </para></entry>
+               </row>
+               <row>
+                  <entry colname = "Field"><para>server </para></entry>
+                  <entry colname = "Type"><para>int </para></entry>
+                  <entry colname = "Key"><para>NO </para></entry>
+                  <entry colname = "Default"><para>1 </para></entry>
+                  <entry colname = "Extra"><para> </para></entry>
+                  <entry colname = "Description"><para>server id </para></entry>
+               </row>
+               <row>
+                  <entry colname = "Field"><para>contact </para></entry>
+                  <entry colname = "Type"><para>int unsigned </para></entry>
+                  <entry colname = "Key"><para>YES </para></entry>
+                  <entry colname = "Default"><para>1 </para></entry>
+                  <entry colname = "Extra"><para> </para></entry>
+                  <entry colname = "Description"><para>user field: pointer to contact database </para></entry>
+               </row>
+               <row>
+                  <entry colname = "Field"><para>notify </para></entry>
+                  <entry colname = "Type"><para>int unsigned </para></entry>
+                  <entry colname = "Key"><para>YES </para></entry>
+                  <entry colname = "Default"><para>1 </para></entry>
+                  <entry colname = "Extra"><para> </para></entry>
+                  <entry colname = "Description"><para>notifier id</para></entry>
+               </row>
+               <row>
+                  <entry colname = "Field"><para>ipaddress </para></entry>
+                  <entry colname = "Type"><para>varchar(15) </para></entry>
+                  <entry colname = "Key"><para>YES </para></entry>
+                  <entry colname = "Default"><para> </para></entry>
+                  <entry colname = "Extra"><para> </para></entry>
+                  <entry colname = "Description"><para>target ipaddress </para></entry>
+               </row>
+               <row>
+                  <entry colname = "Field"><para>description </para></entry>
+                  <entry colname = "Type"><para>text </para></entry>
+                  <entry colname = "Key"><para>NO </para></entry>
+                  <entry colname = "Default"><para> </para></entry>
+                  <entry colname = "Extra"><para> </para></entry>
+                  <entry colname = "Description"><para>description </para></entry>
+               </row>
+               <row>
+                  <entry colname = "Field"><para>freq </para></entry>
+                  <entry colname = "Type"><para>smallint unsigned </para></entry>
+                  <entry colname = "Key"><para>NO </para></entry>
+                  <entry colname = "Default"><para>1 </para></entry>
+                  <entry colname = "Extra"><para> </para></entry>
+                  <entry colname = "Description"><para>frequency in minutes </para></entry>
+               </row>
+               <row>
+                  <entry colname = "Field"><para>yellow </para></entry>
+                  <entry colname = "Type"><para>float </para></entry>
+                  <entry colname = "Key"><para>NO </para></entry>
+                  <entry colname = "Default"><para>[+yellow+] </para></entry>
+                  <entry colname = "Extra"><para> </para></entry>
+                  <entry colname = "Description"><para>value for yellow alert </para></entry>
+               </row>
+               <row>
+                  <entry colname = "Field"><para>red </para></entry>
+                  <entry colname = "Type"><para>float </para></entry>
+                  <entry colname = "Key"><para>NO </para></entry>
+                  <entry colname = "Default"><para>[+red+] </para></entry>
+                  <entry colname = "Extra"><para> </para></entry>
+                  <entry colname = "Description"><para>value for red alert </para></entry>
+               </row>
+               <row>
+                  <entry colname = "Field"><para>disable </para></entry>
+                  <entry colname = "Type"><para>enum('yes', 'no') </para></entry>
+                  <entry colname = "Key"><para>NO </para></entry>
+                  <entry colname = "Default"><para>no </para></entry>
+                  <entry colname = "Extra"><para> </para></entry>
+                  <entry colname = "Description"><para>disable this probe </para></entry>
+               </row>
+               <row>
+                  <entry colname = "Field"><para>hide </para></entry>
+                  <entry colname = "Type"><para>enum('yes', 'no') </para></entry>
+                  <entry colname = "Key"><para>NO </para></entry>
+                  <entry colname = "Default"><para>no </para></entry>
+                  <entry colname = "Extra"><para> </para></entry>
+                  <entry colname = "Description"><para>hide probe results from viewing </para></entry>
+               </row>[+ FOR def +]
+               <row>
+                  <entry colname = "Field"><para>[+name+] </para></entry>[+
+ CASE type +][+ == float +]
+                  <entry colname = "Type"><para>[+type+] </para></entry>[+
+ == varchar +]
+                  <entry colname = "Type"><para>[+type+][+
+IF length +]([+length+])[+ ENDIF +] </para></entry>[+
+ == text +]
+                  <entry colname = "Type"><para>[+type+] </para></entry>[+
+ == char +]
+                  <entry colname = "Type"><para>[+type+] </para></entry>[+
+ == bool +]
+                  <entry colname = "Type"><para>enum('yes', 'no') </para></entry>[+
+ == tinyint +]
+                  <entry colname = "Type"><para>[+type+][+
+IF unsigned +] unsigned[+ ENDIF+] </para></entry>[+
+ == int +]
+                  <entry colname = "Type"><para>[+type+][+
+IF unsigned +] unsigned[+ ENDIF+] </para></entry>[+ 
+ == bigint +]
+                  <entry colname = "Type"><para>[+type+][+
+IF unsigned +] unsigned[+ ENDIF+] </para></entry>[+ 
+ ESAC type +]
+                  <entry colname = "Key"><para>NO </para></entry>
+                  <entry colname = "Default"><para>[+default+] </para></entry>[+
+ IF auto +]
+                  <entry colname = "Extra"><para>auto_increment </para></entry>[+
+ ELSE +]
+                  <entry colname = "Extra"><para> </para></entry>[+
+ ENDIF +]
+                  <entry colname = "Description"><para>[+descrip+] </para></entry>
+               </row>[+ ENDFOR def+]
+           </tbody>
+         </tgroup>
+      </table>
+
+      <table label="[+name+] result record layout" pgwide="1"><title>[+name+] result record layout</title>
+         <tgroup cols = "6">
+            <colspec colname = "Field" colnum = "1" colwidth = "1.0in"/>
+            <colspec colname = "Type" colnum = "2" colwidth = "1.0in"/>
+            <colspec colname = "Key" colnum = "3" colwidth = "0.4in"/>
+            <colspec colname = "Default" colnum = "4" colwidth = "0.4in"/>
+            <colspec colname = "Extra" colnum = "5" colwidth = "1.0in"/>
+            <colspec colname = "Description" colnum = "6" colwidth = "1.4in"/>
+            <tbody>
+               <row>
+                  <entry colname = "Field"><para>Field </para></entry>
+                  <entry colname = "Type"><para>Type </para></entry>
+                  <entry colname = "Key"><para>Key </para></entry>
+                  <entry colname = "Default"><para>Default </para></entry>
+                  <entry colname = "Extra"><para>Extra </para></entry>
+                  <entry colname = "Description"><para>Description</para></entry>
+               </row>
+               <row>
+                  <entry colname = "Field"><para>id </para></entry>
+                  <entry colname = "Type"><para>bigint unsigned </para></entry>
+                  <entry colname = "Key"><para>PRI </para></entry>
+                  <entry colname = "Default"><para> </para></entry>
+                  <entry colname = "Extra"><para>auto_increment </para></entry>
+                  <entry colname = "Description"><para>unique id for result </para></entry>
+               </row>
+               <row>
+                  <entry colname = "Field"><para>probe </para></entry>
+                  <entry colname = "Type"><para>int unsigned </para></entry>
+                  <entry colname = "Key"><para>YES </para></entry>
+                  <entry colname = "Default"><para>1 </para></entry>
+                  <entry colname = "Extra"><para> </para></entry>
+                  <entry colname = "Description"><para>probe identifier </para></entry>
+               </row>
+               <row>
+                  <entry colname = "Field"><para>yellow </para></entry>
+                  <entry colname = "Type"><para>float </para></entry>
+                  <entry colname = "Key"><para>NO </para></entry>
+                  <entry colname = "Default"><para>[+yellow+] </para></entry>
+                  <entry colname = "Extra"><para> </para></entry>
+                  <entry colname = "Description"><para>value for yellow alert </para></entry>
+               </row>
+               <row>
+                  <entry colname = "Field"><para>red </para></entry>
+                  <entry colname = "Type"><para>float </para></entry>
+                  <entry colname = "Key"><para>NO </para></entry>
+                  <entry colname = "Default"><para>[+red+] </para></entry>
+                  <entry colname = "Extra"><para> </para></entry>
+                  <entry colname = "Description"><para>value for red alert </para></entry>
+               </row>
+               <row>
+                  <entry colname = "Field"><para>stattime </para></entry>
+                  <entry colname = "Type"><para>int unsigned </para></entry>
+                  <entry colname = "Key"><para>YES </para></entry>
+                  <entry colname = "Default"><para>0 </para></entry>
+                  <entry colname = "Extra"><para> </para></entry>
+                  <entry colname = "Description"><para>time when result was generated</para></entry>
+               </row>
+               <row>
+                  <entry colname = "Field"><para>color </para></entry>
+                  <entry colname = "Type"><para>smallint unsigned </para></entry>
+                  <entry colname = "Key"><para>YES </para></entry>
+                  <entry colname = "Default"><para>200 </para></entry>
+                  <entry colname = "Extra"><para> </para></entry>
+                  <entry colname = "Description"><para>color value </para></entry>
+               </row>[+ FOR result +]
+               <row>
+                  <entry colname = "Field"><para>[+name+] </para></entry>[+
+ CASE type +][+ == float +]
+                  <entry colname = "Type"><para>[+type+] </para></entry>[+
+ == varchar +]
+                  <entry colname = "Type"><para>[+type+][+
+IF length +]([+length+])[+ ENDIF +] </para></entry>[+
+ == text +]
+                  <entry colname = "Type"><para>[+type+] </para></entry>[+
+ == char +]
+                  <entry colname = "Type"><para>[+type+] </para></entry>[+
+ == bool +]
+                  <entry colname = "Type"><para>enum('yes', 'no') </para></entry>[+
+ == tinyint +]
+                  <entry colname = "Type"><para>[+type+][+
+IF unsigned +] unsigned[+ ENDIF+] </para></entry>[+
+ == int +]
+                  <entry colname = "Type"><para>[+type+][+
+IF unsigned +] unsigned[+ ENDIF+] </para></entry>[+ 
+ == bigint +]
+                  <entry colname = "Type"><para>[+type+][+
+IF unsigned +] unsigned[+ ENDIF+] </para></entry>[+ 
+ ESAC type +]
+                  <entry colname = "Key"><para>NO </para></entry>
+                  <entry colname = "Default"><para>[+default+] </para></entry>[+
+ IF auto +]
+                  <entry colname = "Extra"><para>auto_increment </para></entry>[+
+ ELSE +]
+                  <entry colname = "Extra"><para> </para></entry>[+
+ ENDIF +]
+                  <entry colname = "Description"><para>[+descrip+] </para></entry>
+               </row>[+ ENDFOR result+]
+           </tbody>
+         </tgroup>
+      </table>
+      <para></para>
+   </sect2>
+</sect1>
+[+ ENDFOR probe +]
+[+ ESAC +]

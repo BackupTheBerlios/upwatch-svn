@@ -40,6 +40,9 @@ probe.enum: probe.def $(PROBDEF)
 probe.mysql: probe.def $(PROBDEF) 
 	autogen -b probe $(AGDEFINES) $(GENINCL) -T $(PROBTPL) probe.def
 
+probe.xml: probe.def $(PROBDEF)
+	autogen -b probe $(AGDEFINES) $(GENINCL) -T $(PROBTPL) probe.def
+
 $(program).1: cmd_options.def $(top_srcdir)/common/man1.tpl
 	autogen -b $(program) $(AGDEFINES) $(GENINCL) -T $(MAN1TPL) cmd_options.def
 

@@ -8,8 +8,17 @@
 <!ENTITY interfaces SYSTEM "interfaces.xml">
 <!ENTITY probesspecs SYSTEM "probesspecs.xml">
 <!ENTITY addingaprobe SYSTEM "addingaprobe.xml">
-<!ENTITY iptraf-specs SYSTEM "iptraf-specs.xml">
-<!ENTITY ping-specs SYSTEM "ping-specs.xml">
+<!ENTITY acceptbb-specs SYSTEM "../uw_acceptbb/probe.xml">
+<!ENTITY httpget-specs SYSTEM "../uw_httpget/probe.xml">
+<!ENTITY imap-specs SYSTEM "../uw_imap/probe.xml">
+<!ENTITY iptraf-specs SYSTEM "../uw_iptraf/probe.xml">
+<!ENTITY mssql-specs SYSTEM "../uw_mssql/probe.xml">
+<!ENTITY mysql-specs SYSTEM "../uw_mysql/probe.xml">
+<!ENTITY ping-specs SYSTEM "../uw_ping/probe.xml">
+<!ENTITY pop3-specs SYSTEM "../uw_pop3/probe.xml">
+<!ENTITY postgresql-specs SYSTEM "../uw_postgresql/probe.xml">
+<!ENTITY snmpget-specs SYSTEM "../uw_snmpget/probe.xml">
+<!ENTITY sysstat-specs SYSTEM "../uw_sysstat/probe.xml">
 ]>
 
 <book id="upwatch" lang="en" status="draft">

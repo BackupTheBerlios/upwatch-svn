@@ -5,29 +5,34 @@
     <sect1 id="Getting_upwatch">
         <title>Getting upwatch</title>
         <para> Currently, upwatch is not released, and is not allowed to be distributed. The
-            only way to get it, is through written permission of UpWatch BV.</para>
+          only way to get it, is through written permission of UpWatch BV.</para>
         <para> If you aquired that, you will either receive access to CVS, or will receive a
             tar.gz file, or .RPM's.</para>
+	 <para>Building and installing upwatch is not for the faint of heart. It uses lots of external
+          libraries which may or may not be available on your platform. I myself use Redhat 8/9
+          for development, and test compilation on RH7, SuSE8.2, Solaris, and Yellowdog Linux 2.3.
+       </para>
     </sect1>
     <sect1 id="Requirements">
         <title>Requirements</title>
         <sect2 id="Run-time_requirements">
             <title>Run-time requirements</title>
-            <para>First Iensure that the time/date on all hosts is correctly set. </para>
+            <para>First ensure that the time/date on all hosts is correctly set. </para>
             <para>Run time requirements differ per probe. Look in the corresponding .def file
-                (or in the spec file for the probe, here's a list of everything we expect on a
+                (or in the spec file for the probe), here's a list of everything we expect on a
                 machine running all probes, and the database (I'll also list the version we use ourselves):</para>
             <itemizedlist>
                 <listitem><para>glib2 >= 2.0.4</para></listitem>
+                <listitem><para>xml2 (any version will do)</para></listitem>
                 <listitem><para>freetds >= 0.6.0 compiled with --enable-threadsafe</para></listitem>
                 <listitem><para>mysql 3.23.49</para></listitem>
-                <listitem><para>ucd-snmp 4.2.4</para></listitem>
-                <listitem><para>cURL 7.9.5</para></listitem>
-                <listitem><para>GDBM</para></listitem>
+                <listitem><para>postgreSQL 7.1.0</para></listitem>
+                <listitem><para>net-snmp 5.0.6</para></listitem>
                 <listitem><para>-lcrypto</para></listitem>
                 <listitem><para>libnet 1.0.2a (www.packetfactory.net/libnet/)</para></listitem>
                 <listitem><para>libpcap 0.6.2</para></listitem>
             </itemizedlist>
+            <para>Delivered with upwatch are libstatgrab and the State Threads Library.</para>
         </sect2>
         <sect2 id="Build_requirements">
             <title>Build requirements</title>
@@ -59,6 +64,8 @@
            </literallayout>
         <para> Nothing to it... In case of problems, you're probably missing some library or
             header files, or they are in unexpected places. Look in config.log.</para>
+         <para>You can optionally specify --enable-monitors, --enable-iptraf and/or --enable-server to
+         configure. Default configure only builds the client, docs, and utils.</para>
     </sect1>
     <sect1 id="Actual_Installation">
         <title>Actual Installation</title>
@@ -69,22 +76,11 @@
             up</link> and <link linkend="How_it_all_works">How it all works</link>
         </para>
         <para> For simplicity we assume you run everything on the same host. In this case just
-           install all rpm's on this host. What if you can't use RPM's? Then follow the following
-           procedure as root:
+           install all rpm's on this host. What if you can't use RPM's? Then type the following
+           command as root:
         </para>
         <literallayout>
-           $ mkdir /etc/upwatch.d
-           $ cp config/upwatch.conf /etc
-           $ for i in uw_*
-           > do
-           > cp $i/$i /usr/sbin
-           > cp $i/$i.conf /etc/upwatch.d
-           > done
-           $ for i in uw_*
-           > do
-           > mkdir -p /var/spool/upwatch/$i/tmp
-           > mkdir -p /var/spool/upwatch/$i/new
-           > done
+          $ make install
         </literallayout>
     </sect1>
     <sect1 id="php_pages">
@@ -106,11 +102,11 @@
        </para>
        <para> The PHP web user should have SELECT, UPDATE, DELETE access to all tables.
        </para>
-       <para> <command>uw_access</command>, and  <command>uw_accessbb</command> are
+       <para><command>uw_access</command>, and  <command>uw_accessbb</command> are
             the programs most vulnerable to crackers, as they wait
              for incoming connections on a TCP port (1985/1984). If possible, use <command>chroot</command> and
              firewall rules to limit connections to
-             real probes only. Something similar holds for <command>mysql</command>.Most probes will want
+             real probes only. Something similar holds for <command>mysql</command>. Most probes will want
              access, and passwords can be sniffed. For real security use ssh-tunnels.
        </para>
     </sect1>
