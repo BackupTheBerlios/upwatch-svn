@@ -10,4 +10,4 @@ slotnumbers, given a ctime argument';
 
 argument      = "[string]";
 
-#include ../common/minimal_options.def
+#include minimal_options.def

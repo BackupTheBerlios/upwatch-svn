@@ -8,35 +8,36 @@ EXTRA_DIST +=  $(program).1 $(program).conf
 MAIN_O = main.o
 DB_O = db.o
 
-main.o: ../common/main.c cmd_options.def ../common/generic_options.def
-	$(COMPILE) -c ../common/main.c
+main.o: $(top_srcdir)/common/main.c cmd_options.def $(top_srcdir)/common/generic_options.def
+	$(COMPILE) -c $(top_srcdir)/common/main.c
 
-db.o: ../common/db.c cmd_options.def ../common/generic_options.def
-	$(COMPILE) -c ../common/db.c
+db.o: $(top_srcdir)/common/db.c cmd_options.def $(top_srcdir)/common/generic_options.def
+	$(COMPILE) -c $(top_srcdir)/common/db.c
 
-cmd_options.h: cmd_options.def ../common/generic_options.def 
-	autogen -b cmd_options -L /usr/share/autogen cmd_options.def
+cmd_options.h: cmd_options.def $(top_srcdir)/common/generic_options.def 
+	autogen -b cmd_options -L /usr/share/autogen -L $(top_srcdir)/common cmd_options.def
 
-probe.def_h: probe.def ../common/probe.tpl 
-	autogen -b probe  -T ../common/probe.tpl probe.def
+probe.def_h: probe.def $(top_srcdir)/common 
+	autogen -b probe -L $(top_srcdir)/common -T $(top_srcdir)/common/probe.tpl probe.def
 
-probe.res_h: probe.def ../common/probe.tpl 
-	autogen -b probe  -T ../common/probe.tpl probe.def
+probe.res_h: probe.def $(top_srcdir)/common 
+	autogen -b probe -L $(top_srcdir)/common -T $(top_srcdir)/common/probe.tpl probe.def
 
-$(program).1: cmd_options.def ../common/man1.tpl
-	autogen -b $(program) -L /usr/share/autogen -T ../common/man1.tpl cmd_options.def
+$(program).1: cmd_options.def $(top_srcdir)/common/man1.tpl
+	autogen -b $(program) -L /usr/share/autogen -L $(top_srcdir)/common -T $(top_srcdir)/common/man1.tpl \
+ cmd_options.def
 
-probe.mysql: probe.def ../common/probe.def ../common/probe.tpl
-	autogen -b probe -T ../common/probe.tpl probe.def
+probe.mysql: probe.def $(top_srcdir)/common/probe_generic.def $(top_srcdir)/common
+	autogen -b probe -L $(top_srcdir)/common -T $(top_srcdir)/common/probe.tpl probe.def
 
-$(program).init: cmd_options.def ../common/generic_options.def
-	autogen -b $(program) -T ../common/init.tpl cmd_options.def
+$(program).init: cmd_options.def $(top_srcdir)/common/generic_options.def
+	autogen -b $(program) -L $(top_srcdir)/common -T $(top_srcdir)/common/init.tpl cmd_options.def
 
-$(program).spec-install: cmd_options.def ../common/generic_options.def ../common/spec.tpl
-	autogen -b $(program) -T ../common/spec.tpl cmd_options.def
+$(program).spec-install: cmd_options.def $(top_srcdir)/common/generic_options.def $(top_srcdir)/common/spec.tpl
+	autogen -b $(program) -L $(top_srcdir)/common -T $(top_srcdir)/common/spec.tpl cmd_options.def
 
-$(program).spec-generic: cmd_options.def ../common/generic_options.def ../common/spec.tpl
-	autogen -b $(program) -T ../common/spec.tpl cmd_options.def
+$(program).spec-generic: cmd_options.def $(top_srcdir)/common/generic_options.def $(top_srcdir)/common/spec.tpl
+	autogen -b $(program) -L $(top_srcdir)/common -T $(top_srcdir)/common/spec.tpl cmd_options.def
 
 CLEANFILES = cmd_options.c cmd_options.h *.1 $(program).spec-generic \
   $(program).spec-install $(program).init $(program).spec Makefile.in \

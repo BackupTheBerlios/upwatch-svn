@@ -1,0 +1,93 @@
+flag = {
+    must-set;
+    name      = dbtype;
+    value     = T;        /* flag style option character */
+    arg-default = mysql;
+    arg_type  = string;   /* option argument indication  */
+    max       = NOLIMIT;  /* occurrence limit (none)     */
+    descrip   = "Database type to use (mysql or postgresql)";
+    doc       =
+'the name of the database. For now this only can be "mysql" but other
+databases might be supported in the future';
+};
+
+flag = {
+    must-set;
+    name      = dbcompress;
+    value     = C;        /* flag style option character */
+    arg-default = 1;
+    arg_type  = numeric;   /* option argument indication  */
+    max       = NOLIMIT;  /* occurrence limit (none)     */
+    descrip   = "Use compression on database connection";
+    doc       =
+'If set, this option compresses all communication with the database server';
+};
+
+flag = {
+    must-set;
+    name      = dbhost;
+    value     = h;        /* flag style option character */
+    arg_type  = string;   /* option argument indication  */
+    max       = NOLIMIT;  /* occurrence limit (none)     */
+    descrip   = "Database host to connect to";
+    doc       = 
+'This option denotes the internet hostname where the database resides. For MySQL this
+means the programs connects to port 3306 on this host. This hostname should be DNS
+resolvable of course, but an IP address may be specified';
+};  
+    
+flag = {
+    must-set; 
+    name      = dbname;
+    value     = n;        /* flag style option character */
+    arg_type  = string;   /* option argument indication  */
+    max       = NOLIMIT;  /* occurrence limit (none)     */
+    descrip   = "Database name to connect to";
+};  
+    
+flag = {
+    must-set;
+    name      = dbuser;   
+    value     = u;        /* flag style option character */
+    arg_type  = string;   /* option argument indication  */
+    max       = NOLIMIT;  /* occurrence limit (none)     */
+    descrip   = "Database user to connect as";
+};
+
+flag = {
+    must-set;
+    name      = dbpasswd;
+    value     = p;        /* flag style option character */
+    arg_type  = string;   /* option argument indication  */
+    max       = NOLIMIT;  /* occurrence limit (none)     */
+    descrip   = "Database password"; 
+};  
+
+flag = { 
+    name      = server_table_name; 
+    arg_type  = string;
+    arg-default = "server";
+    descrip   = "Name of the servertable in the database";
+};
+
+flag = { 
+    name      = server_table_name_field; 
+    arg_type  = string;
+    arg-default = "name";
+    descrip   = "Name of the name-field in the servertable";
+};
+
+flag = { 
+    name      = server_table_id_field; 
+    arg_type  = string;
+    arg-default = "id";
+    descrip   = "Name of the id-field in the servertable";
+};
+
+flag = { 
+    name      = server_table_color_field; 
+    arg_type  = string;
+    arg-default = "color";
+    descrip   = "Name of the color-field in the servertable";
+};
+

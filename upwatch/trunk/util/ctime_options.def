@@ -9,4 +9,4 @@ since 1 jan 1970, and it prints out the time';
 
 argument      = "[string]";
 
-#include ../common/minimal_options.def
+#include minimal_options.def

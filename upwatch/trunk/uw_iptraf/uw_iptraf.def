@@ -64,4 +64,4 @@ specificy thosr with one or more -n options. Note only CIDR format is supported
 (192.168.170.0/24)';
 };
 
-#include ../common/generic_options.def
+#include generic_options.def

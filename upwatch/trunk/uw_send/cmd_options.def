@@ -87,4 +87,4 @@ flag = {
     descrip   = "UpWatch password";
 };
 
-#include ../common/generic_options.def
+#include generic_options.def

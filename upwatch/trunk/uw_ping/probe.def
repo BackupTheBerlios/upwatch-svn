@@ -1,5 +1,5 @@
 AutoGen Definitions mysql;
-#include ../common/probe.def
+#include probe_generic.def
 
 probe = {
   name = "ping";

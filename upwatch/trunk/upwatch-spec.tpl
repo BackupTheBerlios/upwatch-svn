@@ -97,6 +97,7 @@ install -m 660 [+program+]/[+program+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+prog
 %defattr(0660,root,upwatch,0770)
 %attr(0644,root,root) %doc AUTHORS COPYING ChangeLog NEWS README upwatch.mysql doc/upwatch.html doc/upwatch.txt doc/upwatch.pdf
 %attr(0755,root,root) /etc/rc.d/init.d/upwatch
+%attr(0755,root,root) /usr/bin/bbhimport
 %attr(0755,root,root) /usr/bin/ctime
 %attr(0755,root,root) /usr/bin/slot
 /usr/share/man/man1/ctime.1.gz

@@ -58,4 +58,4 @@ flag = {
 Probe results currently being investigated are kept here.';
 };
 
-#include ../common/generic_options.def
+#include generic_options.def
