@@ -6,6 +6,9 @@ endif
 if SOLARIS
 MYCFLAGS = -DSOLARIS
 endif
+if CYGWIN
+MYCFLAGS = -DCYGWIN
+endif
 CFLAGS = ${MYCFLAGS}
 
 EXTRA_DIST = osguess.sh

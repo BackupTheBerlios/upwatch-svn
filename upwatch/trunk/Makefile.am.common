@@ -12,7 +12,11 @@ INITTPL = $(top_srcdir)/common/init.tpl
 CMDDEF  = $(top_srcdir)/common/generic_options.def $(top_srcdir)/common/dbase_options.def \
  $(top_srcdir)/common/minimal_options.def
 PROBDEF = $(top_srcdir)/common/probe_generic.def
+if CYGWIN
+GENINCL = -L /usr/local/share/autogen -L $(top_srcdir)/common
+else
 GENINCL = -L /usr/share/autogen -L $(top_srcdir)/common
+endif
 
 SPECFILES = $(program).spec-requires $(program).spec-files
 INITFILES = $(program).redhat $(program).suse $(program).solaris

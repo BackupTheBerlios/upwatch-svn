@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.33 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.34 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -60,6 +60,21 @@ case $host in
     if test "$mandir" = '${prefix}/man' ;		then mandir='/usr/share/man' ; fi
     LIBS="-lgen $LIBS"
     ;;
+  *-*-cygwin*)
+    cygwin=true
+    if test "$bindir" = '${exec_prefix}/bin' ; 		then bindir='/usr/bin' ; fi
+    if test "$sbindir" = '${exec_prefix}/sbin' ; 	then sbindir='/usr/sbin' ; fi
+    if test "$libexecdir" = '${exec_prefix}/libexec';	then libexecdir='/usr/libexec' ; fi
+    if test "$datadir" = '${prefix}/share' ;		then datadir='/usr/share' ; fi
+    if test "$sysconfdir" = '${prefix}/etc' ;		then sysconfdir='/etc' ; fi
+    if test "$sharedstatedir" = '${prefix}/com' ;	then sharedstatedir='/usr/local/com' ; fi
+    if test "$localstatedir" = '${prefix}/var' ; 	then localstatedir='/var' ; fi
+    if test "$libdir" = '${exec_prefix}/lib' ; 		then libdir='/usr/local/lib' ; fi
+    if test "$includedir" = '${prefix}/include' ; 	then includedir='/usr/include' ; fi
+    if test "$oldincludedir" = '/usr/include' ; 	then oldincludedir='/usr/include' ; fi
+    if test "$infodir" = '${prefix}/info';  		then infodir='/usr/share/info' ; fi
+    if test "$mandir" = '${prefix}/man' ;		then mandir='/usr/share/man' ; fi
+    ;;
   *)
     generic=true
     ;;
@@ -67,6 +82,7 @@ esac
 
 AM_CONDITIONAL([LINUX], test x$linux = xtrue)
 AM_CONDITIONAL([SOLARIS], test x$solaris = xtrue)
+AM_CONDITIONAL([CYGWIN], test x$cygwin = xtrue)
 
 # ----------------------------------------------------------------------
 # check for various programs used during the build.
@@ -185,9 +201,9 @@ AC_ARG_WITH(mysql-libs,
 )
 AC_SUBST(MYSQL_LIB_PREFIX)
 
-for libpath in /usr/lib/mysql $MYSQL_LIB_PREFIX /usr/local/lib/mysql /usr/lib
+for libpath in /usr/lib/mysql $MYSQL_LIB_PREFIX /usr/local/lib/mysql /usr/lib /cygdrive/c/mysql/lib/opt
 do
-  if test -f $libpath/libmysqlclient.so
+  if test -f $libpath/libmysqlclient.so -o -f $libpath/mysqlclient.lib
   then
     MYSQL_LIBS="-L${libpath} -lmysqlclient"
   fi
@@ -205,7 +221,7 @@ AC_ARG_WITH(mysql-include,
 )
 AC_SUBST(MYSQL_INC_PREFIX)
 
-for incpath in /usr/include/mysql $MYSQL_LIB_PREFIX /usr/local/include/mysql
+for incpath in /usr/include/mysql $MYSQL_LIB_PREFIX /usr/local/include/mysql /cygdrive/c/mysql/include
 do
   if test -f $incpath/mysql.h
   then
@@ -464,8 +480,8 @@ AC_CONFIG_FILES([Makefile
                  doc/Makefile
                  config/Makefile
                  common/Makefile
-                 upwatch/Makefile
                  st-1.4/Makefile
+                 upwatch/Makefile
                  util/Makefile
                  scripts/Makefile
                  uw_send/Makefile
@@ -476,6 +492,10 @@ AC_CONFIG_FILES([Makefile
                  compat/sometests/Makefile
                  compat/sometests/setproctitle/Makefile])
 
-cp patches/libstatgrab-configure.gnu libstatgrab-0.6/configure.gnu
-AC_CONFIG_SUBDIRS(libstatgrab-0.6)
+if test ! x$cygwin = xtrue
+then
+  cp patches/libstatgrab-configure.gnu libstatgrab-0.6/configure.gnu
+  AC_CONFIG_SUBDIRS(libstatgrab-0.6)
+fi
+
 AC_OUTPUT
