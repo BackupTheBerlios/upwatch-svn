@@ -59,7 +59,15 @@ static void get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr 
     res->incoming = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
     return;
   }
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "in")) && (cur->ns == ns)) {
+    res->incoming = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+    return;
+  }
   if ((!xmlStrcmp(cur->name, (const xmlChar *) "outgoing")) && (cur->ns == ns)) {
+    res->outgoing = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+    return;
+  }
+  if ((!xmlStrcmp(cur->name, (const xmlChar *) "out")) && (cur->ns == ns)) {
     res->outgoing = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
     return;
   }
