@@ -202,6 +202,10 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   sprintf(buffer, "%f", probe->connect);      subtree = xmlNewChild(httpget, NULL, "connect", buffer);
   sprintf(buffer, "%f", probe->pretransfer);  subtree = xmlNewChild(httpget, NULL, "pretransfer", buffer);
   sprintf(buffer, "%f", probe->total);        subtree = xmlNewChild(httpget, NULL, "total", buffer);
+  probe->lookup = 0.0;
+  probe->connect = 0.0;
+  probe->pretransfer = 0.0;
+  probe->total = 0.0;
   if (probe->info) {
     subtree = xmlNewTextChild(httpget, NULL, "info", probe->info);
     free(probe->info);
@@ -249,7 +253,6 @@ void *probe(void *data)
     goto done;
   }
 
-
   /* Connect to remote host */
   if ((sock = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
     probe->msg = strdup(strerror(errno));
@@ -261,7 +264,6 @@ void *probe(void *data)
     goto done;
   }
   start = st_utime();
-  probe->lookup = 0.0;
   if (st_connect(rmt_nfd, (struct sockaddr *)&rmt, sizeof(rmt), -1) < 0) {
     probe->msg = strdup(strerror(errno));
     st_netfd_close(rmt_nfd);
@@ -279,11 +281,13 @@ void *probe(void *data)
     sprintf(buf, "Timeout in writing to host after %u seconds", 
                   (unsigned) (TIMEOUT / 1000000L));
     probe->msg = strdup(buf);
-    goto close;
+    probe->connect = 0.0;
+    goto err_close;
   }
   if (len == -1) {
     probe->msg = strdup(strerror(errno));
-    goto close;
+    probe->connect = 0.0;
+    goto err_close;
   }
   now = st_utime();
   probe->pretransfer = ((float) (now - start)) * 0.000001;
@@ -297,14 +301,16 @@ void *probe(void *data)
     sprintf(buf, "Timeout in reading result after %u seconds", 
                   (unsigned) (TIMEOUT / 1000000L));
     probe->msg = strdup(buf);
-    goto close;
+    probe->connect = 0.0;
+    probe->pretransfer = 0.0;
+    goto err_close;
   }
   if (debug > 3) fprintf(stderr, "< %s", buffer);
   probe->info = strdup(buffer);
-
-close:
   now = st_utime();
   probe->total = ((float) (now - start)) * 0.000001;
+
+err_close:
   st_netfd_close(rmt_nfd);
 
 done:
