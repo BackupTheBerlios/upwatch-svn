@@ -110,7 +110,7 @@ install -m 700 config/cron.daily $RPM_BUILD_ROOT/etc/cron.daily/upwatch
 %endif
 
 # remove files we don't want to package
-for unpackaged in /usr/bin/saidar /usr/bin/statgrab /usr/bin/statgrab-make-mrtg-config /usr/bin/statgrab-make-mrtg-index /usr/include/statgrab.h /usr/lib/libstatgrab.a /usr/lib/libstatgrab.la /usr/lib/libstatgrab.so.1.0.7 /usr/lib/pkgconfig/libstatgrab.pc
+for unpackaged in /usr/bin/saidar /usr/bin/statgrab /usr/bin/statgrab-make-mrtg-config /usr/bin/statgrab-make-mrtg-index /usr/include/statgrab.h /usr/lib/libstatgrab.a /usr/lib/libstatgrab.la /usr/lib/libstatgrab.so.1.1.0 /usr/lib/pkgconfig/libstatgrab.pc
 do
   rm -f $RPM_BUILD_ROOT$unpackaged
 done
