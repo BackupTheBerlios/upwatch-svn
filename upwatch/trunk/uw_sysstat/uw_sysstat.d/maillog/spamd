@@ -6,4 +6,4 @@ green [LOGDATE] spamd[PID]: processing message .* for [USER]:[NUM]
 green [LOGDATE] spamd[PID]: server started on port [NUM](/tcp)? \(running version [NUM]\.[NUM]\) 
 green [LOGDATE] spamd[PID]: server killed by SIGTERM, shutting down
 green [LOGDATE] spamd[PID]: info: setuid to [USER] succeeded
-
+green [LOGDATE] spamd: debug: Score set 0 chosen.

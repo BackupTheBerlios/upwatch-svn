@@ -29,6 +29,7 @@ green [LOGDATE] master[PID]: ready for work
 green [LOGDATE] master[PID]: unable to bind [WORD] socket: Address already in use
 green [LOGDATE] master[PID]: unable to bind [WORD] socket: Cannot assign requested address
 green [LOGDATE] master: unable to change limit of file descriptors available
+green [LOGDATE] pop3d[PID]: accepted connection
 green [LOGDATE] pop3d[PID]: login: [HOSTNAME]\[[IPADDR]\] [USER] (CRAM-MD5|plaintext)
 green [LOGDATE] pop3d[PID]: login: \[[IPADDR]\] [USER] (CRAM-MD5|plaintext)
 green [LOGDATE] service-(imap|lmtp|lmtpunix|pop3)[PID]: executed

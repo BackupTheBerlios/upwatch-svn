@@ -1,6 +1,7 @@
 green [LOGDATE] ipsec: ipsec_setup:  \([PATH] = `[NUM]', should be [NUM]\)
 green [LOGDATE] ipsec: ipsec_setup: Stopping FreeS/WAN IPsec\.\.\.
 green [LOGDATE] ipsec: ipsec_setup: Using [PATH]
+green [LOGDATE] ipsec: ipsec_setup: WARNING: changing route filtering on eth[NUM] \(changing [PATH] from [NUM] to [NUM]\)
 green [LOGDATE] ipsec: ipsec_setup: WARNING: eth[NUM] has route filtering turned on, KLIPS may not work
 green [LOGDATE] ipsec__plutorun: [NUM] ".*" #[NUM]: max number of retransmissions \([NUM]\) reached STATE_MAIN_I[NUM]\.  No acceptable response to our first IKE message
 green [LOGDATE] ipsec__plutorun: [NUM] ".*" #[NUM]: STATE_MAIN_I[NUM]: initiate
@@ -18,6 +19,7 @@ green [LOGDATE] ipsec_setup:  \([PATH] = `[NUM]', should be [NUM]\)
 green [LOGDATE] ipsec_setup: Stopping FreeS/WAN IPsec\.\.\.
 green [LOGDATE] ipsec_setup: Using [PATH]
 green [LOGDATE] ipsec_setup: WARNING: (eth|ippp)[NUM] has route filtering turned on, KLIPS may not work
+green [LOGDATE] ipsec_setup: WARNING: changing route filtering on eth[NUM] \(changing [PATH] from [NUM] to [NUM]\)
 red [LOGDATE] ipsec__plutorun: \.\.\.could not (add|route|start) conn ".*"
 red [LOGDATE] ipsec__plutorun: ipsec_auto: fatal error 
 red [LOGDATE] ipsec__plutorun: [NUM] ERROR: 

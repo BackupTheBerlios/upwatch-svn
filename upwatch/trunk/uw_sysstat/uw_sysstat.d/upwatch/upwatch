@@ -1,3 +1,4 @@
+green [LOGDATE] uw_ping[PID] run\.c\([NUM]\): ICMP Echo from [IPADDR]
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [WORD]: purpled [NUM] probes
 green [LOGDATE] uw_[WORD][PID] last message repeated [NUM] times
 green [LOGDATE] uw_[WORD][PID] logregex\.c\([NUM]\): loading [PATH]
@@ -28,11 +29,12 @@ green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [IPADDR]: timeout reading PASS r
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [IPADDR]: timeout reading USER string
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [PATH]: empty file
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): reading info from database
-green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): running [NUM] probes from group [NUM]
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): running [NUM] probes
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): signal [NUM] received - finishing up
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): started [PID] on [PATH]
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): st_read: Connection reset by peer
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): unknown message:
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): uploaded [PATH]
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): user [WORD], pwd [WORD] not found
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [WORD]: purpled [WORD] [NUM]
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): writing results

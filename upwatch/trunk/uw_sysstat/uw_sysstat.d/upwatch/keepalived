@@ -1,0 +1,7 @@
+green [LOGDATE] Keepalived_vrrp: Remote SMTP server [[IPADDR]:[NUM]] connected.
+green [LOGDATE] Keepalived_vrrp: SMTP alert successfully sent.
+green [LOGDATE] Keepalived_vrrp: VRRP_Group(SARA_S) Syncing instances to (MASTER|BACKUP) state
+green [LOGDATE] Keepalived_vrrp: VRRP_Instance(VI_eth[NUM]) Entering BACKUP STATE
+green [LOGDATE] Keepalived_vrrp: VRRP_Instance(VI_eth[NUM]) Received higher prio advert
+green [LOGDATE] Keepalived_vrrp: VRRP_Instance(VI_eth[NUM]) removing protocol Virtual Routes
+green [LOGDATE] Keepalived_vrrp: VRRP_Instance(VI_eth[NUM]) Transition to MASTER STATE
