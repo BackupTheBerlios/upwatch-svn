@@ -385,14 +385,30 @@ logged_in:
   if (strncasecmp(buffer, "QUIT", 4) == 0) goto end;
   if (strncasecmp(buffer, "DATA ", 5)) goto syntax; 
   filesize = atoi(buffer+5);
+  if (filesize < 174 /* empty result file */ || filesize > 100000) {
+    LOG(LOG_WARNING, "%u: Illegal filesize", filesize);
+    goto syntax;
+  }
   for (filename = buffer+5; *filename && isdigit(*filename); filename++)
     ;
   for (; *filename && isspace(*filename); filename++)
     ;
-  if (filename && strlen(filename) < 12) {
-    filename = NULL;
+  if (filename) {
+    if (strlen(filename) < 12) {
+      filename = NULL;
+    } else {
+      char *s;
+      
+      if (strstr(filename, "..")) {
+        LOG(LOG_WARNING, "%s: Illegal filename", filename);
+        goto syntax;
+      }
+      s = strrchr(filename, '/'); // strip a path, if present
+      if (s) filename = ++s;
+      s = strrchr(filename, '\\'); // DOS format paths
+      if (s) filename = ++s;
+    }
   }
-
   sp_info = spool_open(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), filename);
   if (sp_info == NULL) {
     sprintf(buffer, "-ERR Sorry, error spooling file - enter command\n");
@@ -451,7 +467,7 @@ logged_in:
 
 syntax:
   LOG(LOG_WARNING, "%s: %s", remotehost, buffer);
-  sprintf(buffer, "-ERR unknown command\n");
+  sprintf(buffer, "-ERR syntax error\n");
   if (++errors < 4) goto login;
 
 end:
