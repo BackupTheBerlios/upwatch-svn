@@ -1,4 +1,22 @@
 --
+-- Table structure for table 'probe'
+--
+
+CREATE TABLE probe (
+  id int(11) NOT NULL auto_increment,
+  name varchar(24) NOT NULL default '',
+  description varchar(128) NOT NULL default '',
+  comment text NOT NULL,
+  PRIMARY KEY  (`id`)
+) TYPE=MyISAM;
+
+insert into probe set id = 1, name = 'empty';
+insert into probe set id = 2, name = 'ping', description = 'ping - send ICMP echo requests';
+insert into probe set id = 3, name = 'httpget', description = 'httpget - Do a HTTP GET request';
+insert into probe set id = 4, name = 'iptraf', description = 'iptraf - All incoming and outgoing traffic';
+insert into probe set id = 5, name = 'cpuload', description = 'cpuload - User, system and idle time';
+
+--
 -- Table structure for table 'pr_hist'
 --
 

@@ -170,6 +170,7 @@ AC_CONFIG_FILES([Makefile
                  uw_process/Makefile 
                  uw_iptraf/Makefile 
                  uw_notify/Makefile 
+                 uw_sysstat/Makefile 
                  uw_investigate/Makefile 
                  uw_send/Makefile]
 )

@@ -170,16 +170,27 @@ int run(void)
   }
   mypid = getpid() & 0xffff;
   if (HAVE_OPT(INTERFACE)) {
-    dev = OPT_ARG(INTERFACE);
+    int     ct  = STACKCT_OPT( INTERFACE );
+    char**  pn = STACKLST_OPT( INTERFACE );
+
+    while (ct--) {
+      dev = *pn++;
+      pt = g_thread_create(pcap_thread, strdup(dev), 0, &error);
+      if (pt == NULL) {
+        LOG(LOG_NOTICE, "g_thread_create: %s", error);
+        return 0;
+      }
+    }
   } else {
     char errbuf[PCAP_ERRBUF_SIZE];
 
     dev = pcap_lookupdev(errbuf);
-  }
-  pt = g_thread_create(pcap_thread, strdup(dev), 0, &error);
-  if (pt == NULL) {
-    LOG(LOG_NOTICE, "g_thread_create: %s", error);
-    return 0;
+
+    pt = g_thread_create(pcap_thread, strdup(dev), 0, &error);
+    if (pt == NULL) {
+      LOG(LOG_NOTICE, "g_thread_create: %s", error);
+      return 0;
+    }
   }
   g_thread_join(wt);
   return 1;

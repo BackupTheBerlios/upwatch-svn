@@ -1,16 +1,24 @@
 AutoGen Definitions options;
 #include ../common/generic_options.def
-export        = "#define progOptions uw_iptrafOptions";
-prog-name     = uw_iptraf;
+export        = "#define progOptions uw_sysstatOptions";
+prog-name     = uw_sysstat;
 prog-title    = "Upwatch probe daemon";
 version       = "0.1";
-homerc        = "/etc/upwatch.d/uw_iptraf.conf";
+homerc        = "/etc/upwatch.d/uw_sysstat.conf";
 detail        = 
-'uw_iptraf does the following: ';
+'uw_sysstat does the following: ';
 
 // this section is for the generated specfile
-spec-requires = "libpcap glib2 >= 2.0.4";
-spec-files    = "%attr(4770,root,upwatch) /usr/sbin/uw_iptraf";
+spec-requires = "glib2";
+spec-files    = "%attr(0770,root,upwatch) /usr/sbin/uw_sysstat";
+
+flag = {
+    must-set; 
+    name      = serverid;
+    value     = S;        /* flag style option character */
+    arg_type  = number;   /* option argument indication  */
+    descrip   = "Numeric id of this server in the upwatch database";
+};
 
 // describe commandline flags
 flag = {
@@ -27,7 +35,7 @@ removes any files in `tmp` that are older then 36 hours. For some more info
 about maildir see http://www.qmail.org/man/man5/maildir.html.';
 };
 
-flag = {
+flag = {      
     name      = output;
     value     = O;
     arg_type  = string;
@@ -37,26 +45,4 @@ flag = {
 All results are placed in this queue.';
 };
 
-flag = {
-    name      = interface;
-    value     = i;
-    stack_arg;
-    arg_type  = string;
-    descrip   = "name of interface to capture traffic";
-    doc       =
-'This specifies the name of the interface iptraf should bind to,
-and capture packets from';
-};
-
-flag = {
-    name      = network;
-    value     = n;
-    arg_type  = string;
-    stack_arg;
-    descrip   = "internal network in CIDR format";
-    doc       =
-'iptraf needs to know which network are internal and which are external,
-specificy thosr with one or more -n options. Note only CIDR format is supported
-(192.168.170.0/24)';
-};
 

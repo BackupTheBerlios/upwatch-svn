@@ -1,0 +1,167 @@
+--
+-- Table structure for table 'pr_template_def'
+--
+
+CREATE TABLE pr_template_def (
+  id int(8) NOT NULL auto_increment,
+  server int(8) NOT NULL default '0',
+  address varchar(80) NOT NULL default '',
+  description text NOT NULL default '',
+  freq int(4) NOT NULL default '1',
+  count int(2) unsigned NOT NULL default '5',
+  yellowmiss int(2) unsigned NOT NULL default '1',
+  redmiss int(2) unsigned NOT NULL default '3',
+  stattime int(10) unsigned NOT NULL default '0',
+  expires int(10) unsigned NOT NULL default '0',
+  color smallint(5) unsigned NOT NULL default '0',
+  lasthist int(10) unsigned NOT NULL default '0',
+  message text NOT NULL,
+  PRIMARY KEY  (id)
+) TYPE=MyISAM;
+
+--
+-- Table structure for table 'pr_template_hist'
+--
+
+CREATE TABLE pr_template_hist (
+  id int(10) unsigned NOT NULL auto_increment,
+  probe int(10) unsigned NOT NULL default '0',
+  stattime int(10) unsigned NOT NULL default '0',
+  color smallint(5) unsigned NOT NULL default '0',
+  message text NOT NULL,
+  PRIMARY KEY  (id),
+  UNIQUE KEY probtime (probe,stattime),
+  KEY probe (probe),
+  KEY stattime (stattime)
+) TYPE=MyISAM;
+
+--
+-- Table structure for table 'pr_template_raw'
+--
+
+CREATE TABLE pr_template_raw (
+  id int(10) unsigned NOT NULL auto_increment,
+  probe int(10) unsigned NOT NULL default '0',
+  hist int(10) unsigned NOT NULL default '0',
+  stattime int(10) unsigned NOT NULL default '0',
+  color smallint(5) unsigned NOT NULL default '0',
+  value float NOT NULL default '0',
+  lowest float NOT NULL default '0',
+  highest float NOT NULL default '0',
+  PRIMARY KEY  (id),
+  UNIQUE KEY probtime (probe,stattime),
+  KEY probe (probe),
+  KEY hist (hist),
+  KEY stattime (stattime)
+) TYPE=MyISAM;
+
+--
+-- Table structure for table 'pr_template_day'
+--
+
+CREATE TABLE pr_template_day (
+  id int(10) unsigned NOT NULL auto_increment,
+  probe int(10) unsigned NOT NULL default '0',
+  hist int(10) unsigned NOT NULL default '0',
+  slot int(4) NOT NULL default '0',
+  stattime int(10) unsigned NOT NULL default '0',
+  color smallint(5) unsigned NOT NULL default '0',
+  value float NOT NULL default '0',
+  lowest float NOT NULL default '0',
+  highest float NOT NULL default '0',
+  PRIMARY KEY  (id),
+  UNIQUE KEY probtime (probe,stattime),
+  KEY probe (probe),
+  KEY hist (hist),
+  KEY slot (slot),
+  KEY stattime (stattime)
+) TYPE=MyISAM;
+
+--
+-- Table structure for table 'pr_template_week'
+--
+
+CREATE TABLE pr_template_week (
+  id int(10) unsigned NOT NULL auto_increment,
+  probe int(10) unsigned NOT NULL default '0',
+  hist int(10) unsigned NOT NULL default '0',
+  slot int(4) NOT NULL default '0',
+  stattime int(10) unsigned NOT NULL default '0',
+  color smallint(5) unsigned NOT NULL default '0',
+  value float NOT NULL default '0',
+  lowest float NOT NULL default '0',
+  highest float NOT NULL default '0',
+  PRIMARY KEY  (id),
+  UNIQUE KEY probtime (probe,stattime),
+  KEY probe (probe),
+  KEY hist (hist),
+  KEY slot (slot),
+  KEY stattime (stattime)
+) TYPE=MyISAM;
+
+--
+-- Table structure for table 'pr_template_month'
+--
+
+CREATE TABLE pr_template_month (
+  id int(10) unsigned NOT NULL auto_increment,
+  probe int(10) unsigned NOT NULL default '0',
+  hist int(10) unsigned NOT NULL default '0',
+  slot int(4) NOT NULL default '0',
+  stattime int(10) unsigned NOT NULL default '0',
+  color smallint(5) unsigned NOT NULL default '0',
+  value float NOT NULL default '0',
+  lowest float NOT NULL default '0',
+  highest float NOT NULL default '0',
+  PRIMARY KEY  (id),
+  UNIQUE KEY probtime (probe,stattime),
+  KEY probe (probe),
+  KEY hist (hist),
+  KEY slot (slot),
+  KEY stattime (stattime)
+) TYPE=MyISAM;
+
+--
+-- Table structure for table 'pr_template_year'
+--
+
+CREATE TABLE pr_template_year (
+  id int(10) unsigned NOT NULL auto_increment,
+  probe int(10) unsigned NOT NULL default '0',
+  hist int(10) unsigned NOT NULL default '0',
+  slot int(4) NOT NULL default '0',
+  stattime int(10) unsigned NOT NULL default '0',
+  color smallint(5) unsigned NOT NULL default '0',
+  value float NOT NULL default '0',
+  lowest float NOT NULL default '0',
+  highest float NOT NULL default '0',
+  PRIMARY KEY  (id),
+  UNIQUE KEY probtime (probe,stattime),
+  KEY probe (probe),
+  KEY hist (hist),
+  KEY slot (slot),
+  KEY stattime (stattime)
+) TYPE=MyISAM;
+
+--
+-- Table structure for table 'pr_template_5year'
+--
+
+CREATE TABLE pr_template_5year (
+  id int(10) unsigned NOT NULL auto_increment,
+  probe int(10) unsigned NOT NULL default '0',
+  hist int(10) unsigned NOT NULL default '0',
+  slot int(4) NOT NULL default '0',
+  stattime int(10) unsigned NOT NULL default '0',
+  color smallint(5) unsigned NOT NULL default '0',
+  value float NOT NULL default '0',
+  lowest float NOT NULL default '0',
+  highest float NOT NULL default '0',
+  PRIMARY KEY  (id),
+  UNIQUE KEY probtime (probe,stattime),
+  KEY probe (probe),
+  KEY hist (hist),
+  KEY slot (slot),
+  KEY stattime (stattime)
+) TYPE=MyISAM;
+

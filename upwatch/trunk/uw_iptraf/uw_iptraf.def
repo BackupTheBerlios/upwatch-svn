@@ -9,7 +9,7 @@ detail        =
 'uw_iptraf does the following: ';
 
 // this section is for the generated specfile
-spec-requires = "libpcap mysql glib2 >= 2.0.4";
+spec-requires = "libpcap glib2 >= 2.0.4";
 spec-files    = "%attr(4770,root,upwatch) /usr/sbin/uw_iptraf";
 
 // describe commandline flags
@@ -40,6 +40,7 @@ All results are placed in this queue.';
 flag = {
     name      = interface;
     value     = i;
+    stack_arg;
     arg_type  = string;
     descrip   = "name of interface to capture traffic";
     doc       =

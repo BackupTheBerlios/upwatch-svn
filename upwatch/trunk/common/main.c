@@ -188,23 +188,24 @@ static int cur_second(void)
   return(gmt->tm_sec);
 }
 
+int sleep_seconds = 0;
+
 static void wait_to_start(void)
 {
-  int wait = 0;
   int now = cur_second();
   
   if (debug > 2) { 
-    fprintf(stderr, "waiting 3 seconds..\n");
-    sleep(3);
-    return;
-  }
-  if (now >= startsec) {
-    wait = startsec - now + 60;
+    sleep_seconds = 3;
+    fprintf(stderr, "waiting %d seconds..\n", sleep_seconds);
   } else {
-    wait = startsec - now;
+    if (now >= startsec) {
+      sleep_seconds = startsec - now + 60;
+    } else {
+      sleep_seconds = startsec - now;
+    }
+    if (debug > 1) LOG(LOG_DEBUG, "sleeping for %d seconds", sleep_seconds);
   }
-  if (debug > 1) LOG(LOG_DEBUG, "sleeping for %d seconds", wait);
-  sleep(wait);
+  sleep(sleep_seconds);
 }
 
 /* compute time diff in microsecs */
