@@ -1,0 +1,11 @@
+<!ELEMENT result	((ping|httpget|iptraf|sysstat|bb|bb_cpu|mysql|pop3|mssql|postgresql|imap)*)>
+<!ATTLIST result	fromhost NMTOKEN #REQUIRED
+			date NMTOKEN #REQUIRED
+> 
+
+<!ELEMENT host          (hostname,ipaddress?)>
+<!ELEMENT hostname      (#PCDATA)>
+<!ELEMENT ipaddress     (#PCDATA)>
+
+<!ELEMENT info          (#PCDATA)>
+
