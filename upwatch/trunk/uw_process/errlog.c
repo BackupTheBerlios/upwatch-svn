@@ -26,8 +26,10 @@ static int fix_result(module *probe, void *probe_res)
 {
   struct errlog_result *res = (struct errlog_result *)probe_res;
 
-  if (debug > 1) LOG(LOG_DEBUG, "%s: %s %d stattime %u expires %u", 
-                 res->name, res->hostname, res->color, res->stattime, res->expires);
+  if (debug > 1) {
+    LOG(LOG_DEBUG, "%s: %d stattime %u expires %u", 
+                 res->name, res->color, res->stattime, res->expires);
+  }
   return 1; // ok
 }
 
@@ -45,21 +47,6 @@ static void *get_def(module *probe, void *probe_res)
   MYSQL_RES *result;
   MYSQL_ROW row;
 
-  // first we find the serverid, this will be used to find the probe definition in the hashtable
-  result = my_query(probe->db, 0,
-                    OPT_ARG(QUERY_SERVER_BY_NAME), res->hostname, res->hostname, 
-                    res->hostname, res->hostname, res->hostname);
-  if (!result) return(NULL);
-  row = mysql_fetch_row(result);
-  if (row && row[0]) {
-    res->server   = atoi(row[0]);
-  } else {
-    LOG(LOG_NOTICE, "server %s not found", res->hostname);
-    mysql_free_result(result);
-    return(NULL);
-  }
-  mysql_free_result(result);
-
   def = g_malloc0(probe->def_size);
   def->stamp    = time(NULL);
   def->server   = res->server;
@@ -67,7 +54,7 @@ static void *get_def(module *probe, void *probe_res)
 
   // first find the definition based on the serverid
   result = my_query(probe->db, 0,
-                    "select id, contact, hide from pr_errlog_def "
+                    "select id, contact, hide, email, redmins from pr_errlog_def "
                     "where  server = '%u'", res->server);
   if (!result) {
     g_free(def);
@@ -84,7 +71,7 @@ static void *get_def(module *probe, void *probe_res)
     def->probeid = mysql_insert_id(probe->db);
     LOG(LOG_NOTICE, "pr_errlog_def created for %s, id = %u", res->hostname, def->probeid);
     result = my_query(probe->db, 0,
-                    "select id, contact, hide from pr_errlog_def "
+                    "select id, contact, hide, email, redmins from pr_errlog_def "
                     "where  server = '%u'", res->server);
     if (!result) return(NULL);
   }
@@ -98,6 +85,9 @@ static void *get_def(module *probe, void *probe_res)
   if (row[0])  def->probeid = atoi(row[0]);
   if (row[1])  def->contact = atoi(row[1]);
   strcpy(def->hide, row[2] ? row[2] : "no");
+  strcpy(def->email, row[3] ? row[3] : "");
+  if (row[4]) def->redmins = atoi(row[4]);
+
   mysql_free_result(result);
 
   // definition found, get the pr_status
@@ -123,11 +113,6 @@ static void *get_def(module *probe, void *probe_res)
   return(def);
 }
 
-static void end_probe(module *probe, void *def, void *res)
-{
-  g_free(def);
-}
-
 module errlog_module  = {
   STANDARD_MODULE_STUFF(errlog),
   NO_FREE_DEF,
@@ -141,7 +126,7 @@ module errlog_module  = {
   get_def,
   NO_STORE_RESULTS,
   NO_SUMMARIZE,
-  end_probe,
+  NO_END_PROBE,
   NO_END_RUN
 };
 

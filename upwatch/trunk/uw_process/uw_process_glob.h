@@ -3,7 +3,6 @@
 
 extern int trust(char *name);
 
-
 /* list of probes */
 typedef enum
 {

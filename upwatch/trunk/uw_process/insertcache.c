@@ -28,7 +28,7 @@ void mod_ic_flush(module *probe, const char *table)
   }
   sql = malloc(len + 256);
   start = sql + sprintf(sql, "insert into %s values %s", 
-                             table, g_ptr_array_index(probe->insertc, 0));
+                             (char *) table, (char *) g_ptr_array_index(probe->insertc, 0));
   g_free(g_ptr_array_index(probe->insertc, 0));
   for (i=1; i < probe->insertc->len; i++) {
     start += sprintf(start, ", %s", g_ptr_array_index(probe->insertc, i));

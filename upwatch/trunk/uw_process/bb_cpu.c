@@ -109,7 +109,7 @@ static void *get_def(module *probe, void *probe_res)
     strcpy(def->hide, "no");
 
     // first find the definition based on the serverid
-    result = my_query(probe->db, 0, "select id, yellow, red, contact, hide "
+    result = my_query(probe->db, 0, "select id, yellow, red, contact, hide, email, redmins "
                                     "from pr_%s_def where server = '%u'", 
                       res->name, res->server);
     if (!result) {
@@ -125,7 +125,7 @@ static void *get_def(module *probe, void *probe_res)
       mysql_free_result(result);
       def->probeid = mysql_insert_id(probe->db);
       LOG(LOG_NOTICE, "pr_%s_def created for %s, id = %u", res->name, res->hostname, def->probeid);
-      result = my_query(probe->db, 0, "select id, yellow, red, contact, hide "
+      result = my_query(probe->db, 0, "select id, yellow, red, contact, hide, email, redmins "
                                       "from pr_%s_def where id = '%u'", 
                         res->name, def->probeid);
     }
@@ -141,6 +141,9 @@ static void *get_def(module *probe, void *probe_res)
     if (row[2]) def->red = atof(row[2]);
     if (row[3]) def->contact = atof(row[3]);
     strcpy(def->hide, row[4] ? row[4] : "no");
+    strcpy(def->email, row[5] ? row[5] : "");
+    if (row[6]) def->redmins = atoi(row[6]);
+
     mysql_free_result(result);
     result = my_query(probe->db, 0, 
                       "select color, changed, notified "

@@ -116,7 +116,7 @@ static void *get_def(module *probe, void *probe_res)
     def->server = res->server;
     
     result = my_query(probe->db, 0,
-                      "select id, yellow, red, contact, hide "
+                      "select id, yellow, red, contact, hide, email, redmins "
                       "from   pr_%s_def "
                       "where  server = '%u'", res->name, res->server);
     if (!result) return(NULL);
@@ -138,7 +138,7 @@ static void *get_def(module *probe, void *probe_res)
                          res->name, def->probeid, mysql_error(probe->db));
       }
       result = my_query(probe->db, 0,
-                        "select id, yellow, red, contact, hide "
+                        "select id, yellow, red, contact, hide, email, redmins "
                         "from   pr_%s_def "
                         "where  server = '%u'", res->name, res->server);
       if (!result) return(NULL);
@@ -154,6 +154,9 @@ static void *get_def(module *probe, void *probe_res)
     if (row[2]) def->red      = atoi(row[2]);
     if (row[3]) def->contact  = atoi(row[3]);
     strcpy(def->hide, row[4] ? row[4] : "no");
+    strcpy(def->email, row[5] ? row[5] : "");
+    if (row[6]) def->redmins = atoi(row[6]);
+
     mysql_free_result(result);
 
     result = my_query(probe->db, 0,

@@ -48,7 +48,7 @@ void resfile_remove(struct resfile *rf, int ondisk)
   g_static_rec_mutex_lock (&resfile_mutex);
   if (ondisk) { 
     unlink(rf->filename);
-    if (debug > 3) fprintf(stderr, "%s: deleted\n", rf->filename);
+    if (debug > 3) { fprintf(stderr, "%s: deleted\n", rf->filename); }
   }
   g_ptr_array_remove(resfile_arr, rf);
   resfile_free(rf);
@@ -97,7 +97,9 @@ static void modules_end_run(void)
       strcat(buf, wrk);
     }
   }
-  if (debug) LOG(LOG_DEBUG, "Processed: Total:%u (%s)", total, buf);
+  if (debug) { 
+    LOG(LOG_DEBUG, "Processed: Total:%u (%s)", total, buf);
+  }
 }
 
 static void modules_cleanup(void)
@@ -304,10 +306,10 @@ extern int forever;
 
     if (resfile_arr->len >= OPT_VALUE_BATCH_SIZE) {
       free(g_ptr_array_index(arr,i));
-      if (debug > 3) fprintf(stderr, "%u ", i);
+      if (debug > 3) { fprintf(stderr, "%u ", i); }
       continue;
     }
-    if (debug > 3) fprintf(stderr, "%u: %s: ", i, g_ptr_array_index(arr,i));
+    if (debug > 3) { fprintf(stderr, "%u: %s: ", i, g_ptr_array_index(arr,i)); }
     for (j=0; j < resfile_arr->len; j++) { // are we already working on this file?
       rf = g_ptr_array_index(resfile_arr, j);
       if (!strcmp(rf->filename, g_ptr_array_index(arr,i))) {
@@ -324,7 +326,7 @@ extern int forever;
     rf->filename = g_ptr_array_remove_index(arr,i);
     uw_setproctitle("reading %s", rf->filename);
     g_ptr_array_add(resfile_arr, rf); 
-    if (debug > 3) fprintf(stderr, "IMPORTED\n");
+    if (debug > 3) { fprintf(stderr, "IMPORTED\n"); }
     handle_file(rf, NULL); // extract probe results and queue them
     count++;
   }
@@ -335,7 +337,7 @@ int run(void)
 {
 static int resummarize(void);
 
-  if (debug > 3) LOG(LOG_DEBUG, "run()");
+  if (debug > 3) { LOG(LOG_DEBUG, "run()"); }
 
   if (HAVE_OPT(SUMMARIZE)) {
     return(resummarize()); // --summarize
@@ -367,7 +369,7 @@ static int resummarize(void);
         }
         if (found) { // fork a thread for this separate group
           g_thread_create(process_probes_thread, (gpointer)sep, FALSE, &error);
-          if (debug > 3) LOG(LOG_NOTICE, "%d %s", sep, pn[sep]);
+          if (debug > 3) { LOG(LOG_NOTICE, "%d %s", sep, pn[sep]); }
         }
         p = strtok_r(NULL, " ,;:\n\r\t/", &tmp2);
       }
@@ -394,7 +396,7 @@ gpointer process_probes_thread(gpointer data)
 extern int forever;
   while (forever) {
     sleep(1);
-    if (debug > 3) LOG(LOG_NOTICE, "Processing probes");
+    if (debug > 3) { LOG(LOG_NOTICE, "Processing probes"); }
     process_probes(data);
   }
   return(NULL);
@@ -410,7 +412,7 @@ extern int forever;
     if (resfile_arr->len < 10) {
       sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), OPT_ARG(INPUT));
       uw_setproctitle("listing %s", path);
-      if (debug > 3) LOG(LOG_NOTICE, "Reading from %s", path);
+      if (debug > 3) { LOG(LOG_NOTICE, "Reading from %s", path); }
       read_input_files(path);
       uw_setproctitle("sleeping");
     }
@@ -423,7 +425,7 @@ void process_probes(gpointer data)
 extern int forever;
   int failures = 0;
   int i, sep;
-  if (debug> 3) LOG(LOG_DEBUG, "processing %u file entries", resfile_arr->len);
+  if (debug> 3) { LOG(LOG_DEBUG, "processing %u file entries", resfile_arr->len); }
 
   sep = (int) data;
   // Now we have the queues updated, process all results
@@ -464,7 +466,7 @@ extern int forever;
       g_static_mutex_unlock (&modules[i]->queue_mutex);
       if (t == NULL) break;
 
-      if (debug > 3) fprintf(stderr, "%s %s@%s", buf, t->res->name, t->rf->fromhost);
+      if (debug > 3) { fprintf(stderr, "%s %s@%s", buf, t->res->name, t->rf->fromhost); }
       if (buf[0] == 0 || count % 100 == 0) {
         strftime(buf, sizeof(buf), "%Y-%m-%d %T", gmtime(&t->rf->fromdate));
         uw_setproctitle("%s %s@%s", buf, t->res->name, t->rf->fromhost);
@@ -578,7 +580,7 @@ static int handle_file(gpointer data, gpointer user_data)
   int filesize;
   int i;
 
-  if (debug) LOG(LOG_DEBUG, "Processing %s", rf->filename);
+  if (debug) { LOG(LOG_DEBUG, "Processing %s", rf->filename); }
 
   if (stat(rf->filename, &st)) {
     LOG(LOG_WARNING, "%s: %m", rf->filename);
@@ -785,7 +787,7 @@ extern int forever;
 
       def.newest = res.stattime;
       if (found %500 == 0) {
-        if (debug > 2) fprintf(stderr, "%8u records processed\r", found);
+        if (debug > 2) { fprintf(stderr, "%8u records processed\r", found); }
       }
     }
     mysql_free_result(presult);

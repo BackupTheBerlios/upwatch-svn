@@ -9,41 +9,22 @@
 #include "dmalloc.h"
 #endif
 
-struct bb_result {
+struct diskfree_result {
   STANDARD_PROBE_RESULT;
-  char *bbname;
 };
-struct bb_def {
+struct diskfree_def {
   STANDARD_PROBE_DEF;
 #include "../common/common.h"
 };
 
-static void free_res(void *res)
-{
-  struct bb_result *r = (struct bb_result *)res;
-
-  if (r->bbname) {
-    g_free(r->bbname);
-  }
-}
-
-//*******************************************************************
-// GET THE INFO FROM THE XML FILE
-// Caller must free the pointer it returns
-//*******************************************************************
-static void xml_result_node(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
-{
-  struct bb_result *res = (struct bb_result *)probe_res;
-
-  res->bbname = xmlGetProp(cur, (const xmlChar *) "bbname");
-}
+extern module diskfree_module;
 
 //*******************************************************************
 // Only used for debugging
 //*******************************************************************
 static int fix_result(module *probe, void *probe_res)
 {
-  struct bb_result *res = (struct bb_result *)probe_res;
+  struct diskfree_result *res = (struct diskfree_result *)probe_res;
 
   if (debug > 1) {
     LOG(LOG_DEBUG, "%s: %s %d stattime %u expires %u", 
@@ -62,24 +43,9 @@ static int fix_result(module *probe, void *probe_res)
 static void *get_def(module *probe, void *probe_res)
 {
   struct probe_def *def;
-  struct bb_result *res = (struct bb_result *)probe_res;
+  struct diskfree_result *res = (struct diskfree_result *)probe_res;
   MYSQL_RES *result;
   MYSQL_ROW row;
-
-  // first we find the serverid, this will be used to find the probe definition in the hashtable
-  result = my_query(probe->db, 0,
-                    OPT_ARG(QUERY_SERVER_BY_NAME), res->hostname, res->hostname, 
-                    res->hostname, res->hostname, res->hostname);
-  if (!result) return(NULL);
-  row = mysql_fetch_row(result);
-  if (row && row[0]) {
-    res->server   = atoi(row[0]);
-  } else {
-    LOG(LOG_NOTICE, "server %s not found", res->hostname);
-    mysql_free_result(result);
-    return(NULL);
-  }
-  mysql_free_result(result);
 
   def = g_malloc0(probe->def_size);
   def->stamp    = time(NULL);
@@ -88,8 +54,8 @@ static void *get_def(module *probe, void *probe_res)
 
   // first find the definition based on the serverid
   result = my_query(probe->db, 0,
-                    "select id, contact, hide, email, redmins from pr_bb_def "
-                    "where  bbname = '%s' and server = '%u'", res->bbname, res->server);
+                    "select id, contact, hide, email, redmins from pr_diskfree_def "
+                    "where  server = '%u'", res->server);
   if (!result) {
     g_free(def);
     return(NULL);
@@ -98,15 +64,15 @@ static void *get_def(module *probe, void *probe_res)
     mysql_free_result(result);
     result = my_query(probe->db, 0,
                       "insert into pr_%s_def set server = '%u', ipaddress = '%s', " 
-                      "       description = '%s', bbname = '%s'", 
+                      "       description = '%s'", 
                        res->name, res->server, res->ipaddress ? res->ipaddress : "", 
-                       res->hostname, res->bbname);
+                       res->hostname);
     mysql_free_result(result);
     def->probeid = mysql_insert_id(probe->db);
-    LOG(LOG_NOTICE, "pr_bb_def %s created for %s, id = %u", res->bbname, res->hostname, def->probeid);
+    LOG(LOG_NOTICE, "pr_diskfree_def created for %s, id = %u", res->hostname, def->probeid);
     result = my_query(probe->db, 0,
-                    "select id, contact, hide, email, redmins from pr_bb_def "
-                    "where  bbname = '%s' and server = '%u'", res->bbname, res->server);
+                    "select id, contact, hide, email, redmins from pr_diskfree_def "
+                    "where  server = '%u'", res->server);
     if (!result) return(NULL);
   }
   row = mysql_fetch_row(result);
@@ -147,25 +113,20 @@ static void *get_def(module *probe, void *probe_res)
   return(def);
 }
 
-static void end_probe(module *probe, void *def, void *res)
-{
-  g_free(def);
-}
-
-module bb_module  = {
-  STANDARD_MODULE_STUFF(bb),
+module diskfree_module  = {
+  STANDARD_MODULE_STUFF(diskfree),
   NO_FREE_DEF,
-  free_res,
+  NO_FREE_RES,
   NO_INIT,
   NO_START_RUN,
   NO_ACCEPT_PROBE,
-  xml_result_node,
+  NO_XML_RESULT_NODE,
   NO_GET_FROM_XML,
   fix_result,
   get_def,
   NO_STORE_RESULTS,
   NO_SUMMARIZE,
-  end_probe,
+  NO_END_PROBE,
   NO_END_RUN
 };
 

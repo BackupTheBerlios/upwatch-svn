@@ -60,3 +60,10 @@ install-data-local:
 	fi
 
 CLEANFILES += ../probes.enum
+
+bin_PROGRAMS = tnot
+tnot_SOURCES = tnot.c notify.c cmd_options.h cmd_options.c
+tnot_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ \
+  $(DEF_LIBPQ) $(DEF_LIBSNMP) $(DEF_LIBTDS) $(DEF_LIBESMTP) # -DUSE_THREADS
+
+

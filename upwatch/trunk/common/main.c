@@ -170,7 +170,7 @@ int main( int argc, char** argv, char **envp )
   atexit(exit_function);
   if (!init()) exit(1);
 
-  /* set up SIGTERM/SIGINT handler */
+  /* set up SIGTERM/SIGINT/SIGSEGV handler */
   new_action.sa_handler = termination_handler;
   sigemptyset (&new_action.sa_mask);
   new_action.sa_flags = 0;
@@ -180,6 +180,11 @@ int main( int argc, char** argv, char **envp )
   sigemptyset (&new_action.sa_mask);
   new_action.sa_flags = 0;
   sigaction (SIGINT, &new_action, NULL);
+
+  new_action.sa_handler = termination_handler;
+  sigemptyset (&new_action.sa_mask);
+  new_action.sa_flags = 0;
+  sigaction (SIGSEGV, &new_action, NULL);
 
   /* ignore SIGHUP/SIGPIPE */
   new_action.sa_handler = SIG_IGN;

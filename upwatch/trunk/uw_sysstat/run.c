@@ -138,6 +138,7 @@ GString *check_log(char *syslogfile, int *color, int testmode)
     }
   }
   offset = ftell(in);
+  fclose(in);
   if (!testmode) {
     if ((in = fopen(STATFILE, "w")) != NULL) {
       fprintf(in, "%lu", offset);
@@ -240,13 +241,14 @@ int init(void)
   return 1;
 }
 
+static int prv_color = STAT_GREEN;
+
 int run(void)
 {
   xmlDocPtr doc;
   xmlNodePtr subtree, sysstat, errlog, diskfree;
   int ret = 0;
   int color = STAT_GREEN;
-static int prv_color = STAT_GREEN;
   time_t now;
   char buffer[1024];
   float fullest = 0.0;
@@ -285,11 +287,12 @@ extern int forever;
     }
   }
 
-  if (st.load->min1 > 0.5) { // if loadavg > 0.5 give `top` listing
+  if (st.load->min1 >= atof(OPT_ARG(LOADAVG_YELLOW))) { 
     char cmd[1024];
     FILE *in;
 
-    if (st.load->min1 > 5.0) color = STAT_RED;
+    if (st.load->min1 >= atof(OPT_ARG(LOADAVG_YELLOW))) color = STAT_YELLOW;
+    if (st.load->min1 >= atof(OPT_ARG(LOADAVG_RED))) color = STAT_RED;
 
     sprintf(cmd, "%s > /tmp/.uw_sysstat.tmp", OPT_ARG(TOP_COMMAND));
     if (debug > 2) LOG(LOG_NOTICE, cmd);
@@ -395,12 +398,12 @@ extern int forever;
     }
   }
 
-  if (fullest > 80) { // if some disk is more then 80% full give `df` listing
+  if (fullest > OPT_VALUE_DISKFREE_YELLOW) { // if some disk is more then 80% full give `df` listing
     char cmd[1024];
     FILE *in;
 
-    if (fullest > 90) color = STAT_YELLOW;
-    if (fullest > 95) color = STAT_RED;
+    if (fullest > OPT_VALUE_DISKFREE_YELLOW) color = STAT_YELLOW;
+    if (fullest > OPT_VALUE_DISKFREE_RED) color = STAT_RED;
 
     sprintf(cmd, "%s > /tmp/.uw_sysstat.tmp", OPT_ARG(DF_COMMAND));
     if (debug > 2) LOG(LOG_NOTICE, cmd);

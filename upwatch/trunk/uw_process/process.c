@@ -37,27 +37,6 @@ void free_res(void *res)
   g_free(r);
 }
 
-char *query_server_by_id(module *probe, int id)
-{
-  MYSQL_RES *result;
-  MYSQL_ROW row;
-static char name[256];
-
-  result = my_query(probe->db, 0,
-                    OPT_ARG(QUERY_SERVER_BY_ID), id, id, id, id, id);
-  if (!result) return("");
-  row = mysql_fetch_row(result);
-  if (row && row[0]) {
-    strcpy(name, row[0]);
-  } else {
-    LOG(LOG_NOTICE, "name for server %u not found", id);
-    mysql_free_result(result);
-    return("");
-  }
-  mysql_free_result(result);
-  return(name);
-}
-
 //*******************************************************************
 // GET THE INFO FROM THE XML FILE
 // Caller must free the pointer it returns
@@ -318,7 +297,7 @@ static void update_pr_status(module *probe, struct probe_def *def, struct probe_
 {
   MYSQL_RES *result;
   char *escmsg;
-  char color[24];
+  char color[80];
 
   if (res->message) {
     escmsg = g_malloc(strlen(res->message) * 2 + 1);
@@ -327,25 +306,26 @@ static void update_pr_status(module *probe, struct probe_def *def, struct probe_
     escmsg = strdup("");
   }
 
+  color[0] = 0;
   if (probe->fuse) {
-    if (res->color < prv->color) {
+    if (res->color > prv->color) {
     // if this probe acts like a fuse, only update if new color is higher then old color
-      sprintf(color, "color = '%u', changed = '%u'", prv->color, res->stattime);
+    // because colors must be set to green (= fuse replaced) by a human
+      sprintf(color, "color = '%u', changed = '%u', notified = 'no',", prv->color, res->stattime);
       def->changed = res->stattime;
-    } else {
+      strcpy(def->notified, "no");
     }
   } else {
     if (res->color != prv->color) {
-      sprintf(color, "color = '%u', changed = '%u'", res->color, res->stattime);
+      sprintf(color, "color = '%u', changed = '%u', notified = 'no',", res->color, res->stattime);
       def->changed = res->stattime;
-    } else {
-      sprintf(color, "color = '%u'", res->color);
+      strcpy(def->notified, "no");
     }
   }
 
   result = my_query(probe->db, 0,
                     "update pr_status "
-                    "set    stattime = '%u', expires = '%u', %s, hide = '%s', " 
+                    "set    stattime = '%u', expires = '%u', %s hide = '%s', " 
                     "       message = '%s', yellow = '%f', red = '%f', contact = '%u', server = '%u' "
                     "where  probe = '%u' and class = '%u'",
                     res->stattime, res->expires, color, def->hide, 
@@ -357,7 +337,7 @@ static void update_pr_status(module *probe, struct probe_def *def, struct probe_
     result = my_query(probe->db, 0,
                       "insert into pr_status "
                       "set    class =  '%u', probe = '%u', stattime = '%u', expires = '%u', "
-                      "       server = '%u', %s, message = '%s', yellow = '%f', red = '%f', "
+                      "       server = '%u', %s message = '%s', yellow = '%f', red = '%f', "
                       "       contact = '%u', hide = '%s'",
                       probe->class, def->probeid, res->stattime, res->expires, def->server, color, 
                       escmsg, def->yellow, def->red, def->contact, def->hide);
@@ -623,11 +603,6 @@ int process(module *probe, trx *t)
     goto finish;
   }
 
-  // notify if needed
-#if 0
-  notify(probe, def, t->res, prv);
-#endif
-
   // IF COLOR DIFFERS FROM PRECEDING RAW RECORD
   if (t->res->color != prv->color) {
     struct probe_result *nxt;
@@ -704,6 +679,10 @@ int process(module *probe, trx *t)
       }
     }
   }
+
+  // notify if needed
+  notify(probe, def, t->res, prv);
+
 finish:
   if (must_update_def) {
     def->newest = t->res->stattime;

@@ -59,21 +59,32 @@ These transactions are kept in the filename given with here';
 flag = {
     name      = smtpserver;
     arg_type  = string;
-    arg_default = "localhost:25";
+    arg_default = "localhost";
     descrip   = "Outgoing SMTP server";
     doc       =
 'SMTP server to send email notifications to';
 };
 
 flag = {
+    name      = smtpserverport;
+    arg_type  = number;
+    arg_default = 25;
+    descrip   = "Outgoing SMTP server port";
+    doc       =
+'SMTP server port number to send email notifications to';
+};
+
+flag = {
     name      = from-email;
     arg_type  = string;
+    arg_default = "beheer@netland.nl";
     descrip   = "Email address for outgoing messages";
 };
 
 flag = {
     name      = from-name;
     arg_type  = string;
+    arg_default = "CMS Netland Internet Services BV";
     descrip   = "Email name for outgoing messages";
 };
 
@@ -139,7 +150,7 @@ up to five `%s` sequences in the query, they will be replaced with the servernam
 flag = {
     name      = query-server-by-id;
     arg_type  = string;
-    arg_default = "select name from server where id = '%s'";
+    arg_default = "select name from server where id = '%u'";
     descrip   = "SQL query to find the name of a server given the id";
     doc       =
 'Specifically used for notifications, this query should find the name of a server

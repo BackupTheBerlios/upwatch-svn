@@ -30,7 +30,7 @@ CLIENTPROG = uw_send uw_sysstat
 
 if ENABLE_SERVER
 # order is important here: uw_process should be last
-SERVERPROG = uw_acceptbb uw_accept uw_setip uw_notify uw_process
+SERVERPROG = uw_acceptbb uw_accept uw_route uw_setip uw_notify uw_process
 ENABLE_SERVER = --enable-server
 endif
 

@@ -54,6 +54,44 @@ minutes, its color will turn to blue.';
 };
 
 flag = {
+    name      = loadavg-red;
+    arg_default  = "5.0";  /* option argument indication  */
+    arg_type  = string;   /* option argument indication  */
+    descrip   = "Load average value for a red condition";
+    doc       =
+'When the loadaverage reaches the given value, the probe color will turn red';
+};
+
+flag = {
+    name      = loadavg-yellow;
+    arg_default  = "3.0";  /* option argument indication  */
+    arg_type  = string;   /* option argument indication  */
+    descrip   = "Load average value for a yellow condition";
+    doc       =
+'When the loadaverage reaches the given value, the probe color will turn yellow';
+};
+
+flag = {
+    name      = diskfree-red;
+    arg_default  = 95;
+    arg_type  = number;
+    arg-range = "1->100";
+    descrip   = "Turn red when more than this percentage used";
+    doc       =
+'When any disk is more full then this percentage, the probe color will turn red';
+};
+
+flag = {
+    name      = diskfree-yellow;
+    arg_default  = 90;
+    arg-range = "1->100";
+    arg_type  = number;
+    descrip   = "Turn yellow when more than this percentage used";
+    doc       =
+'When any disk is more full then this percentage, the probe color will turn yellow';
+};
+
+flag = {
     name      = syslog-test;
     arg_type  = bool;   /* option argument indication  */
     descrip   = "Test current regular expressions setup";
@@ -99,7 +137,7 @@ flag = {
 flag = {
     must-set; 
     name      = serverid;
-    value     = S;        /* flag style option character */
+    value     = i;        /* flag style option character */
     arg_type  = number;   /* option argument indication  */
     descrip   = "Numeric id of this server in the upwatch database";
 };
@@ -157,7 +195,7 @@ This flag may be given multiple times.';
 
 flag = {      
     name      = hpqueue;
-    value     = O;
+    value     = H;
     arg_type  = string;
     descrip   = "name of high-priority queue to drop status changes";
     doc       =

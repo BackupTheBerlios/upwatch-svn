@@ -60,6 +60,8 @@ extern int daemonize;
 #define EVERY_5SECS 2
 #define EVERY_MINUTE 3
 
+char *color2string(int color);
+
 #define STAT_NONE 0
 #define STAT_BLUE 100
 #define STAT_GREEN 200
