@@ -5,4 +5,5 @@ BUILT_SOURCES = cmd_options.h  $(program).spec-generic $(program).init $(program
 INCLUDES = -I../upwatch 
 EXTRA_DIST = cmd_options.def 
 uw_ping_LDADD = db.o main.o ../upwatch/libupwatch.a
+uw_ping_CFLAGS = -g 
 include $(top_srcdir)/Makefile.am.common

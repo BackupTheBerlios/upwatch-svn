@@ -121,6 +121,7 @@ AC_CONFIG_FILES([Makefile
                  uw_ping/Makefile 
                  uw_process/Makefile 
                  uw_traceroute/Makefile 
+                 uw_notify/Makefile 
                  uw_send/Makefile]
 )
 AC_OUTPUT

@@ -225,6 +225,8 @@ void _LOG(int level, const char *fmt, ...)
   char *p, *file;
   va_list arg;
 
+  if (fmt == NULL) fmt = "(null)";
+
   va_start(arg, fmt);
   vsnprintf(buffer, BUFSIZ, fmt, arg);
   va_end(arg);
@@ -239,9 +241,6 @@ void _LOG(int level, const char *fmt, ...)
 
   if (OPT_VALUE_STDERR) {
     fprintf(stderr, "%s\n", msg);
-  }
-  if (OPT_VALUE_SYSLOG) {
-    syslog(level, msg);
   }
   if (HAVE_OPT(LOGFILE)) {
     FILE *out;
@@ -261,7 +260,12 @@ void _LOG(int level, const char *fmt, ...)
     if (out) {
       fprintf(out, "%s %s %s\n", timebuf, hostname, msg);
       fclose(out);
+    } else {
+      OPT_VALUE_SYSLOG = 1;
     }
+  }
+  if (OPT_VALUE_SYSLOG) {
+    syslog(level, msg);
   }
   pthread_mutex_unlock(&_logmutex);
 }

@@ -166,14 +166,14 @@ int run(void)
       "WHERE  pr_ping_def.server = server.id ";
 
     if (mysql_query(mysql, qry)) {
-      close_database();
       LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql));
+      close_database();
       return(1);
     }
     result = mysql_store_result(mysql);
     if (!result) {
-      close_database();
       if (debug) LOG(LOG_DEBUG, "%s: no result", qry);
+      close_database();
       return(FALSE);
     }
     newh = calloc(mysql_num_rows(result), sizeof(struct hostinfo));
@@ -231,8 +231,8 @@ int run(void)
       free(hosts);
     }
     hosts = newh; // replace with new structure
-    close_database();
     if (debug > 0) LOG(LOG_DEBUG, "done reading");
+    close_database();
   }
   if (hosts == NULL) {
     LOG(LOG_ERR, mysql_error(mysql));

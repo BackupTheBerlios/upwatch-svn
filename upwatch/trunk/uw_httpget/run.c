@@ -56,8 +56,8 @@ int run(void)
       "ORDER  BY name";
 
     if (mysql_query(mysql, qry)) {
-      close_database();
       LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql));
+      close_database();
       return(1);
     }
 

@@ -36,7 +36,7 @@ void *spool_open(char *basedir, char *target)
   }
 
   /* Step 1:  Check that the supplied directories are OK. */
-  sprintf(buffer, "%s/target/tmp", target, basedir); // I know, no bounds checking..
+  sprintf(buffer, "%s/%s/tmp", basedir, target); // I know, no bounds checking..
   if (!stat_dir(buffer)) {
     LOG(LOG_ERR, "Cannot touch %s", buffer);
     free(si);

@@ -29,14 +29,14 @@ static int uw_password_ok(char *user, char *passwd)
 
     sprintf(buffer, "select id from contact where username = '%.16ss' and password = '%.8s'", user, passwd);
     if (mysql_query(mysql, buffer)) {
-      close_database();
       LOG(LOG_ERR, "buffer: %s", mysql_error(mysql));
+      close_database();
       return(FALSE);
     }
     result = mysql_store_result(mysql);
     if (!result) {
-      close_database();
       if (debug) LOG(LOG_DEBUG, "user %s, pwd %s not found", user, passwd);
+      close_database();
       return(FALSE);
     }
     if ((row = mysql_fetch_row(result))) {
