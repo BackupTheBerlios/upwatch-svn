@@ -262,7 +262,7 @@ if [ "$1" -eq "0" ]; then
   rm -f /usr/sbin/rc[+serverprog+]
 [+ ENDFOR +]else
   /etc/init.d/upwatch
-
+fi
 %files server
 %defattr(0660,root,upwatch,0770)
 %attr(0755,root,root) /usr/bin/bbhimport
