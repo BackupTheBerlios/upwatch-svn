@@ -32,7 +32,6 @@ AC_SUBST(MYSQL_LIBS)
 AC_SUBST(MYSQL_CFLAGS)
 
 CFLAGS="$CFLAGS $MYSQL_CFLAGS"
-LIBS="$LIBS $MYSQL_LIBS"
 
 ################## PCAP
 # path to pcap:
@@ -57,41 +56,62 @@ AC_SUBST(PCAP_LIBS)
 AC_SUBST(PCAP_CFLAGS)
 
 CFLAGS="$CFLAGS $PCAP_CFLAGS"
-LIBS="$LIBS $PCAP_LIBS"
 
 ################## LIBNET
 # libnet
 LIBNET_CFLAGS="`libnet-config --cflags`"
 LIBNET_CFLAGS="$LIBNET_CFLAGS `libnet-config --defines`"
 LIBNET_LIBS="`libnet-config --libs`"
+if test -z "$LIBNET_LIBS"
+then
+  AC_MSG_ERROR([You really need libnet to compile upwatch])
+fi
 AC_SUBST(LIBNET_CFLAGS)
 AC_SUBST(LIBNET_LIBS)
 CFLAGS="$CFLAGS $LIBNET_CFLAGS"
-LIBS="$LIBS $LIBNET_LIBS"
 
 ################## GLIB2
 # glib2 
 LIBGLIB2_CFLAGS="-D_REENTRANT `pkg-config --cflags glib-2.0`"
 LIBGLIB2_LIBS="`pkg-config --libs gthread-2.0`"
+if test -z "$LIBGLIB2_LIBS"
+then
+  AC_MSG_ERROR([You really need libglib-2 to compile upwatch])
+fi
 AC_SUBST(LIBGLIB2_CFLAGS)
 AC_SUBST(LIBGLIB2_LIBS)
 CFLAGS="$CFLAGS $LIBGLIB2_CFLAGS"
-LIBS="$LIBS $LIBGLIB2_LIBS"
 
 ################## GNET
 # gnet
 LIBGNET_CFLAGS="`gnet-config --cflags`"
 LIBGNET_LIBS="`gnet-config --libs`"
+if test -z "$LIBGNET_LIBS"
+then
+  AC_MSG_ERROR([You really need libgnet to compile upwatch])
+fi
 AC_SUBST(LIBGNET_CFLAGS)
 AC_SUBST(LIBGNET_LIBS)
 CFLAGS="$CFLAGS $LIBGNET_CFLAGS"
-LIBS="$LIBS $LIBGNET_LIBS"
 
 # Checks for other libraries.
-AC_CHECK_LIB([opts], [optionLoadLine])
-AC_CHECK_LIB([pthread], [pthread_create])
-AC_CHECK_LIB([curl], [curl_easy_init])
-AC_CHECK_LIB([pcap], [pcap_close])
+AC_CHECK_LIB([opts], [optionLoadLine], 
+  [LIBOPTS_LIBS=-lopts], [AC_MSG_ERROR([Sorry, we need -lopts to continue])])
+AC_SUBST(LIBOPTS_LIBS)
+# everybody needs libopts
+LIBS="$LIBS -lopts"
+
+AC_CHECK_LIB([pthread], [pthread_create], 
+  [LIBPTHREAD_LIBS=-lpthread],[AC_MSG_ERROR([Sorry, we need -lpthread to continue])] )
+AC_SUBST(LIBPTHREAD_LIBS)
+
+AC_CHECK_LIB([curl], [curl_easy_init], 
+  [LIBCURL_LIBS=-lcurl], [AC_MSG_ERROR([Sorry, we need -lcurl to continue])])
+AC_SUBST(LIBCURL_LIBS)
+
+AC_CHECK_LIB([pcap], [pcap_close], 
+  [LIBPCAP_LIBS=-lpcap], [AC_MSG_ERROR([Sorry, we need -lpcap to continue])])
+AC_SUBST(LIBPCAP_LIBS)
 
 # Checks for header files.
 AC_HEADER_STDC

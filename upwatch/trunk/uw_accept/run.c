@@ -28,13 +28,14 @@ static int uw_password_ok(char *user, char *passwd)
     MYSQL_ROW row;
 
     sprintf(buffer, OPT_ARG(AUTHQUERY), user, passwd);
+    if (debug) LOG(LOG_DEBUG, buffer);
     if (mysql_query(mysql, buffer)) {
       LOG(LOG_ERR, "buffer: %s", mysql_error(mysql));
       close_database();
       return(FALSE);
     }
     result = mysql_store_result(mysql);
-    if (!result) {
+    if (!result || mysql_num_rows(result) < 1) {
       if (debug) LOG(LOG_DEBUG, "user %s, pwd %s not found", user, passwd);
       close_database();
       return(FALSE);
@@ -48,6 +49,8 @@ static int uw_password_ok(char *user, char *passwd)
     }
     mysql_free_result(result);
     close_database();
+  } else {
+    return(FALSE); // couldn't open database
   }
   return(TRUE);
 }
