@@ -75,8 +75,8 @@ int spool_result(char *basedir, char *target, xmlDocPtr doc, char **targetname)
 
     /* Try up to 5 times, every 2 seconds. */
     if(count == 5) {
+      LOG(LOG_ERR, "stat %s: %m", buffer);
       free(si);
-      LOG(LOG_ERR, "could not stat %s", buffer);
       return 0;
     }
 
@@ -167,8 +167,8 @@ void *spool_open(char *basedir, char *target, char *basename)
 
     /* Try up to 5 times, every 2 seconds. */
     if(count == 5) {
+      LOG(LOG_ERR, "stat %s: %m", buffer);
       free(si);
-      LOG(LOG_ERR, "could not stat %s", buffer);
       return(NULL);
     }
 

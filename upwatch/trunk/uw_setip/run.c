@@ -66,7 +66,6 @@ static int uw_password_ok(char *user, char *passwd)
 static int uw_set_ip(char *user, char *ip) 
 {
   MYSQL *mysql;
-  MYSQL_RES *result;
 
   mysql = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
 			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD), OPT_VALUE_DBCOMPRESS);
@@ -190,6 +189,7 @@ extern int forever;
     handle_session(cli_nfd, remote);
     free(remote);
     st_netfd_close(cli_nfd);
+    uw_setproctitle("accepting connections");
   }
   return NULL;
 }
@@ -239,5 +239,4 @@ void handle_session(st_netfd_t rmt_nfd, char *remotehost)
   uw_setproctitle("%s: %s", remotehost, buffer);
   if (debug > 3) fprintf(stderr, "> %s", buffer);
   st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
-  uw_setproctitle("accepting connections");
 }
