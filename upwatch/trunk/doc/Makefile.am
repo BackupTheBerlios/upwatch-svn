@@ -8,6 +8,7 @@ XMLSOURCE = upwatch.xml addingaprobe.xml administration.xml configuration.xml \
 EXTRA_DIST = ${XMLSOURCE}
 
 upwatch.html: ${XMLSOURCE}
+	xmllint --valid --noout upwatch.xml
 	xsltproc -o upwatch.html upwatch.xsl upwatch.xml
 
 upwatch.txt: ${XMLSOURCE}

@@ -33,8 +33,6 @@ int mystrcmp(char **a, char **b)
 {
   int ret = strcmp(*a, *b);
 
-  //printf("%s\n", *a);
-  //printf("%s\n\n", *b);
   if (ret < 0) return(-1);
   if (ret > 0) return(1);
   return(0);
@@ -51,6 +49,7 @@ int run(void)
   int i;
   int files = 0;
 
+  if (debug > 1) LOG(LOG_DEBUG, "run()");
   sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), progname);
   dir = g_dir_open (path, 0, NULL);
   while ((filename = g_dir_read_name(dir)) != NULL) {

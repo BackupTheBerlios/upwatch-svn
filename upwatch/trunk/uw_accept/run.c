@@ -153,6 +153,7 @@ int ob_client_func (GConn* conn, GConnStatus status,
   struct conn_stat *cs = (struct conn_stat *)user_data;
   int i = length-1;
 
+  // remove trailing spaces. IS this really a sensible thing to do?
   while (i > 0 && isspace(buffer[i])) {
     buffer[i--] = 0;
   }

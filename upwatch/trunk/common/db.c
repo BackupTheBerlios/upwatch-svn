@@ -7,7 +7,8 @@
 MYSQL *mysql;
 
 /****************************
- database functions
+ database functions. 
+ NOTE: Don't use with multithreaded programs!
  ***************************/
 int open_database(void)
 {
@@ -30,10 +31,19 @@ int open_database(void)
 void close_database(void)
 {
   if (mysql) {
+    my_transaction("rollback");
     mysql_close(mysql);
     free(mysql);
     mysql = NULL;
   }
+}
+
+void my_transaction(char *what)
+{
+  MYSQL_RES *result;
+
+  if (!mysql) return(NULL);
+  mysql_query(mysql, what);
 }
 
 MYSQL_RES *my_query(char *fmt, ...)

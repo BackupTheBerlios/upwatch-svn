@@ -90,6 +90,8 @@ int process_ping(char *spec, GString *remark)
   mysql_free_result(result);
  
   if (stattime <= prv_stattime) return(1);  // already processed?
+
+  //my_transaction("begin");
   if (prv_stattime == 0) { // first time?
     prv_stattime = stattime; // fake
 
@@ -126,6 +128,7 @@ int process_ping(char *spec, GString *remark)
     row = mysql_fetch_row(result);
     if (!row) {
       mysql_free_result(result);
+      //my_transaction("rollback");
       close_database();
       return(FALSE);
     }
@@ -179,8 +182,9 @@ int process_ping(char *spec, GString *remark)
                     "where  id = '%d'",
                     stattime, expires, color, hist_id, message, probe);
   mysql_free_result(result);
-  
-  return(1);
+
+  //my_transaction("commit");
+  return 1;  
 }
 
 static void summarize_ping(int probe, char *from, char *into, guint slotlow, guint slothigh)

@@ -71,8 +71,8 @@ AC_SUBST(LIBNET_LIBS)
 CFLAGS="$CFLAGS $LIBNET_CFLAGS"
 
 ################## GLIB2
-# glib2 
-LIBGLIB2_CFLAGS="-D_REENTRANT `pkg-config --cflags glib-2.0`"
+# glib2 - always need thread libraries
+LIBGLIB2_CFLAGS="`pkg-config --cflags gthread-2.0`"
 LIBGLIB2_LIBS="`pkg-config --libs gthread-2.0`"
 if test -z "$LIBGLIB2_LIBS"
 then
