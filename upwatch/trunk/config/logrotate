@@ -1,4 +1,4 @@
-/var/log/upwatch/upwatch.log {
+/var/log/upwatch/messages {
 	rotate 5
 	missingok
 	create 664 upwatch upwatch

@@ -10,11 +10,11 @@ do
 done
 
 # remove failed entries older than 3 days
-find /var/spool/upwatch/q_failed/new -type f -atime +3 -exec rm -f {} \;
+find /var/spool/upwatch/q_failed/new -type f -mtime +3 -exec rm -f {} \;
 
 # remove old data from the database
 if [ -x /usr/bin/uw_maint.pl ]
 then
-	/usr/bin/uw_maint.pl
+	/usr/bin/uw_maint.pl -l 5000
 fi
 

@@ -42,7 +42,8 @@ int find_expired_probes(struct dbspec *dbspec)
   // find all expired probes, but skip those for which processing
   // has been stopped for some reason
   result = my_query(db, 0, "select probe.name, pr_status.probe, " 
-                           "       pr_status.server, pr_status.color "
+                           "       pr_status.server, pr_status.color, "
+                           "       pr_status.expires "
                            "from   pr_status, probe "
                            "where  probe.id = pr_status.class and color <> 400 "
                            "       and expires < UNIX_TIMESTAMP()-30 "
@@ -58,8 +59,7 @@ int find_expired_probes(struct dbspec *dbspec)
     xmlSetProp(probe, "id", row[1]);
     xmlSetProp(probe, "server", row[2]);
     sprintf(buffer, "%u", (int) now);	xmlSetProp(probe, "date", buffer);
-    sprintf(buffer, "%u", INT_MAX);  // never (well.. in 2038, which is way past my retirement, so who cares)
-    xmlSetProp(probe, "expires", buffer);
+    xmlSetProp(probe, "expires", row[4]);
 
     xmlNewChild(probe, NULL, "color", "400");  // PURPLE
     xmlNewChild(probe, NULL, "prevcolor", row[3]);
