@@ -99,7 +99,7 @@ static void *get_def(module *probe, void *probe_res)
     def->stamp    = time(NULL);
 
     // first find the definition based on the serverid
-    result = my_query(probe->db, 0, "select id, yellow, red from pr_%s_def where server = '%u'", 
+    result = my_query(probe->db, 0, "select id, yellow, red, contact from pr_%s_def where server = '%u'", 
                       res->name, res->server);
     if (!result) {
       g_free(def);
@@ -114,7 +114,7 @@ static void *get_def(module *probe, void *probe_res)
       mysql_free_result(result);
       res->probeid = mysql_insert_id(probe->db);
       LOG(LOG_NOTICE, "pr_%s_def created for %s, id = %u", res->name, res->hostname, res->probeid);
-      result = my_query(probe->db, 0, "select id, yellow, red from pr_%s_def where id = '%u'", 
+      result = my_query(probe->db, 0, "select id, yellow, red, contact from pr_%s_def where id = '%u'", 
                         res->name, res->probeid);
     }
     row = mysql_fetch_row(result);
@@ -123,6 +123,7 @@ static void *get_def(module *probe, void *probe_res)
       res->probeid = atoi(row[0]);
       def->yellow = atof(row[1]);
       def->red = atof(row[2]);
+      def->contact = atof(row[3]);
       mysql_free_result(result);
       result = my_query(probe->db, 0, 
                         "select color "

@@ -84,7 +84,7 @@ static void *get_def(module *probe, void *probe_res)
     def->stamp = now;
 
     result = my_query(probe->db, 0,
-                      "select id, server, yellow, red "
+                      "select id, server, yellow, red, contact "
                       "from   pr_%s_def "
                       "where  ipaddress = '%s'", res->name, res->ipaddress);
     if (!result) return(NULL);
@@ -109,7 +109,7 @@ static void *get_def(module *probe, void *probe_res)
                          res->name, res->ipaddress);
       }
       result = my_query(probe->db, 0,
-                        "select id, server, yellow, red "
+                        "select id, server, yellow, red, contact "
                         "from   pr_%s_def "
                         "where  ipaddress = '%s'", res->name, res->ipaddress);
       if (!result) return(NULL);
@@ -124,6 +124,7 @@ static void *get_def(module *probe, void *probe_res)
     def->server   = atoi(row[1]);
     def->yellow   = atof(row[2]);
     def->red      = atof(row[3]);
+    def->contact  = atof(row[4]);
     mysql_free_result(result);
 
     result = my_query(probe->db, 0,

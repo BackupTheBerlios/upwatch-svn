@@ -80,7 +80,7 @@ static void *get_def(module *probe, void *probe_res)
 
   // first find the definition based on the serverid
   result = my_query(probe->db, 0,
-                    "select id from pr_bb_def "
+                    "select id, contact from pr_bb_def "
                     "where  bbname = '%s' and server = '%u'", res->bbname, res->server);
   if (!result) {
     g_free(def);
@@ -90,6 +90,7 @@ static void *get_def(module *probe, void *probe_res)
   if (row && row[0]) {
     // definition found, get the pr_status
     res->probeid = atoi(row[0]);
+    def->contact = atoi(row[1]);
     mysql_free_result(result);
     result = my_query(probe->db, 0,
                       "select color "
