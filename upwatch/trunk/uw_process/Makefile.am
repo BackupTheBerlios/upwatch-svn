@@ -30,7 +30,7 @@ conf_DATA = $(program:%=%.conf)
 init_DATA = $(INITFILES)
 
 uw_process_SOURCES = run.c process.c notify.c generic_ct.c uw_process.c insertcache.c \
- ping.c httpget.c iptraf.c sysstat.c mysql.c bb_cpu.c bb.c pop3.c $(USE_LIBPQ) \
+ ping.c httpget.c iptraf.c sysstat.c mysql.c bb_cpu.c bb.c pop3.c tcpconnect.c $(USE_LIBPQ) \
  $(USE_LIBSNMP) $(USE_LIBTDS) imap.c errlog.c diskfree.c \
  uw_process.h uw_process_glob.h modules.inc $(SPECFILES) $(INITFILES)
 uw_process_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ $(AM_CFLAGS) \

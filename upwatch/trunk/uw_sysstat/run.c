@@ -216,7 +216,7 @@ int init(void)
     }
   }
 
-  if (OPT_VALUE_SYSLOG_TEST) {
+  if (HAVE_OPT(SYSLOG_TEST)) {
     int logcolor = STAT_GREEN;
     check_log(OPT_ARG(SYSLOG_FILE), &logcolor, TRUE);
     printf("color = %d\n", logcolor);

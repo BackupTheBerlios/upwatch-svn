@@ -11,9 +11,9 @@ homerc        = "$$/upwatch.conf";
 homerc        = "$$/uw_accept.conf";
 
 detail        = 
-'uw_accept listen on port 1985 for incoming upwatch reports.
+'uw_accept listens on port 1985 for incoming upwatch reports.
 Using a POP3-like protocol it asks for a username and password
-and copies incoming files to a queue';
+and copies incoming files to a queue.';
 
 // this section is for the generated specfile 
 spec-requires = "/usr/bin/mysql glib2";

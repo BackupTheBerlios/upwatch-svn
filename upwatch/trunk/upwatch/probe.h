@@ -255,6 +255,16 @@ struct pop3_def {
 #include "../common/common.h"
 };
 
+/****************************** probe tcpconnect3 ************************/
+struct tcpconnect_result {
+  STANDARD_PROBE_RESULT;
+#include "../uw_tcpconnect/probe.res_h"
+};
+struct tcpconnect_def {
+  STANDARD_PROBE_DEF;
+#include "../common/common.h"
+};
+
 /****************************** probe postgresql ************************/
 struct postgresql_result {
   STANDARD_PROBE_RESULT;

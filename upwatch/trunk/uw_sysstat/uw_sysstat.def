@@ -109,7 +109,7 @@ flag = {
 
 flag = {
     name      = syslog-test;
-    arg_type  = bool;   /* option argument indication  */
+    value     = t;
     descrip   = "Test current regular expressions setup";
 };
 
@@ -218,7 +218,7 @@ flag = {
 'The argument is taken to be a maildir under the directory `spooldir`.
 When a probe changes status (color) results should be sent out immediately.
 This denotes the name of the queue to drop results in.
-Mainly used in ISDN situations.';
+Mainly used in dialup situations.';
 };
 
 
