@@ -53,6 +53,11 @@ int init(void)
 
   hash = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, queue_free);
 
+  if (!HAVE_OPT(THREADS)) {
+    fprintf(stderr, "missing threads option\n");
+    return 0;
+  }
+
   host = STACKLST_OPT(HOST);
   port = STACKLST_OPT(PORT);
   user = STACKLST_OPT(UWUSER);

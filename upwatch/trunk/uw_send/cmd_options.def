@@ -66,6 +66,7 @@ flag = {
     name      = threads;
     value     = t;
     stack_arg;
+    must_set;
     arg_type  = string;
     descrip   = "number of threads per queue";
     doc       =
