@@ -1,6 +1,6 @@
 include $(top_srcdir)/Makefile.am.path
 
-AM_CFLAGS = -DWITH_THREADS
+AM_CFLAGS += -DWITH_THREADS
 program = uw_mysql
 sbin_PROGRAMS = $(program)
 man_MANS = uw_mysql.1

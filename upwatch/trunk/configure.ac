@@ -7,7 +7,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.62 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.63 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -206,10 +206,10 @@ do
     MYSQL_LIBS="-L${libpath} -lmysqlclient"
   fi
 done
-if test -z "$MYSQL_LIBS"
-then
-  AC_MSG_ERROR([Cannot find MySQL libraries, tell me where they are with --with-mysql-libs=])
-fi
+#if test -z "$MYSQL_LIBS"
+#then
+#  AC_MSG_ERROR([Cannot find MySQL libraries, tell me where they are with --with-mysql-libs=])
+#fi
 
 # path to mysql includes
 AC_ARG_WITH(mysql-include,
@@ -226,10 +226,10 @@ do
     MYSQL_CFLAGS="-I${incpath}"
   fi
 done
-if test -z "$MYSQL_CFLAGS"
-then
-  AC_MSG_ERROR([Cannot find MySQL include files, tell me where they are with --with-mysql-include=])
-fi
+#if test -z "$MYSQL_CFLAGS"
+#then
+#  AC_MSG_ERROR([Cannot find MySQL include files, tell me where they are with --with-mysql-include=])
+#fi
 
 AC_SUBST(MYSQL_CFLAGS)
 AC_SUBST(MYSQL_LIBS)

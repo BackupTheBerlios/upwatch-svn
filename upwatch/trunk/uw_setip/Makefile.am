@@ -1,6 +1,6 @@
 include $(top_srcdir)/Makefile.am.path
 
-AM_CFLAGS = -I$(INCL_ST)
+AM_CFLAGS += -I$(INCL_ST)
 program = uw_setip
 sbin_PROGRAMS = $(program)
 man_MANS = uw_setip.1

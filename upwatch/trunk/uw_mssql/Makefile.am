@@ -1,6 +1,6 @@
 include $(top_srcdir)/Makefile.am.path
 
-AM_CFLAGS = -DWITH_THREADS
+AM_CFLAGS += -DWITH_THREADS
 program = uw_mssql
 sbin_PROGRAMS = $(program)
 man_MANS = uw_mssql.1

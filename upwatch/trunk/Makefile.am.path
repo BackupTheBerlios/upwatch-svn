@@ -5,3 +5,6 @@ dtddir = $(upwatchdir)/dtd
 initdir = $(upwatchdir)/init
 logdir = ${localstatedir}/log/upwatch
 spooldir = ${localstatedir}/spool/upwatch
+
+AM_CFLAGS = 
+

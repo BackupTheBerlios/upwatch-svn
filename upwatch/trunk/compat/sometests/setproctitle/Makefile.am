@@ -4,8 +4,8 @@ noinst_PROGRAMS = $(program)
 noinst_MANS = setproctitle.1
 
 setproctitle_SOURCES = run.c setproctitle.c setproctitle.h
-setproctitle_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ $(AM_CFLAGS)
-setproctitle_LDADD = setproctitle_$(DB_O) setproctitle_$(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @LIBGLIB2_LIBS@ @MYSQL_LIBS@
+setproctitle_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ $(AM_CFLAGS)
+setproctitle_LDADD = setproctitle_$(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @LIBGLIB2_LIBS@ 
 
 BUILT_SOURCES = $(program:%=%.1) $(program:%=%.c) $(program:%=%.h)
 INCLUDES = -I$(top_srcdir)/upwatch 

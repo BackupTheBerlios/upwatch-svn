@@ -6,7 +6,9 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <glib.h>
+#if defined(ENABLE_SERVER) || defined(ENABLE_MONITORS)
 #include <db.h>
+#endif
 
 #include <options.h>
 

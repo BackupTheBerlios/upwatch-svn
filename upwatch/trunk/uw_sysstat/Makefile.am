@@ -4,7 +4,7 @@ if SOLARIS
 SOLARISLIBS = -lkstat -ldevinfo
 endif
 
-AM_CFLAGS = -I$(INCL_STATGRAB) -I../xmbmon203
+AM_CFLAGS += -I$(INCL_STATGRAB) -I../xmbmon203
 program = uw_sysstat
 sbin_PROGRAMS = uw_sysstat
 man_MANS = uw_sysstat.1

@@ -32,20 +32,23 @@ if ENABLE_SERVER
 # order is important here: uw_process should be last
 SERVERPROG = uw_acceptbb uw_accept uw_purple uw_route uw_syncprobes uw_setip uw_process 
 ENABLE_SERVER = --enable-server
+AM_CFLAGS += -DENABLE_SERVER
 endif
 
 if ENABLE_MONITORS
 MONITORPROG = uw_httpget uw_dns uw_ping uw_mysql uw_pop3 uw_smtp uw_tcpconnect uw_imap \
  ${UW_POSTGRESQL} ${UW_SNMPGET} ${UW_MSSQL}
 ENABLE_MONITOR = --enable-monitors
+AM_CFLAGS += -DENABLE_MONITOR
 endif
 
 if ENABLE_IPTRAF
 EXTRAPROG = ${UW_IPTRAF}
-ENABLE_EXTRA = --enable-iptraf
+ENABLE_IPTRAF = --enable-iptraf
+AM_CFLAGS += -DENABLE_IPTRAF
 endif
 
-CONFARGS = --enable-client $(ENABLE_SERVER) $(ENABLE_MONITOR) $(ENABLE_EXTRA)
+CONFARGS = --enable-client $(ENABLE_SERVER) $(ENABLE_MONITOR) $(ENABLE_IPTRAF)
 
 # order is important: SERVERPROG should be last
 PROGNAMES = ${CLIENTPROG} ${MONITORPROG} ${EXTRAPROG} ${SERVERPROG}

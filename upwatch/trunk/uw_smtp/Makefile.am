@@ -1,6 +1,6 @@
 include $(top_srcdir)/Makefile.am.path
 
-AM_CFLAGS = -I$(INCL_ST)
+AM_CFLAGS += -I$(INCL_ST)
 program = uw_smtp
 sbin_PROGRAMS = $(program)
 man_MANS = uw_smtp.1
