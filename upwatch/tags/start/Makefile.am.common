@@ -1,0 +1,25 @@
+# included from Makefile.am in every program subdirectory
+
+bin_PROGRAMS = $(program)
+man_MANS = $(program).1
+EXTRA_DIST +=  $(program).1 $(program).conf
+
+main.o: ../common/main.c
+	$(COMPILE) -c ../common/main.c
+
+db.o: ../common/db.c
+	$(COMPILE) -c ../common/db.c
+
+cmd_options.h: cmd_options.def ../common/generic_options.def 
+	autogen -b cmd_options -L /usr/share/autogen cmd_options.def
+	autogen -b $(program) -L /usr/share/autogen -T ../common/man1.tpl cmd_options.def
+
+$(program).init: cmd_options.def ../common/generic_options.def
+	autogen -b $(program) -T ../common/init.tpl cmd_options.def
+
+$(program).spec-generic: cmd_options.def ../common/generic_options.def
+	autogen -b $(program) -T ../common/spec.tpl cmd_options.def
+
+CLEANFILES = cmd_options.c cmd_options.h *.1 $(program).spec-generic \
+  $(program).spec-install $(program).init
+
