@@ -9,7 +9,8 @@ EXTRA_DIST = ${XMLSOURCE}
 
 upwatch.html: ${XMLSOURCE}
 	xmllint --valid --noout upwatch.xml
-	xsltproc --nonet -o upwatch.html upwatch.xsl upwatch.xml
+	-xsltproc --nonet -o upwatch.html upwatch.xsl upwatch.xml
+	touch upwatch.html
 
 upwatch.txt: ${XMLSOURCE}
 	lynx -nolist -dump upwatch.html > upwatch.txt
@@ -18,7 +19,7 @@ upwatch.txt: ${XMLSOURCE}
 # enough to disable this
 # So I'll just ignore any ererors from jw
 upwatch.pdf: ${XMLSOURCE}
-	-jw -c /etc/sgml/catalog -f docbook -b pdf -d style.dsl upwatch.xml
+	-${JW} -c /etc/sgml/catalog -f docbook -b pdf -d style.dsl upwatch.xml
 	touch upwatch.pdf
 
 CLEANFILES = upwatch.pdf upwatch.txt upwatch.html Makefile.in

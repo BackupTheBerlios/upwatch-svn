@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.27 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.28 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -35,6 +35,12 @@ AC_EXEEXT
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_AWK
+
+AC_PATH_PROG(JW, jw)
+if test -z "$JW"
+then
+  AC_PATH_PROG(JW, echo)
+fi
 
 AC_PATH_PROG(RPMBUILD, rpmbuild)
 if test -z "$RPMBUILD"
@@ -217,7 +223,7 @@ fi
 AM_CONDITIONAL(HAVE_LIBCRYPTO, test $HAVE_LIBCRYPTO -eq 1)
 AC_SUBST(LIBCRYPTO_LIBS)
 
-AC_CHECK_LIB([snmp], [snmp_open], [HAVE_LIBSNMP=1], [HAVE_LIBSNMP=0], -lcrypto)
+AC_CHECK_LIB([snmp], [snprint_value], [HAVE_LIBSNMP=1], [HAVE_LIBSNMP=0], -lcrypto)
 if test $HAVE_LIBSNMP -eq 1
 then
 	LIBSNMP_LIBS=-lsnmp
@@ -237,9 +243,15 @@ AC_CHECK_LIB([pq], [PQclear], [HAVE_LIBPQ=1], [HAVE_LIBPQ=0])
 if test $HAVE_LIBPQ -eq 1
 then
 	LIBPQ_LIBS=-lpq
+	LIBPQ_CFLAGS=""
+	if test -f /usr/include/pgsql/libpq-fe.h
+	then
+		LIBPQ_CFLAGS=-I/usr/include/pgsql
+	fi
 fi
 AM_CONDITIONAL(HAVE_LIBPQ, test $HAVE_LIBPQ -eq 1)
 AC_SUBST(LIBPQ_LIBS)
+AC_SUBST(LIBPQ_CFLAGS)
 
 #LIBOPTS_LDADD=-lopts
 #AC_SUBST(LIBOPTS_LDADD)
