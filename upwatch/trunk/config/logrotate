@@ -1,0 +1,7 @@
+/var/log/upwatch/upwatch.log {
+	rotate 5
+	missingok
+	create 664 upwatch upwatch
+	weekly
+}
+

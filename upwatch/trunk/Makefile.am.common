@@ -20,10 +20,10 @@ cmd_options.h: cmd_options.def ../common/generic_options.def
 $(program).init: cmd_options.def ../common/generic_options.def
 	autogen -b $(program) -T ../common/init.tpl cmd_options.def
 
-$(program).spec-install: cmd_options.def ../common/generic_options.def
+$(program).spec-install: cmd_options.def ../common/generic_options.def ../common/spec.tpl
 	autogen -b $(program) -T ../common/spec.tpl cmd_options.def
 
-$(program).spec-generic: cmd_options.def ../common/generic_options.def
+$(program).spec-generic: cmd_options.def ../common/generic_options.def ../common/spec.tpl
 	autogen -b $(program) -T ../common/spec.tpl cmd_options.def
 
 CLEANFILES = cmd_options.c cmd_options.h *.1 $(program).spec-generic \

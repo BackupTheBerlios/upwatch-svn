@@ -8,7 +8,7 @@ EXTRA_DIST = Makefile.am.common upwatch-spec.def upwatch-spec.tpl upwatch.spec u
 
 BUILT_SOURCES = upwatch.mysql 
 
-upwatch.spec: upwatch-spec.def upwatch-spec.tpl
+upwatch.spec: upwatch-spec.def upwatch-spec.tpl uw_*/*.spec-generic uw_*/*.spec-install
 	autogen -b upwatch upwatch-spec.def
 
 upwatch.mysql: config/upwatch-base.mysql uw_*/uw_*.mysql

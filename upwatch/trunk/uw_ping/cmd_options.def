@@ -11,7 +11,7 @@ packets to each host.  This happens in parallel, so uw_ping can
 process thousands of hosts in a very short period.';
 
 // this section is for the generated specfile
-spec-requires = "mysql glib2 gnet >= 1.1.2 upwatch-uw_traceroute upwatch-uw_notify";
+spec-requires = "mysql glib2 gnet >= 1.1.2";
 
 // describe commandline flags
 flag = {
