@@ -29,60 +29,12 @@ history, graphs, and notification.
 This package contains all upwatch documentation, the client monitoring
 programs, utilities and supporting files like the database schema.
 
-%package server
-Summary: UpWatch - server programs
-Group: Application/Monitoring
-Requires: upwatch 
-[+ FOR serverprog +]# [+serverprog+] requirements:
-[+ include (string-append (get "serverprog") "/" (get "serverprog") ".spec-requires") ;+]
-[+ ENDFOR +]
-%description server
-Upwatch is a full-fledged monitoring and report engine for
-internet hosts. It is built for high-volume sites.
-It boasts support for various services, long-time
-history, graphs, and notification. 
-
-This package contains the needed programs for the upwatch
-processing server.
-
-%package monitor
-Summary: UpWatch - programs for a monitoring station
-Group: Application/Monitoring
-Requires: upwatch
-[+ FOR monitorprog +]# [+monitorprog+] requirements:
-[+ include (string-append (get "monitorprog") "/" (get "monitorprog") ".spec-requires") ;+]
-[+ ENDFOR +]
-%description monitor
-Upwatch is a full-fledged monitoring and report engine for
-internet hosts. It is built for high-volume sites.
-It boasts support for various services, long-time
-history, graphs, and notification. 
-
-This package should be installed on a monitoring station
-that remotely checks services. It contains the following
-programs:
-[+ FOR monitorprog +] [+monitorprog+]
-[+ ENDFOR +]
-%package iptraf
-Summary: UpWatch - monitor IP traffic
-Group: Application/Monitoring
-Requires: upwatch libxml2 >= 2.4.19 libpcap glib2 >= 2.0.4
-
-%description iptraf
-Upwatch is a full-fledged monitoring and report engine for
-internet hosts. It is built for high-volume sites.
-It boasts support for various services, long-time
-history, graphs, and notification. 
-
-This package contains the IP traffic monitor for
-edge/border routers.
-
 %prep
 
 %setup  
 
 %build 
-%configure --enable-all
+%configure [+ (getenv "confargs") +]
 make 
 make check
 
@@ -129,14 +81,14 @@ if [ -f /etc/redhat-release ]
 then
   DISTR=redhat
   ln -sf /usr/share/upwatch/init/upwatch.$DISTR /etc/init.d/upwatch
-[+ FOR clientprog +]  ln -sf /usr/share/upwatch/init/[+clientprog+] /etc/init.d/[+clientprog+]
+[+ FOR clientprog +]  ln -sf /usr/share/upwatch/init/[+clientprog+].$DISTR /etc/init.d/[+clientprog+]
 [+ ENDFOR +]fi
 
 if [ -f /etc/SuSE-release ]
 then
   DISTR=suse
   ln -sf /usr/share/upwatch/init/upwatch.$DISTR /etc/init.d/upwatch
-[+ FOR clientprog +]  ln -sf /usr/share/upwatch/init/[+clientprog+] /etc/init.d/[+clientprog+]
+[+ FOR clientprog +]  ln -sf /usr/share/upwatch/init/[+clientprog+].$DISTR /etc/init.d/[+clientprog+]
 [+ ENDFOR +]  pushd /usr/sbin
 [+ FOR clientprog +]  ln -sf ../../etc/init.d/[+clientprog+] rc[+clientprog+]
 [+ ENDFOR +]  popd
@@ -160,6 +112,51 @@ if [ "$1" -eq "0" ]; then
   rm -f /usr/sbin/rc[+clientprog+]
 [+ ENDFOR +]fi
 
+%files
+%defattr(0660,root,upwatch,0770)
+/usr/share/doc/%{name}-%{version}
+#%doc doc/upwatch.txt doc/upwatch.html doc/upwatch.pdf
+%attr(0770,upwatch,upwatch) %dir /etc/upwatch.d
+%attr(0770,upwatch,upwatch) %dir /usr/share/upwatch
+%attr(0770,upwatch,upwatch) %dir /usr/share/upwatch/init
+%attr(0770,upwatch,upwatch) %dir /usr/share/upwatch/dtd
+/usr/share/upwatch/dtd/result.dtd
+/usr/share/upwatch/init/upwatch.redhat
+/usr/share/upwatch/init/upwatch.suse
+%config(noreplace) /etc/upwatch.conf
+/etc/logrotate.d/upwatch
+/etc/cron.daily/upwatch
+%attr(2770,upwatch,upwatch) %dir /var/log/upwatch
+%attr(2770,upwatch,upwatch) %dir /var/spool/upwatch
+%attr(0755,root,root) /usr/bin/uwsaidar
+%attr(0755,root,root) /usr/bin/ctime
+%attr(0755,root,root) /usr/bin/slot
+%attr(0755,root,root) /usr/bin/uwq
+/usr/share/man/man1/ctime.1.gz
+/usr/share/man/man1/slot.1.gz
+/usr/share/man/man1/uwq.1.gz
+[+ FOR clientprog +][+ include (string-append (get "clientprog") "/" (get "clientprog") ".spec-files") ;+]
+[+ ENDFOR +]
+
+[+ IF monitorprog +]
+%package monitor
+Summary: UpWatch - programs for a monitoring station
+Group: Application/Monitoring
+Requires: upwatch
+[+ FOR monitorprog +]# [+monitorprog+] requirements:
+[+ include (string-append (get "monitorprog") "/" (get "monitorprog") ".spec-requires") ;+]
+[+ ENDFOR +]
+%description monitor
+Upwatch is a full-fledged monitoring and report engine for
+internet hosts. It is built for high-volume sites.
+It boasts support for various services, long-time
+history, graphs, and notification. 
+
+This package should be installed on a monitoring station
+that remotely checks services. It contains the following
+programs:
+[+ FOR monitorprog +] [+monitorprog+]
+[+ ENDFOR +]
 %post monitor
 # install initscripts
 if [ -f /etc/redhat-release ]
@@ -191,6 +188,29 @@ if [ "$1" -eq "0" ]; then
 [+ FOR monitorprog +]  rm -f /etc/init.d/[+monitorprog+]
   rm -f /usr/sbin/rc[+monitorprog+]
 [+ ENDFOR +]fi
+
+%files monitor
+%defattr(0660,root,upwatch,0770)
+[+ FOR monitorprog +][+ include (string-append (get "monitorprog") "/" (get "monitorprog") ".spec-files") ;+]
+[+ ENDFOR +]
+[+ ENDIF monitor +]
+
+[+ IF serverprog +]
+%package server
+Summary: UpWatch - server programs
+Group: Application/Monitoring
+Requires: upwatch 
+[+ FOR serverprog +]# [+serverprog+] requirements:
+[+ include (string-append (get "serverprog") "/" (get "serverprog") ".spec-requires") ;+]
+[+ ENDFOR +]
+%description server
+Upwatch is a full-fledged monitoring and report engine for
+internet hosts. It is built for high-volume sites.
+It boasts support for various services, long-time
+history, graphs, and notification. 
+
+This package contains the needed programs for the upwatch
+processing server.
 
 %post server
 # install initscripts
@@ -224,80 +244,72 @@ if [ "$1" -eq "0" ]; then
   rm -f /usr/sbin/rc[+serverprog+]
 [+ ENDFOR +]fi
 
-%post iptraf
-# install initscript
-if [ -f /etc/redhat-release ]
-then
-  DISTR=redhat
-  ln -sf /usr/share/upwatch/init/uw_iptraf.$DISTR /etc/init.d/uw_iptraf
-fi
-if [ -f /etc/SuSE-release ]
-then
-  DISTR=suse
-  ln -sf /usr/share/upwatch/init/uw_iptraf.$DISTR /etc/init.d/uw_iptraf
-  pushd /usr/sbin
-  ln -sf ../../etc/init.d/uw_iptraf rcuw_iptraf
-  popd
-fi
-if [ -x /sbin/chkconfig ]; then
-  /sbin/chkconfig --add uw_iptraf 2>/dev/null || true
-fi
-
-%postun iptraf
-if [ "$1" -eq "0" ]; then
-  rm -f /etc/init.d/uw_iptraf
-  rm -f /usr/sbin/rcuw_iptraf
-fi
-
-%preun iptraf
-if [ "$1" = 0 ] ; then
-  if [ -x /sbin/chkconfig ]; then
-    /sbin/chkconfig --del uw_iptraf 2>/dev/null || true
-  fi
-fi
-
-%files
-%defattr(0660,root,upwatch,0770)
-/usr/share/doc/%{name}-%{version}
-%doc doc/upwatch.txt doc/upwatch.html doc/upwatch.pdf
-%attr(0770,upwatch,upwatch) %dir /etc/upwatch.d
-%attr(0770,upwatch,upwatch) %dir /usr/share/upwatch
-%attr(0770,upwatch,upwatch) %dir /usr/share/upwatch/init
-%attr(0770,upwatch,upwatch) %dir /usr/share/upwatch/dtd
-/usr/share/upwatch/dtd/result.dtd
-/usr/share/upwatch/init/upwatch.redhat
-/usr/share/upwatch/init/upwatch.suse
-%config(noreplace) /etc/upwatch.conf
-/etc/logrotate.d/upwatch
-/etc/cron.daily/upwatch
-%attr(2770,upwatch,upwatch) %dir /var/log/upwatch
-%attr(2770,upwatch,upwatch) %dir /var/spool/upwatch
-%attr(0755,root,root) /usr/bin/uwsaidar
-%attr(0755,root,root) /usr/bin/ctime
-%attr(0755,root,root) /usr/bin/slot
-%attr(0755,root,root) /usr/bin/uwq
-/usr/share/man/man1/ctime.1.gz
-/usr/share/man/man1/slot.1.gz
-/usr/share/man/man1/uwq.1.gz
-[+ FOR clientprog +][+ include (string-append (get "clientprog") "/" (get "clientprog") ".spec-files") ;+]
-[+ ENDFOR +]
-
-%files monitor
-%defattr(0660,root,upwatch,0770)
-[+ FOR monitorprog +][+ include (string-append (get "monitorprog") "/" (get "monitorprog") ".spec-files") ;+]
-[+ ENDFOR +]
-%files iptraf
-%defattr(0660,root,upwatch,0770)
-[+ include "uw_iptraf/uw_iptraf.spec-files" ;+]
-
 %files server
 %defattr(0660,root,upwatch,0770)
+[+ IF serverprog +]
 %attr(0755,root,root) /usr/bin/bbhimport
 %attr(0755,root,root) /usr/bin/uw_maint.pl
 /usr/share/man/man1/bbhimport.1.gz
 %attr(0755,root,root) /usr/bin/fill_probe_description.pl
+[+ ENDIF +]
 [+ FOR serverprog +][+ include (string-append (get "serverprog") "/" (get "serverprog") ".spec-files") ;+]
 [+ ENDFOR +]
+[+ ENDIF serverprog +]
+
+[+ IF extraprog +]
+[+ FOR extraprog +]
+%package [+ extraprog +]
+Summary: UpWatch - monitor IP traffic
+Group: Application/Monitoring
+Requires: upwatch libxml2 >= 2.4.19 libpcap glib2 >= 2.0.4
+
+%description [+ extraprog +]
+Upwatch is a full-fledged monitoring and report engine for
+internet hosts. It is built for high-volume sites.
+It boasts support for various services, long-time
+history, graphs, and notification. 
+
+This package contains [+ extraprog +]
+
+%post [+ extraprog +]
+# install initscript
+if [ -f /etc/redhat-release ]
+then
+  DISTR=redhat
+  ln -sf /usr/share/upwatch/init/uw_[+ extraprog +].$DISTR /etc/init.d/uw_[+ extraprog +]
+fi
+if [ -f /etc/SuSE-release ]
+then
+  DISTR=suse
+  ln -sf /usr/share/upwatch/init/uw_[+ extraprog +].$DISTR /etc/init.d/uw_[+ extraprog +]
+  pushd /usr/sbin
+  ln -sf ../../etc/init.d/uw_[+ extraprog +] rcuw_[+ extraprog +]
+  popd
+fi
+if [ -x /sbin/chkconfig ]; then
+  /sbin/chkconfig --add uw_[+ extraprog +] 2>/dev/null || true
+fi
+
+%postun [+ extraprog +]
+if [ "$1" -eq "0" ]; then
+  rm -f /etc/init.d/uw_[+ extraprog +]
+  rm -f /usr/sbin/rcuw_[+ extraprog +]
+fi
+
+%preun [+ extraprog +]
+if [ "$1" = 0 ] ; then
+  if [ -x /sbin/chkconfig ]; then
+    /sbin/chkconfig --del uw_[+ extraprog +] 2>/dev/null || true
+  fi
+fi
+
+%files [+extraprog+]
+%defattr(0660,root,upwatch,0770)
+[+ include (string-append (get "extraprog") "/" (get "extraprog") ".spec-files") ;+]
+
+[+ ENDFOR extraprog +]
+[+ ENDIF extraprog +]
+
 %changelog
 * Fri Dec 27 2002 Ron Arts <raarts@upwatch.com>
 - Added ChangeLog, removed xml files from doc dir

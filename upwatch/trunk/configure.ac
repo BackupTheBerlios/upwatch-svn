@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.37 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.38 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -488,6 +488,11 @@ then
   AC_CONFIG_FILES([uw_acceptbb/Makefile])
   AC_CONFIG_FILES([uw_process/Makefile])
   AC_CONFIG_FILES([uw_notify/Makefile])
+  AC_CONFIG_FILES([compat/Makefile])
+  AC_CONFIG_FILES([compat/bb/Makefile])
+  AC_CONFIG_FILES([compat/bb/bbhimport/Makefile])
+  AC_CONFIG_FILES([compat/sometests/Makefile])
+  AC_CONFIG_FILES([compat/sometests/setproctitle/Makefile])
 fi
 
 echo "*********************************************************"
@@ -504,11 +509,7 @@ AC_CONFIG_FILES([Makefile
                  scripts/Makefile
                  uw_send/Makefile
                  uw_sysstat/Makefile
-                 compat/Makefile
-                 compat/bb/Makefile
-                 compat/bb/bbhimport/Makefile
-                 compat/sometests/Makefile
-                 compat/sometests/setproctitle/Makefile])
+])
 
 cp patches/libstatgrab-configure.gnu libstatgrab-0.7/configure.gnu
 AC_CONFIG_SUBDIRS(libstatgrab-0.7)

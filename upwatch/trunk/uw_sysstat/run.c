@@ -135,6 +135,7 @@ extern int forever;
     char cmd[1024];
 
     sprintf(cmd, "%s > /tmp/.uw_sysstat.tmp", OPT_ARG(TOP_COMMAND));
+    if (debug > 2) LOG(LOG_NOTICE, cmd);
     uw_setproctitle("running %s", OPT_ARG(TOP_COMMAND));
     system(cmd);
   }
@@ -152,7 +153,7 @@ extern int forever;
   } else {
     strcpy(info, strerror(errno));
   }
-  unlink("tmp/.uw_sysstat.tmp");
+  unlink("/tmp/.uw_sysstat.tmp");
 
   if (HAVE_OPT(SYSTEMP_COMMAND)) {
     char cmd[1024];

@@ -28,18 +28,23 @@ endif
 # server (uw_process, uw_accept, uw_acceptbb, uw_setip)
 CLIENTPROG = uw_send uw_sysstat
 
+CONFARGS = --enable-client
+
 if ENABLE_SERVER
 # order is important here: uw_process should be last
 SERVERPROG = uw_acceptbb uw_accept uw_setip uw_notify uw_process compat doc
+CONFARGS += --enable-server
 endif
 
 if ENABLE_MONITORS
 MONITORPROG = uw_httpget uw_ping uw_mysql uw_pop3 uw_imap \
  ${UW_IPTRAF} ${UW_POSTGRESQL} ${UW_SNMPGET} ${UW_MSSQL}
+CONFARGS += --enable-monitor
 endif
 
 if ENABLE_IPTRAF
 EXTRAPROG = ${UW_IPTRAF}
+CONFARGS += --enable-extra
 endif
 
 # order is important: SERVERPROG should be last
@@ -48,20 +53,24 @@ PROGNAMES = ${CLIENTPROG} ${MONITORPROG} ${EXTRAPROG} ${SERVERPROG}
 export PROGNAMES MONITORPROG CLIENTPROG SERVERPROG EXTRAPROG
 export TOP_SRCDIR = $(top_srcdir)
 
-SUBDIRS = upwatch st-1.4 libstatgrab-0.7 ${PROGNAMES} util scripts compat config common
+SUBDIRS = upwatch st-1.4 libstatgrab-0.7 ${PROGNAMES} util scripts config common
 DIST_SUBDIRS = ${SUBDIRS} doc
 
 doc_DATA = AUTHORS COPYING ChangeLog NEWS README upwatch.mysql
 
+if ENABLE_SERVER
+SERVER_DIST = probes.enum doc/upwatch.html doc/upwatch.pdf doc/upwatch.txt
+endif
+
 EXTRA_DIST = Makefile.am.common Makefile.am.libs Makefile.am.path VERSION libtool ChangeLog \
-  upwatch-spec.def upwatch-spec.tpl upwatch.spec templates upwatch.mysql probes.enum \
+  upwatch-spec.def upwatch-spec.tpl upwatch.spec templates upwatch.mysql \
   patches/libpcap-linux-timeout.patch patches/libstatgrab-configure.gnu \
-  doc/upwatch.html doc/upwatch.pdf doc/upwatch.txt \
+  ${SERVER_DIST} \
   cfg/install-sh cfg/config.sub cfg/mkinstalldirs cfg/depcomp cfg/cvs2cl.pl
 
 upwatch.spec: upwatch-spec.def upwatch-spec.tpl common/spec.tpl \
   uw_*/*.spec-files uw_*/*.spec-requires 
-	autogen -b upwatch upwatch-spec.def
+	autogen -b upwatch -Dconfargs="$(CONFARGS)" upwatch-spec.def
 
 upwatch.mysql: config/upwatch-base.mysql uw_*/probe.mysql
 	cat $+ > upwatch.mysql
