@@ -151,23 +151,23 @@ int run(void)
 
   if (lavg > 5.0) color = STAT_RED;
 
-  if (color >= STAT_RED) {
-    uw_setproctitle("running top");
-    system("top -b -n 1 > /tmp/.uw_sysstat.tmp");
-    in = fopen("/tmp/.uw_sysstat.tmp", "r");
-    if (in) {
-      signed char *s;
+  uw_setproctitle("running top");
+  system("top -b -n 1 | head -30 > /tmp/.uw_sysstat.tmp");
+  in = fopen("/tmp/.uw_sysstat.tmp", "r");
+  if (in) {
+    signed char *s;
 
-      fread(info, sizeof(info)-1, 1, in); 
-      info[sizeof(info)-1] = 0;
-      fclose(in);
+    fread(info, sizeof(info)-1, 1, in); 
+    info[sizeof(info)-1] = 0;
+    fclose(in);
 
-      for (s = info; *s; s++) { // clean up strange characters
-        if (*s < 0) *s = ' ';
-      }
+    for (s = info; *s; s++) { // clean up strange characters
+      if (*s < 0) *s = ' ';
     }
-    unlink("tmp/.uw_sysstat.tmp");
+  } else {
+    strcpy(info, strerror(errno));
   }
+  unlink("tmp/.uw_sysstat.tmp");
   if (HAVE_OPT(SYSTEMP_COMMAND)) {
     char cmd[1024];
 
