@@ -249,9 +249,13 @@ static void summarize_ping(int probe, char *from, char *into, guint slotlow, gui
   max_color   = atoi(row[3]);
   mysql_free_result(result);
 
+
   result = my_query("insert into pr_ping_%s " 
-                    "set    value = %f, lowest = %f, highest = %f, probe = %d, color = '%u', stattime = %d",
+                    "set    value = %f, lowest = %f, highest = %f, i"
+		    "probe = %d, color = '%u', stattime = %d",
                     into, avg_value, min_lowest, max_highest, probe, max_color, stattime);
   mysql_free_result(result);
 }
+
+
 

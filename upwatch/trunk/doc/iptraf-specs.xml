@@ -62,7 +62,10 @@
    </sect2>
    <sect2 id="uw_iptraf_daemon">
       <title>uw_iptraf daemon</title>
-      <para>There is no such thing. There <emphasis>is</emphasis> a shell script though, it reads
-         the iptables, and produces a queue file.</para>
+      <para>The iptraf daemon uses the libpcap library to inspect packets passing through one or more interfaces.
+      Each interfaces gets its own capturing thread. Every minute the results are written (by another thread) to the queue.
+      Contrary to other probes, iptraf does not read the upwatch database, it just gives the traffic report the internal ipaddress
+      as the <varname>probeid</varname>. To determine which ip addresss are internal, it needs a list of internal networks in its
+      config file.</para>
    </sect2>
 </sect1>

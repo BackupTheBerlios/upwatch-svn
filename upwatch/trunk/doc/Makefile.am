@@ -9,7 +9,7 @@ EXTRA_DIST = ${XMLSOURCE}
 
 upwatch.html: ${XMLSOURCE}
 	xmllint --valid --noout upwatch.xml
-	xsltproc -o upwatch.html upwatch.xsl upwatch.xml
+	xsltproc --nonet -o upwatch.html upwatch.xsl upwatch.xml
 
 upwatch.txt: ${XMLSOURCE}
 	lynx -nolist -dump upwatch.html > upwatch.txt

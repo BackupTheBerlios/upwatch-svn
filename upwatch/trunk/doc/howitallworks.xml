@@ -6,8 +6,8 @@
         <title>General Overview</title>
         <para> The system primary function is to fill lots of database tables, to offer views on
             those tables, and to page operators in case things go wrong. To enable this it
-            consists of a MySQL dataabase, lots of probe daemons (one daemon per probe), some
-            supporting daemons, a PHP website, and other software, like SMS and mail interfaces.</para>
+            consists of a MySQL database, lots of probe daemons (one daemon per probe, usually one probe
+            per daemon), some supporting daemons, a PHP website, and other software, like SMS and mail interfaces.</para>
         <para> Things start at the database. For every probe it contains the following tables:</para>
         <itemizedlist>
             <listitem><para>Definition table</para></listitem>
@@ -29,17 +29,17 @@
           <filename>/var/spool/upwatch</filename>). After that the probe just waits for the next round.
        </para>
        <para> Many probes have to do a lot of work. They are programmed to do this as efficient as possible.
-          For example: the uw_ping probe is code as a tight loop around a single select statement. This is the
-          most practical way (as far as I know) to ping thousands of hosts in, say, 20 seconds.
+          For example: the uw_ping probe is coded as a tight loop around a single select statement. This is the
+          most efficient way (as far as I know) to ping thousands of hosts in, say, 20 seconds.
           Other probes use pools of threads (like <varname>httpget</varname>).</para>
     </sect1>
     <sect1 id="What_happens_to_the_probe_results">
         <title>What happens to the probe results?</title>
-        <para>First, all results with status red are handed over to <varname>uw_examine</varname>, which tries to
-           find out why the probe failed, and attaches a report to the probe. After this these red results are put in
+        <para>First, all results with status non-green are handed over to <varname>uw_examine</varname>, which tries to
+           find out why the probe failed, and attaches a report to the probe. After this the results are put in
            the same queue as every other probe: <varname>uw_notify</varname>.
-           <varname>uw_notify</varname> reads the result, looks at the probe status, and at previous statuses, and 
-           decides if someone should be notified.
+           <varname>uw_notify</varname> reads the result, looks at the probe status, and at previous statuses, and
+           decides if someone should be notified by sms, email, or by just putting it into a high-priority queue.
         </para>
         <para> The outgoing queue may be either the <varname>uw_process</varname> queue, or an
            <varname>uw_send</varname> queue, which is emptied by the uw_send process which sends
