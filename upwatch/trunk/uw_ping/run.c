@@ -158,7 +158,7 @@ int run(void)
 
 
   tm = gmtime(&now);
-  if (debug > 0) LOG(LOG_DEBUG, "reading ping info from database");
+  LOG(LOG_INFO, "reading ping info from database");
   uw_setproctitle("reading ping info from database");
   mysql = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
 			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD), OPT_VALUE_DBCOMPRESS);
@@ -176,13 +176,11 @@ int run(void)
                 (unsigned)OPT_VALUE_GROUPID);
 
     if (mysql_query(mysql, qry)) {
-      LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql));
       close_database(mysql);
       break;
     }
     result = mysql_store_result(mysql);
     if (!result) {
-      if (debug) LOG(LOG_DEBUG, "%s: no result", qry);
       close_database(mysql);
       break;
     }
@@ -200,7 +198,7 @@ int run(void)
 
       if (tm->tm_min % freq != 0) continue;
       if ((ip = inet_addr(ipaddress)) == -1) {
-        LOG(LOG_NOTICE, "illegal ip address %s", ipaddress);
+        LOG(LOG_WARNING, "illegal ip address %s", ipaddress);
         continue;
       }
       if (count < 1) count = 1;
@@ -223,11 +221,10 @@ int run(void)
     }
     mysql_free_result(result);
     close_database(mysql);
-    if (debug > 0) LOG(LOG_DEBUG, "done reading");
 
     newh[id] = NULL;
     num_hosts = id;
-    LOG(LOG_DEBUG, "%d hosts read", num_hosts);
+    LOG(LOG_INFO, "%d hosts read", num_hosts);
 
     if (hosts != NULL) {
       for (id=0; hosts[id]; id++) {
@@ -253,7 +250,7 @@ int run(void)
 
   uw_setproctitle("running %d probes", num_hosts);
   run_actual_probes(num_hosts); /* this runs the actual probes */
-  if (debug > 0) LOG(LOG_DEBUG, "done running probes");
+  LOG(LOG_INFO, "done running probes");
 
   now = time(NULL);
   uw_setproctitle("writing results");
@@ -407,7 +404,7 @@ static int send_ping(int id, struct hostinfo *host)
   icp->icmp_cksum = in_cksum( (u_short *)icp, ping_pkt_size );
 
   sprintf(buf, "sending [%d] to %s", host->num_sent, inet_ntoa(host->saddr.sin_addr));
-  if (debug > 2) LOG(LOG_DEBUG, buf);
+  LOG(LOG_DEBUG, buf);
 
   n = sendto(sock, buffer, ping_pkt_size, 0, (struct sockaddr *)&host->saddr,
                                                sizeof(struct sockaddr_in) );
@@ -519,14 +516,14 @@ int recvfrom_wto (int s, char *buf, int len, struct sockaddr *saddr, int timo)
   nfound = select(s+1,&readset,&writeset,NULL,&to);
   if (nfound<0) {
     if (errno == EINTR) return(-1); // fake timeout
-    LOG(LOG_ERR, "select");
+    LOG(LOG_ERR, "select: %m");
     exit(1);
   }
   if (nfound==0) return -1;  /* timeout */
   slen=sizeof(struct sockaddr);
   n=recvfrom(s,buf,len,0,saddr,&slen);
   if (n<0) {
-    LOG(LOG_ERR, "recvfrom");
+    LOG(LOG_ERR, "recvfrom: %m");
     exit(1);
   }
   return n;
@@ -557,7 +554,7 @@ int handle_random_icmp(struct icmp *p, int psize, struct sockaddr_in *addr)
                 icmp_unreach_str[p->icmp_code],
                 inet_ntoa(addr->sin_addr));
       }
-      if (debug > 1) LOG(LOG_DEBUG, buffer);
+      LOG(LOG_INFO, buffer);
       host->msg = strdup(buffer);
     }
     return 1;
@@ -574,7 +571,7 @@ int handle_random_icmp(struct icmp *p, int psize, struct sockaddr_in *addr)
       sprintf(buffer, "%s from %s",
               icmp_type_str[p->icmp_type],
               inet_ntoa(addr->sin_addr));
-      if (debug > 1) LOG(LOG_DEBUG, buffer);
+      LOG(LOG_INFO, buffer);
       host->msg = strdup(buffer);
     }
     return 2;

@@ -85,7 +85,7 @@ GString *check_log(char *syslogfile, int *color, int testmode)
   
   // open logfile
   if ((in = fopen(syslogfile, "r")) == NULL) {
-    LOG(LOG_NOTICE, "%s: %m", syslogfile);
+    LOG(LOG_ERR, "%s: %m", syslogfile);
     return(NULL);
   }
   fseek(in, 0, SEEK_END);
@@ -144,7 +144,7 @@ GString *check_log(char *syslogfile, int *color, int testmode)
       fprintf(in, "%lu", offset);
       fclose(in);
     } else {
-      LOG(LOG_NOTICE, "%s: %m", STATFILE);
+      LOG(LOG_WARNING, "%s: %m", STATFILE);
     }
   }
   return(string);
@@ -181,7 +181,7 @@ int init(void)
         char buffer[256];
 
         regerror(err, &spec->preg, buffer, sizeof(buffer));
-        LOG(LOG_NOTICE, buffer);
+        LOG(LOG_ERR, buffer);
         continue;
       }
       spec->regex = pn[ct];
@@ -207,7 +207,7 @@ int init(void)
         char buffer[256];
 
         regerror(err, &spec->preg, buffer, sizeof(buffer));
-        LOG(LOG_NOTICE, buffer);
+        LOG(LOG_ERR, buffer);
         continue;
       }
       spec->regex = pn[ct];
@@ -227,12 +227,12 @@ int init(void)
   setsin(&to, inet_addr("1.1.1.1"));
   msg = findsaddr(&to, &from);
   if (msg) {
-    LOG(LOG_NOTICE, (char *)msg);
+    LOG(LOG_INFO, (char *)msg);
     strcpy(ipaddress, OPT_ARG(IPADDRESS));
   } else {
     strcpy(ipaddress, inet_ntoa(from.sin_addr)); 
   }
-  if (debug) LOG(LOG_DEBUG, "using ipaddress %s", ipaddress);
+  LOG(LOG_INFO, "using ipaddress %s", ipaddress);
 
   daemonize = TRUE;
   every = EVERY_SECOND;
@@ -295,7 +295,7 @@ extern int forever;
     if (st.load->min1 >= atof(OPT_ARG(LOADAVG_RED))) color = STAT_RED;
 
     sprintf(cmd, "%s > /tmp/.uw_sysstat.tmp", OPT_ARG(TOP_COMMAND));
-    if (debug > 2) LOG(LOG_NOTICE, cmd);
+    LOG(LOG_INFO, cmd);
     uw_setproctitle("running %s", OPT_ARG(TOP_COMMAND));
     system(cmd);
     in = fopen("/tmp/.uw_sysstat.tmp", "r");
@@ -407,7 +407,7 @@ extern int forever;
     if (fullest > OPT_VALUE_DISKFREE_RED) color = STAT_RED;
 
     sprintf(cmd, "%s > /tmp/.uw_sysstat.tmp", OPT_ARG(DF_COMMAND));
-    if (debug > 2) LOG(LOG_NOTICE, cmd);
+    LOG(LOG_INFO, cmd);
     uw_setproctitle("running %s", OPT_ARG(DF_COMMAND));
     system(cmd);
     in = fopen("/tmp/.uw_sysstat.tmp", "r");

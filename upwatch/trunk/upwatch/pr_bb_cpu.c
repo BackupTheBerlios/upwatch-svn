@@ -46,11 +46,9 @@ int bb_cpu_accept_result(trx *t)
       }
     }
   }
-  if (debug > 1) {
-    LOG(LOG_DEBUG, "%s: %s %d stattime:%u expires:%u loadavg:%.2f user:%u idle:%u used:%u free:%u",
-                   res->name, res->hostname, res->color, res->stattime, res->expires,
-                   res->loadavg, res->user, res->idle, res->used, res->free);
-  }
+  LOG(LOG_DEBUG, "%s: %s %d stattime:%u expires:%u loadavg:%.2f user:%u idle:%u used:%u free:%u",
+                 res->name, res->hostname, res->color, res->stattime, res->expires,
+                 res->loadavg, res->user, res->idle, res->used, res->free);
   return 1;
 }
 
@@ -136,15 +134,13 @@ void *bb_cpu_get_def(trx *t, int create)
 
     mysql_free_result(result);
     result = my_query(t->probe->db, 0, 
-                      "select color, changed, notified "
+                      "select color "
                       "from   pr_status "
                       "where  class = '%u' and probe = '%u'", t->probe->class, def->probeid);
     if (result) {
       row = mysql_fetch_row(result);
       if (row) {
         if (row[0]) def->color   = atoi(row[0]);
-        if (row[1]) def->changed = atoi(row[1]);
-        strcpy(def->notified, row[2] ? row[2] : "no");
       } else {
         LOG(LOG_NOTICE, "pr_status record for %s id %u not found", res->name, def->probeid);
       }

@@ -37,15 +37,14 @@ static int uw_password_ok(char *user, char *passwd)
     MYSQL_ROW row;
 
     sprintf(buffer, OPT_ARG(AUTHQUERY), user, passwd);
-    if (debug > 1) LOG(LOG_DEBUG, buffer);
+    LOG(LOG_DEBUG, buffer);
     if (mysql_query(mysql, buffer)) {
-      LOG(LOG_ERR, "buffer: %s", mysql_error(mysql));
       close_database(mysql);
       return(FALSE);
     }
     result = mysql_store_result(mysql);
     if (!result || mysql_num_rows(result) < 1) {
-      if (debug) LOG(LOG_DEBUG, "user %s, pwd %s not found", user, passwd);
+      LOG(LOG_NOTICE, "user %s, pwd %s not found", user, passwd);
       close_database(mysql);
       return(FALSE);
     }
@@ -53,7 +52,7 @@ static int uw_password_ok(char *user, char *passwd)
       int id;
 
       id = atoi(row[0]);
-      if (debug>1) LOG(LOG_DEBUG, "user %s, pwd %s resulted in id %d", user, passwd, id);
+      LOG(LOG_DEBUG, "user %s, pwd %s resulted in id %d", user, passwd, id);
     }
     mysql_free_result(result);
     close_database(mysql);
@@ -87,12 +86,12 @@ int run(void)
   
   /* Create server socket */
   if ((sock = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
-    LOG(LOG_NOTICE, "socket: %m");
+    LOG(LOG_ERR, "socket: %m");
     return 0;
   }
   n = 1;
   if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char *)&n, sizeof(n)) < 0) {
-    LOG(LOG_NOTICE, "setsockopt(REUSEADDR): %m");
+    LOG(LOG_ERR, "setsockopt(REUSEADDR): %m");
     close(sock);
     return 0;
   }
@@ -112,7 +111,7 @@ int run(void)
     struct hostent *hp;
     /* not dotted-decimal */
     if ((hp = gethostbyname("0.0.0.0")) == NULL) {
-      LOG(LOG_NOTICE, "0.0.0.0: %m");
+      LOG(LOG_ERR, "0.0.0.0: %m");
       close(sock);
       return 0;
     }
@@ -121,19 +120,19 @@ int run(void)
 
   /* Do bind and listen */
   if (bind(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
-    LOG(LOG_NOTICE, "bind: %m");
+    LOG(LOG_ERR, "bind: %m");
     close(sock);
     return 0;
   }
   if (listen(sock, 10) < 0) {
-    LOG(LOG_NOTICE, "listen: %m");
+    LOG(LOG_ERR, "listen: %m");
     close(sock);
     return 0;
   }
 
   /* Create file descriptor object from OS socket */
   if ((nfd = st_netfd_open_socket(sock)) == NULL) {
-    LOG(LOG_NOTICE, "st_netfd_open_socket: %m");
+    LOG(LOG_ERR, "st_netfd_open_socket: %m");
     close(sock);
     return 0;
   }
@@ -142,7 +141,7 @@ int run(void)
     if (st_thread_create(handle_connections, (void *)&nfd, 0, 0) != NULL) {
       thread_count++;
     } else {
-      LOG(LOG_NOTICE, "st_thread_create: %m");
+      LOG(LOG_WARNING, "st_thread_create: %m");
     }
   }
 
@@ -171,7 +170,7 @@ extern int forever;
       continue;
     }
     remote = strdup(inet_ntoa(from.sin_addr));
-    LOG(LOG_NOTICE, "%s: new connection", remote);
+    LOG(LOG_INFO, "%s: new connection", remote);
     handle_session(cli_nfd, remote);
     free(remote);
     st_netfd_close(cli_nfd);
@@ -197,8 +196,11 @@ login:
   if (debug > 3) fprintf(stderr, "%s[%u] > %s", remotehost, st_netfd_fileno(rmt_nfd), buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
   if (len == -1) {
-    if (errno == ETIME) LOG(LOG_WARNING, "%s: timeout on greeting string", remotehost);
-    else LOG(LOG_WARNING, "%s: %m", remotehost);
+    if (errno == ETIME) { 
+      LOG(LOG_WARNING, "%s: timeout on greeting string", remotehost);
+    } else {
+      LOG(LOG_WARNING, "%s: %m", remotehost);
+    }
     return;
   }
 
@@ -206,8 +208,11 @@ login:
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
   if (len == -1) {
-    if (errno == ETIME) LOG(LOG_WARNING, "%s: timeout reading USER string", remotehost);
-    else LOG(LOG_WARNING, "%s: %m", remotehost);
+    if (errno == ETIME) {
+      LOG(LOG_WARNING, "%s: timeout reading USER string", remotehost);
+    } else {
+      LOG(LOG_WARNING, "%s: %m", remotehost);
+    }
     return;
   }
   if (debug > 3) fprintf(stderr, "%s[%u] < %s", remotehost, st_netfd_fileno(rmt_nfd), buffer);
@@ -222,8 +227,11 @@ login:
   if (debug > 3) fprintf(stderr, "%s[%u] > %s", remotehost, st_netfd_fileno(rmt_nfd), buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
   if (len == -1) {
-    if (errno == ETIME) LOG(LOG_WARNING, "%s: timeout writing password string", remotehost);
-    else LOG(LOG_WARNING, "%s: %m", remotehost);
+    if (errno == ETIME) {
+      LOG(LOG_WARNING, "%s: timeout writing password string", remotehost);
+    } else {
+      LOG(LOG_WARNING, "%s: %m", remotehost);
+    }
     return;
   }
 
@@ -231,8 +239,11 @@ login:
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
   if (len == -1) {
-    if (errno == ETIME) LOG(LOG_WARNING, "%s: timeout reading PASS response", remotehost);
-    else LOG(LOG_WARNING, "%s: %m", remotehost);
+    if (errno == ETIME) {
+      LOG(LOG_WARNING, "%s: timeout reading PASS response", remotehost);
+    } else { 
+      LOG(LOG_WARNING, "%s: %m", remotehost);
+    }
     return;
   }
   if (debug > 3) fprintf(stderr, "%s[%u] < %s", remotehost, st_netfd_fileno(rmt_nfd), buffer);
@@ -255,8 +266,11 @@ logged_in:
   if (debug > 3) fprintf(stderr, "%s[%u] > %s", remotehost, st_netfd_fileno(rmt_nfd), buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
   if (len == -1) {
-    if (errno == ETIME) LOG(LOG_WARNING, "%s: timeout writing ENTER COMMAND", remotehost);
-    else LOG(LOG_WARNING, "%s: %m", remotehost);
+    if (errno == ETIME) { 
+      LOG(LOG_WARNING, "%s: timeout writing ENTER COMMAND", remotehost);
+    } else { 
+      LOG(LOG_WARNING, "%s: %m", remotehost);
+    }
     return;
   }
 
@@ -264,8 +278,11 @@ logged_in:
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
   if (len == -1) {
-    if (errno == ETIME) LOG(LOG_WARNING, "%s: timeout reading DATA statement", remotehost);
-    else LOG(LOG_WARNING, "%s: %m", remotehost);
+    if (errno == ETIME) {
+      LOG(LOG_WARNING, "%s: timeout reading DATA statement", remotehost);
+    } else { 
+      LOG(LOG_WARNING, "%s: %m", remotehost);
+    }
     return;
   }
   if (debug > 3) fprintf(stderr, "%s[%u] < %s", remotehost, st_netfd_fileno(rmt_nfd), buffer);
@@ -292,8 +309,11 @@ logged_in:
   if (debug > 3) fprintf(stderr, "%s[%u] > %s", remotehost, st_netfd_fileno(rmt_nfd), buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
   if (len == -1) {
-    if (errno == ETIME) LOG(LOG_WARNING, "%s: timeout writing %s", remotehost, buffer);
-    else LOG(LOG_WARNING, "%s: %m", remotehost);
+    if (errno == ETIME) {
+      LOG(LOG_WARNING, "%s: timeout writing %s", remotehost, buffer);
+    } else {
+      LOG(LOG_WARNING, "%s: %m", remotehost);
+    }
     return;
   }
 
@@ -304,13 +324,16 @@ logged_in:
     //fprintf(stderr, "reading %u bytes", length);
     len = st_read(rmt_nfd, buffer, length, TIMEOUT);
     if (len == -1) {
-      if (errno == ETIME) LOG(LOG_WARNING, "%s: timeout reading fileblock", remotehost);
-      else LOG(LOG_WARNING, "%s: %m", remotehost);
+      if (errno == ETIME) {
+        LOG(LOG_WARNING, "%s: timeout reading fileblock", remotehost);
+      } else { 
+        LOG(LOG_WARNING, "%s: %m", remotehost);
+      }
       spool_close(sp_info, FALSE);
       goto end;
     }
     if (spool_write(sp_info, buffer, len) == -1) {
-      LOG(LOG_NOTICE, "%s: %s write error writing %u bytes, %u bytes to go", 
+      LOG(LOG_ERR, "%s: %s write error writing %u bytes, %u bytes to go", 
                       targ+spooldir_strlen, remotehost, len, filesize);
       spool_close(sp_info, FALSE);
       goto end;
@@ -321,10 +344,10 @@ logged_in:
 
   targ = strdup(spool_targfilename(sp_info));
   if (!spool_close(sp_info, TRUE)) {
-    LOG(LOG_NOTICE, "%s: %s close error", remotehost, targ+spooldir_strlen);
+    LOG(LOG_ERR, "%s: %s close error", remotehost, targ+spooldir_strlen);
     goto end;
   }
-  if (debug) LOG(LOG_DEBUG, "%s: spooled to %s", remotehost, targ+spooldir_strlen);
+  LOG(LOG_INFO, "%s: spooled to %s", remotehost, targ+spooldir_strlen);
   free(targ);
 
   sprintf(buffer, "+OK Thank you. Enter command\n");

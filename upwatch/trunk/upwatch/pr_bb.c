@@ -46,7 +46,7 @@ void *bb_get_def(trx *t, int create)
 
   // first we find the serverid, this will be used to find the probe definition in the hashtable
   if (!query_server_by_name) {
-    LOG(LOG_NOTICE, "don't know how to find a server by name");
+    LOG(LOG_WARNING, "don't know how to find a server by name");
     return(NULL);
   }
   result = my_query(t->probe->db, 0, query_server_by_name, res->hostname, res->hostname, 
@@ -56,7 +56,7 @@ void *bb_get_def(trx *t, int create)
   if (row && row[0]) {
     res->server   = atoi(row[0]);
   } else {
-    LOG(LOG_NOTICE, "server %s not found", res->hostname);
+    LOG(LOG_WARNING, "server %s not found", res->hostname);
     mysql_free_result(result);
     return(NULL);
   }
@@ -107,7 +107,7 @@ void *bb_get_def(trx *t, int create)
 
   // definition found, get the pr_status
   result = my_query(t->probe->db, 0,
-                    "select color, stattime, changed, notified "
+                    "select color, stattime "
                     "from   pr_status "
                     "where  class = '%u' and probe = '%u'", t->probe->class, def->probeid);
   if (result) {
@@ -115,8 +115,6 @@ void *bb_get_def(trx *t, int create)
     if (row) {
       if (row[0]) def->color   = atoi(row[0]);
       if (row[1]) def->newest  = atoi(row[1]);
-      if (row[2]) def->changed = atoi(row[2]);
-      strcpy(def->notified, row[3] ? row[3] : "no");
     } else {
       LOG(LOG_NOTICE, "pr_status record for %s id %u (server %s) not found", 
                        res->name, def->probeid, res->hostname);

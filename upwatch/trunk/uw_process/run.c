@@ -53,8 +53,8 @@ static void modules_end_run(void)
       strcat(buf, wrk);
     }
   }
-  if (debug > 1 && total) { 
-    LOG(LOG_DEBUG, "Processed: Total:%u (%s)", total, buf);
+  if (total) { 
+    LOG(LOG_INFO, "Processed: Total:%u (%s)", total, buf);
   }
 }
 
@@ -139,7 +139,7 @@ void child_termination_handler (int signum)
     pid = waitpid(-1, &status, WNOHANG);
     if (pid < 0) {
       if (errno != ECHILD) {
-        LOG(LOG_NOTICE, "waitpid: %u %m", errno);
+        LOG(LOG_ERR, "waitpid: %u %m", errno);
       }
       return;
     }
@@ -213,7 +213,7 @@ int init(void)
     }
   }
   if (!HAVE_OPT(INPUT)) {
-    LOG(LOG_NOTICE, "Error: no input queue given");
+    LOG(LOG_ERR, "Error: no input queue given");
     return(0);
   }
 
@@ -280,7 +280,7 @@ int read_input_files(char *path)
 extern int forever;
   dir = g_dir_open (path, 0, &error);
   if (dir == NULL) {
-    LOG(LOG_NOTICE, "g_dir_open %s: (%m) %s", path, error);
+    LOG(LOG_ERR, "g_dir_open %s: (%m) %s", path, error);
     g_ptr_array_free(arr, TRUE);
     return 0;
   }
@@ -395,7 +395,7 @@ static int resummarize(void);
         sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), pn[ct]);
         pid = fork();
         if (pid == -1) {
-          LOG(LOG_NOTICE, "fork: %m");
+          LOG(LOG_ERR, "fork: %m");
           return 1;
         }
         if (pid == 0) {

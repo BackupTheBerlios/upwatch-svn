@@ -36,15 +36,14 @@ static int uw_password_ok(char *user, char *passwd)
     MYSQL_ROW row;
 
     sprintf(buffer, OPT_ARG(AUTHQUERY), user, passwd);
-    if (debug > 1) LOG(LOG_DEBUG, buffer);
+    LOG(LOG_DEBUG, buffer);
     if (mysql_query(mysql, buffer)) {
-      LOG(LOG_ERR, "buffer: %s", mysql_error(mysql));
       close_database(mysql);
       return(FALSE);
     }
     result = mysql_store_result(mysql);
     if (!result || mysql_num_rows(result) < 1) {
-      if (debug) LOG(LOG_DEBUG, "user %s, pwd %s not found", user, passwd);
+      LOG(LOG_NOTICE, "user %s, pwd %s not found", user, passwd);
       close_database(mysql);
       return(FALSE);
     }
@@ -52,7 +51,7 @@ static int uw_password_ok(char *user, char *passwd)
       int id;
 
       id = atoi(row[0]);
-      if (debug>1) LOG(LOG_DEBUG, "user %s, pwd %s resulted in id %d", user, passwd, id);
+      LOG(LOG_DEBUG, "user %s, pwd %s resulted in id %d", user, passwd, id);
     }
     mysql_free_result(result);
     close_database(mysql);
@@ -73,9 +72,8 @@ static int uw_set_ip(char *user, char *ip, char *remotehost)
     gchar buffer[256];
 
     sprintf(buffer, OPT_ARG(SETIPQUERY), ip, remotehost, user);
-    if (debug > 1) LOG(LOG_DEBUG, buffer);
+    LOG(LOG_DEBUG, buffer);
     if (mysql_query(mysql, buffer)) {
-      LOG(LOG_ERR, "buffer: %s", mysql_error(mysql));
       close_database(mysql);
       return(FALSE);
     }
@@ -109,12 +107,12 @@ int run(void)
   
   /* Create server socket */
   if ((sock = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
-    LOG(LOG_NOTICE, "socket: %m");
+    LOG(LOG_ERR, "socket: %m");
     return 0;
   }
   n = 1;
   if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char *)&n, sizeof(n)) < 0) {
-    LOG(LOG_NOTICE, "setsockopt(REUSEADDR): %m");
+    LOG(LOG_ERR, "setsockopt(REUSEADDR): %m");
     close(sock);
     return 0;
   }
@@ -126,7 +124,7 @@ int run(void)
     struct hostent *hp;
     /* not dotted-decimal */
     if ((hp = gethostbyname("0.0.0.0")) == NULL) {
-      LOG(LOG_NOTICE, "0.0.0.0: %m");
+      LOG(LOG_ERR, "0.0.0.0: %m");
       close(sock);
       return 0;
     }
@@ -135,19 +133,19 @@ int run(void)
 
   /* Do bind and listen */
   if (bind(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
-    LOG(LOG_NOTICE, "bind: %m");
+    LOG(LOG_ERR, "bind: %m");
     close(sock);
     return 0;
   }
   if (listen(sock, 10) < 0) {
-    LOG(LOG_NOTICE, "listen: %m");
+    LOG(LOG_ERR, "listen: %m");
     close(sock);
     return 0;
   }
 
   /* Create file descriptor object from OS socket */
   if ((nfd = st_netfd_open_socket(sock)) == NULL) {
-    LOG(LOG_NOTICE, "st_netfd_open_socket: %m");
+    LOG(LOG_ERR, "st_netfd_open_socket: %m");
     close(sock);
     return 0;
   }
@@ -156,7 +154,7 @@ int run(void)
     if (st_thread_create(handle_connections, (void *)&nfd, 0, 0) != NULL) {
       thread_count++;
     } else {
-      LOG(LOG_NOTICE, "st_thread_create: %m");
+      LOG(LOG_WARNING, "st_thread_create: %m");
     }
   }
 
@@ -181,11 +179,11 @@ extern int forever;
     char *remote;
     cli_nfd = st_accept(srv_nfd, (struct sockaddr *)&from, &fromlen, -1);
     if (cli_nfd == NULL) {
-      LOG(LOG_NOTICE, "st_accept: %m");
+      LOG(LOG_WARNING, "st_accept: %m");
       continue;
     }
     remote = strdup(inet_ntoa(from.sin_addr));
-    LOG(LOG_NOTICE, "New connection from: %s", remote);
+    LOG(LOG_INFO, "New connection from: %s", remote);
     handle_session(cli_nfd, remote);
     free(remote);
     st_netfd_close(cli_nfd);
@@ -211,7 +209,7 @@ void handle_session(st_netfd_t rmt_nfd, char *remotehost)
     return;
   }
   if (len == -1) {
-    LOG(LOG_WARNING, "%m");
+    LOG(LOG_WARNING, "st_write: %m");
     return;
   }
 
@@ -223,14 +221,14 @@ void handle_session(st_netfd_t rmt_nfd, char *remotehost)
     return;
   }
   if (len == -1) {
-    LOG(LOG_WARNING, "%m");
+    LOG(LOG_WARNING, "st_read: %m");
     return;
   }
   if (debug > 3) fprintf(stderr, "< %s", buffer);
   chop(buffer, len);
   sscanf(buffer, "%s %s %s", user, passwd, ip);
   if (!uw_password_ok(user, passwd)) {
-    LOG(LOG_WARNING, "Login error: %s/%s", user, passwd);
+    LOG(LOG_NOTICE, "Login error: %s/%s", user, passwd);
     return;
   }
   uw_set_ip(user, ip, remotehost);

@@ -68,7 +68,7 @@ int run(void)
     cache = g_hash_table_new_full(g_int_hash, g_int_equal, g_free, free_probe);
   }
   
-  if (debug > 0) LOG(LOG_DEBUG, "reading info from database");
+  LOG(LOG_INFO, "reading info from database");
   uw_setproctitle("reading info from database");
   mysql = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
 			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD), OPT_VALUE_DBCOMPRESS);
@@ -78,11 +78,11 @@ int run(void)
   }
 
   if (g_hash_table_size(cache) > 0) {
-    if (debug > 0) LOG(LOG_DEBUG, "running %d probes", g_hash_table_size(cache));
+    LOG(LOG_INFO, "running %d probes", g_hash_table_size(cache));
     uw_setproctitle("running %d probes", g_hash_table_size(cache));
     run_actual_probes(); /* this runs the actual probes */
 
-    if (debug > 0) LOG(LOG_DEBUG, "writing results");
+    LOG(LOG_INFO, "writing results");
     uw_setproctitle("writing results");
     write_results();
   }
@@ -175,7 +175,7 @@ int asynch_response(int operation, struct snmp_session *sp, int reqid,
  	val = (float) *vp->val.floatVal; 
         break;
       default:
-        LOG(LOG_NOTICE, "unsupported type %d", vp->type);
+        LOG(LOG_ERR, "unsupported SNMP type %d", vp->type);
         break;
       }
       if (rel) {

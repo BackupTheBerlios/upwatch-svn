@@ -53,7 +53,7 @@ int read_input_files(char *path)
 extern int forever;
   dir = g_dir_open (path, 0, &error);
   if (dir == NULL) {
-    LOG(LOG_NOTICE, "g_dir_open: %s", error);
+    LOG(LOG_WARNING, "g_dir_open: %s", error);
     g_ptr_array_free(arr, TRUE);
     return 0;
   }

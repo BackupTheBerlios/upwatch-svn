@@ -147,7 +147,7 @@ static char path[PATH_MAX];
     td->q = q;
     td->filename = strdup(buffer);
     if (st_thread_create(push, td, 0, 0) == NULL) { 
-      LOG(LOG_DEBUG, "couldn't create thread");
+      LOG(LOG_WARNING, "couldn't create thread");
       st_sleep(1);
     } else {
       q->thread_count++;
@@ -165,7 +165,7 @@ static char path[PATH_MAX];
 static void create_q_threads(gpointer key, gpointer value, gpointer user_data)
 {
   if (st_thread_create(read_queue, value, 0, 0) == NULL) { 
-    LOG(LOG_DEBUG, "couldn't create queue thread for %s", (char *)key);
+    LOG(LOG_WARNING, "couldn't create queue thread for %s", (char *)key);
   } else {
     if (debug > 3) { LOG(LOG_DEBUG, "created new thread"); }
     thread_count++;
@@ -185,10 +185,10 @@ int run(void)
     status = system(OPT_ARG(HANGUPSCRIPT));
     if (WIFEXITED(status)) {
       if (WEXITSTATUS(status) != 0) {
-        LOG(LOG_NOTICE, "%s: error %d", OPT_ARG(HANGUPSCRIPT), WEXITSTATUS(status));
+        LOG(LOG_WARNING, "%s: error %d", OPT_ARG(HANGUPSCRIPT), WEXITSTATUS(status));
       }
     } else {
-      LOG(LOG_NOTICE, "%s exited abnormally", OPT_ARG(HANGUPSCRIPT));
+      LOG(LOG_ERR, "%s exited abnormally", OPT_ARG(HANGUPSCRIPT));
     }
   }
   online = FALSE;
@@ -211,18 +211,18 @@ void *push(void *data)
     status = system(OPT_ARG(DIALSCRIPT));
     if (WIFEXITED(status)) {
       if (WEXITSTATUS(status) != 0) {
-        LOG(LOG_NOTICE, "%s: error %d", OPT_ARG(DIALSCRIPT), WEXITSTATUS(status));
+        LOG(LOG_WARNING, "%s: error %d", OPT_ARG(DIALSCRIPT), WEXITSTATUS(status));
         goto quit;
       }
     } else {
-      LOG(LOG_NOTICE, "%s exited abnormally", OPT_ARG(DIALSCRIPT));
+      LOG(LOG_ERR, "%s exited abnormally", OPT_ARG(DIALSCRIPT));
       goto quit;
     }
     online = TRUE;
   }
 
   if ((hp = gethostbyname(q->host)) == (struct hostent *) 0) {
-    LOG(LOG_NOTICE, "can't resolve %s: %s", q->host, strerror(h_errno));
+    LOG(LOG_ERR, "can't resolve %s: %s", q->host, strerror(h_errno));
     q->fatal = 1;
     goto quit;
   } 
@@ -234,27 +234,27 @@ void *push(void *data)
 
   sock = socket( AF_INET, SOCK_STREAM, 0 );
   if (sock == -1) {
-    LOG(LOG_WARNING, "socket: %m");
+    LOG(LOG_ERR, "socket: %m");
     q->fatal = 1;
     goto quit;
   }
   uw_setproctitle("connecting to %s:%d", q->host, q->port);
   if ((rmt_nfd = st_netfd_open_socket(sock)) == NULL) {
-    LOG(LOG_NOTICE, "st_netfd_open_socket: %m", strerror(errno));
+    LOG(LOG_ERR, "st_netfd_open_socket: %m", strerror(errno));
     close(sock);
     q->fatal = 1;
     goto quit;
   } 
 
   if (st_connect(rmt_nfd, (struct sockaddr *)&server, sizeof(server), -1) < 0) {
-    LOG(LOG_NOTICE, "%s:%d: %m", q->host, q->port, strerror(errno));
+    LOG(LOG_ERR, "%s:%d: %m", q->host, q->port, strerror(errno));
     st_netfd_close(rmt_nfd);
     q->fatal = 1;
     goto quit;
   }
 
   if (pushto(rmt_nfd, td)) {
-    if (debug) { LOG(LOG_NOTICE, "uploaded %s", td->filename); }
+    LOG(LOG_INFO, "uploaded %s", td->filename); 
     unlink(td->filename);
   }
   st_netfd_close(rmt_nfd);
@@ -298,8 +298,11 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
   if (len == -1) {
-    if (errno == ETIME) { LOG(LOG_WARNING, "timeout reading login request string"); }
-    else { LOG(LOG_WARNING, "%m"); }
+    if (errno == ETIME) { 
+      LOG(LOG_WARNING, "timeout reading login request string"); 
+    } else { 
+      LOG(LOG_WARNING, "st_read: %m"); 
+    }
     return 0;
   }
   if (debug > 3) fprintf(stderr, "%s[%u] < %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
@@ -313,8 +316,11 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
   if (debug > 3) fprintf(stderr, "%s[%u] > %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
   if (len == -1) {
-    if (errno == ETIME) { LOG(LOG_WARNING, "timeout writing %s", buffer); }
-    else { LOG(LOG_WARNING, "%m"); }
+    if (errno == ETIME) { 
+      LOG(LOG_WARNING, "timeout writing %s", buffer); 
+    } else { 
+      LOG(LOG_WARNING, "st_write: %m"); 
+    }
     return 0;
   }
 
@@ -322,8 +328,11 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
   if (len == -1) {
-    if (errno == ETIME) { LOG(LOG_WARNING, "timeout reading OK enter password"); }
-    else { LOG(LOG_WARNING, "%m"); }
+    if (errno == ETIME) { 
+      LOG(LOG_WARNING, "timeout reading OK enter password"); 
+    } else { 
+      LOG(LOG_WARNING, "st_read: %m"); 
+    }
     return 0;
   }
   if (debug > 3) fprintf(stderr, "%s[%u] < %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
@@ -337,8 +346,11 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
   if (debug > 3) fprintf(stderr, "%s[%u] > %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
   if (len == -1) {
-    if (errno == ETIME) { LOG(LOG_WARNING, "timeout writing %s", buffer); }
-    else { LOG(LOG_WARNING, "%m"); }
+    if (errno == ETIME) { 
+      LOG(LOG_WARNING, "timeout writing %s", buffer); 
+    } else { 
+      LOG(LOG_WARNING, "st_write: %m"); 
+    }
     return 0;
   }
 
@@ -346,8 +358,11 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
   if (len == -1) {
-    if (errno == ETIME) { LOG(LOG_WARNING, "timeout reading enter command"); }
-    else { LOG(LOG_WARNING, "%m"); }
+    if (errno == ETIME) { 
+      LOG(LOG_WARNING, "timeout reading enter command"); 
+    } else { 
+      LOG(LOG_WARNING, "st_read: %m"); 
+    }
     return 0;
   }
   if (debug > 3) fprintf(stderr, "%s[%u] < %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
@@ -361,8 +376,11 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
   if (debug > 3) fprintf(stderr, "%s[%u] > %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
   if (len == -1) {
-    if (errno == ETIME) { LOG(LOG_WARNING, "timeout writing %s", buffer); }
-    else { LOG(LOG_WARNING, "%m"); }
+    if (errno == ETIME) { 
+      LOG(LOG_WARNING, "timeout writing %s", buffer); 
+    } else { 
+      LOG(LOG_WARNING, "st_write: %m"); 
+    }
     return 0;
   }
 
@@ -370,8 +388,11 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
   if (len == -1) {
-    if (errno == ETIME) { LOG(LOG_WARNING, "timeout reading DATA response"); }
-    else { LOG(LOG_WARNING, "%m"); }
+    if (errno == ETIME) { 
+      LOG(LOG_WARNING, "timeout reading DATA response"); 
+    } else { 
+      LOG(LOG_WARNING, "st_read: %m"); 
+    }
     return 0;
   }
   if (debug > 3) fprintf(stderr, "%s[%u] < %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
@@ -381,7 +402,7 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
   } 
 
   if ((in = fopen(td->filename, "r")) == NULL) {
-    LOG(LOG_WARNING, "can't open %s", td->filename);
+    LOG(LOG_ERR, "can't open %s", td->filename);
     return 0;
   }
 
@@ -391,8 +412,11 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
     //LOG(LOG_DEBUG, "read %d from input", i);
     len = st_write(rmt_nfd, buffer, i, TIMEOUT);
     if (len == -1) {
-      if (errno == ETIME) { LOG(LOG_WARNING, "timeout writing %s", buffer); }
-      else { LOG(LOG_WARNING, "%m"); }
+      if (errno == ETIME) { 
+        LOG(LOG_WARNING, "timeout writing %s", buffer); 
+      } else { 
+        LOG(LOG_WARNING, "st_write: %m"); 
+      }
       fclose(in);
       return 0;
     }
@@ -400,12 +424,12 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
   }
 
   if (!feof(in)) {
-    LOG(LOG_WARNING, "fread: %m");
+    LOG(LOG_ERR, "fread: %m");
     fclose(in);
     return 0;
   }
   if (i>0 && st_write(rmt_nfd, buffer, i, TIMEOUT) != i) {
-    LOG(LOG_WARNING, "socket write error: %m");
+    LOG(LOG_ERR, "socket write error: %m");
     fclose(in);
     return 0;
   }
@@ -415,8 +439,11 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
   if (len == -1) {
-    if (errno == ETIME) { LOG(LOG_WARNING, "timeout reading enter command"); }
-    else { LOG(LOG_WARNING, "%m"); }
+    if (errno == ETIME) { 
+      LOG(LOG_WARNING, "timeout reading enter command"); 
+    } else { 
+      LOG(LOG_WARNING, "st_read: %m"); 
+    }
     return 0;
   }
   if (debug > 3) fprintf(stderr, "%s[%u] < %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
@@ -430,8 +457,11 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
   if (debug > 3) fprintf(stderr, "%s[%u] > %s", q->host, st_netfd_fileno(rmt_nfd), buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
   if (len == -1) {
-    if (errno == ETIME) { LOG(LOG_WARNING, "timeout writing %s", buffer); }
-    else { LOG(LOG_WARNING, "%m"); }
+    if (errno == ETIME) { 
+      LOG(LOG_WARNING, "timeout writing %s", buffer); 
+    } else { 
+      LOG(LOG_WARNING, "st_write: %m"); 
+    }
     return 0;
   }
 
@@ -439,8 +469,11 @@ int pushto(st_netfd_t rmt_nfd, struct thr_data *td)
   memset(buffer, 0, sizeof(buffer));
   len = st_read(rmt_nfd, buffer, sizeof(buffer), TIMEOUT);
   if (len == -1) {
-    if (errno == ETIME) { LOG(LOG_WARNING, "timeout reading QUIT response", buffer); }
-    else { LOG(LOG_WARNING, "%m"); }
+    if (errno == ETIME) { 
+      LOG(LOG_WARNING, "timeout reading QUIT response", buffer); 
+    } else { 
+      LOG(LOG_WARNING, "st_read: %m"); 
+    }
     return 0;
   }
   if (debug > 3) fprintf(stderr, "%s[%u] < %s", q->host, st_netfd_fileno(rmt_nfd), buffer);

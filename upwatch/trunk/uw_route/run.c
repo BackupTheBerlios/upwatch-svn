@@ -80,7 +80,7 @@ int read_input_files(char *path)
 extern int forever;
   dir = g_dir_open (path, 0, &error);
   if (dir == NULL) {
-    LOG(LOG_NOTICE, "g_dir_open: %s", error);
+    LOG(LOG_ERR, "g_dir_open: %s", error);
     g_ptr_array_free(arr, TRUE);
     return 0;
   }
@@ -119,7 +119,7 @@ int run(void)
   if (debug > 3) { 
     int i;
 
-    LOG(LOG_DEBUG, "run()"); 
+    if (debug > 3) { LOG(LOG_DEBUG, "run()"); }
     for (i = 0; route[i].name; i++) {
       fprintf(stderr, "%s -> %s\n", route[i].name, route[i].queue);
     }
@@ -150,7 +150,7 @@ static int handle_file(gpointer data, gpointer user_data)
   if (filebase) filebase++;
   else filebase = filename;
 
-  if (debug) { LOG(LOG_DEBUG, "Processing %s", filename); }
+  LOG(LOG_INFO, "Processing %s", filename);
 
   if (stat(filename, &st)) {
     LOG(LOG_WARNING, "%s: %m", filename);
@@ -186,7 +186,7 @@ static int handle_file(gpointer data, gpointer user_data)
 
   cur = xmlDocGetRootElement(doc);
   if (cur == NULL) {
-    LOG(LOG_NOTICE, "%s: empty document", filename);
+    LOG(LOG_WARNING, "%s: empty document", filename);
     unlink(filename);
     free(filename);
     xmlFreeDoc(doc);
@@ -194,14 +194,14 @@ static int handle_file(gpointer data, gpointer user_data)
   }
   ns = xmlSearchNsByHref(doc, cur, (const xmlChar *) NAMESPACE_URL);
   if (ns == NULL) {
-    LOG(LOG_NOTICE, "%s: wrong type, result namespace not found", filename);
+    LOG(LOG_WARNING, "%s: wrong type, result namespace not found", filename);
     unlink(filename);
     free(filename);
     xmlFreeDoc(doc);
     return 0;
   }
   if (xmlStrcmp(cur->name, (const xmlChar *) "result")) {
-    LOG(LOG_NOTICE, "%s: wrong type, root node is not 'result'", filename);
+    LOG(LOG_WARNING, "%s: wrong type, root node is not 'result'", filename);
     unlink(filename);
     free(filename);
     xmlFreeDoc(doc);
@@ -217,7 +217,7 @@ static int handle_file(gpointer data, gpointer user_data)
     cur = cur->next;
   }
   if (cur == 0) {
-    LOG(LOG_NOTICE, "%s: empty file", filename);
+    LOG(LOG_WARNING, "%s: empty file", filename);
     unlink(filename);
     free(filename);
     xmlFreeDoc(doc);
@@ -240,7 +240,7 @@ static int handle_file(gpointer data, gpointer user_data)
       } 
 
       if (cur->ns != ns) {
-        LOG(LOG_ERR, "method found, but namespace incorrect on %s", cur->name);
+        LOG(LOG_WARNING, "method found, but namespace incorrect on %s", cur->name);
         continue;
       }
       found = 1;
@@ -260,7 +260,7 @@ static int handle_file(gpointer data, gpointer user_data)
       break;
     }
     if (!found) {
-      LOG(LOG_ERR, "can't find method: %s, saved to %s", cur->name, OPT_ARG(FAILURES));
+      LOG(LOG_WARNING, "can't find method: %s, saved to %s", cur->name, OPT_ARG(FAILURES));
       failures++;
       cur = cur->next;
     }

@@ -87,7 +87,7 @@ static void iptraf_summarize(trx *t, char *from, char *into, guint slot, guint s
 
     if (!result) return;
     if (mysql_num_rows(result) == 0) { // no records found
-      LOG(LOG_WARNING, "nothing to summarize from %s for probe %u %u %u",
+      LOG(LOG_NOTICE, "nothing to summarize from %s for probe %u %u %u",
                          from, def->probeid, slotlow, slothigh);
       mysql_free_result(result);
       return;
@@ -95,12 +95,11 @@ static void iptraf_summarize(trx *t, char *from, char *into, guint slot, guint s
 
     row = mysql_fetch_row(result);
     if (!row) {
-      LOG(LOG_ERR, (char *)mysql_error(t->probe->db));
       mysql_free_result(result);
       return;
     }
     if (row[0] == NULL) {
-      LOG(LOG_WARNING, "nothing to summarize from %s for probe %u %u %u", 
+      LOG(LOG_NOTICE, "nothing to summarize from %s for probe %u %u %u", 
                        from, def->probeid, slotlow, slothigh);
       mysql_free_result(result);
       return;

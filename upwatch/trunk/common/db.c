@@ -52,21 +52,23 @@ MYSQL_RES *my_query(MYSQL *mysql, int log_dupes, char *fmt, ...)
   va_start(arg, fmt);
   vsnprintf(qry, sizeof(qry)-1, fmt, arg);
   va_end(arg);
-  if (debug > 3) LOGRAW(LOG_DEBUG, qry);
+  if (debug > 3) {
+    LOGRAW(LOG_DEBUG, qry);
+  }
 
   if (mysql_query(mysql, qry)) {
     switch (mysql_errno(mysql)) {
     case ER_DUP_ENTRY:
         if (!log_dupes) break;
     default:
-      LOG(LOG_ERR, "%s:[%u] %s", qry, mysql_errno(mysql), mysql_error(mysql));
+      LOG(LOG_WARNING, "%s:[%u] %s", qry, mysql_errno(mysql), mysql_error(mysql));
       break;
     }
     return(NULL);
   }
   result = mysql_store_result(mysql);
   if (mysql_errno(mysql)) {
-    LOG(LOG_ERR, "%s: [%u] %s", qry, mysql_errno(mysql), mysql_error(mysql));
+    LOG(LOG_WARNING, "%s: [%u] %s", qry, mysql_errno(mysql), mysql_error(mysql));
   }
   return(result);
 }

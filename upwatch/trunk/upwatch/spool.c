@@ -112,9 +112,7 @@ int spool_result(char *basedir, char *target, xmlDocPtr doc, char **targetname)
   }
   /* We've succeeded!  Now, no matter what, we return "success" */
   if (targetname) *targetname = strdup(si->targ_filename);
-  if (debug) {
-    LOG(LOG_DEBUG, "spooled to %s", si->targ_filename);
-  }
+  LOG(LOG_INFO, "spooled to %s", si->targ_filename);
 
   /* Okay, delete the temporary file. If it fails, bummer. */
   unlink(si->temp_filename);

@@ -33,10 +33,10 @@ void get_previous_pr_hist(trx *t)
   MYSQL_RES *result;
   MYSQL_ROW row;
 
-  t->def->changed = 0;
-  strcpy(t->def->notified, "yes"); // if we cannot find pr_hist record, assume the user has already been warned
+  t->res->changed = 0;
+  strcpy(t->res->notified, "yes"); // if we cannot find pr_hist record, assume the user has already been warned
   result = my_query(t->probe->db, 0,
-                    "select   id, stattime, notified "
+                    "select   id, stattime, notified, prv_color "
                     "from     pr_hist  "
                     "where    probe = '%u' and class = '%u' and stattime <= '%u' "
                     "order by stattime desc limit 1",
@@ -44,9 +44,10 @@ void get_previous_pr_hist(trx *t)
   if (!result) return;
   row = mysql_fetch_row(result);
   if (row) {
-    t->def->prevhistid = atoll(row[0]);
-    t->def->changed = atoi(row[1]);
-    strcpy(t->def->notified, row[2]);
+    t->res->prevhistid = atoll(row[0]);
+    t->res->changed = atoi(row[1]);
+    strcpy(t->res->notified, row[2]);
+    t->res->prevhistcolor = atoi(row[3]);
   }
   mysql_free_result(result);
   return;
@@ -58,7 +59,7 @@ void set_pr_hist_notified(trx *t)
 
   result = my_query(t->probe->db, 0,
                     "update pr_hist set notified = 'yes' "
-                    "where  id = '%ull'", t->def->prevhistid);
+                    "where  id = '%ull'", t->res->prevhistid);
   mysql_free_result(result);
 }
 
@@ -102,11 +103,11 @@ int process(trx *t)
     goto exit_with_res;
   }
 
-  // RETRIEVE HIST ENTRY RIGHT BEFORE THIS PROBE
+  // RETRIEVE LAST HIST ENTRY FOR THIS PROBE
   get_previous_pr_hist(t);
 
   // notify if needed
-  if (strcmp(t->def->notified, "yes")) { // not already notified?
+  if (strcmp(t->res->notified, "yes")) { // not already notified?
     if (notify(t)) {
       set_pr_hist_notified(t);
     }

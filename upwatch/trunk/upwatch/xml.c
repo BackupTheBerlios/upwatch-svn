@@ -17,7 +17,7 @@ void UpwatchXmlGenericErrorFunc(void *ctx, const char *fmt, ...)
   vsnprintf(buffer, BUFSIZ, fmt, arg);
   va_end(arg);
 
-  LOG(LOG_NOTICE, buffer);
+  LOG(LOG_WARNING, buffer);
 }
 
 xmlDocPtr UpwatchXmlDoc(const char *root)

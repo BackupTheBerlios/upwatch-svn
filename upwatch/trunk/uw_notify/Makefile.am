@@ -62,10 +62,3 @@ install-data-local:
 
 CLEANFILES += ../probes.enum
 
-noinst_PROGRAMS = uw_tnot
-uw_tnot_SOURCES = tnotrun.c notify.c uw_tnot.h uw_tnot.c
-uw_tnot_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ \
-  $(DEF_LIBPQ) $(DEF_LIBSNMP) $(DEF_LIBTDS) $(DEF_LIBESMTP) -DTNOT
-uw_tnot_LDADD = uw_tnot_$(DB_O) uw_tnot_$(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @MYSQL_LIBS@ \
-  @LIBESMTP_LIBS@ @LIBGLIB2_LIBS@ @LIBXML2_LIBS@ $(SOLARISLIBS)
-

@@ -129,10 +129,8 @@ int extract_info_from_xml(trx *t)
 //*******************************************************************
 int accept_result(trx *t)
 {
-  if (debug > 1) {
-    LOG(LOG_DEBUG, "%s: %d stattime %u expires %u",
-                 t->res->name, t->res->color, t->res->stattime, t->res->expires);
-  }
+  LOG(LOG_DEBUG, "%s: %d stattime %u expires %u",
+               t->res->name, t->res->color, t->res->stattime, t->res->expires);
   return 1; // ok
 }
 
@@ -162,15 +160,13 @@ void *get_def(trx *t, int create)
     strcpy(def->hide, "no");
 
     result = my_query(t->probe->db, 0,
-                      "select color, changed, notified "
+                      "select color "
                       "from   pr_status "
                       "where  class = '%u' and probe = '%u'", t->probe->class, res->probeid);
     if (result) {
       row = mysql_fetch_row(result);
       if (row) {
         if (row[0]) def->color   = atoi(row[0]);
-        if (row[1]) def->changed = atoi(row[1]);
-        strcpy(def->notified, row[2] ? row[2] : "no");
       } else {
         LOG(LOG_NOTICE, "pr_status record for %s id %u not found", res->name, res->probeid);
       }
@@ -309,7 +305,7 @@ void *get_def_by_servid(trx *t, int create)
 
   // definition found, get the pr_status
   result = my_query(t->probe->db, 0,
-                    "select color, stattime, changed, notified "
+                    "select color, stattime "
                     "from   pr_status "
                     "where  class = '%u' and probe = '%u'", t->probe->class, def->probeid);
   if (result) {
@@ -317,8 +313,6 @@ void *get_def_by_servid(trx *t, int create)
     if (row) {
       if (row[0]) def->color   = atoi(row[0]);
       if (row[1]) def->newest  = atoi(row[1]);
-      if (row[2]) def->changed = atoi(row[2]);
-      strcpy(def->notified, row[3] ? row[3] : "no");
     } else {
       LOG(LOG_NOTICE, "pr_status record for %s id %u (server %s) not found", 
                        res->name, def->probeid, res->hostname);
@@ -344,7 +338,7 @@ int handle_result_file(gpointer data, gpointer user_data)
   int filesize;
   int i, ret = 0;
 
-  if (debug) { LOG(LOG_DEBUG, "Processing %s", filename); }
+  LOG(LOG_INFO, "Processing %s", filename); 
 
   if (stat(filename, &st)) {
     LOG(LOG_WARNING, "%s: %m", filename);
@@ -359,21 +353,21 @@ int handle_result_file(gpointer data, gpointer user_data)
 
   t->doc = xmlParseFile(filename);
   if (t->doc == NULL) {
-    LOG(LOG_NOTICE, "%s: %m", filename);
+    LOG(LOG_WARNING, "%s: %m", filename);
     return ret;
   }
   t->cur = xmlDocGetRootElement(t->doc);
   if (t->cur == NULL) {
-    LOG(LOG_NOTICE, "%s: empty document", filename);
+    LOG(LOG_WARNING, "%s: empty document", filename);
     return ret;
   }
   t->ns = xmlSearchNsByHref(t->doc, t->cur, (const xmlChar *) NAMESPACE_URL);
   if (t->ns == NULL) {
-    LOG(LOG_NOTICE, "%s: wrong type, result namespace not found", filename);
+    LOG(LOG_WARNING, "%s: wrong type, result namespace not found", filename);
     return ret;
   }
   if (xmlStrcmp(t->cur->name, (const xmlChar *) "result")) {
-    LOG(LOG_NOTICE, "%s: wrong type, root node is not 'result'", filename);
+    LOG(LOG_WARNING, "%s: wrong type, root node is not 'result'", filename);
     return ret;
   }
   p = xmlGetProp(t->cur, (const xmlChar *) "fromhost");
@@ -392,7 +386,7 @@ int handle_result_file(gpointer data, gpointer user_data)
     t->cur = t->cur->next;
   }
   if (t->cur == 0) {
-    LOG(LOG_NOTICE, "%s: empty file", filename);
+    LOG(LOG_WARNING, "%s: empty file", filename);
     return ret;
   }
   ret++; /* file contents syntax check succeeded */
@@ -418,7 +412,7 @@ int handle_result_file(gpointer data, gpointer user_data)
       } 
 
       if (t->cur->ns != t->ns) {
-        LOG(LOG_ERR, "%s: namespace %s != %s", t->cur->name, t->cur->ns, t->ns);
+        LOG(LOG_WARNING, "%s: namespace %s != %s", t->cur->name, t->cur->ns, t->ns);
         //continue;
       }
       found = 1;
@@ -445,7 +439,7 @@ int handle_result_file(gpointer data, gpointer user_data)
       xmlNodePtr node, new;
 
       if (retval > 0) {
-        LOG(LOG_ERR, "can't find method: %s, saved as failure", t->cur->name);
+        LOG(LOG_WARNING, "can't find method: %s, saved as failure", t->cur->name);
       }
       t->failed_count++;
       node = t->cur;

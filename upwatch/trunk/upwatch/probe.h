@@ -13,8 +13,12 @@
   guint expires; \
   guint received; \
   guint interval; \
+  guint changed; \
   char *proto; \
   char *target; \
+  long long prevhistid; \
+  guint prevhistcolor; \
+  char notified[4]; \
   char *message; 
 
 struct probe_result {
@@ -28,12 +32,9 @@ struct probe_result {
   guint contact; \
   guint probeid; \
   guint color; \
-  guint changed; \
   guint newest; \
   char email[65]; \
   guint delay; \
-  long long prevhistid; \
-  char notified[4]; \
 
 struct probe_def {
   STANDARD_PROBE_DEF;

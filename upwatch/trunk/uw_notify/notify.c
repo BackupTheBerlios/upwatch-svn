@@ -11,69 +11,21 @@
 static int do_notification(trx *t);
 
 //*******************************************************************
-// Notify user if necessary - if we enter this function, we know
-// that the color changed, and the user has not been warned yet.
+// if we enter this function, we know
+// the user has not been warned yet.
 //*******************************************************************
 int notify(trx *t)
 {
   int notified = FALSE;
-  int color = t->res->color;
-
-//  if (t->res->received > t->res->expires) color = STAT_BLUE;
 
   if (debug > 3) fprintf(stderr, "%s %u %s (was %s). %s\n", t->probe->module_name, t->def->probeid, 
-                  color2string(t->res->color), color2string(t->res->prevcolor), t->res->hostname);
+                  color2string(t->res->color), color2string(t->res->prevhistcolor), t->res->hostname);
 
-  if (t->res->stattime - t->def->changed < (t->def->delay * 60)) {
-    if (debug > 3) fprintf(stderr, "Not RED long enough\n");
+  if (t->res->stattime - t->res->changed < (t->def->delay * 60)) {
+    if (debug > 3) fprintf(stderr, "Not %s long enough\n", color2string(t->res->color));
     return(notified); // NOT YET
   }
-  switch (color) {
-  case STAT_RED:
-    switch (t->res->prevcolor) {
-    case STAT_RED:
-      notified = do_notification(t);
-      break;
-    case STAT_YELLOW:
-      notified = do_notification(t);
-      break;
-    case STAT_GREEN:
-      notified = do_notification(t);
-      break;
-    }
-    break;
-
-  case STAT_YELLOW:
-    switch (t->res->prevcolor) {
-    case STAT_RED:
-      notified = do_notification(t);
-      break;
-    case STAT_YELLOW:
-      notified = do_notification(t);
-      break;
-    case STAT_GREEN:
-      notified = do_notification(t);
-      break;
-    }
-    break;
-
-  case STAT_GREEN:
-    switch (t->res->prevcolor) {
-    case STAT_RED:
-      notified = do_notification(t);
-      break;
-    case STAT_YELLOW:
-      notified = do_notification(t);
-      break;
-    case STAT_GREEN:
-      notified = do_notification(t);
-      break;
-    }
-    break;
-
-  default:
-    break;
-  }
+  notified = do_notification(t);
   return(notified);
 }
 
@@ -139,21 +91,21 @@ static int do_notification(trx *t)
 
   fp = tmpfile();
   if (!fp) {
-    LOG(LOG_NOTICE, "tmpfile: %m");
+    LOG(LOG_ERR, "tmpfile: %m");
     return(notified);
   }
   fprintf(fp, "From: %s <%s>\n", OPT_ARG(FROM_NAME), OPT_ARG(FROM_EMAIL));
   fprintf(fp, "To: %s\n", t->def->email);
   fprintf(fp, "Subject: %s: %s %s (was %s)\n", servername,
                    t->probe->module_name, color2string(t->res->color),
-                   color2string(t->res->prevcolor));
+                   color2string(t->res->prevhistcolor));
   fprintf(fp, "\n");
   fprintf(fp, "Geachte klant,\n\n"
               "zojuist, om %s"
               "is de status van de probe %s\n"
               "op server %s\n"
               "overgegaan van %s in %s\n", ctime((time_t *)&t->res->stattime), t->probe->module_name,
-                   servername, color2string(t->res->prevcolor), color2string(t->res->color));
+                   servername, color2string(t->res->prevhistcolor), color2string(t->res->color));
   if (t->res->message) {
     fprintf(fp, "\nDe volgende melding werd hierbij gegeven:\n%s\n", t->res->message);
   }
@@ -167,26 +119,16 @@ static int do_notification(trx *t)
     char buf[128];
 
     smtp_strerror (smtp_errno (), buf, sizeof(buf));
-    LOG(LOG_NOTICE, "%s: %s", "localhost:25", buf);
+    LOG(LOG_WARNING, "%s:%u: %s", OPT_ARG(SMTPSERVER), OPT_VALUE_SMTPSERVERPORT, buf);
   } else {
     const smtp_status_t *status;
 
-    strcpy(t->def->notified, "yes");
-    if (t->probe->db) {
-      MYSQL_RES *result;
-
-      result = my_query(t->probe->db, 0,
-                        "update pr_status set notified = 'yes' "
-                        "where  probe = '%u' and class = '%u'",
-                        t->def->probeid, t->probe->class);
-
-      if (result) mysql_free_result(result);
-    }
+    strcpy(t->res->notified, "yes");
 
     // Report on the success or otherwise of the mail transfer.
     status = smtp_message_transfer_status (message);
     LOG(LOG_INFO, "%s: %s %u %s (was %s)", servername, t->res->name, t->res->probeid, 
-                   color2string(t->res->color), color2string(t->res->prevcolor));
+                   color2string(t->res->color), color2string(t->res->prevhistcolor));
     LOG(LOG_INFO, "MAILTO: %s %d %s", t->def->email, status->code, status->text ? status->text : "");
     if (debug > 3) fprintf(stderr, "MAILTO: %s %d %s", t->def->email, status->code, status->text ? status->text : "");
     if (status->code == 250) {
@@ -196,7 +138,7 @@ static int do_notification(trx *t)
   smtp_destroy_session (session);
   fclose(fp);
 #else /* HAVE_LIBESMTP */
-  LOG(LOG_NOTICE, "STMP support not compiled in");
+  LOG(LOG_WARNING, "STMP support not compiled in");
 #endif /* HAVE_LIBESMTP */
   return(notified);
 }

@@ -54,12 +54,12 @@ extern int forever;
   
   /* Create server socket */
   if ((sock = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
-    LOG(LOG_NOTICE, "socket: %m");
+    LOG(LOG_ERR, "socket: %m");
     return 0;
   }
   n = 1;
   if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char *)&n, sizeof(n)) < 0) {
-    LOG(LOG_NOTICE, "setsockopt(REUSEADDR): %m");
+    LOG(LOG_ERR, "setsockopt(REUSEADDR): %m");
     close(sock);
     return 0;
   }
@@ -71,7 +71,7 @@ extern int forever;
     struct hostent *hp;
     /* not dotted-decimal */
     if ((hp = gethostbyname("0.0.0.0")) == NULL) {
-      LOG(LOG_NOTICE, "0.0.0.0: %m");
+      LOG(LOG_ERR, "0.0.0.0: %m");
       close(sock);
       return 0;
     }
@@ -80,19 +80,19 @@ extern int forever;
 
   /* Do bind and listen */
   if (bind(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
-    LOG(LOG_NOTICE, "bind: %m");
+    LOG(LOG_ERR, "bind: %m");
     close(sock);
     return 0;
   }
   if (listen(sock, 10) < 0) {
-    LOG(LOG_NOTICE, "listen: %m");
+    LOG(LOG_ERR, "listen: %m");
     close(sock);
     return 0;
   }
 
   /* Create file descriptor object from OS socket */
   if ((nfd = st_netfd_open_socket(sock)) == NULL) {
-    LOG(LOG_NOTICE, "st_netfd_open_socket: %m");
+    LOG(LOG_ERR, "st_netfd_open_socket: %m");
     close(sock);
     return 0;
   }
@@ -140,12 +140,12 @@ extern int forever;
       continue;
     }
     remote = strdup(inet_ntoa(from.sin_addr));
-    if (debug > 1) LOG(LOG_NOTICE, "New connection from: %s", remote);
+    LOG(LOG_DEBUG, "New connection from: %s", remote);
 
     memset(buffer, 0, sizeof(buffer));
     len = st_read(cli_nfd, buffer, sizeof(buffer), TIMEOUT);
     if (len == ETIME) {
-      LOG(LOG_WARNING, "timeout on BB report");
+      LOG(LOG_NOTICE, "timeout on BB report");
       continue;
     }
     if (debug > 3) fprintf(stderr, "< %s", buffer);
@@ -176,7 +176,7 @@ extern int forever;
   while (forever) {
     int i;
 
-    if (debug > 2) LOG(LOG_DEBUG, "timeout function");
+    LOG(LOG_DEBUG, "timeout function");
     if (doc) {
       int ct  = STACKCT_OPT(OUTPUT);
       char **output = STACKLST_OPT(OUTPUT);
@@ -286,7 +286,7 @@ void runbb(char *cmd)
     }
     while (*cmd && *cmd == ' ') cmd++;
     if (!*cmd) {
-      LOG(LOG_DEBUG, "Illegal status message format, dot not found");
+      LOG(LOG_NOTICE, "Illegal status message format, dot not found");
       return;
     }
     //  status ntserver5,domain,nl.disk green Mon Oct 07 14:37:54 RDT 2002 [ntserver5.domain.nl]
@@ -300,7 +300,7 @@ void runbb(char *cmd)
     // isolate hostname
     p = strchr(cmd, '.');
     if (!p) {
-      LOG(LOG_DEBUG, "Illegal status message format, dot not found");
+      LOG(LOG_NOTICE, "Illegal status message format, dot not found");
       return;
     }
     *p = 0;
@@ -311,7 +311,7 @@ void runbb(char *cmd)
     // isolate probe
     p = strchr(cmd, ' ');
     if (!p) {
-      LOG(LOG_DEBUG, "Illegal status message format, probename not found");
+      LOG(LOG_NOTICE, "Illegal status message format, probename not found");
       return;
     }
     *p = 0;
@@ -321,7 +321,7 @@ void runbb(char *cmd)
     // isolate color
     p = strchr(cmd, ' ');
     if (!p) {
-      LOG(LOG_DEBUG, "Illegal status message format, color not found");
+      LOG(LOG_NOTICE, "Illegal status message format, color not found");
       return;
     }
     *p = 0;
@@ -330,20 +330,20 @@ void runbb(char *cmd)
     while (*cmd == ' ') cmd++; // skip leading spaces
 
     // isolate date/time
-    if (debug > 1) LOG(LOG_WARNING, "datestring: %s", cmd); 
+    LOG(LOG_NOTICE, "datestring: %s", cmd); 
     // Mon Oct 07 14:37:54 RDT 2002
     message = strptime(cmd, "%a %b %d %T ", &probedate);
     if (!message) {
-      LOG(LOG_DEBUG, "Illegal status message format, illegal time format");
+      LOG(LOG_NOTICE, "Illegal status message format, illegal time format");
       return;
     }
     message = strptime(message+4, "%Y", &probedate); // lose the timezone info - it's unusable
 
     //fprintf(stderr, message);
     add_to_xml_document(hostname, probename, color, &probedate, message);
-    if (debug > 1) LOG(LOG_WARNING, "host: %s, probe: %s, color: %s, msg: %s, date: %s", 
+    LOG(LOG_DEBUG, "host: %s, probe: %s, color: %s, msg: %s, date: %s", 
 		    hostname, probename, color, message, asctime(&probedate));
   } else {
-    if (debug > 1) LOG(LOG_WARNING, "unknown message: %s", cmd);
+    LOG(LOG_NOTICE, "unknown message: %s", cmd);
   }
 }

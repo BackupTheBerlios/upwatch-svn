@@ -27,9 +27,7 @@ int runcounter;
 
 void sighup_handler (int signum)
 {
-  if (debug > 1) {
-    LOG(LOG_NOTICE, "signal %d received", signum); 
-  }
+  LOG(LOG_NOTICE, "signal %d received", signum); 
   sighup = 1;
 }
 
@@ -50,9 +48,7 @@ void termination_handler (int signum)
 
 void exit_function(void)
 {
-  if (debug > 1) {
-    LOG(LOG_NOTICE, "exit");
-  }
+  LOG(LOG_NOTICE, "exit");
 }
 
 /****************************
@@ -87,9 +83,8 @@ int main( int argc, char** argv, char **envp )
 
   debug = OPT_VALUE_DEBUG;
 
-  if (debug > 1) {
-    LOG(LOG_NOTICE, "start");
-  }
+  LOG(LOG_NOTICE, "start");
+
   atexit(exit_function);
   if (!init()) exit(1);
 
@@ -257,10 +252,10 @@ static unsigned prv;
 
 static void _ll_lograw(int level, const char *msg)
 {
-  if (OPT_VALUE_STDERR) {
+  if (OPT_VALUE_STDERR && (level-3 > debug)) {
     fprintf(stderr, "%s\n", msg);
   }
-  if (HAVE_OPT(LOGFILE)) {
+  if (HAVE_OPT(LOGFILE) && (level-3 > debug)) {
     FILE *out;
     struct tm *tms;
     time_t now;

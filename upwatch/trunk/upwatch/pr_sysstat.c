@@ -144,15 +144,13 @@ void *sysstat_get_def(trx *t, int create)
     mysql_free_result(result);
 
     result = my_query(t->probe->db, 0,
-                      "select color, changed, notified "
+                      "select color "
                       "from   pr_status "
                       "where  class = '%d' and probe = '%d'", t->probe->class, def->probeid);
     if (result) {
       row = mysql_fetch_row(result);
       if (row) {
         def->color   = atoi(row[0]); 
-        def->changed = atoi(row[1]); 
-        strcpy(def->notified, row[2] ? row[2] : "no");
       }
       mysql_free_result(result);
     } 

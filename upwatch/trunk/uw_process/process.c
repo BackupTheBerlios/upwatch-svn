@@ -139,13 +139,11 @@ static void update_pr_status(trx *t, struct probe_result *prv)
     if (t->res->color > prv->color) {
     // if this probe acts like a fuse, only update if new color is higher then old color
     // because colors must be set to green (= fuse replaced) by a human
-      sprintf(color, "color = '%u', changed = '%u',", prv->color, t->res->stattime);
-      t->def->changed = t->res->stattime;
+      sprintf(color, "color = '%u', ", prv->color);
     }
   } else {
     if (t->res->color != prv->color) {
-      sprintf(color, "color = '%u', changed = '%u',", t->res->color, t->res->stattime);
-      t->def->changed = t->res->stattime;
+      sprintf(color, "color = '%u', ", t->res->color);
     }
   }
 
@@ -192,9 +190,9 @@ static void insert_pr_status(trx *t)
                     "insert into pr_status "
                     "set    class =  '%u', probe = '%u', stattime = '%u', expires = '%u', "
                     "       color = '%u', server = '%u', message = '%s', yellow = '%f', red = '%f', "
-                    "       contact = '%u', hide = '%s', changed = '%u'",
+                    "       contact = '%u', hide = '%s'",
                     t->probe->class, t->def->probeid, t->res->stattime, t->res->expires, t->def->color, t->def->server, 
-                    escmsg, t->def->yellow, t->def->red, t->def->contact, t->def->hide, t->res->stattime);
+                    escmsg, t->def->yellow, t->def->red, t->def->contact, t->def->hide);
   mysql_free_result(result);
   if (mysql_affected_rows(t->probe->db) == 0 || (mysql_errno(t->probe->db) == ER_DUP_ENTRY)) { 
     // nothing was actually inserted, it was probably already there
@@ -202,10 +200,10 @@ static void insert_pr_status(trx *t)
                     t->res->name, t->res->stattime, t->def->probeid, mysql_error(t->probe->db));
     result = my_query(t->probe->db, 0,
                       "update pr_status "
-                      "set    stattime = '%u', expires = '%u', color = '%d', hide = '%s', changed = '%u', "
+                      "set    stattime = '%u', expires = '%u', color = '%d', hide = '%s', "
                       "       message = '%s', yellow = '%f', red = '%f', contact = '%u', server = '%u' "
                       "where  probe = '%u' and class = '%u'",
-                      t->res->stattime, t->res->expires, t->res->color, t->def->hide, t->res->stattime, escmsg, 
+                      t->res->stattime, t->res->expires, t->res->color, t->def->hide, escmsg, 
                       t->def->yellow, t->def->red, t->def->contact, t->def->server, t->def->probeid, t->probe->class);
     mysql_free_result(result);
   }
