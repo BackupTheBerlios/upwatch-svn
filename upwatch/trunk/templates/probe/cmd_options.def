@@ -1,0 +1,33 @@
+AutoGen Definitions options;
+#include ../common/generic_options.def
+export        = "#define progOptions uw_templateOptions";
+prog-name     = uw_template;
+prog-title    = "Upwatch probe daemon";
+version       = "0.1";
+homerc        = "/etc/upwatch.d/uw_template.conf";
+detail        = 
+'uw_template does the following: ';
+
+// this section is for the generated specfile
+spec-requires = "libpcap mysql glib2 gnet >= 1.1.2 curl >= 7.9.3 libnet >= 1.0.2";
+spec-install  = "mkdir -p $RPM_BUILD_ROOT/var/spool/upwatch/uw_template/tmp";
+spec-install  = "mkdir -p $RPM_BUILD_ROOT/var/spool/upwatch/uw_template/new";
+spec-files    = "%dir /var/spool/upwatch/uw_template/new";
+spec-files    = "%dir /var/spool/upwatch/uw_template/tmp";
+
+// describe commandline flags
+flag = {
+    name      = spooldir;
+    value     = S;
+    arg_type  = string;
+    descrip   = "maildir-type spooldirectory for result files";
+    doc       =
+'This probe generates files with data. These are put in maildir style
+spooldirectories. This parameter denotes the basedirectory. Inside
+this directory a directory `tmp` and `new` should exist. All files
+will finally reside in `new`. You should set up some cron job that
+removes any files in `tmp` that are older then 36 hours. For some more info
+about maildir see http://www.qmail.org/man/man5/maildir.html.';
+};
+
+
