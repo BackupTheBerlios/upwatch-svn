@@ -107,9 +107,9 @@
        be entered in <filename>/etc/upwatch.d/uw_sysstat.d/syslog/macros.txt</filename>.</para>
        <para>You can easily add a directory of youw own, containing regular expressions
        for you own logfiles. In fact upwatch includes a handy utility <command>chklog</command> to
-       help you create regular expression lists. Here is an example how to do it. Suppose 
-       you plan to scan the logfile for the imaginary 'timtim' navigational system. It resides in 
-       <filename>/var/log/timtim.log</filename>.</para>
+       help you create regular expression lists. Here is an example how to do it. </para>
+       <para>Suppose you plan to scan the logfile for the imaginary 'timtim' navigational 
+       system. It resides in <filename>/var/log/timtim.log</filename>.</para>
        <itemizedlist>
        <listitem><para>First create the directory:</para>
        <literallayout>
