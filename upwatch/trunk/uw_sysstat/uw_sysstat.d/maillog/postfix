@@ -15,6 +15,7 @@ green [LOGDATE] postfix/postfix-script: stopping the Postfix mail system
 green [LOGDATE] postfix/postfix-script: warning: group or other writable: [PATH]
 green [LOGDATE] postfix/postfix-script: warning: [PATH] and [PATH] differ
 green [LOGDATE] postfix/qmgr[PID]: [MSGID]: skipped, still being delivered
+green [LOGDATE] postfix/nqmgr[PID]: [MSGID]: from=<[EMAIL]>, size=[NUM], nrcpt=[NUM] \(queue active\)
 green [LOGDATE] postfix/rpm: copy [PATH] to [PATH]
 green [LOGDATE] postfix/rpm: triggerpostun -- postfix: final number of Postfix packages=[NUM]
 green [LOGDATE] postfix/rpm: Upgrading Postfix: using RH alternatives

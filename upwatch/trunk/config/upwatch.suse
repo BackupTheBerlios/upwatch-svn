@@ -53,7 +53,8 @@ case "$1" in
         done
 	;;
     status)
-        for i in /etc/init.d/uw_*
+	cd /etc/init.d
+        for i in uw_*
         do
                 $i status
         done

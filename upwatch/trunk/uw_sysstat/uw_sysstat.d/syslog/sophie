@@ -32,3 +32,5 @@ green [LOGDATE] sophie[PID]: Umask            : [NUM]
 green [LOGDATE] sophie[PID]: warning          : Scan result => '[PATH]' infected with virus '.*' 
 green [LOGDATE] sophie[PID]: warning          : Socket '[PATH]' already exists! 
 green [LOGDATE] sophie: sophie shutdown failed
+green [LOGDATE] logger: Sophos Upgrade Done
+

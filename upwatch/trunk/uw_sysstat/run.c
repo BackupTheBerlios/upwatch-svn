@@ -118,7 +118,9 @@ int check_log(GString *string, int idx, int *color)
   char buffer[8192];
   int firstmatch = TRUE;
   int logcolor = STAT_GREEN;
-  int lines = 0;
+  int warnlines = 0;
+  int readlines = 0;
+  long long filesize = 0;
 
   uw_setproctitle("scanning %s", errlogspec[idx].path);
   in = fopen(errlogspec[idx].path, "r");
@@ -126,7 +128,7 @@ int check_log(GString *string, int idx, int *color)
     errlogspec[idx].offset = 0;
     return STAT_GREEN;
   }
-  if (fstat(fileno(in), &st)) {
+  if (stat(errlogspec[idx].path, &st)) {
     char buf2[PATH_MAX+4];
 
     sprintf(buf2, "%s: %m\n", errlogspec[idx].path);
@@ -139,10 +141,19 @@ int check_log(GString *string, int idx, int *color)
   if (st.st_size < errlogspec[idx].offset) {
     errlogspec[idx].offset = 0;
   }
+  filesize = st.st_size;
   fseek(in, errlogspec[idx].offset, SEEK_SET);
   while (fgets(buffer, sizeof(buffer), in)) {
     int color;
 
+    if (++readlines % 5 == 0) {
+      float perc;
+      long long pos = ftell(in);
+
+      perc = (float)(pos - errlogspec[idx].offset) / (float) (filesize - errlogspec[idx].offset);
+      perc *= 100;
+      uw_setproctitle("scanning %s, %lu of %lu (%3.f%%)", errlogspec[idx].path, (long) pos, (long) filesize, perc);
+    }
     if (logregex_matchline(errlogspec[idx].style, buffer, &color)) {
       if (firstmatch) {
         char buf2[PATH_MAX+4];
@@ -151,7 +162,7 @@ int check_log(GString *string, int idx, int *color)
         g_string_append(string, buf2);
         firstmatch = FALSE;
       }
-      if (++lines < 50) g_string_append(string, buffer);
+      if (++warnlines < 50) g_string_append(string, buffer);
     }
     if (color > logcolor) logcolor = color;
   }

@@ -8,7 +8,8 @@ green [LOGDATE] uw_[WORD][PID] main\.c\([NUM]\): signal [NUM] received - finishi
 green [LOGDATE] uw_[WORD][PID] main\.c\([NUM]\): sleeping for [NUM] seconds
 green [LOGDATE] uw_[WORD][PID] main\.c\([NUM]\): start
 green [LOGDATE] uw_[WORD][PID] notify\.c\([NUM]\): MAILTO: [EMAIL] [NUM] [NUM] Message accepted for delivery
-green [LOGDATE] uw_[WORD][PID] notify\.c\([NUM]\): Subject: [HOSTNAME]: [WORD] [COLOR] \(was [COLOR]\)
+green [LOGDATE] uw_[WORD][PID] notify\.c\([NUM]\): MAILTO: [EMAIL] [NUM] Ok: queued as
+green [LOGDATE] uw_[WORD][PID] notify\.c\([NUM]\): [HOSTNAME]: [WORD] [COLOR] \(was [COLOR]\)
 green [LOGDATE] uw_[WORD][PID] pr_process\.c\([NUM]\): Processing [PATH]
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): can't resolve [HOSTNAME]: No such file or directory
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): child [NUM] exited with status [NUM]
@@ -38,3 +39,4 @@ green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): writing results
 green [LOGDATE] uw_[WORD][PID] spool\.c\([NUM]\): spooled to [PATH]
 red [LOGDATE] uw_[WORD][PID] db\.c\([NUM]\): Too many connections
 red [LOGDATE] uw_[WORD][PID] notify\.c\([NUM]\): UPWATCH: probe mysqlstats is lagging in processing
+

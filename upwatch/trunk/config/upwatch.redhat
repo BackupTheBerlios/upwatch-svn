@@ -23,6 +23,13 @@ case "$1" in
 		$i stop
 	done
 	;;
+  status)
+	cd /etc/init.d
+	for i in uw_*
+	do
+		status $i
+	done
+	;;
   restart)
 	for i in /etc/init.d/uw_*
 	do
@@ -30,7 +37,7 @@ case "$1" in
 	done
 	;;
   *)
-	echo "Usage: upwatch {start|stop|restart}"
+	echo "Usage: upwatch {start|stop|restart|status}"
 	exit 1
 esac
 

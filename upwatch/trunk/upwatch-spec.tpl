@@ -93,14 +93,19 @@ then
 [+ FOR clientprog +]  ln -sf ../../etc/init.d/[+clientprog+] rc[+clientprog+]
 [+ ENDFOR +]  popd
 fi
-
+for i in `service upwatch status | grep running | cut -d' ' -f1`
+do
+  /etc/init.d/$i restart
+done
 if [ -x /sbin/chkconfig ]; then
 [+ FOR clientprog +]  /sbin/chkconfig --add [+clientprog+] 2>/dev/null || true
 [+ ENDFOR +]fi
 
 %preun
 if [ "$1" = 0 ] ; then
-  if [ -x /sbin/chkconfig ]; then
+  # stop all servers
+[+ FOR clientprog +]  /etc/init.d/[+clientprog+] stop || true
+[+ ENDFOR +]  if [ -x /sbin/chkconfig ]; then
 [+ FOR clientprog +]    /sbin/chkconfig --del [+clientprog+] 2>/dev/null || true
 [+ ENDFOR +]  fi
 fi
@@ -184,7 +189,9 @@ if [ -x /sbin/chkconfig ]; then
 
 %preun monitor
 if [ "$1" = 0 ] ; then
-  if [ -x /sbin/chkconfig ]; then
+  # stop all servers
+[+ FOR monitorprog +]  /etc/init.d/[+monitorprog+] stop || true
+[+ ENDFOR +]  if [ -x /sbin/chkconfig ]; then
 [+ FOR monitorprog +]    /sbin/chkconfig --del [+monitorprog+] 2>/dev/null || true
 [+ ENDFOR +]  fi
 fi
@@ -241,7 +248,9 @@ if [ -x /sbin/chkconfig ]; then
 
 %preun server
 if [ "$1" = 0 ] ; then
-  if [ -x /sbin/chkconfig ]; then
+  # stop all servers
+[+ FOR serverprog +]  /etc/init.d/[+serverprog+] stop || true
+[+ ENDFOR +]  if [ -x /sbin/chkconfig ]; then
 [+ FOR serverprog +]    /sbin/chkconfig --del [+serverprog+] 2>/dev/null || true
 [+ ENDFOR +]  fi
 fi
@@ -250,7 +259,8 @@ fi
 if [ "$1" -eq "0" ]; then
 [+ FOR serverprog +]  rm -f /etc/init.d/[+serverprog+]
   rm -f /usr/sbin/rc[+serverprog+]
-[+ ENDFOR +]fi
+[+ ENDFOR +]else
+  /etc/init.d/upwatch
 
 %files server
 %defattr(0660,root,upwatch,0770)
@@ -307,6 +317,8 @@ fi
 
 %preun [+ extraprog +]
 if [ "$1" = 0 ] ; then
+  # stop server
+  /etc/init.d/[+ extraprog +] stop
   if [ -x /sbin/chkconfig ]; then
     /sbin/chkconfig --del [+ extraprog +] 2>/dev/null || true
   fi
