@@ -25,7 +25,7 @@
     </preface>
     <chapter>
         <title>Installation</title>
-        <sect1 id="Getting upwatch">
+        <sect1 id="Getting_upwatch">
             <title>Getting upwatch</title>
             <para> Currently, upwatch is not released, and is not allowed to be distributed. The
                 only way to get it, is through written permission of UpWatch BV.</para>
@@ -34,37 +34,37 @@
         </sect1>
         <sect1 id="Requirements">
             <title>Requirements</title>
-            <sect2 id="Run-time requirements">
+            <sect2 id="Run-time_requirements">
                 <title>Run-time requirements</title>
                 <para> Run time requirements differ per probe. Look in the corresponding .def file
                     (or in the spec file for the probe, here's a list of everything we expect on a
                     machine running all probes, and the database (I'll also list the version we use ourselves):</para>
                 <itemizedlist>
-                    <listitem>glib2 2.0.1</listitem>
-                    <listitem>gnet 1.1.2</listitem>
-                    <listitem>mysql 3.23.49</listitem>
-                    <listitem>cURL 7.9.5</listitem>
-                    <listitem>libnet 1.0.2a</listitem>
-                    <listitem>libpcap 0.6.2</listitem>
+                    <listitem><para>glib2 2.0.1</para></listitem>
+                    <listitem><para>gnet 1.1.2</para></listitem>
+                    <listitem><para>mysql 3.23.49</para></listitem>
+                    <listitem><para>cURL 7.9.5</para></listitem>
+                    <listitem><para>libnet 1.0.2a</para></listitem>
+                    <listitem><para>libpcap 0.6.2</para></listitem>
                 </itemizedlist>
             </sect2>
-            <sect2 id="Build requirements">
+            <sect2 id="Build_requirements">
                 <title>Build requirements</title>
                 <para> Of course you can build the software yourself. Apart from the normal GNU
                     compilation tools, and the aforementioned packages, you'll need the following on
                     your system to build upwatch:</para>
                 <itemizedlist>
-                    <listitem>autogen 5.3.6</listitem>
-                    <listitem>libxslt 1.0.15</listitem>
-                    <listitem>docbook 1.48</listitem>
-                    <listitem>lynx 2.8.4</listitem>
-                    <listitem>RPM tools, if you want to build RPM's</listitem>
+                    <listitem><para>autogen 5.3.6</para></listitem>
+                    <listitem><para>libxslt 1.0.15</para></listitem>
+                    <listitem><para>docbook 1.48</para></listitem>
+                    <listitem><para>lynx 2.8.4</para></listitem>
+                    <listitem><para>RPM tools, if you want to build RPM's</para></listitem>
                 </itemizedlist>
                 <para>If you run redhat, debian or SuSe, don't forget to install the devel packages
                     if there are any.</para>
             </sect2>
         </sect1>
-        <sect1 id="Compiling upwatch">
+        <sect1 id="Compiling_upwatch">
             <title>Compiling upwatch</title>
             <para> Just in case you really want to (or need to) compile upwatch yourself, it's
                 pretty easy:</para>
@@ -72,13 +72,13 @@
             <para> Nothing to it... In case of problems, you're probably missing some library or
                 header files, or they are in unexpected places. Look in config.log.</para>
         </sect1>
-        <sect1 id="Actual Installation">
+        <sect1 id="Actual_Installation">
             <title>Actual Installation</title>
             <para> Before you install the software decide on the architecture. If you know in
                 advance yuo'll have to monitor thousands of hosts, or the probes will exhaust your
                 machine otherwise, you may have to split your installation across several machines.
-                There may be more reasons to do that. Consult <link linkend="Scaling up">Scaling
-                up</link> and <link linkend="How it all works">How it all works</link>
+                There may be more reasons to do that. Consult <link linkend="Scaling_up">Scaling
+                up</link> and <link linkend="How_it_all_works">How it all works</link>
             </para>
         </sect1>
         <sect1 id="Database">
@@ -88,6 +88,8 @@
     </chapter>
     <chapter id="Configuration">
         <title>Configuration</title>
+        <para>
+        </para>
     </chapter>
     <chapter id="Administration">
         <title>Administration</title>
@@ -96,9 +98,9 @@
             <para> Suppose your machine becomes too small</para>
         </sect1>
     </chapter>
-    <chapter id="How it all works">
+    <chapter id="How_it_all_works">
         <title>How it all works</title>
-        <sect1 id="General Overview">
+        <sect1 id="General_Overview">
             <title>General Overview</title>
             <para> The system primary function is to fill lots of database tables, to offer views on
                 those tables, and to page operators in case things go wrong. To enable this it
@@ -106,10 +108,10 @@
                 supporting daemons, a PHP website, and other software, like SMS and mail interfaces.</para>
             <para> Things start at the database. For every probe it contains the following tables:</para>
             <itemizedlist>
-                <listitem>Definition table</listitem>
-                <listitem>Raw results table</listitem>
-                <listitem>Tables for compressed results per day, week, month, year and 5 year</listitem>
-                <listitem>A table with an overview of state changes</listitem>
+                <listitem><para>Definition table</para></listitem>
+                <listitem><para>Raw results table</para></listitem>
+                <listitem><para>Tables for compressed results per day, week, month, year and 5 year</para></listitem>
+                <listitem><para>A table with an overview of state changes</para></listitem>
             </itemizedlist>
             <para> The definition table contains, of course, the definition of this particular
                 probe, this is of course probe specific but in practive usually contains frequency,
@@ -122,48 +124,48 @@
                 tables. This way we ensure that we never have to read more then 200 database records
                 to produce a graph for a day, week, month, year or 5-year period.</para>
         </sect1>
-        <sect1 id="What a probe does">
+        <sect1 id="What_a_probe_does">
             <title>What a probe does</title>
             <para> What a probe does</para>
         </sect1>
-        <sect1 id="What happens to the probe results">
+        <sect1 id="What_happens_to_the_probe_results">
             <title>What happens to the probe results?</title>
             <para> What happens to the probe results</para>
         </sect1>
-        <sect1 id="uw_process: storing results in the database">
+        <sect1 id="uw_process_storing_results_in_the_database">
             <title>uw_process: storing results in the database</title>
             <para> uw_process: storing results in the database</para>
         </sect1>
-        <sect1 id="Scaling up">
+        <sect1 id="Scaling_up">
             <title>Scaling up</title>
             <para> Scaling up</para>
         </sect1>
     </chapter>
     <appendix>
       <title>Interfaces and file layouts</title>
-      <sect1 id="Probe result file">
+      <sect1 id="Probe_result_file">
       <title>Probe result file</title>
       <para> Every probe result is written into a queue file. This file will be picked up by the process
           emptying the queue, usually uw_send, or uw_process. The file must have a specific name,
 	  and a specific layout.
       </para>
       <sect2>
-          <title id="Probe file name">Probe file name</title>
+          <title id="Probe_file_name">Probe file name</title>
 	  <para> The name of the file is composed of the current epoch time in seconds, microseconds, process
 	      id, and hostname, all separated by dots. An example would be:
 	  </para>
 	  <itemizedlist>
-	     <listitem>1031601982.341878.27470.ron-ibook.nbs.arts-betel.org</listitem>
+	     <listitem><para>1031601982.341878.27470.ron-ibook.nbs.arts-betel.org</para></listitem>
 	  </itemizedlist>
           <para>From a shell you can generate such a name using <command>echo `date +%s`.500.$$.`hostname`</command></para>
       </sect2>
       <sect2>
-         <title id="Generic probe file layout">Generic probe file layout</title>
+         <title id="Generic_probe_file_layout">Generic probe file layout</title>
 	 <para> The probe result file consists of ASCII lines, separated by linefeeds. The first line has a special format,
 	    any following lines are free format, can contain an error text, or some detail text like the HTTP
 	    header on a HTTP probe. The format of the first line is:
 	 </para>
-	 <table label="Header record layout" pgwide="1">
+	 <table label="Header record layout" pgwide="1"><title>Header record layout</title>
             <tgroup cols = "2">
                <colspec colname = "1" colnum = "1" colwidth = "1.0in"/>
                <colspec colname = "2" colnum = "2" colwidth = "1.0in"/>
@@ -217,22 +219,23 @@
          </table>
       </sect2>
       <sect2>
-         <title id="ping file layout">ping file layout</title>
-
+         <title id="ping_file_layout">ping file layout</title>
+         <para>
+         </para>
       </sect2>
       </sect1>
-      <sect1 id="uw_accept protocol">
+      <sect1 id="uw_accept_protocol">
          <title>uw_accept protocol</title>
          <para></para>
       </sect1>
     </appendix>
-    <appendix id="Probe specifications">
+    <appendix id="Probe_specifications">
        <title>Probe specifications</title>
        <sect1 id="Ping">
           <title>Ping</title>
-          <sect2 id="Ping result record">
+          <sect2 id="Ping_result_record">
              <title>Ping result record</title>
-	 <table label="ping record layout" pgwide="1">
+	 <table label="ping record layout" pgwide="1"><title>ping record layout</title>
             <tgroup cols = "2">
                <colspec colname = "1" colnum = "1" colwidth = "1.0in"/>
                <colspec colname = "2" colnum = "2" colwidth = "1.0in"/>
@@ -268,11 +271,11 @@
          <para> Any lines following the header record contain error messages.
          </para>
           </sect2>
-          <sect2 id="Ping database layout">
+          <sect2 id="Ping_database_layout">
              <title>Ping databasse layout</title>
              <para></para>
           </sect2>
-          <sect2 id="uw_ping daemon">
+          <sect2 id="uw_ping_daemon">
              <title>uw_ping daemon</title>
              <para></para>
           </sect2>
