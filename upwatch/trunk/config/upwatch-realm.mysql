@@ -10,6 +10,9 @@ CREATE TABLE pr_realm (
   db varchar(24) NOT NULL default '',
   user varchar(24) NOT NULL default '',
   password varchar(24) NOT NULL default '',
+  srvrbyname varchar(255) NOT NULL default '',
+  srvrbyid varchar(245) NOT NULL default '',
+  srvrbyip varchar(245) NOT NULL default '',
   comment text NOT NULL,
   PRIMARY KEY  (id)
 ) TYPE=MyISAM;

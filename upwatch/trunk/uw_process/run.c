@@ -363,6 +363,11 @@ int init(void)
     every = ONE_SHOT;
   }
 
+  if (!HAVE_OPT(OUTPUT)) {
+    LOG(LOG_ERR, "missing output option");
+    return 0;
+  }
+
   // check trust option strings
   if (HAVE_OPT(TRUST)) {
     int i, found=0;

@@ -39,8 +39,9 @@ int main(int argc, char *argv[])
     }
 
     logregex_refresh_type("/etc/upwatch.d/uw_sysstat.d", style);
-    logregex_expand_macros("syslog", regexp, buf);
+    logregex_expand_macros(style, regexp, buf);
 
+    printf("Resulting regex: %s\n", buf);
     err = regcomp(&preg, buf, REG_EXTENDED|REG_NOSUB|REG_ICASE);
     if (err) {
       char buffer[256];
