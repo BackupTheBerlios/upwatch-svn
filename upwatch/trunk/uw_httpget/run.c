@@ -53,7 +53,7 @@ int run_actual_probes(int count);
 
     sprintf(qry,  "SELECT pr_httpget_def.id, %s.%s, pr_httpget_def.hostname, " 
                   "       pr_httpget_def.uri, " 
-                  "       pr_httpget_def.yellowtime,  pr_httpget_def.redtime "
+                  "       pr_httpget_def.yellow,  pr_httpget_def.red "
                   "FROM   pr_httpget_def, server "
                   "WHERE  pr_httpget_def.server = %s.%s ", 
             OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_NAME_FIELD),
