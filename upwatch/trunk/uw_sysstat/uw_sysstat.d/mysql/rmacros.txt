@@ -1,0 +1,9 @@
+# macros for log2regex 
+# they are very much like the ones in the 'macros' file, but
+# specifically designed to extract rules from existing logfiles
+LOGDATE \d\d\d\d\d\d \d\d:\d\d:\d\d
+TABLE   \w+/\w+
+HOSTNAME ([a-z0-9][-a-z0-9]*)(\.[a-z0-9][-a-z0-9]*)*(\.(arpa|com|edu|biz|org|gov|int|info|mil|net|name|museum|coop|aero|[a-z][a-z]))
+IPADDR	(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])){3}
+PATH	(/[-\._[:alnum:]]+){2,}([/]?)
+NUM	[-+]?(0x)?\d+

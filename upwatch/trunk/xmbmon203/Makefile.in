@@ -1,0 +1,140 @@
+#
+# Makefile for xmbmon related things
+#  (for FreeBSD)
+#
+
+# for Linux
+#DEFS=-DHAVE_CONFIG_H -Wall -DLINUX
+# for using SMBus ioctl
+#DEFS=-DHAVE_CONFIG_H -Wall -DSMBUS_IOCTL
+# for using temperature limit (see getMBinfo.c)
+#DEFS=-DHAVE_CONFIG_H -Wall -DTEMP_LIMIT
+
+# for making small_mbmon
+#DEFS=-DHAVE_CONFIG_H -Wall -DSMALL_MBMON
+
+DEFS=-DHAVE_CONFIG_H -Wall @HOSTDEF@
+
+LIBDIR=/usr/X11R6/lib
+INCDIR=.
+XINCDIR=/usr/X11R6/include
+XLIB=-lXaw -lXmu
+EXTENSIONLIB=-lXext
+INCLUDES=-I$(INCDIR)
+XINCLUDES=-I$(XINCDIR)
+SPLIBS=@ADDLIBS@
+LIBS=-L$(LIBDIR) -lXaw $(XLIB) -lXt $(EXTENSIONLIB) -lX11 -lm
+
+#CC=/compat/linux/usr/bin/gcc
+CC=@CC@
+CFLAGS=-O3 $(INCLUDES) $(DEFS)
+CFLAGSX=-O3 $(XINCLUDES) $(DEFS)
+LDFLAGS=-s
+
+LINT=lint
+# LINT=$(CC) -c -Wall -Wshadow -Wpointer-arith
+# also maybe -Wcast-qual -Wwrite-strings
+RM=rm -f
+INSTALL=install
+
+INST_DIR=$(DESTDIR)/usr/local/bin
+INST_XDIR=/usr/X11R6/bin
+INST_XRDIR=/usr/X11R6/lib/X11/app-defaults
+ 
+.c.o:
+	$(CC) -c $(CFLAGS) $*.c
+
+PROGRAM = mbmon xmbmon.a
+
+TESTPROG = testpci testsmb testhwm testfan
+
+MB_OBJ  = getMB-via.o getMB-smb.o getMB-isa.o
+SMB_OBJ = smbuses.o smbus_piix4.o smbus_amd.o smbus_ali.o smbus_amd8.o
+HWM_OBJ = sens_winbond.o sens_via686.o sens_it87.o sens_gl52.o sens_lm85.o sens_lm80.o sens_lm90.o sens_lm75.o sens_wl784.o smb_extemp.o
+OBJS = getMBinfo.o tyan_tiger.o pci_pm.o sensors.o $(MB_OBJ) $(SMB_OBJ) $(HWM_OBJ)
+
+all: $(PROGRAM)
+
+xmbmon.a: $(OBJS)
+	$(AR) -r xmbmon.a *.o
+
+mbmon: mbmon.c mbmon.h methods.h pci_pm.h smbuses.h sensors.h $(OBJS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ mbmon.c $(OBJS) $(SPLIBS)
+
+mbmon_small: mbmon_small.c mbmon.h methods.h pci_pm.h smbuses.h sensors.h $(OBJS)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ mbmon_small.c $(OBJS) $(SPLIBS)
+
+xmbmon: xmbmon.c mbmon.h methods.h pci_pm.h smbuses.h sensors.h $(OBJS)
+	$(CC) $(CFLAGSX) $(LDFLAGS) -o $@ xmbmon.c $(OBJS) $(LIBS) $(SPLIBS)
+
+testprog: $(TESTPROG)
+
+testpci: testpci.c pci_smb.c pci_pm.o pci_pm.h
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ testpci.c pci_pm.o $(SMB_OBJ) $(SPLIBS)
+
+testsmb: testsmb.c pci_smb.c pci_pm.o pci_pm.h smbus_piix4.c smbus_amd.c smbus_ali.c smbus_amd8.c
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ testsmb.c pci_pm.o $(SMB_OBJ) $(SPLIBS)
+
+testhwm: testhwm.c pci_smb.c pci_pm.o pci_pm.h smbus_piix4.c smbus_amd.c smbus_ali.c smbus_amd8.c
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ testhwm.c pci_pm.o $(SMB_OBJ) $(SPLIBS)
+
+testfan: testhwm.c pci_smb.c pci_pm.o pci_pm.h smbus_piix4.c smbus_amd.c smbus_ali.c smbus_amd8.c
+	$(CC) -DFAN_DIV_CHK $(CFLAGS) $(LDFLAGS) -o $@ testhwm.c pci_pm.o $(SMB_OBJ) $(SPLIBS)
+
+
+getMB-isa.o: getMB-isa.c methods.h io_static.c
+
+getMB-smb.o: getMB-smb.c getMB-smb_ioctl.c methods.h smbuses.h io_static.c
+
+getMB-via.o: getMB-via.c methods.h io_static.c
+
+getMBinfo.o: getMBinfo.c methods.h pci_pm.h smbuses.h sensors.h sensors.c
+
+pci_pm.o: pci_pm.c pci_pm.h io_static.c
+
+smbuses.o: smbuses.c smbuses.h
+
+smbus_piix4.o: smbus_piix4.c smbuses.h
+
+smbus_amd.o: smbus_amd.c smbuses.h
+
+smbus_ali.o: smbus_ali.c smbuses.h
+
+smbus_amd8.o: smbus_amd8.c smbuses.h
+
+sensors.o: sensors.c sensors.h
+
+sens_it87.o: sens_it87.c sensors.h sensors.c
+
+sens_gl52.o: sens_gl52.c sensors.h sensors.c
+
+sens_lm85.o: sens_lm85.c sensors.h sensors.c
+
+sens_lm80.o: sens_lm80.c sensors.h sensors.c
+
+sens_via686.o: sens_via686.c sensors.h sensors.c
+
+sens_winbond.o: sens_winbond.c sens_winbond.h sensors.h sensors.c
+
+sens_lm90.o: sens_lm90.c sensors.h sensors.c
+
+sens_lm75.o: sens_lm75.c sensors.h sensors.c
+
+sens_wl784.o: sens_wl784.c sens_wl784.h sensors.h sensors.c
+
+tyan_tiger.o: tyan_tiger.c io_static.c
+
+smb_extemp.o: smb_extemp.c smb_extemp.h
+
+clean:
+	$(RM) *.o *.bak a.out core *.core *~ $(PROGRAM) $(TESTPROG) mbmon_small
+
+distclean: clean
+	$(RM) Makefile config.cache config.log config.h config.status
+
+install: $(PROGRAM)
+	$(INSTALL) -o root -g wheel -m 4555 -c -p mbmon $(INST_DIR)
+	$(INSTALL) -o root -g wheel -m 4555 -c -p xmbmon $(INST_XDIR)
+
+lint:
+	$(LINT) $(INCLUDES) $(DEFS) $(FONTDEFINES) $(SRCS) -lm

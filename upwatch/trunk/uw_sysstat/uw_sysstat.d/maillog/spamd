@@ -1,0 +1,9 @@
+green [LOGDATE] spamd[PID]: connection from [HOSTNAME] \[[IPADDR]\] at port [NUM] 
+green [LOGDATE] spamd[PID]: identified spam \([NUM]\.[NUM]/[NUM]\.[NUM]\) for [USER]:[NUM] in [NUM]\.[NUM] seconds, [NUM] bytes\. 
+green [LOGDATE] spamd[PID]: clean message \([NUM].[NUM]/[NUM].[NUM]\) for [USER]:[NUM] in [NUM].[NUM] seconds, [NUM] bytes.
+green [LOGDATE] spamd[PID]: info: setuid to enter-wi succeeded 
+green [LOGDATE] spamd[PID]: processing message .* for [USER]:[NUM]
+green [LOGDATE] spamd[PID]: server started on port [NUM](/tcp)? \(running version [NUM]\.[NUM]\) 
+green [LOGDATE] spamd[PID]: server killed by SIGTERM, shutting down
+green [LOGDATE] spamd[PID]: info: setuid to [USER] succeeded
+

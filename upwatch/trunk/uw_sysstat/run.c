@@ -15,6 +15,7 @@
 #include <fcntl.h>
 #include <findsaddr.h>
 #include <logregex.h>
+#include "mbmon.h"
 
 char ipaddress[24];
 
@@ -24,7 +25,7 @@ struct _errlogspec {
   long long offset;
 } errlogspec[256];
 
-typedef struct{
+typedef struct {
   cpu_percent_t *cpu;
   mem_stat_t *mem;
   swap_stat_t *swap;
@@ -45,6 +46,23 @@ typedef struct{
    user_stat_t *user;
 } stats_t;
 stats_t st;
+
+typedef struct {
+  float temp1;
+  float temp2;
+  float temp3;
+  float vc0;
+  float vc1;
+  float v33;
+  float v50p;
+  float v12p;
+  float v12n;
+  float v50n;
+  int rot1;
+  int rot2;
+  int rot3;
+} hwstats_t;
+hwstats_t hw;
 
 int get_stats(void)
 {
@@ -72,6 +90,17 @@ int get_stats(void)
   if (!st.cpu) { LOG(LOG_INFO, "could not get_user_stats"); }
 
   return 1;
+}
+
+int get_hwstats(void)
+{
+  getTemp(&hw.temp1, &hw.temp2, &hw.temp3);
+  //printf("Temp.= %4.1f, %4.1f, %4.1f;",hw.temp1, hw.temp2, hw.temp3);
+  getFanSp(&hw.rot1, &hw.rot2, &hw.rot3);
+  //printf(" Rot.= %4d, %4d, %4d\n", hw.rot1, hw.rot2, hw.rot3);
+  getVolt(&hw.vc0, &hw.vc1, &hw.v33, &hw.v50p, &hw.v50n, &hw.v12p, &hw.v12n);
+  //printf(" Vcore = %4.2f, %4.2f; Volt. = %4.2f, %4.2f, %5.2f, %6.2f, %5.2f\n", 
+  //       hw.vc0, hw.vc1, hw.v33, hw.v50p, hw.v12p, hw.v12n, hw.v50n);
 }
 
 #define STATFILE "/var/run/upwatch/uw_sysstat.stat"
@@ -208,6 +237,13 @@ int init(void)
     }
   }
 
+  if ((i = InitMBInfo(' ')) != 0) {
+    LOG(LOG_ERR, "InitMBInfo: %m");
+    if (i < 0) {
+      LOG(LOG_ERR,"This program needs setuid root");
+    }
+  }
+
   // determine ip address for default gateway interface
   setsin(&to, inet_addr("1.1.1.1"));
   msg = findsaddr(&to, &from);
@@ -244,6 +280,31 @@ xmlNodePtr newnode(xmlDocPtr doc, char *name)
   xmlSetProp(node, "color", "200");
   sprintf(buffer, "%ld", OPT_VALUE_INTERVAL);	xmlSetProp(node, "interval", buffer);
   return node;
+}
+
+void add_hwstat(xmlNodePtr node)
+{
+  char buffer[24];
+
+  sprintf(buffer, "%.1f", hw.temp1);    xmlNewChild(node, NULL, "temp1", buffer);
+  sprintf(buffer, "%.1f", hw.temp2);    xmlNewChild(node, NULL, "temp2", buffer);
+  sprintf(buffer, "%.1f", hw.temp3);    xmlNewChild(node, NULL, "temp3", buffer);
+
+  sprintf(buffer, "%d", hw.rot1);       xmlNewChild(node, NULL, "rot1", buffer);
+  sprintf(buffer, "%d", hw.rot2);       xmlNewChild(node, NULL, "rot2", buffer);
+  sprintf(buffer, "%d", hw.rot3);       xmlNewChild(node, NULL, "rot3", buffer);
+
+  sprintf(buffer, "%.2f", hw.vc0);       xmlNewChild(node, NULL, "vc0", buffer);
+  sprintf(buffer, "%.2f", hw.vc1);       xmlNewChild(node, NULL, "vc1", buffer);
+  sprintf(buffer, "%.2f", hw.v33);       xmlNewChild(node, NULL, "v33", buffer);
+  sprintf(buffer, "%.2f", hw.v50p);      xmlNewChild(node, NULL, "v50p", buffer);
+  sprintf(buffer, "%.2f", hw.v50n);      xmlNewChild(node, NULL, "v50n", buffer);
+  sprintf(buffer, "%.2f", hw.v12p);      xmlNewChild(node, NULL, "v12p", buffer);
+  sprintf(buffer, "%.2f", hw.v12n);      xmlNewChild(node, NULL, "v12n", buffer);
+
+  if (hw.temp1 > 60.0 || hw.temp2 > 60.0 || hw.rot1 < 100 || hw.rot2 < 100) {
+    xmlSetProp(node, "color", "500");
+  }
 }
 
 void add_loadavg(xmlNodePtr node)
@@ -486,6 +547,13 @@ extern int forever;
   add_memory(node);
   add_systemp(node);
   add_sysstat_info(node);
+  color = xmlGetPropInt(node, "color");
+  if (color > highest_color) highest_color = color;
+
+  // do the hwstat
+  get_hwstats();
+  node = newnode(doc, "hwstat");
+  add_hwstat(node);
   color = xmlGetPropInt(node, "color");
   if (color > highest_color) highest_color = color;
 

@@ -4,7 +4,7 @@ if SOLARIS
 SOLARISLIBS = -lkstat -ldevinfo
 endif
 
-AM_CFLAGS = -I$(INCL_STATGRAB)
+AM_CFLAGS = -I$(INCL_STATGRAB) -I../xmbmon203
 program = uw_sysstat
 sbin_PROGRAMS = uw_sysstat
 man_MANS = uw_sysstat.1
@@ -13,7 +13,7 @@ init_DATA = $(INITFILES)
 
 uw_sysstat_SOURCES = run.c uw_sysstat.c uw_sysstat.h $(PROBFILES) $(SPECFILES) $(INITFILES)
 uw_sysstat_CFLAGS = @MYSQL_CFLAGS@ @LIBXML2_CFLAGS@ @LIBGLIB2_CFLAGS@ $(AM_CFLAGS) @LIBPCRE_CFLAGS@
-uw_sysstat_LDADD = uw_sysstat_$(MAIN_O) $(LIBOPTS) $(SOLARISLIBS) $(LIBSTATGRAB) $(LIBUPWATCH) @LIBXML2_LIBS@ @LIBGLIB2_LIBS@ @LIBPCRE_LIBS@
+uw_sysstat_LDADD = uw_sysstat_$(MAIN_O) ../xmbmon203/xmbmon.a $(LIBOPTS) $(SOLARISLIBS) $(LIBSTATGRAB) $(LIBUPWATCH) @LIBXML2_LIBS@ @LIBGLIB2_LIBS@ @LIBPCRE_LIBS@
 
 BUILT_SOURCES = $(program:%=%.1) $(program:%=%.h) $(program:%=%.c) $(PROBFILES) $(SPECFILES) $(INITFILES)
 INCLUDES = -I../upwatch 

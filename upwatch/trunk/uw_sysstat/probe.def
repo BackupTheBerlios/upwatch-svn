@@ -172,6 +172,156 @@ probe = {
 };
 
 probe = {
+  name = "hwstat";
+  id = 17;
+  descrip = "Hardware information like CPU temperature, fan speed";
+  addbyhand = "no";
+  class = "";
+  graphgroup = "hwstat";
+  graphtypes = "cpu loadavg memory blockio swap systemp";
+  comment = "";
+  max_rows = 1000000;
+  yellow = "40";
+  red = "50";
+  message = "CPU temperature";
+
+  attribute = {
+    name = "server";
+    required = true;
+    descrip = "id of this server in the database";
+  };
+
+  attribute = {
+    name = "ipaddress";
+    default = "127.0.0.1";
+    descrip = "target ip address";
+  };
+
+  attribute = {
+    name = "date";
+    required = true;
+    descrip = "date/time for this result";
+  };
+
+  attribute = {
+    name = "expires";
+    required = true;
+    descrip = "when this result expires";
+  };
+
+  attribute = {
+    name = "color";
+    required = true;
+    descrip = "color as this probe thinks it should be";
+  };
+
+  attribute = {
+    name = "interval";
+    default = "60";
+    descrip = "time between measurements";
+  };
+
+  attribute = {
+    name = "received";
+    descrip = "date/time this result was received by the upwatch server";
+  };
+
+  /* no extra definition fields */
+
+  result = {
+    name = "temp1";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "First temperature sensor - usually CPU temp";
+  };
+  result = {
+    name = "temp2";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "Second temperature sensor - usually motherboard";
+  };
+  result = {
+    name = "temp3";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "Third temperature sensor - usually enclosure";
+  };
+  result = {
+    name = "rot1";
+    type = "int";
+    null = false;
+    default = "0";
+    descrip = "First fan rotation speed - usually CPU fan";
+  };
+  result = {
+    name = "rot2";
+    type = "int";
+    null = false;
+    default = "0";
+    descrip = "Second fan rotation speed";
+  };
+  result = {
+    name = "rot3";
+    type = "int";
+    null = false;
+    default = "0";
+    descrip = "Third fan rotation speed";
+  };
+  result = {
+    name = "vc0";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "CPU core voltage #1";
+  };
+  result = {
+    name = "vc1";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "CPU core voltage #2";
+  };
+  result = {
+    name = "v33";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "Voltage of 3.3V line";
+  };
+  result = {
+    name = "v50p";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "Voltage of 5V line";
+  };
+  result = {
+    name = "v12p";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "Voltage of 12V line";
+  };
+  result = {
+    name = "v12n";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "Voltage of -12V line";
+  };
+  result = {
+    name = "v50n";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "Voltage of -5V line";
+  };
+};
+
+probe = {
   name = "errlog";
   id = 12;
   descrip = "System error log analysis";

@@ -1,0 +1,7 @@
+green [LOGDATE] (ipop3d|imapd)[PID]: Logout user=.* host=.*
+green [LOGDATE] (ipop3d|imapd)[PID]: Login failure user=.* host=.*
+green [LOGDATE] (ipop3d|imapd)[PID]: port [NUM] service init from .*
+green [LOGDATE] (ipop3d|imapd)[PID]: Login user=[USER] host=.* nmsgs=[NUM]/[NUM]
+green [LOGDATE] (ipop3d|imapd)[PID]: Login user=[USER] host=[HOSTNAME] \[[IPADDR]\] nmsgs=[NUM]/[NUM]
+green [LOGDATE] (ipop3d|imapd)[PID]: (pop3|imap) service init from [IPADDR]
+

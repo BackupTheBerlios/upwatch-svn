@@ -311,6 +311,19 @@ void sysstat_get_from_xml(trx *t);
 void *sysstat_get_def(trx *t, int create);
 void sysstat_adjust_result(trx *t);
 
+/****************************** probe hwstat ************************/
+struct hwstat_result {
+  STANDARD_PROBE_RESULT;
+#include "../uw_sysstat/probe.res_h"
+};
+struct hwstat_def {
+  STANDARD_PROBE_DEF;
+#include "../common/common.h"
+};
+
+void hwstat_get_from_xml(trx *t);
+void *hwstat_get_def(trx *t, int create);
+void hwstat_adjust_result(trx *t);
 
 #endif /* __UW_PROBE_H */
 

@@ -1,0 +1,22 @@
+red Cannot find table [TABLE] from the internal data dictionary
+green [LOGDATE]  InnoDB: Shutdown completed
+green [LOGDATE]  InnoDB: Started
+green [LOGDATE]  InnoDB: Starting shutdown\.\.\.
+green [LOGDATE]  mysqld ended
+green [LOGDATE]  mysqld started
+green [LOGDATE]  Note: Found [NUM] of [NUM] rows when repairing '\./[TABLE]'
+green [LOGDATE]  .*/mysqld: Forcing close of thread [NUM]  user: 'cms'
+green [LOGDATE]  .*/mysqld: Normal shutdown
+green [LOGDATE]  .*/mysqld: Shutdown Complete
+red [NUM]  [NUM]:[NUM]:[NUM]  Fatal error:
+green [NUM]  [NUM]:[NUM]:[NUM]  InnoDB: Data file [PATH] did not exist: new to be created
+green [NUM]  [NUM]:[NUM]:[NUM]  InnoDB error:
+green [NUM]  [NUM]:[NUM]:[NUM]  InnoDB: Log file [PATH] did not exist: new to be created
+green [NUM]  [NUM]:[NUM]:[NUM]  InnoDB: Setting file [PATH] size to [NUM] MB
+green [NUM]  [NUM]:[NUM]:[NUM]  InnoDB: Shutdown completed
+green [NUM]  [NUM]:[NUM]:[NUM]  InnoDB: Started
+green [NUM]  [NUM]:[NUM]:[NUM]  InnoDB: Starting shutdown\.\.\.
+green [NUM]  [NUM]:[NUM]:[NUM]  .*/mysqld: Normal shutdown
+green [NUM]  [NUM]:[NUM]:[NUM]  .*/mysqld: Shutdown Complete
+green .*/mysqld: ready for connections\.
+green Version: '[NUM]\.[NUM]\.[NUM]-standard-log'  socket: '[PATH]'  port: [NUM]

@@ -2,7 +2,7 @@ noinst_LIBRARIES = libupwatch.a libupwatcht.a
 
 sources = pr_process.c slot.c spool.c uwstat.c xml.c util.c setproctitle.c ifaddrlist.c \
  findsaddr-linux.c setsin.c compat.c log.c logregex.c pr_bb.c pr_bb_cpu.c pr_httpget.c \
- pr_ping.c pr_snmpget.c pr_sysstat.c pr_iptraf.c pr_generic.c \
+ pr_ping.c pr_snmpget.c pr_sysstat.c pr_iptraf.c pr_generic.c pr_hwstat.c \
  compat.h db.h generic.h slot.h spool.h uwstat.h xml.h setproctitle.h ifaddrlist.h \
  findsaddr.h gnuc.h logregex.h probe.h
 

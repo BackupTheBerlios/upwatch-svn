@@ -1,0 +1,6 @@
+green [LOGDATE] sendmail[PID]: [MSGID]: ((from=.*|to=.*|size=.*|class=.*|pri=.*|nrcpts=.*|msgid=.*|proto=.*|dsn=.*|delay=.*|xdelay=.*|mailer=.*|relay=.*|stat=.*),\s*)*
+green [LOGDATE] sendmail[PID]: alias database [PATH] (auto)?rebuilt by root
+green [LOGDATE] sendmail[PID]: [PATH]: [NUM] aliases, longest [NUM] bytes, [NUM] bytes total
+green [LOGDATE] sendmail[PID]: restarting on signal /usr/sbin/sendmail
+
+

@@ -1,0 +1,48 @@
+green [LOGDATE] dbclean[PID]: hashed [NUM] records containing [NUM] checksums, compressed [NUM] records
+green [LOGDATE] dbclean[PID]: [NUM] hash entries total, [NUM] or [NUM]% used
+green [LOGDATE] dbclean[PID]: [NUM]\.[NUM]\.[NUM] cleaning dcc_db
+green [LOGDATE] dbclean[PID]: [NUM]\.[NUM]\.[NUM] clearing database dcc_db
+green [LOGDATE] dccifd[PID]: [NUM]\.[NUM]\.[NUM] listening to [PATH]
+green [LOGDATE] dccifd[PID]: [NUM]\.[NUM]\.[NUM] rejected messages to [NUM] targets and discarded messages to [NUM] targets among [NUM] total since [NUM][PATH] [NUM]:[NUM]:[NUM]
+green [LOGDATE] postfix/(cleanup|lmtp|local|master|pickup|pipe|qmgr|smtp|smtpd)[PID]: [MSGID]: ((message-id=.*|resent-message-id=.*|from=.*|size=.*|nrcpt=.*|to=.*|orig_to=.*|relay=.*|delay=.*|status=.*),?\s*)*
+green [LOGDATE] postfix/cleanup[PID]: table has changed -- exiting
+green [LOGDATE] postfix/master[PID]: daemon started -- version [NUM]\.[NUM]\.[NUM]
+green [LOGDATE] postfix/master[PID]: reload configuration
+green [LOGDATE] postfix/master[PID]: terminating on signal [NUM]
+green [LOGDATE] postfix/postfix-script: refreshing the Postfix mail system
+green [LOGDATE] postfix/postfix-script: starting the Postfix mail system
+green [LOGDATE] postfix/postfix-script: stopping the Postfix mail system
+green [LOGDATE] postfix/postfix-script: warning: group or other writable: [PATH]
+green [LOGDATE] postfix/postfix-script: warning: [PATH] and [PATH] differ
+green [LOGDATE] postfix/qmgr[PID]: [MSGID]: skipped, still being delivered
+green [LOGDATE] postfix/rpm: copy [PATH] to [PATH]
+green [LOGDATE] postfix/rpm: triggerpostun -- postfix: final number of Postfix packages=[NUM]
+green [LOGDATE] postfix/rpm: Upgrading Postfix: using RH alternatives
+green [LOGDATE] postfix/smtpd[PID]: connect from [HOSTNAME]\[[IPADDR]\]
+green [LOGDATE] postfix/smtpd[PID]: disconnect from [HOSTNAME]\[[IPADDR]\]
+green [LOGDATE] postfix/smtpd[PID]: lost connection after [WORD] from [HOSTNAME]\[[IPADDR]\]
+green [LOGDATE] postfix/smtpd[PID]: [MSGID]: client=[HOSTNAME]\[[IPADDR]\]
+green [LOGDATE] postfix/smtpd[PID]: [MSGID]: client=unknown\[[IPADDR]\]
+green [LOGDATE] postfix/smtpd[PID]: [MSGID]: reject: RCPT from [HOSTNAME]\[[IPADDR]\]: [NUM] <.*>:
+green [LOGDATE] postfix/smtpd[PID]: [MSGID]: reject: RCPT from unknown\[[IPADDR]\]: [NUM] <.*>:
+green [LOGDATE] postfix/smtpd[PID]: timeout after [WORD] from [HOSTNAME]\[[IPADDR]\]
+green [LOGDATE] postfix/smtpd[PID]: warning: [IPADDR]: address not listed for hostname [HOSTNAME]
+green [LOGDATE] postfix/smtpd[PID]: warning: [IPADDR]: hostname [HOSTNAME] verification failed: Host not found
+green [LOGDATE] postfix/smtpd[PID]: warning: [IPADDR]: hostname localhost verification failed: Host not found
+green [LOGDATE] postfix/smtpd[PID]: warning: reject: ETRN [HOSTNAME]\.\.\. from [HOSTNAME]\[[IPADDR]\]
+green [LOGDATE] postfix/smtpd[PID]: warning: reject: ETRN [HOSTNAME]\.\.\. from unknown\[[IPADDR]\]
+green [LOGDATE] postfix/smtpd[PID]: warning: [HOSTNAME]\[[IPADDR]\] sent 
+green [LOGDATE] postfix/smtpd[PID]: warning: Illegal address syntax from [HOSTNAME]\[[IPADDR]\] in
+green [LOGDATE] postfix/smtpd[PID]: [MSGID]: discard: [WORD] from [HOSTNAME]\[[IPADDR]\]: <.*>:
+green [LOGDATE] postfix/smtpd[PID]: NOQUEUE: reject: [WORD] from [HOSTNAME]\[[IPADDR]\]
+green [LOGDATE] postfix/smtpd[PID]: too many errors after [WORD] from [HOSTNAME]
+green [LOGDATE] postfix/smtp[PID]: connect to [HOSTNAME]\[[IPADDR]\]: 
+green [LOGDATE] postfix/smtp[PID]: [MSGID]: enabling PIX <CRLF>\.<CRLF> workaround for [HOSTNAME]\[[IPADDR]\]
+green [LOGDATE] postfix/smtp[PID]: warning: host [HOSTNAME]\[[IPADDR]\] greeted me with my own hostname [HOSTNAME]
+green [LOGDATE] postfix/smtp[PID]: warning: host [HOSTNAME]\[[IPADDR]\] replied to HELO/EHLO with my own hostname [HOSTNAME]
+red [LOGDATE] postfix/local[PID]: table has changed -- exiting
+red [LOGDATE] postfix/postfix-script: fatal: the Postfix mail system is already running
+red [LOGDATE] postfix/postfix-script: fatal: the Postfix mail system is not running
+red [LOGDATE] postfix/smtpd[PID]: lookup table has changed -- exiting
+red [LOGDATE] postfix/trivial-rewrite[PID]: table has changed -- exiting
+red [LOGDATE] postfix/smtp[PID]: fatal:
