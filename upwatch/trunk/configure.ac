@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.29 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.30 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -22,6 +22,23 @@ unset MFLAGS MAKEFLAGS MAKELEVEL 2>/dev/null
 
 ifdef([AC_LIBTOOL_WIN32_DLL], AC_LIBTOOL_WIN32_DLL)
 AM_WITH_DMALLOC
+
+# ----------------------------------------------------------------------
+# Set some global things based on os type
+# ----------------------------------------------------------------------
+case $host in
+  *-*-linux*) 
+    LINUX=yes
+    AC_SUBST([LINUX])
+    ;;
+  *-*-solaris*)
+    SOLARIS=yes
+    AC_SUBST([SOLARIS])
+    ;;
+  *)
+    HOST="generic"
+    ;;
+esac
 
 # ----------------------------------------------------------------------
 # check for various programs used during the build.

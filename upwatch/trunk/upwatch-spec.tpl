@@ -115,18 +115,6 @@ mkdir -p $RPM_BUILD_ROOT/etc/init.d
 install -m 770 config/upwatch.init $RPM_BUILD_ROOT/usr/lib/upwatch/redhat/upwatch
 install -m 770 config/upwatch.init-suse $RPM_BUILD_ROOT/usr/lib/upwatch/suse/upwatch
 
-#if [ -f /usr/lib/libopts.so ]
-#then
-#  cp /usr/lib/libopts.so $RPM_BUILD_ROOT/usr/lib
-#  cp /usr/lib/libopts.so.9 $RPM_BUILD_ROOT/usr/lib
-#fi
-
-#if [ -f /usr/local/lib/libopts.so ]
-#then
-#  cp /usr/local/lib/libopts.so $RPM_BUILD_ROOT/usr/lib
-#  cp /usr/local/lib/libopts.so.9 $RPM_BUILD_ROOT/usr/lib
-#fi
-
 [+ FOR monitorprog +]# package specific files for [+monitorprog+]
 install -m 770 [+monitorprog+]/[+monitorprog+].init $RPM_BUILD_ROOT/usr/lib/upwatch/redhat/[+monitorprog+]
 install -m 770 [+monitorprog+]/[+monitorprog+].init-suse $RPM_BUILD_ROOT/usr/lib/upwatch/suse/[+monitorprog+]
@@ -164,10 +152,13 @@ install -m 660 [+extraprog+]/[+extraprog+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+
 %endif
 
 # remove files we don't want to package
-for unpackaged in /usr/bin/saidar /usr/bin/statgrab /usr/bin/statgrab-make-mrtg-config /usr/bin/statgrab-make-mrtg-index /usr/include/statgrab.h /usr/lib/libstatgrab.a /usr/lib/libstatgrab.la /usr/lib/libstatgrab.so.1.0.7 /usr/lib/pkgconfig/libstatgrab.pc
+for unpackaged in /usr/bin/statgrab /usr/bin/statgrab-make-mrtg-config /usr/bin/statgrab-make-mrtg-index /usr/include/statgrab.h /usr/lib/libstatgrab.a /usr/lib/libstatgrab.la /usr/lib/libstatgrab.so.1.0.7 /usr/lib/pkgconfig/libstatgrab.pc
 do
   rm -f $RPM_BUILD_ROOT$unpackaged
 done
+
+# rename specific executables
+mv $RPM_BUILD_ROOT/usr/bin/saidar $RPM_BUILD_ROOT/usr/bin/uwsaidar
 
 %clean
 [ "$RPM_BUILD_ROOT" != "/" ] && rm -rf $RPM_BUILD_ROOT
@@ -326,6 +317,7 @@ fi
 %attr(2770,upwatch,upwatch) %dir /var/log/upwatch
 %attr(2770,upwatch,upwatch) %dir /var/run/upwatch
 %attr(2770,upwatch,upwatch) %dir /var/spool/upwatch
+%attr(0755,root,root) /usr/bin/uwsaidar
 %attr(0755,root,root) /usr/bin/ctime
 %attr(0755,root,root) /usr/bin/slot
 /usr/share/man/man1/ctime.1.gz
