@@ -152,12 +152,12 @@ void add_probe(gpointer key, gpointer value, gpointer user_data)
 void run_actual_probes(void)
 {
   GThreadPool *gtpool = NULL;
+  GError *gerror;
 
-  gtpool = g_thread_pool_new(probe, NULL, 10, TRUE, NULL);
+  gtpool = g_thread_pool_new(probe, NULL, 10, TRUE, &gerror);
 
   if (gtpool == NULL) {
-    //printf("%s\n", gerror->message);
-    //LOG(LOG_ERR, gerror->message);
+    LOG(LOG_ERR, gerror->message);
     fprintf(stderr, "could not create threadpool\n");
     return;
   }
