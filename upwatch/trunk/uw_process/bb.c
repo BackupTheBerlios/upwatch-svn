@@ -12,6 +12,7 @@
 struct bb_generic_result {
   STANDARD_PROBE_RESULT;
   gchar *hostname;
+  gchar *message;
 };
 
 static void free_res(void *res)

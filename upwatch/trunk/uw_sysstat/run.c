@@ -155,7 +155,7 @@ int run(void)
     system("top -b -n 1 > /tmp/.uw_sysstat.tmp");
     in = fopen("/tmp/.uw_sysstat.tmp", "r");
     if (in) {
-      char *s;
+      signed char *s;
 
       fread(info, sizeof(info)-1, 1, in); 
       info[sizeof(info)-1] = 0;
@@ -187,7 +187,7 @@ int run(void)
   sprintf(buffer, "%d", (int) now);		xmlSetProp(sysstat, "date", buffer);
   sprintf(buffer, "%d", ((int)now)+(2*60));	xmlSetProp(sysstat, "expires", buffer);
   sprintf(buffer, "%d", color);			subtree = xmlNewChild(sysstat, NULL, "color", buffer);
-  sprintf(buffer, "%.1lf", lavg);		subtree = xmlNewChild(sysstat, NULL, "loadavg", buffer);
+  sprintf(buffer, "%.1f", lavg);		subtree = xmlNewChild(sysstat, NULL, "loadavg", buffer);
   sprintf(buffer, "%u", duse);			subtree = xmlNewChild(sysstat, NULL, "user", buffer);
   sprintf(buffer, "%u", dsys);			subtree = xmlNewChild(sysstat, NULL, "system", buffer);
   sprintf(buffer, "%u", didl);			subtree = xmlNewChild(sysstat, NULL, "idle", buffer);

@@ -1,0 +1,32 @@
+AutoGen Definitions mysql;
+#include ../common/probe.def
+
+probe = {
+  name = "iptraf";
+  id = 4;
+  descrip = "Incoming and outgoing traffic to an IP adddress, network or interface";
+  addbyhand = "yes";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+  yellow = "300";
+  red = "500";
+
+/* no specific definition fields */
+
+  result = {
+    name = "in_total";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "total incoming bytes";
+  };
+  result = {
+    name = "out_total";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "total outgoing bytes";
+  };
+};
+

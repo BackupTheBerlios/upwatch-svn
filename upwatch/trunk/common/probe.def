@@ -1,0 +1,6 @@
+period = "raw";
+period = "day";
+period = "week";
+period = "month";
+period = "year";
+period = "5year";

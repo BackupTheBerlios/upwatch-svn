@@ -11,10 +11,7 @@
 
 struct httpget_result {
   STANDARD_PROBE_RESULT;
-  gfloat lookup;
-  gfloat connect;
-  gfloat pretransfer;
-  gfloat total;
+#include "../uw_httpget/probe.res_h"
 };
 extern module httpget_module;
 

@@ -11,12 +11,8 @@
 
 struct bb_cpu_result {
   STANDARD_PROBE_RESULT;
-  gfloat loadavg;
-  guint user;  // cpu in %
-  guint idle;  // idle time in %
-  guint used;  // memory used
-  guint free;  // memory free
-  gchar *hostname;
+#include "../uw_acceptbb/probe.res_h"
+  char *hostname;
 };
 extern module bb_cpu_module;
 

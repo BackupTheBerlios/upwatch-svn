@@ -18,9 +18,10 @@
 struct hostinfo {
   int 			id;		/* server probe id */
   char 			*name;		/* server name */
+  char 			*ipaddress;	/* server name */
   int			count;		/* amount of packets to send */
-  int			yellowmiss;	/* amount to miss before turning yellow */
-  int			redmiss;	/* amount to miss before turning red */
+  int			yellow;	        /* amount to miss before turning yellow */
+  int			red;	        /* amount to miss before turning red */
   struct sockaddr_in	saddr; 		/* internet address */
   int 			done; 		/* true if done with this host */
   struct timeval	last_send_time;	/* time of last packet sent */
@@ -163,9 +164,10 @@ int run(void)
     sprintf(qry, "SELECT pr_ping_def.id, pr_ping_def.count, pr_ping_def.yellow, " 
                  "       pr_ping_def.red, %s.%s, pr_ping_def.ipaddress as ip, "
                  "       pr_ping_def.freq "
-                 "FROM   pr_ping_def, server "
+                 "FROM   pr_ping_def, %s "
                  "WHERE  pr_ping_def.server = %s.%s ", 
             OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_NAME_FIELD),
+            OPT_ARG(SERVER_TABLE_NAME),
             OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_ID_FIELD));
 
     if (mysql_query(mysql, qry)) {
@@ -188,8 +190,8 @@ int run(void)
       char *ipaddress = row[5];
       int probeid = atoi(row[0]);
       int count = atoi(row[1]);
-      int yellowmiss = atoi(row[2]);
-      int redmiss = atoi(row[3]);
+      int yellow = atoi(row[2]);
+      int red = atoi(row[3]);
       int freq = atoi(row[6]); // every # minutes
 
       if (tm->tm_min % freq != 0) continue;
@@ -199,18 +201,18 @@ int run(void)
       }
       if (count < 1) count = 1;
       if (count > 30) count = 30;
-      if (yellowmiss < 0) yellowmiss = 0;
-      if (yellowmiss > count) yellowmiss = count;
-      if (redmiss < 0) redmiss = 0;
-      if (redmiss > count) redmiss = count;
-      if (redmiss < yellowmiss) redmiss = yellowmiss;
+      if (yellow < 0) yellow = 0;
+      if (yellow > count) yellow = count;
+      if (red < 0) red = 0;
+      if (red > count) red = count;
+      if (red < yellow) red = yellow;
 
       newh[id] = calloc(1, sizeof(struct hostinfo));
       newh[id]->id = probeid;
       newh[id]->name = strdup(name);
       newh[id]->count = count;
-      newh[id]->yellowmiss = yellowmiss;
-      newh[id]->redmiss = redmiss;
+      newh[id]->yellow = yellow;
+      newh[id]->red = red;
       newh[id]->saddr.sin_family = AF_INET;
       newh[id]->saddr.sin_addr = *ipa;
       newh[id]->done = 0;
@@ -266,11 +268,11 @@ int run(void)
     }
 
     missed = hosts[id]->num_sent - hosts[id]->num_recv;
-    if (missed >= hosts[id]->redmiss) {
+    if (missed >= hosts[id]->red) {
       color = STAT_RED;
       cur = red;
       redcount++;
-    } else if (missed >= hosts[id]->yellowmiss) {
+    } else if (missed >= hosts[id]->yellow) {
       color = STAT_YELLOW;
     } else {
       color = STAT_GREEN;

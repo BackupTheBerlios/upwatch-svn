@@ -1,9 +1,13 @@
+probe = sysstat
 program = uw_sysstat
-uw_sysstat_SOURCES = run.c cmd_options.c sysinfo.c sysinfo.h version.c version.h cmd_options.h cmd_options.def $(program).spec-generic \
- $(program).init
-BUILT_SOURCES = cmd_options.h  $(program).spec-generic $(program).init $(program).spec-install
+uw_sysstat_SOURCES = run.c cmd_options.c sysinfo.c sysinfo.h version.c version.h \
+ cmd_options.h probe.def_h probe.res_h $(program).spec-generic $(program).init
+BUILT_SOURCES = cmd_options.h probe.mysql probe.enum probe.def_h probe.res_h \
+ $(program).spec-generic $(program).init $(program).spec-install
 INCLUDES = -I../upwatch 
-EXTRA_DIST = cmd_options.def $(program).mysql
-LDADD = $(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @LIBGLIB2_LIBS@
+EXTRA_DIST = cmd_options.def probe.def probe.enum probe.mysql
+LDADD = $(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @LIBXML2_LIBS@ @MYSQL_LIBS@ \
+  @LIBCURL_LIBS@ @LIBGLIB2_LIBS@
+
 include $(top_srcdir)/Makefile.am.common
 

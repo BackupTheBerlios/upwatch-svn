@@ -1,0 +1,54 @@
+AutoGen Definitions mysql;
+#include ../common/probe.def
+
+probe = {
+  name = "ping";
+  id = 2;
+  descrip = "send ICMP echo requests";
+  addbyhand = "yes";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+  yellow = "3";
+  red = "5";
+
+  def = {
+    name = "count";
+    type = "int";
+    length = 2;
+    unsigned = true;
+    null = false;
+    default = "5";
+    descrip = "Number of ping packets to send";
+  };
+
+  result = {
+    name = "value";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "Average turn-around time";
+  };
+  result = {
+    name = "lowest";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "lowest turn-around time";
+  };
+  result = {
+    name = "highest";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "highest turn-around time";
+  };
+  result = {
+    name = "message";
+    type = "text";
+    null = false;
+    default = "";
+    descrip = "optional error message";
+  };
+};
+

@@ -1,0 +1,134 @@
+AutoGen Definitions mysql;
+#include ../common/probe.def
+
+probe = {
+  name = "sysstat";
+  id = 5;
+  descrip = "System information like load average, CPU/MEM usage etc";
+  addbyhand = "yes";
+  class = "";
+  graphtypes = "cpu loadavg memory blockio swap systemp";
+  comment = "";
+  yellow = "3";
+  red = "5";
+
+  /* no extra definition fields */
+
+  result = {
+    name = "loadavg";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "The load average as reported by the system";
+  };
+  result = {
+    name = "user";
+    type = "tinyint";
+    unsigned;
+    null = false;
+    default = "0";
+    descrip = "CPU user time";
+  };
+  result = {
+    name = "system";
+    type = "tinyint";
+    unsigned;
+    null = false;
+    default = "0";
+    descrip = "CPU system time";
+  };
+  result = {
+    name = "idle";
+    type = "tinyint";
+    unsigned;
+    null = false;
+    default = "0";
+    descrip = "CPU idle time";
+  };
+  result = {
+    name = "systemp";
+    type = "tinyint";
+    null = false;
+    default = "0";
+    descrip = "System temperature in Celsius";
+  };
+  result = {
+    name = "swapin";
+    type = "int";
+    unsigned;
+    null = false;
+    default = "0";
+    descrip = "Amount of blocks swapped in from disk";
+  };
+  result = {
+    name = "swapout";
+    type = "int";
+    unsigned;
+    null = false;
+    default = "0";
+    descrip = "Amount of blocks swapped out to disk";
+  };
+  result = {
+    name = "blockin";
+    type = "int";
+    unsigned;
+    null = false;
+    default = "0";
+    descrip = "Amount of blocks read from block devices";
+  };
+  result = {
+    name = "blockout";
+    type = "int";
+    unsigned;
+    null = false;
+    default = "0";
+    descrip = "Amount of blocks written to block devices";
+  };
+  result = {
+    name = "swapped";
+    type = "int";
+    unsigned;
+    null = false;
+    default = "0";
+    descrip = "Amount of blocks written to swap device";
+  };
+  result = {
+    name = "free";
+    type = "int";
+    unsigned;
+    null = false;
+    default = "0";
+    descrip = "Free memory";
+  };
+  result = {
+    name = "buffered";
+    type = "int";
+    unsigned;
+    null = false;
+    default = "0";
+    descrip = "Amount of memory used for OS buffers";
+  };
+  result = {
+    name = "cached";
+    type = "int";
+    unsigned;
+    null = false;
+    default = "0";
+    descrip = "Amount of memory used for disk buffers";
+  };
+  result = {
+    name = "used";
+    type = "int";
+    unsigned;
+    null = false;
+    default = "0";
+    descrip = "Amount of memory used by processes";
+  };
+  result = {
+    name = "message";
+    type = "text";
+    null = false;
+    default = "";
+    descrip = "list of processes";
+  };
+};

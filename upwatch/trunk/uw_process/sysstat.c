@@ -11,20 +11,7 @@
 
 struct sysstat_result {
   STANDARD_PROBE_RESULT;
-  gfloat loadavg;
-  guint user;
-  guint system;
-  guint idle;
-  guint swapin;
-  guint swapout;
-  guint blockin;
-  guint blockout;
-  guint swapped;
-  guint free;
-  guint buffered;
-  guint cached;
-  guint used;
-  gint  systemp;
+#include "../uw_sysstat/probe.res_h"
 };
 
 extern module sysstat_module;

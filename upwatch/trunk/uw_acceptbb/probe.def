@@ -1,0 +1,385 @@
+AutoGen Definitions mysql;
+#include ../common/probe.def
+
+probe = {
+  name = "bb_bkp";
+  id = 1000;
+  descrip = "Big Brother bkp probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_conn";
+  id = 1001;
+  descrip = "Big Brother conn probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_cont";
+  id = 1002;
+  descrip = "Big Brother cont probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_dig";
+  id = 1003;
+  descrip = "Big Brother dig probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_disk";
+  id = 1004;
+  descrip = "Big Brother disk probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_dns";
+  id = 1005;
+  descrip = "Big Brother dns probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_fping";
+  id = 1006;
+  descrip = "Big Brother fping probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_ftp";
+  id = 1007;
+  descrip = "Big Brother ftp probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_http";
+  id = 1008;
+  descrip = "Big Brother http probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_imap";
+  id = 1009;
+  descrip = "Big Brother imap probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_mrtg";
+  id = 1010;
+  descrip = "Big Brother mrtg probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_msgs";
+  id = 1011;
+  descrip = "Big Brother msgs probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_nm";
+  id = 1012;
+  descrip = "Big Brother nm probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_pop3";
+  id = 1013;
+  descrip = "Big Brother pop3 probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_procs";
+  id = 1014;
+  descrip = "Big Brother procs probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_smtp";
+  id = 1015;
+  descrip = "Big Brother smtp probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_ssh";
+  id = 1016;
+  descrip = "Big Brother ssh probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_swap";
+  id = 1017;
+  descrip = "Big Brother Swap Space probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_telnet";
+  id = 1018;
+  descrip = "Big Brother telnet probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_trap";
+  id = 1019;
+  descrip = "Big Brother SNMP trap probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_tw";
+  id = 1020;
+  descrip = "Big Brother TripWire probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_cpu";
+  id = 1021;
+  descrip = "Big Brother System probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "cpu memory";
+  comment = "";
+  yellow = "3";
+  red = "5";
+
+  result = {
+    name = "loadavg";
+    type = "tinyint";
+    unsigned;
+    null = false;
+    default = "0";
+    descrip = "Load average as computed by upwatch";
+  };
+  result = {
+    name = "user";
+    type = "tinyint";
+    unsigned;
+    null = false;
+    default = "0";
+    descrip = "CPU user time";
+  };
+  result = {
+    name = "system";
+    type = "tinyint";
+    unsigned;
+    null = false;
+    default = "0";
+    descrip = "CPU system time";
+  };
+  result = {
+    name = "idle";
+    type = "tinyint";
+    unsigned;
+    null = false;
+    default = "0";
+    descrip = "CPU idle time";
+  };
+  result = {
+    name = "swapped";
+    type = "int";
+    unsigned;
+    null = false;
+    default = "0";
+    descrip = "Amount of blocks written to swap device";
+  };
+  result = {
+    name = "free";
+    type = "int";
+    unsigned;
+    null = false;
+    default = "0";
+    descrip = "Free memory";
+  };
+  result = {
+    name = "buffered";
+    type = "int";
+    unsigned;
+    null = false;
+    default = "0";
+    descrip = "Amount of memory used for OS buffers";
+  };
+  result = {
+    name = "cached";
+    type = "int";
+    unsigned;
+    null = false;
+    default = "0";
+    descrip = "Amount of memory used for disk buffers";
+  };
+  result = {
+    name = "used";
+    type = "int";
+    unsigned;
+    null = false;
+    default = "0";
+    descrip = "Amount of memory used by processes";
+  };
+  result = {
+    name = "message";
+    type = "text";
+    null = false;
+    default = "";
+    descrip = "list of processes";
+  };
+};
+
+probe = {
+  name = "bb_bgp";
+  id = 1200;
+  descrip = "Big Brother BGP probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_dhcp";
+  id = 1201;
+  descrip = "Big Brother DHCP probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_hylafax";
+  id = 1202;
+  descrip = "Big Brother Hylafax probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_ismtp";
+  id = 1203;
+  descrip = "Big Brother internal SMTP probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_mysql";
+  id = 1204;
+  descrip = "Big Brother MySQL probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_radius";
+  id = 1205;
+  descrip = "Big Brother RADIUS probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_squid";
+  id = 1206;
+  descrip = "Big Brother SQUID probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+
+probe = {
+  name = "bb_svcs";
+  id = 1207;
+  descrip = "Big Brother Services probe";
+  addbyhand = "no";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+};
+

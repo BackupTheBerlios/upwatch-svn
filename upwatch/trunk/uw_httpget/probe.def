@@ -1,0 +1,67 @@
+AutoGen Definitions mysql;
+#include ../common/probe.def
+
+probe = {
+  name = "httpget";
+  id = 3;
+  descrip = "Do a HTTP GET request";
+  addbyhand = "yes";
+  class = "";
+  graphtypes = "default";
+  comment = "";
+  yellow = "3";
+  red = "5";
+
+  def = {
+    name = "hostname";
+    type = "varchar";
+    length = 80;
+    null = false;
+    default = "";
+    descrip = "Hostname for the HTTP request";
+  };
+  def = {
+    name = "uri";
+    type = "varchar";
+    length = 255;
+    null = false;
+    default = "";
+    descrip = "URI part";
+  };
+
+  result = {
+    name = "lookup";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "time needed for DNS lookup";
+  };
+  result = {
+    name = "connect";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "time for connection to complete";
+  };
+  result = {
+    name = "pretransfer";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "time for any pre-transfer actions";
+  };
+  result = {
+    name = "total";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "total time needed";
+  };
+  result = {
+    name = "message";
+    type = "text";
+    null = false;
+    default = "";
+    descrip = "Optional error message";
+  };
+};

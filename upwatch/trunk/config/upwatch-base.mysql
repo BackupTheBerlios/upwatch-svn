@@ -3,18 +3,17 @@
 --
 
 CREATE TABLE probe (
-  id int NOT NULL auto_increment,
+  id int unsigned NOT NULL auto_increment,
   name varchar(24) NOT NULL default '',
   description varchar(128) NOT NULL default '',
+  addbyhand enum('yes','no') NOT NULL default 'yes',
+  class varchar(16) NOT NULL default '',
+  graphtypes varchar(255) NOT NULL default 'default',
   comment text NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (id)
 ) TYPE=MyISAM;
 
-insert into probe set id = 1, name = 'empty';
-insert into probe set id = 2, name = 'ping', description = 'ping - send ICMP echo requests';
-insert into probe set id = 3, name = 'httpget', description = 'httpget - Do a HTTP GET request';
-insert into probe set id = 4, name = 'iptraf', description = 'iptraf - All incoming and outgoing traffic';
-insert into probe set id = 5, name = 'cpuload', description = 'cpuload - User, system and idle time';
+INSERT INTO probe set id = '1', name = 'empty', addbyhand = 'no', comment = 'do NOT delete!';
 
 --
 -- Table structure for table 'pr_hist'
@@ -23,19 +22,18 @@ insert into probe set id = 5, name = 'cpuload', description = 'cpuload - User, s
 CREATE TABLE pr_hist (
   id int unsigned NOT NULL auto_increment,
   server int unsigned NOT NULL default '1',
-  class smallint unsigned NOT NULL default '0',
-  probe int unsigned NOT NULL default '0',
+  class smallint unsigned NOT NULL default '1',
+  probe int unsigned NOT NULL default '1',
   stattime int unsigned NOT NULL default '0',
-  prv_color smallint unsigned NOT NULL default '0',
-  prv_raw bigint unsigned NOT NULL default '0',
-  color smallint unsigned NOT NULL default '0',
-  raw bigint unsigned NOT NULL default '0',
-  message text NOT NULL,
+  prv_color smallint unsigned NOT NULL default '200',
+  color smallint unsigned NOT NULL default '200',
+  message text NOT NULL default '',
   PRIMARY KEY  (id),
   UNIQUE KEY probtime (probe,stattime),
-  KEY probe (probe),
   KEY stattime (stattime)
 ) TYPE=MyISAM;
+
+INSERT INTO notify set id = '1', message = 'do NOT delete!';
 
 --
 -- Table structure for table 'pr_status'
@@ -43,10 +41,16 @@ CREATE TABLE pr_hist (
 
 CREATE TABLE pr_status (
   id int unsigned NOT NULL auto_increment,
-  class int unsigned NOT NULL default '0',
-  probe int unsigned NOT NULL default '0',
-  server int unsigned NOT NULL default '0',
-  color smallint unsigned NOT NULL default '0',
+  class int unsigned NOT NULL default '1',
+  probe int unsigned NOT NULL default '1',
+  server int unsigned NOT NULL default '1',
+  yellow float NOT NULL default '0',
+  red float NOT NULL default '0',
+  newest int unsigned NOT NULL default '0',
+  stattime int unsigned NOT NULL default '0',
+  expires int unsigned NOT NULL default '0',
+  color smallint unsigned NOT NULL default '200',
+  message text NOT NULL,
   PRIMARY KEY  (id),
   UNIQUE KEY uprobe (class,probe),
   KEY class (class),
@@ -54,18 +58,22 @@ CREATE TABLE pr_status (
   KEY server (server)
 ) TYPE=MyISAM;
 
+INSERT INTO pr_status set id = '1', message = 'do NOT delete!';
+
 --
 -- Table structure for table 'server'
 --
 
 CREATE TABLE server (
-  id int(11) NOT NULL auto_increment,
+  id int unsigned NOT NULL auto_increment,
   name varchar(128) NOT NULL default '',
   os varchar(32) NOT NULL default '',
   comment text NOT NULL,
-  color smallint(5) unsigned NOT NULL default '0',
+  color smallint unsigned NOT NULL default '0',
   PRIMARY KEY  (id)
 ) TYPE=MyISAM;
+
+INSERT INTO server set id = '1', name = 'empty', comment = 'do NOT delete!';
 
 --
 -- Table structure for table 'notify'

@@ -9,14 +9,14 @@
 # Created:         Sun August 18, 2002
 #            by: bkorb
 # ----------------------------------------------------------------------
-# @(#) $Id: bootstrap.local,v 1.1 2002/12/19 12:41:09 raarts Exp $
+# @(#) $Id: bootstrap.local,v 1.2 2002/12/27 09:46:08 raarts Exp $
 # ----------------------------------------------------------------------
 
 case "${BOOTSTRAP}" in
 pre  )
   set -e ; set -x
   rm -rf libopts libopts-*
-  gunzip -c `autoopts-config libsrc` | tar -xvf -
+  gunzip -fc `autoopts-config libsrc` | tar -xvf -
   tag=`set -- libopts-*.*.*/libopts.m4 ; echo $1 | sed 's,/.*,,'`
   cp -f ${tag}/libopts.m4 cfg/. || exit 1
 

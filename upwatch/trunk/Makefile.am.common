@@ -16,7 +16,18 @@ db.o: ../common/db.c cmd_options.def ../common/generic_options.def
 
 cmd_options.h: cmd_options.def ../common/generic_options.def 
 	autogen -b cmd_options -L /usr/share/autogen cmd_options.def
+
+probe.def_h: probe.def ../common/probe.tpl 
+	autogen -b probe  -T ../common/probe.tpl probe.def
+
+probe.res_h: probe.def ../common/probe.tpl 
+	autogen -b probe  -T ../common/probe.tpl probe.def
+
+$(program).1: cmd_options.def ../common/man1.tpl
 	autogen -b $(program) -L /usr/share/autogen -T ../common/man1.tpl cmd_options.def
+
+probe.mysql: probe.def ../common/probe.def ../common/probe.tpl
+	autogen -b probe -T ../common/probe.tpl probe.def
 
 $(program).init: cmd_options.def ../common/generic_options.def
 	autogen -b $(program) -T ../common/init.tpl cmd_options.def
@@ -28,5 +39,6 @@ $(program).spec-generic: cmd_options.def ../common/generic_options.def ../common
 	autogen -b $(program) -T ../common/spec.tpl cmd_options.def
 
 CLEANFILES = cmd_options.c cmd_options.h *.1 $(program).spec-generic \
-  $(program).spec-install $(program).init $(program).spec Makefile.in 
+  $(program).spec-install $(program).init $(program).spec Makefile.in \
+  probe.def_h probe.res_h probe.enum probe.mysql
 

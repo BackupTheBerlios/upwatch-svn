@@ -1,8 +1,8 @@
 [+ AutoGen5 template spec-generic spec-install +]
-
 [+ CASE (suffix) +][+
-   == spec-generic +]
-[= AutoGen5 template spec =]
+   == spec-generic 
++][= AutoGen5 template spec =]
+[+(dne "# ")+]
 %package [+prog-name+]
 Summary: UpWatch - [+prog-title+]
 Group: Application/Monitoring
@@ -28,8 +28,9 @@ spec-files +]
 %preun [+prog-name+]
 /sbin/chkconfig --del [+prog-name+] 2>/dev/null || true
 
-[+ == spec-install +] 
-[= AutoGen5 template spec =]
+[+ == spec-install 
++][= AutoGen5 template spec =]
+[+(dne "# ")+]
 [+ FOR spec-install +][+ 
 spec-install +]
 [+ ENDFOR +][+ 

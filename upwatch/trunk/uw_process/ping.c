@@ -11,9 +11,7 @@
 
 struct ping_result {
   STANDARD_PROBE_RESULT;
-  gfloat lowest;
-  gfloat value;
-  gfloat highest;
+#include "../uw_ping/probe.res_h"
   gchar *hostname;
   gchar *ipaddress;
 };

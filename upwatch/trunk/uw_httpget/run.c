@@ -7,21 +7,16 @@
 #include "cmd_options.h"
 
 struct hostinfo {
-  int                   id;             /* server probe id */
-  char                  *name;          /* server name */
-  char                  *host;          /* Host header name */
-  char                  *uri;           /* URI */
-  double                yellowtime;     /* if lower then this value: green */
-  double                redtime;        /* if higher then this value: red */
-  int                   ret;            /* return value */
-  double                total_time;     /* total retrieval time (sec) */
-  double                namelookup_time;/* time in sec for DNS lookup  */
-  double                connect_time;   /* time for connect (sec) */
-  double                pretransfer_time;/* time to first byte (sec) */
-  char                  msg[CURL_ERROR_SIZE]; /* last error message */
-  char                  *info;           /* HTTP GET result */
-  size_t                info_curlen;     /* HTTP GET result length */
-  size_t                info_maxlen;     /* HTTP GET result length */
+  int		id;             /* server probe id */
+  char		*name;          /* server name */
+#include "probe.def_h"
+#include "../common/common.h"
+#include "probe.res_h"
+  int		ret;            /* return value */
+  char		msg[CURL_ERROR_SIZE]; /* last error message */
+  char		*info;           /* HTTP GET result */
+  size_t	info_curlen;     /* HTTP GET result length */
+  size_t	info_maxlen;     /* HTTP GET result length */
 } hostinfo;
 
 static struct hostinfo **hosts;
@@ -74,10 +69,10 @@ int run_actual_probes(int count);
         newh[id]->id = atol(row[0]);
         newh[id]->name = strdup(row[1]);
         if (debug > 2) LOG(LOG_DEBUG, "read %s", newh[id]->name);
-        newh[id]->host = strdup(row[2]);
+        newh[id]->hostname = strdup(row[2]);
         newh[id]->uri = strdup(row[3]);
-        newh[id]->yellowtime  = atof(row[4]);
-        newh[id]->redtime = atof(row[5]);
+        newh[id]->yellow  = atof(row[4]);
+        newh[id]->red = atof(row[5]);
         newh[id]->info = NULL;
         newh[id]->info_curlen = 0;
         newh[id]->info_maxlen = 0;
@@ -91,7 +86,7 @@ int run_actual_probes(int count);
         for (id=0; hosts[id]; id++) {
           printf("%s\n", hosts[id]->name);
           free(hosts[id]->name);
-          free(hosts[id]->host);
+          free(hosts[id]->hostname);
           free(hosts[id]->uri);
           free(hosts[id]);
           if (hosts[id]->info) free(hosts[id]->info);
@@ -132,9 +127,9 @@ int run_actual_probes(int count);
       investigate = 1;
       redcount++;
     } else {
-      if (hosts[id]->total_time < hosts[id]->yellowtime) {
+      if (hosts[id]->total < hosts[id]->yellow) {
         color = STAT_GREEN;
-      } else if (hosts[id]->total_time > hosts[id]->redtime) {
+      } else if (hosts[id]->total > hosts[id]->red) {
         color = STAT_RED;
         cur = red;
         redcount++;
@@ -155,13 +150,13 @@ int run_actual_probes(int count);
     //sprintf(buffer, "%s", inet_ntoa(hosts[id]->saddr.sin_addr));
     //  subtree = xmlNewChild(host, NULL, "ipaddress", buffer);
     sprintf(buffer, "%d", color);               subtree = xmlNewChild(httpget, NULL, "color", buffer);
-    sprintf(buffer, "%.3f", hosts[id]->namelookup_time); subtree = xmlNewChild(httpget, NULL, "lookup", buffer);
-    sprintf(buffer, "%.3f", hosts[id]->connect_time);    subtree = xmlNewChild(httpget, NULL, "connect", buffer);
-    sprintf(buffer, "%.3f", hosts[id]->pretransfer_time); subtree = xmlNewChild(httpget, NULL, "pretransfer", buffer);
-    sprintf(buffer, "%.3f", hosts[id]->total_time); subtree = xmlNewChild(httpget, NULL, "total", buffer);
+    sprintf(buffer, "%.3f", hosts[id]->lookup); subtree = xmlNewChild(httpget, NULL, "lookup", buffer);
+    sprintf(buffer, "%.3f", hosts[id]->connect);    subtree = xmlNewChild(httpget, NULL, "connect", buffer);
+    sprintf(buffer, "%.3f", hosts[id]->pretransfer); subtree = xmlNewChild(httpget, NULL, "pretransfer", buffer);
+    sprintf(buffer, "%.3f", hosts[id]->total); subtree = xmlNewChild(httpget, NULL, "total", buffer);
     if (hosts[id]->info) {
       // remove non-ASCII characters as the xml library chokes on some
-      char *s;
+      signed char *s;
 
       for (s = hosts[id]->info; *s; s++) {
         if (*s < 0) *s = ' ';
@@ -228,7 +223,7 @@ void probe(gpointer data, gpointer user_data)
   char buffer[BUFSIZ];
 
   if (!host) return;
-  sprintf(buffer, "http://%s%s", host->host, host->uri);
+  sprintf(buffer, "http://%s%s", host->hostname, host->uri);
   curl = curl_easy_init();
 
   curl_easy_setopt(curl, CURLOPT_FILE, host);
@@ -242,24 +237,24 @@ void probe(gpointer data, gpointer user_data)
 
   // Pass a pointer to a double to receive the total transaction time in seconds for the
   // previous transfer.
-  curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &host->total_time);
-  host->total_time *= 1000.0; // convert to millesecs
+  curl_easy_getinfo(curl, CURLINFO_TOTAL_TIME, &host->total);
+  host->total *= 1000.0; // convert to millesecs
 
   // Pass a pointer to a double to receive the time, in seconds, it took from the start
   //until the name resolving was completed.
-  curl_easy_getinfo(curl, CURLINFO_NAMELOOKUP_TIME, &host->namelookup_time);
-  host->namelookup_time *= 1000.0; // convert to millesecs
+  curl_easy_getinfo(curl, CURLINFO_NAMELOOKUP_TIME, &host->lookup);
+  host->lookup *= 1000.0; // convert to millesecs
 
   // Pass a pointer to a double to receive the time, in seconds, it took from the start
   // until the connect to the remote host (or proxy) was completed.
-  curl_easy_getinfo(curl, CURLINFO_CONNECT_TIME, &host->connect_time);
-  host->connect_time *= 1000.0; // convert to millesecs
+  curl_easy_getinfo(curl, CURLINFO_CONNECT_TIME, &host->connect);
+  host->connect *= 1000.0; // convert to millesecs
 
   // Pass a pointer to a double to receive the time, in seconds, it  took from the start
   // until the file transfer is just about to begin. This includes all pre-transfer com­
   // mands and negotiations that are specific to the particular protocol(s) involved.
-  curl_easy_getinfo(curl, CURLINFO_PRETRANSFER_TIME, &host->pretransfer_time);
-  host->pretransfer_time *= 1000.0; // convert to millesecs
+  curl_easy_getinfo(curl, CURLINFO_PRETRANSFER_TIME, &host->pretransfer);
+  host->pretransfer *= 1000.0; // convert to millesecs
 
   if (host->info) host->info[512] = 0; // limit amount of data
 

@@ -1,29 +1,37 @@
 #ifndef __UW_PROCESS_H
 #define __UW_PROCESS_H
 
+/* list of probes */
+typedef enum
+{
+PROBE_EMPTY = 1,
+#include "../probes.enum"
+} probeidx;
+
+
 #define STANDARD_PROBE_RESULT   \
   guint color; \
   guint stattime; \
   guint probeid; \
   guint server; \
-  guint expires; \
-  char *message;
+  guint expires; 
 
 struct probe_result {
   STANDARD_PROBE_RESULT;
+  char *message;
+#include "../common/common.h"
 };
 
 #define STANDARD_PROBE_DEF   \
   guint stamp; \
   guint server; \
   guint probeid; \
-  gint  yellow; \
-  gint  red; \
   guint color; \
   guint newest; \
 
 struct probe_def{
   STANDARD_PROBE_DEF;
+#include "../common/common.h"
 };
 
 typedef struct _module {

@@ -1,22 +1,27 @@
-PROGNAMES = uw_send uw_accept uw_process uw_notify uw_acceptbb uw_investigate \
- uw_httpget uw_ping uw_iptraf uw_sysstat
+PROGNAMES = uw_send uw_accept uw_notify uw_investigate \
+ uw_httpget uw_ping uw_iptraf uw_sysstat uw_acceptbb
+
+# NOTE: uw_process must be the last in the list of PROGNAMES
+export PROGNAMES += uw_process
 
 SUBDIRS = upwatch ${PROGNAMES} util doc
 
-EXTRA_DIST = Makefile.am.common upwatch-spec.def upwatch-spec.tpl upwatch.spec upwatch.mysql templates \
+EXTRA_DIST = Makefile.am.common upwatch-spec.def upwatch-spec.tpl upwatch.spec templates \
   config/upwatch.conf config/upwatch-base.mysql config/result.dtd config/logrotate config/cron.daily \
   config/upwatch.init patches/libpcap-linux-timeout.patch \
   common/db.c common/generic_options.def common/init.tpl common/main.c common/man1.tpl common/spec.tpl \
+  common/probe.tpl common/probe.def common/common.h \
   doc/upwatch.xml doc/Makefile doc/upwatch.xsl doc/jadetex.cfg doc/style.dsl doc/style.xsl doc/style.css \
-  compat/bb/*.mysql Makefile.am.libs VERSION common/minimal_options.def
-
-BUILT_SOURCES = upwatch.mysql 
+  upwatch.mysql probes.enum Makefile.am.libs VERSION common/minimal_options.def \
+  cfg/install-sh cfg/config.sub libtool cfg/mkinstalldirs
 
 upwatch.spec: upwatch-spec.def upwatch-spec.tpl uw_*/*.spec-generic uw_*/*.spec-install
 	autogen -b upwatch upwatch-spec.def
 
-upwatch.mysql: config/upwatch-base.mysql uw_*/uw_*.mysql compat/bb/*.mysql
+upwatch.mysql: config/upwatch-base.mysql uw_*/probe.mysql
 	cat $+ > upwatch.mysql
+
+CLEANFILES = upwatch.mysql upwatch.spec
 
 rpm: dist
 	rpmbuild -ta upwatch-${VERSION}.tar.gz

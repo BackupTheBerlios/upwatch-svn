@@ -16,14 +16,14 @@ struct iptraf_result {
   STANDARD_PROBE_RESULT;
   gchar ip[16];
   struct in_addr ipaddr;
-  guint in;
-  guint out;
+#include "../uw_iptraf/probe.res_h"
 };
 
 struct iptraf_def {
   STANDARD_PROBE_DEF;
-  guint slotday_in_total;   // in-memory counters for the current slot in the 
-  guint slotday_out_total;  // pr_iptraf_day table. To speed things up a bit.
+#include "../common/common.h"
+  float slotday_in_total;   // in-memory counters for the current slot in the 
+  float slotday_out_total;  // pr_iptraf_day table. To speed things up a bit.
   guint slotday_max_color;  // same with color
   gint  slotday_avg_yellow; // 
   gint  slotday_avg_red;    // 
@@ -57,10 +57,10 @@ static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr
   for (cur = cur->xmlChildrenNode; cur != NULL; cur = cur->next) {
     if (xmlIsBlankNode(cur)) continue;
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "in")) && (cur->ns == ns)) {
-      res->in = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
+      res->in_total = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
     }
     if ((!xmlStrcmp(cur->name, (const xmlChar *) "out")) && (cur->ns == ns)) {
-      res->out = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
+      res->out_total = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
     }
   }
 
@@ -153,7 +153,7 @@ static void *get_def(module *probe, void *probe_res)
     g_hash_table_insert(probe->cache, guintdup(*(unsigned *)&res->ipaddr), def);
   }
   if (res->color == 0) { // no color given in the result?
-    guint total = res->in + res->out;
+    float total = res->in_total + res->out_total;
     res->color = 200;
     if ((total*8)/60 > (def->yellow*1024)) {
       res->color = STAT_YELLOW;
@@ -175,17 +175,17 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
   struct iptraf_def *def = (struct iptraf_def *)probe_def;
   int already_there = TRUE;
     
-  def->slotday_in_total += res->in;
-  def->slotday_out_total += res->out;
+  def->slotday_in_total += res->in_total;
+  def->slotday_out_total += res->out_total;
   if (res->color > def->slotday_max_color) {
     def->slotday_max_color = res->color;
   }
 
   result = my_query("insert into pr_iptraf_raw "
                     "set    probe = '%u', yellow = '%d', red = '%d', stattime = '%u', color = '%u', "
-                    "       in_total = '%u', out_total = '%u'",
+                    "       in_total = '%f', out_total = '%f'",
                     def->probeid, def->yellow, def->red, res->stattime, res->color, 
-                    res->in, res->out);
+                    res->in_total, res->out_total);
   mysql_free_result(result);
   if (mysql_affected_rows(mysql) > 0) { // something was actually inserted
     already_there = FALSE;

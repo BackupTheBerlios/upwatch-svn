@@ -2,7 +2,7 @@ AutoGen Definitions upwatch-spec;
 
 version = `cat VERSION`;
 #shell 
-for i in uw_*
+for i in $PROGNAMES
 do
 	echo "program = \""$i"\";"
 done

@@ -5,8 +5,6 @@ XMLSOURCE = upwatch.xml addingaprobe.xml administration.xml configuration.xml \
   howitallworks.xml installation.xml interfaces.xml iptraf-specs.xml ping-specs.xml \
   probesspecs.xml upwatch.xml
 
-EXTRA_DIST = ${XMLSOURCE}
-
 upwatch.html: ${XMLSOURCE}
 	xmllint --valid --noout upwatch.xml
 	xsltproc --nonet -o upwatch.html upwatch.xsl upwatch.xml
