@@ -57,6 +57,11 @@ install-data-local:
 	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/q_failed ;\
 	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/q_failed/new ;\
 	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/q_failed/tmp ;\
+	  for i in `cat ../probes.enum | sed -e 's:PROBE_::g' | cut -f1 -d=`; do ; \
+	    ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/q_$$i ;\
+	    ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/q_$$i/new ;\
+	    ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/q_$$i/tmp ;\
+	  done ; \
 	else \
 	  mkdir -p ${DESTDIR}${spooldir}/uw_process ;\
 	  mkdir -p ${DESTDIR}${spooldir}/uw_process/new ;\
@@ -64,6 +69,11 @@ install-data-local:
 	  mkdir -p ${DESTDIR}${spooldir}/q_failed ;\
 	  mkdir -p ${DESTDIR}${spooldir}/q_failed/new ;\
 	  mkdir -p ${DESTDIR}${spooldir}/q_failed/tmp ;\
+	  for i in `cat ../probes.enum | sed -e 's:PROBE_::g' | cut -f1 -d=`; do ; \
+	    mkdir -p ${DESTDIR}${spooldir}/q_$$i ;\
+	    mkdir -p ${DESTDIR}${spooldir}/q_$$i/new ;\
+	    mkdir -p ${DESTDIR}${spooldir}/q_$$i/tmp ;\
+	  done ; \
 	fi
 
 CLEANFILES += ../probes.enum

@@ -132,7 +132,8 @@
            $ mysql -u root --password=PASSWORD netland &lt; upwatch-full.mysql
         </literallayout>
         <para>Of course you need to assign users and GRANT them access. We start with 
-           the probes. Mosts probes need read access to their definition table. 
+           the probes. We assume the probes are running on a separate host with ip address 192.168.1.23.
+           Mosts probes need read access to their definition table. 
            In many situations you can use just one user for that. Give that user access with:
         </para>
         <literallayout>
@@ -140,10 +141,46 @@
            mysql> GRANT SELECT ON upwatch.% TO probe@'192.168.1.23' IDENTIFIED BY 'PASSWD'
         </literallayout>
         <para>Do this for every host that runs probes.</para>
-        <para>Next user is for the background processing and the php access:</para>
+        <para>Next user is for the background processing (user upwatch) and the php access (user uwww):</para>
         <literallayout>
            $ mysql -u root --PASSWORD=PASSWORD mysql
            mysql> GRANT SELECT, INSERT, UPDATE, DELETE ON `netland`.* TO 'upwatch'@'localhost' IDENTIFIED BY 'PASSWD'
+           mysql> GRANT SELECT, INSERT, UPDATE, DELETE ON `upwatch`.* TO 'upwatch'@'localhost' IDENTIFIED BY 'PASSWD'
+           mysql> GRANT SELECT, INSERT, UPDATE, DELETE, PROCESS ON `netland`.* TO 'uwww'@'localhost' IDENTIFIED BY 'PASSWD'
+        </literallayout>
+        <para>Now enter the database connection info in /etc/upwatch.conf. This is for example that file on the 
+        host that runs uw_process:</para>
+        <literallayout>
+          # Upwatch configuration file
+          # contains defaults for all modules
+          # these can be overridden in /etc/upwatch.d/<module>.conf
+          #
+
+          # group we belong to
+          groupid 2
+          
+          # debug mode
+          debug 2
+
+          # log to syslog
+          syslog no
+
+          # log errors to stderr
+          stderr no
+
+          # log to logfile
+          logfile /var/log/upwatch/messages
+
+          # spooldirectory
+          spooldir /var/spool/upwatch
+
+          # connect to database
+          dbtype mysql
+          dbhost localhost
+          dbport 3306
+          dbname dymos
+          dbuser upwatch
+          dbpasswd PASSWORD
         </literallayout>
     </sect1>
 </chapter>

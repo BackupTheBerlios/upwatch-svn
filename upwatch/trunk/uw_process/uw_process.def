@@ -22,6 +22,14 @@ spec-files = `echo "%attr(0770,root,upwatch) %dir " $spooldir/uw_process/tmp`;
 spec-files = `echo "%attr(0770,root,upwatch) %dir " $spooldir/q_failed`;
 spec-files = `echo "%attr(0770,root,upwatch) %dir " $spooldir/q_failed/new`;
 spec-files = `echo "%attr(0770,root,upwatch) %dir " $spooldir/q_failed/tmp`;
+#shell
+for i in `cat ../probes.enum | sed -e 's:PROBE_::g' | cut -f1 -d=`
+do
+  echo spec-files = "\"%attr(0770,root,upwatch) %dir $spooldir/q_$i\";";
+  echo spec-files = "\"%attr(0770,root,upwatch) %dir $spooldir/q_$i/new\";";
+  echo spec-files = "\"%attr(0770,root,upwatch) %dir $spooldir/q_$i/tmp\";";
+done
+#endshell
 
 // describe commandline flags
 flag = {

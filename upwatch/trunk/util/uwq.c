@@ -23,6 +23,22 @@ int main (int argc, char *argv[])
     only = *argv;
   }
 
+  if (strcmp(only, "create") == 0) {
+    char buffer[PATH_MAX];
+
+    if (*++argv == NULL) {
+      fprintf(stderr, "missing queuename\n");
+      exit(1);
+    }
+    sprintf(buffer, "%s/%s", OPT_ARG(SPOOLDIR), *argv);
+    if (mkdir(buffer, 0770)) { perror(buffer); exit(1); }
+    sprintf(buffer, "%s/%s/new", OPT_ARG(SPOOLDIR), *argv);
+    if (mkdir(buffer, 0770)) { perror(buffer); exit(1); }
+    sprintf(buffer, "%s/%s/tmp", OPT_ARG(SPOOLDIR), *argv);
+    if (mkdir(buffer, 0770)) { perror(buffer); exit(1); }
+    exit(0);
+  }
+
   printf("%s:\n", OPT_ARG(SPOOLDIR));
   printf("%-15s | entries | %-35s | %-35s\n", " ", "oldest", "newest");
 
