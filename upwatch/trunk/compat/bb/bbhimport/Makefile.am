@@ -1,7 +1,7 @@
 program = bbhimport
 bin_PROGRAMS = bbhimport
 man_MANS = $(program).1
-bbhimport_SOURCES = run.c cmd_options.c cmd_options.h bbhimport.h
+bbhimport_SOURCES = run.c cmd_options.h cmd_options.c bbhimport.h
 bbhimport_CFLAGS = @MYSQL_CFLAGS@ @LIBXML2_CFLAGS@ @LIBGLIB2_CFLAGS@
 BUILT_SOURCES = cmd_options.h cmd_options.c
 INCLUDES = -I$(top_srcdir)/upwatch 

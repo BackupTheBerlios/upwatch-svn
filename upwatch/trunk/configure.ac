@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.41 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.42 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -447,47 +447,25 @@ then
   if test $HAVE_LIBPCAP -eq 0
   then
     echo "* libpcap not found, uw_iptraf will not be built"
-  else
-    AC_CONFIG_FILES([uw_iptraf/Makefile])
   fi
 fi
 
 if test "$enable_monitors" = "yes"
 then
-  AC_CONFIG_FILES([uw_httpget/Makefile])
-  AC_CONFIG_FILES([uw_ping/Makefile])
-  AC_CONFIG_FILES([uw_mysql/Makefile])
-  AC_CONFIG_FILES([uw_pop3/Makefile])
-  AC_CONFIG_FILES([uw_imap/Makefile])
   if test $HAVE_LIBSNMP -eq 0
   then
     echo "* snmp libs not found, no SNMP support"
-  else
-    AC_CONFIG_FILES([uw_snmpget/Makefile])
   fi
 
   if test $HAVE_LIBTDS -eq 0
   then
     echo "* TDS lib not found, no MS-SQL support"
-  else
-    AC_CONFIG_FILES([uw_mssql/Makefile])
   fi
 
   if test $HAVE_LIBPQ -eq 0
   then
     echo "* PostgreSQL not found, no PostgreSQL support"
-  else
-    AC_CONFIG_FILES([uw_postgresql/Makefile])
   fi
-fi
-
-if test "$enable_server" = "yes"
-then
-  AC_CONFIG_FILES([uw_setip/Makefile])
-  AC_CONFIG_FILES([uw_accept/Makefile])
-  AC_CONFIG_FILES([uw_acceptbb/Makefile])
-  AC_CONFIG_FILES([uw_process/Makefile])
-  AC_CONFIG_FILES([uw_notify/Makefile])
 fi
 
 echo "*********************************************************"
@@ -507,6 +485,21 @@ AC_CONFIG_FILES([compat/bb/Makefile])
 AC_CONFIG_FILES([compat/bb/bbhimport/Makefile])
 AC_CONFIG_FILES([compat/sometests/Makefile])
 AC_CONFIG_FILES([compat/sometests/setproctitle/Makefile])
+
+  AC_CONFIG_FILES([uw_setip/Makefile])
+  AC_CONFIG_FILES([uw_accept/Makefile])
+  AC_CONFIG_FILES([uw_acceptbb/Makefile])
+  AC_CONFIG_FILES([uw_process/Makefile])
+  AC_CONFIG_FILES([uw_notify/Makefile])
+  AC_CONFIG_FILES([uw_httpget/Makefile])
+  AC_CONFIG_FILES([uw_ping/Makefile])
+  AC_CONFIG_FILES([uw_mysql/Makefile])
+  AC_CONFIG_FILES([uw_pop3/Makefile])
+  AC_CONFIG_FILES([uw_imap/Makefile])
+    AC_CONFIG_FILES([uw_iptraf/Makefile])
+    AC_CONFIG_FILES([uw_snmpget/Makefile])
+    AC_CONFIG_FILES([uw_mssql/Makefile])
+    AC_CONFIG_FILES([uw_postgresql/Makefile])
 
 cp patches/libstatgrab-configure.gnu libstatgrab/configure.gnu
 AC_CONFIG_SUBDIRS(libstatgrab)
