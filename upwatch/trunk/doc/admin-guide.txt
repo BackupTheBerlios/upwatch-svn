@@ -3,7 +3,7 @@ Upwatch Administration Guide
 
 Ron Arts
 
-   Copyright © 2002-2004 UpWatch BV, The Netherlands
+   Copyright © 2002-2005 NeoNova BV, The Netherlands
      _________________________________________________________________
 
    Table of Contents
@@ -126,12 +126,7 @@ Chapter 2. Installation
 
 2.1. Getting upwatch
 
-   Currently, the UpWatch server and monitoring software are not released, and
-   are  not allowed to be distributed. The only way to get it, is through
-   written permission of UpWatch BV.
-
-   If you aquired that, you will either receive access to CVS, or will receive
-   a tar.gz file, or .RPM's.
+   The Upwatch software is released under the GPL on 26 Jan 2005.
 
    Building and installing upwatch is not for the faint of heart. It uses lots
    of external libraries which may or may not be available on your platform. I

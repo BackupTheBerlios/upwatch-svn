@@ -3,7 +3,7 @@ Upwatch Programmers Guide
 
 Ron Arts
 
-   Copyright © 2002-2004 UpWatch BV, The Netherlands
+   Copyright © 2002-2005 NeoNova BV, The Netherlands
      _________________________________________________________________
 
    Table of Contents
@@ -144,77 +144,6 @@ Ron Arts
               B.17.2. tcpconnect database layout
 
    Index
-
-   List of Tables
-
-   bb attributes. bb attributes
-   bb elements. bb elements
-   bb definition record layout. bb definition record layout
-   bb result record layout. bb result record layout
-   bb_cpu attributes. bb_cpu attributes
-   bb_cpu elements. bb_cpu elements
-   bb_cpu definition record layout. bb_cpu definition record layout
-   bb_cpu result record layout. bb_cpu result record layout
-   httpget attributes. httpget attributes
-   httpget elements. httpget elements
-   httpget definition record layout. httpget definition record layout
-   httpget result record layout. httpget result record layout
-   imap attributes. imap attributes
-   imap elements. imap elements
-   imap definition record layout. imap definition record layout
-   imap result record layout. imap result record layout
-   iptraf attributes. iptraf attributes
-   iptraf elements. iptraf elements
-   iptraf definition record layout. iptraf definition record layout
-   iptraf result record layout. iptraf result record layout
-   mssql attributes. mssql attributes
-   mssql elements. mssql elements
-   mssql definition record layout. mssql definition record layout
-   mssql result record layout. mssql result record layout
-   mysql attributes. mysql attributes
-   mysql elements. mysql elements
-   mysql definition record layout. mysql definition record layout
-   mysql result record layout. mysql result record layout
-   ping attributes. ping attributes
-   ping elements. ping elements
-   ping definition record layout. ping definition record layout
-   ping result record layout. ping result record layout
-   pop3 attributes. pop3 attributes
-   pop3 elements. pop3 elements
-   pop3 definition record layout. pop3 definition record layout
-   pop3 result record layout. pop3 result record layout
-   postgresql attributes. postgresql attributes
-   postgresql elements. postgresql elements
-   postgresql definition record layout. postgresql definition record layout
-   postgresql result record layout. postgresql result record layout
-   smtp attributes. smtp attributes
-   smtp elements. smtp elements
-   smtp definition record layout. smtp definition record layout
-   smtp result record layout. smtp result record layout
-   snmpget attributes. snmpget attributes
-   snmpget elements. snmpget elements
-   snmpget definition record layout. snmpget definition record layout
-   snmpget result record layout. snmpget result record layout
-   sysstat attributes. sysstat attributes
-   sysstat elements. sysstat elements
-   sysstat definition record layout. sysstat definition record layout
-   sysstat result record layout. sysstat result record layout
-   hwstat attributes. hwstat attributes
-   hwstat elements. hwstat elements
-   hwstat definition record layout. hwstat definition record layout
-   hwstat result record layout. hwstat result record layout
-   errlog attributes. errlog attributes
-   errlog elements. errlog elements
-   errlog definition record layout. errlog definition record layout
-   errlog result record layout. errlog result record layout
-   diskfree attributes. diskfree attributes
-   diskfree elements. diskfree elements
-   diskfree definition record layout. diskfree definition record layout
-   diskfree result record layout. diskfree result record layout
-   tcpconnect attributes. tcpconnect attributes
-   tcpconnect elements. tcpconnect elements
-   tcpconnect definition record layout. tcpconnect definition record layout
-   tcpconnect result record layout. tcpconnect result record layout
 
 Preface
 

@@ -3,7 +3,7 @@ Upwatch User Guide
 
 Ron Arts
 
-   Copyright © 2002-2004 UpWatch BV, The Netherlands
+   Copyright © 2002-2005 NeoNova BV, The Netherlands
      _________________________________________________________________
 
    Table of Contents
@@ -76,8 +76,8 @@ Chapter 1. About UpWatch
    the URL to our customers. Third problem was integration with our backoffice.
 
    At the same time yours truly was thinking about setting up a commercial
-   service for monitoring servers remotely. All this culminated into UpWatch.
-   So lets get straight to the ..
+   service for monitoring servers remotely. All this culminated into UpWatch,
+   which was further developed by NeoNova BV. So let's get straight to the ..
 
 1.2. Features
 
@@ -119,7 +119,7 @@ Chapter 2. Installation
 
 2.1. Getting upwatch
 
-   The UpWatch clients can be download from www.upwatch.com. They are available
+   The UpWatch clients can be download from www.upwatch.org. They are available
    in the following formats:
      * as a tar.gz file, including sources for every supported platform
      * SuSE, RedHat of Fedora .rpm files

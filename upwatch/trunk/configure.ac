@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(upwatch, 0.95, bugs@upwatch.com)
+AC_INIT(upwatch, 0.98, bugs@upwatch.com)
 AC_CONFIG_SRCDIR(upwatch/spool.c)
 VERSION=`cat VERSION`
 RELEASE=`cat RELEASE`
