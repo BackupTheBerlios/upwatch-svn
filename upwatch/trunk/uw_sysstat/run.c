@@ -100,7 +100,7 @@ static int prv_color = STAT_GREEN;
   char buffer[1024];
   char info[32768];
   int systemp = 0;
-  int rt, wt;
+  long long rt=0, wt=0;
   int ct  = STACKCT_OPT(OUTPUT);
   char **output = STACKLST_OPT(OUTPUT);
   int i;
@@ -118,13 +118,14 @@ extern int forever;
   get_stats();
   { 
     diskio_stat_t *diskio_stat_ptr = st.diskio;
-    int r, w, counter;
+    int counter;
 
-    for (r=0, w=0, counter=0; counter < st.diskio_entries; counter++) {
-      rt = diskio_stat_ptr->read_bytes;
-      r += rt;
-      wt = diskio_stat_ptr->write_bytes;
-      w += wt;
+    for (counter=0; counter < st.diskio_entries; counter++) {
+      long long  r, w;
+      r = diskio_stat_ptr->read_bytes;
+      rt += r;
+      w = diskio_stat_ptr->write_bytes;
+      wt += w;
       diskio_stat_ptr++;
     }
   }
@@ -187,13 +188,13 @@ extern int forever;
   sprintf(buffer, "%u", (int) (st.cpu->idle));
     subtree = xmlNewChild(sysstat, NULL, "idle", buffer);
 
-  sprintf(buffer, "%llu", st.paging->pages_pagein/1024);
+  sprintf(buffer, "%llu", st.paging->pages_pagein);
     subtree = xmlNewChild(sysstat, NULL, "swapin", buffer);
-  sprintf(buffer, "%llu", st.paging->pages_pageout/1024);
+  sprintf(buffer, "%llu", st.paging->pages_pageout);
     subtree = xmlNewChild(sysstat, NULL, "swapout", buffer);
 
-  sprintf(buffer, "%u", rt);	 subtree = xmlNewChild(sysstat, NULL, "blockin", buffer);
-  sprintf(buffer, "%u", wt);     subtree = xmlNewChild(sysstat, NULL, "blockout", buffer);
+  sprintf(buffer, "%llu", rt/1024);	subtree = xmlNewChild(sysstat, NULL, "blockin", buffer);
+  sprintf(buffer, "%llu", wt/1024);	subtree = xmlNewChild(sysstat, NULL, "blockout", buffer);
 
   sprintf(buffer, "%llu", st.swap->used/1024);	subtree = xmlNewChild(sysstat, NULL, "swapped", buffer);
   sprintf(buffer, "%llu", st.mem->free/1024);	subtree = xmlNewChild(sysstat, NULL, "free", buffer);
