@@ -63,6 +63,11 @@ typedef struct _module {
 
 extern module *modules[];
 
+struct summ_spec {
+  int period;
+  char *from, *to;
+}; 
+
 typedef struct transaction {
   module *mod;		// point to the module processing this transaction
   xmlDocPtr doc; 	// the Xml doc structure
