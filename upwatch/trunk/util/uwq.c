@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <pwd.h>
 #include <stdlib.h>
 #include <uwq_options.h>
 #include "generic.h"
@@ -25,17 +26,22 @@ int main (int argc, char *argv[])
 
   if (strcmp(only, "create") == 0) {
     char buffer[PATH_MAX];
+    struct passwd *up;
 
+    up = getpwnam("upwatch");
     if (*++argv == NULL) {
       fprintf(stderr, "missing queuename\n");
       exit(1);
     }
     sprintf(buffer, "%s/%s", OPT_ARG(SPOOLDIR), *argv);
     if (mkdir(buffer, 0770)) { perror(buffer); exit(1); }
+    if (chown(buffer, 0, up->pw_gid)) { perror(buffer); exit(1); }
     sprintf(buffer, "%s/%s/new", OPT_ARG(SPOOLDIR), *argv);
     if (mkdir(buffer, 0770)) { perror(buffer); exit(1); }
+    if (chown(buffer, 0, up->pw_gid)) { perror(buffer); exit(1); }
     sprintf(buffer, "%s/%s/tmp", OPT_ARG(SPOOLDIR), *argv);
     if (mkdir(buffer, 0770)) { perror(buffer); exit(1); }
+    if (chown(buffer, 0, up->pw_gid)) { perror(buffer); exit(1); }
     exit(0);
   }
 
