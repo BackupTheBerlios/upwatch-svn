@@ -23,7 +23,7 @@ green [LOGDATE] sshd[PID]: error: key_read:
 green [LOGDATE] sshd[PID]: error: PAM: Authentication failure
 green [LOGDATE] sshd[PID]: Failed keyboard-interactive/pam for [USER] from [IPADDR] port [NUM] ssh[NUM]
 green [LOGDATE] sshd[PID]: Failed none for [USER] from [IPADDR] port [NUM] ssh[NUM]
-green [LOGDATE] sshd[PID]: Failed password for [USER] from [IPADDR] port [NUM] ssh[NUM]
+green [LOGDATE] sshd[PID]: Failed password for (illegal )*[USER] from [IPADDR] port [NUM] ssh[NUM]
 green [LOGDATE] sshd[PID]: Failed publickey for [USER] from [IPADDR] port [NUM] ssh[NUM]
 green [LOGDATE] sshd[PID]: fatal: Bad protocol version identification:
 green [LOGDATE] sshd[PID]: fatal: Connection closed by remote host\.

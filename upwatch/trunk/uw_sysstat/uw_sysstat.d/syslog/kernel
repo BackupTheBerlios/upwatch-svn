@@ -106,7 +106,7 @@ green [LOGDATE] kernel: Detected .* processor
 green [LOGDATE] kernel: Detected PS/[NUM] Mouse Port\.
 green [LOGDATE] kernel: Detected scsi .* at scsi[NUM], channel [NUM], id [NUM], lun [NUM]
 green [LOGDATE] kernel: Detecting Adaptec I2O RAID controllers
-green [LOGDATE] kernel: device eth[NUM] (entered|left) promiscuous mode
+green [LOGDATE] kernel: device eth[NUM](\.[NUM])* (entered|left) promiscuous mode
 green [LOGDATE] kernel: device-mapper: [NUM]\.[NUM]\.[NUM]-ioctl \([NUM][NUM][NUM]\) initialised: [EMAIL]
 green [LOGDATE] kernel: dev_mc_discard: multicast leakage! dmi_users=[NUM]
 green [LOGDATE] kernel: Disabled Privacy Extensions on device
@@ -133,10 +133,11 @@ green [LOGDATE] kernel: Enabling the CPU's according to the ACPI table
 green [LOGDATE] kernel: Enabling unmasked SIMD FPU exception support\.\.\. done\.
 green [LOGDATE] kernel: e[NUM]: eth[NUM]: Intel\(R\) PRO/[NUM] Network Connection
 green [LOGDATE] kernel: e[NUM]: eth[NUM] NIC Link is Up [NUM] Mbps Full duplex
-green [LOGDATE] kernel: eth[HEX]: MII #[HEX] registers are: [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX]\. 
+green [LOGDATE] kernel: eth[NUM]: MII #[HEX] registers are: [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX]\. 
 green [LOGDATE] kernel: eth[NUM]: Airport entering sleep mode
 green [LOGDATE] kernel: eth[NUM]: Airport waking up
 green [LOGDATE] kernel: eth[NUM]: .* at [HEX], IRQ [NUM], [MACADDR]
+green [LOGDATE] kernel: eth[NUM](\.[NUM])*: dev_set_promiscuity\(master, [NUM]\)
 green [LOGDATE] kernel: eth[NUM]: Found BCM[NUM] PHY
 green [LOGDATE] kernel: eth[NUM]: .* [MACADDR], I/O at [HEX][HEX], IRQ [NUM]
 green [LOGDATE] kernel: eth[NUM]: .* [MACADDR], IRQ [NUM]
@@ -172,6 +173,7 @@ green [LOGDATE] kernel: Fixup res [NUM] \([NUM]\) of dev [NUM]:[NUM]\.[NUM]: [NU
 green [LOGDATE] kernel: Fixups for bus [NUM]
 green [LOGDATE] kernel: Floppy drive\(s\): fd[NUM] is [NUM]\.[NUM]M
 green [LOGDATE] kernel: floppy[NUM]: Unable to grab IRQ[NUM] for the floppy driver
+green [LOGDATE] kernel: floppy[NUM]: no floppy controllers found
 green [LOGDATE] kernel: Found and enabled local APIC!
 green [LOGDATE] kernel: Found a Pangea mac-io controller, rev: [NUM], mapped at [HEX]
 green [LOGDATE] kernel: Found [HEX]:[HEX] \[[HEX]/[HEX]\] [HEX] [HEX]
@@ -510,7 +512,7 @@ green [LOGDATE] kernel:   ROM checksum self-test: passed \([HEX]\)\.
 green [LOGDATE] kernel: RSD PTR  v[NUM] \[PTLTD \]
 green [LOGDATE] kernel: rtl[NUM]\.c:v[NUM]\.[NUM] [NUM][PATH] Donald Becker http:/[PATH] 
 green [LOGDATE] kernel:\s*$
-green [LOGDATE] kernel: \s*<Adaptec.*adapter> 
+green [LOGDATE] kernel:\s*<Adaptec.*adapter> 
 green [LOGDATE] kernel: \s*aic[NUM].* Channel [A-D], SCSI Id=[NUM], [NUM]/[NUM] SCBs
 green [LOGDATE] kernel: \s*BAR[NUM] [HEX] - size= [NUM]
 green [LOGDATE] kernel: \s*Hardware receive checksums enabled

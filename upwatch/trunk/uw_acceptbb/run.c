@@ -346,7 +346,8 @@ void runbb(char *req)
       LOG(LOG_NOTICE, "Illegal status message format, illegal time format: %s", datestring);
       return;
     }
-    message = strptime(message+4, "%Y", &probedate); // lose the timezone info - it's unusable
+    // lose the timezone info - it's unsupported in glibc, because timezone names are not unique
+    message = strptime(message+4, "%Y", &probedate);
     *message++ = 0;
 
     LOG(LOG_INFO, "%s [%s] %s %s", datestring, hostname, probename, color);

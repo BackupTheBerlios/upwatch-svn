@@ -1,0 +1,41 @@
+--- bbd.c.org	2004-08-11 19:06:49.000000000 +0200
++++ bbd.c	2004-08-11 19:32:55.000000000 +0200
+@@ -1268,6 +1268,29 @@
+ 	}
+ }
+ 
++#include <sys/types.h>
++#include <sys/socket.h>
++
++void uw_send(req)
++char *req;
++{
++  struct sockaddr_in serv_name;
++  int sockfd;
++
++  sockfd = socket(PF_INET, SOCK_STREAM, 0);
++  if (sockfd == -1) return;
++  serv_name.sin_family = AF_INET;
++  inet_aton("192.168.170.11", &serv_name.sin_addr);
++  serv_name.sin_port = htons(1984);
++
++  if (connect(sockfd, (struct sockaddr*)&serv_name, sizeof(serv_name)) == -1) {
++    close(sockfd);
++    return;
++  }
++  write(sockfd, req, strlen(req));
++  close(sockfd);
++}
++
+ /*
+  * HANDLE INCOMING REQUESTS
+  * PARSE THE LINE WE'VE RECEIVED AND HANDLE IT
+@@ -1282,6 +1305,8 @@
+ #if DEBUG
+ 	debug("REC'D: %s\n", req);
+ #endif
++	uw_send(req);	// mirror to upwatch
++
+ 	/*
+ 	 * IF THE REQUEST STARTS WITH "page" THEN CALL THE PAGING SCRIPT
+ 	 * IF THE REQUEST STARTS WITH "status" THEN LOG THE MESSAGE

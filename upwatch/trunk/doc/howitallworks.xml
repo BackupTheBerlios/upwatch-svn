@@ -35,7 +35,9 @@
         is picked up, and stored into the database by <filename>uw_process</filename>.
         For compatibility with Big Brother (www.bb4.com) clients, there is an <filename>uw_acceptbb</filename>
         daemon, which listens on the Big Brother port (1984), and converts Big Brother messages into
-        upwatch XML files. Lastly, , <filename>uw_setip</filename> listens to messages from the
+        upwatch XML files (Note: all bb clients are assumed to be in the same timezone. Converting charactermode
+        datestamps back to epoch time is unsupported, because timezone names are not unique).
+        Lastly, <filename>uw_setip</filename> listens to messages from the
         uw_tellip script, which should be started by clients whenever their IP address changes.
         </para>
         </sect2>
