@@ -7,6 +7,10 @@ UWREGEXP = uwregexp
 endif
 endif
 
+if FREEBSD
+FREEBSDLIBS = -lkvm -ldevstat
+endif
+
 if SOLARIS
 SOLARISLIBS = -lkstat -ldevinfo
 endif
@@ -23,7 +27,7 @@ EXTRA_DIST = ctime.1 slot.1 uwq.1 chklog.1
 
 if HAVE_CURSES
 uwsaidar_SOURCES = uwsaidar.c
-uwsaidar_LDADD = $(LIBSTATGRAB) $(SOLARISLIBS) @LIBCURSES_LIBS@ 
+uwsaidar_LDADD = $(LIBSTATGRAB) $(SOLARISLIBS) $(FREEBSDLIBS) @LIBCURSES_LIBS@ 
 uwsaidar_CFLAGS = -I$(INCL_STATGRAB) $(MYCFLAGS)
 
 uwregexp_SOURCES = uwregexp.c

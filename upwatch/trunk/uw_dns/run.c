@@ -287,6 +287,8 @@ typedef struct dns_info {
   struct timeval	ts;		/* time sent */
 } PING_INFO;
 
+#include <netinet/in_systm.h>
+#include <netinet/ip_var.h>
 #include <netinet/ip_icmp.h>
 #define SIZE_ICMP_HDR ICMP_MINLEN   /* from ip_icmp.h */
 #define PING_PACKET_SIZE  (44+SIZE_ICMP_HDR)

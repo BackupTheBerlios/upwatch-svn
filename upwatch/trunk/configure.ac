@@ -7,7 +7,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.64 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.65 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -26,6 +26,8 @@ AM_WITH_DMALLOC
 # Set some global things based on os type
 # ----------------------------------------------------------------------
 AC_CANONICAL_HOST
+AC_CANONICAL_BUILD
+AC_CANONICAL_TARGET
 
 case $host in
   *-*-linux*) 
@@ -43,6 +45,23 @@ case $host in
     if test "$infodir" = '${prefix}/info' ; 		then infodir='/usr/share/info' ; fi
     if test "$mandir" = '${prefix}/man' ;		then mandir='/usr/share/man' ; fi
     ;;
+  *-*-freebsd*) 
+    freebsd=true
+    if test "$bindir" = '${exec_prefix}/bin' ; 		then bindir='/usr/bin' ; fi
+    if test "$sbindir" = '${exec_prefix}/sbin' ; 	then sbindir='/usr/sbin' ; fi
+    if test "$libexecdir" = '${exec_prefix}/libexec';	then libexecdir='/usr/libexec' ; fi
+    if test "$datadir" = '${prefix}/share' ;		then datadir='/usr/local/share' ; fi
+    if test "$sysconfdir" = '${prefix}/etc' ;		then sysconfdir='/etc' ; fi
+    if test "$sharedstatedir" = '${prefix}/com' ;	then sharedstatedir='/usr/local/com' ; fi
+    if test "$localstatedir" = '${prefix}/var' ; 	then localstatedir='/var' ; fi
+    if test "$libdir" = '${exec_prefix}/lib' ; 		then libdir='/usr/lib' ; fi
+    if test "$includedir" = '${prefix}/include' ; 	then includedir='/usr/include' ; fi
+    if test "$oldincludedir" = '/usr/include' ; 	then oldincludedir='/usr/include' ; fi
+    if test "$infodir" = '${prefix}/info' ; 		then infodir='/usr/share/info' ; fi
+    if test "$mandir" = '${prefix}/man' ;		then mandir='/usr/share/man' ; fi
+    CFLAGS="${CFLAGS} -I/usr/local/include"
+    LDFLAGS="-L/usr/local/lib"
+    ;;
   *-*-solaris*)
     solaris=true
     if test "$bindir" = '${exec_prefix}/bin' ; 		then bindir='/usr/bin' ; fi
@@ -57,7 +76,7 @@ case $host in
     if test "$oldincludedir" = '/usr/include' ; 	then oldincludedir='/usr/include' ; fi
     if test "$infodir" = '${prefix}/info';  		then infodir='/usr/share/info' ; fi
     if test "$mandir" = '${prefix}/man' ;		then mandir='/usr/share/man' ; fi
-    LIBS="-lgen $LIBS"
+    LIBS="-lgen ${LIBS}"
     ;;
   *-*-cygwin*)
     cygwin=true
@@ -80,6 +99,7 @@ case $host in
 esac
 
 AM_CONDITIONAL(LINUX, test x$linux = xtrue)
+AM_CONDITIONAL(FREEBSD, test x$freebsd = xtrue)
 AM_CONDITIONAL(SOLARIS, test x$solaris = xtrue)
 AM_CONDITIONAL(CYGWIN, test x$cygwin = xtrue)
 
@@ -132,9 +152,9 @@ fi
 AC_ARG_ENABLE(debug,
     [  --enable-debug          Turn on compiler debugging information (default=no)],
     [if eval "test x$enable_debug = xyes"; then
-        CFLAGS="-g -Wall ${LIBOPTS_CFLAGS}"   # note: discard previous CLAGS value
+        CFLAGS="${CFLAGS} -g -Wall"
     else
-        CFLAGS="${CFLAGS} -Wall -O2 ${LIBOPTS_CFLAGS}"
+        CFLAGS="${CFLAGS} -Wall -O2"
     fi]
 )
 
@@ -206,10 +226,6 @@ do
     MYSQL_LIBS="-L${libpath} -lmysqlclient"
   fi
 done
-#if test -z "$MYSQL_LIBS"
-#then
-#  AC_MSG_ERROR([Cannot find MySQL libraries, tell me where they are with --with-mysql-libs=])
-#fi
 
 # path to mysql includes
 AC_ARG_WITH(mysql-include,
@@ -226,10 +242,18 @@ do
     MYSQL_CFLAGS="-I${incpath}"
   fi
 done
-#if test -z "$MYSQL_CFLAGS"
-#then
-#  AC_MSG_ERROR([Cannot find MySQL include files, tell me where they are with --with-mysql-include=])
-#fi
+
+if test "$enable_monitors" = "yes" -o "$enable_server" = "yes"
+then
+  if test -z "$MYSQL_LIBS"
+  then
+    AC_MSG_ERROR([Cannot find MySQL libraries, tell me where they are with --with-mysql-libs=])
+  fi
+  if test -z "$MYSQL_CFLAGS"
+  then
+    AC_MSG_ERROR([Cannot find MySQL include files, tell me where they are with --with-mysql-include=])
+  fi
+fi
 
 AC_SUBST(MYSQL_CFLAGS)
 AC_SUBST(MYSQL_LIBS)
@@ -339,9 +363,25 @@ fi
 AC_SUBST(LIBXML2_CFLAGS)
 AC_SUBST(LIBXML2_LIBS)
 
-AC_CHECK_LIB([pthread], [pthread_create],
-  [LIBPTHREAD_LIBS=-lpthread],[AC_MSG_ERROR([Sorry, we need -lpthread to continue])] )
+# THREADS
+AC_CHECK_LIB(pthread, pthread_create, HAS_PTHREADS=yes, HAS_PTHREADS=no)
+if test ${HAS_PTHREADS} = yes ; then
+  LIBPTHREAD_LIBS=-lpthread
+else
+  # FreeBSD checks
+  AC_CHECK_LIB(c_r, pthread_create, HAS_PTHREADS=yes, HAS_PTHREADS=no)
+  if test ${HAS_PTHREADS} = yes ; then
+    LIBPTHREAD_LIBS=-pthread
+    LIBPTHREAD_CFLAGS="-D_REENTRANT -pthread"
+  fi
+fi
+
+if test ${HAS_PTHREADS} = no ; then
+  AC_MSG_ERROR([Sorry, we need a thread library to continue])
+fi
+
 AC_SUBST(LIBPTHREAD_LIBS)
+AC_SUBST(LIBPTHREAD_CFLAGS)
 
 # CURSES/NCURSES
 AC_CHECK_LIB([curses], [initscr], [HAVE_LIBCURSES=1], [HAVE_LIBCURSES=0])
@@ -402,6 +442,12 @@ AC_CHECK_LIB([snmp], [snmp_errno], [HAVE_LIBSNMP=1], [HAVE_LIBSNMP=0], -lcrypto)
 if test $HAVE_LIBSNMP -eq 1
 then
 	LIBSNMP_LIBS=-lsnmp
+else
+	AC_CHECK_LIB([netsnmp], [snmp_errno], [HAVE_LIBSNMP=1], [HAVE_LIBSNMP=0], -lcrypto)
+	if test $HAVE_LIBSNMP -eq 1
+	then
+		LIBSNMP_LIBS=-lnetsnmp
+	fi
 fi
 AM_CONDITIONAL(HAVE_LIBSNMP, test $HAVE_LIBSNMP -eq 1)
 AC_SUBST(LIBSNMP_LIBS)

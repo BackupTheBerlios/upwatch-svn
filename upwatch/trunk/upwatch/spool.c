@@ -4,7 +4,7 @@
 #include <fcntl.h>
 #include <generic.h>
 #include <errno.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <sys/stat.h>
 #include <sys/time.h>
 #include <libxml/xmlmemory.h>

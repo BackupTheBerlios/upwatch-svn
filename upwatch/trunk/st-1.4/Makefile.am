@@ -3,6 +3,9 @@ libst_a_SOURCES = sched.c stk.c sync.c key.c io.c st.h common.h  md.h public.h
 if LINUX
 MYCFLAGS = -DUSE_POLL -DLINUX
 endif
+if FREEBSD
+MYCFLAGS = -DFREEBSD
+endif
 if SOLARIS
 MYCFLAGS = -DSOLARIS
 endif
