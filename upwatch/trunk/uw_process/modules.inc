@@ -4,6 +4,7 @@ extern module iptraf_module;
 extern module sysstat_module;
 extern module mysql_module;
 extern module pop3_module;
+extern module smtp_module;
 extern module tcpconnect_module;
 extern module imap_module;
 extern module bb_cpu_module;
@@ -21,6 +22,7 @@ module *modules[] = {
   &sysstat_module,
   &mysql_module,
   &pop3_module,
+  &smtp_module,
   &tcpconnect_module,
   &imap_module,
   &errlog_module,

@@ -51,6 +51,7 @@ char *uw_gmtime(time_t *now);
 long timeval_diff(struct timeval *a,struct timeval *b);
 guint *guintdup(guint val);
 int uw_rand(float maxval);
+char *strcat_realloc(char *here, char *str);
 void setsin(struct sockaddr_in *, u_int32_t);
 
 #include <compat.h>

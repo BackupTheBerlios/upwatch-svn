@@ -255,6 +255,16 @@ struct pop3_def {
 #include "../common/common.h"
 };
 
+/****************************** probe smtp ************************/
+struct smtp_result {
+  STANDARD_PROBE_RESULT;
+#include "../uw_smtp/probe.res_h"
+};
+struct smtp_def {
+  STANDARD_PROBE_DEF;
+#include "../common/common.h"
+};
+
 /****************************** probe tcpconnect3 ************************/
 struct tcpconnect_result {
   STANDARD_PROBE_RESULT;

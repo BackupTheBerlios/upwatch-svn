@@ -31,3 +31,19 @@ static char buf[10];
   default:	sprintf(buf, "%u", color); return(buf);
   }
 }
+
+char *strcat_realloc(char *old, char *str)
+{
+  char *new;
+  int len;
+
+  if (old == NULL) {
+    return strdup(str);
+  }
+  
+  len = strlen(old);
+  new = realloc(old, len+strlen(str)+2);
+  strcpy(&new[len], str);
+  return(new);
+}
+
