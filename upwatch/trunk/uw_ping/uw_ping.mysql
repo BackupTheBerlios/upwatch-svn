@@ -6,7 +6,8 @@ CREATE TABLE pr_ping_def (
   id int(8) NOT NULL auto_increment,
   server int(8) NOT NULL default '0',
   notify int(11) NOT NULL default '1',
-  address varchar(80) NOT NULL default '',
+  ipaddress varchar(80) NOT NULL default '',
+  description text NOT NULL default '',
   freq int(4) NOT NULL default '1',
   count int(2) unsigned NOT NULL default '5',
   yellowmiss int(2) unsigned NOT NULL default '1',
@@ -16,7 +17,10 @@ CREATE TABLE pr_ping_def (
   color smallint(5) unsigned NOT NULL default '0',
   lasthist int(10) unsigned NOT NULL default '0',
   message text NOT NULL,
-  PRIMARY KEY  (id)
+  PRIMARY KEY  (id),
+  KEY server (server),
+  KEY notify (notify),
+  KEY ipaddress (ipaddress)
 ) TYPE=MyISAM;
 
 --

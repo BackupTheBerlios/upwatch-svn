@@ -1,4 +1,4 @@
-<!ELEMENT result	((ping|httpget|bb_disk|bb_bgp|bb_conn|bb_cpu|bb_dhcp|bb_dns|
+<!ELEMENT result	((ping|httpget|iptraf|bb_disk|bb_bgp|bb_conn|bb_cpu|bb_dhcp|bb_dns|
                           bb_ftp|bb_http|bb_hylafax|bb_ismtp|bb_msgs|bb_mysql|bb_pop3|
                           bb_procs|bb_radius|bb_smtp|bb_squid|bb_svcs)*)>
 
@@ -19,6 +19,9 @@
 <!ELEMENT pretransfer   (#PCDATA)>
 <!ELEMENT total		(#PCDATA)>
 
+<!ELEMENT in      	(#PCDATA)>
+<!ELEMENT out      	(#PCDATA)>
+
 <!ELEMENT ping		(host,color,min,avg,max,info?)>
 <!ATTLIST ping		id NMTOKEN #REQUIRED 
 			investigate NMTOKEN #FIXED "icmptraceroute"
@@ -30,6 +33,12 @@
 <!ATTLIST httpget	id NMTOKEN #REQUIRED 
 			investigate NMTOKEN #FIXED "tcptraceroute"
 			port NMTOKEN "80"
+			date NMTOKEN #REQUIRED 
+			expires NMTOKEN #REQUIRED
+			notify NMTOKEN "1" >
+
+<!ELEMENT iptraf	(in?,out?)>
+<!ATTLIST iptraf	id NMTOKEN #REQUIRED 
 			date NMTOKEN #REQUIRED 
 			expires NMTOKEN #REQUIRED
 			notify NMTOKEN "1" >

@@ -51,7 +51,7 @@ int run_actual_probes(int count);
     MYSQL_ROW row;
 
     char *qry = // no real http probes yet
-      "SELECT pr_httpget_def.id, server.name, pr_httpget_def.address, " 
+      "SELECT pr_httpget_def.id, server.name, pr_httpget_def.hostname, " 
       "       pr_httpget_def.uri, " 
       "       pr_httpget_def.yellowtime,  pr_httpget_def.redtime "
       "FROM   pr_httpget_def, server "

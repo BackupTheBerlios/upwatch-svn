@@ -6,6 +6,7 @@ CREATE TABLE pr_template_def (
   id int(8) NOT NULL auto_increment,
   server int(8) NOT NULL default '0',
   address varchar(80) NOT NULL default '',
+  description text NOT NULL default '',
   freq int(4) NOT NULL default '1',
   count int(2) unsigned NOT NULL default '5',
   yellowmiss int(2) unsigned NOT NULL default '1',

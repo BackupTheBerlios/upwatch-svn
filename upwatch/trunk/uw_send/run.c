@@ -3,6 +3,7 @@
 #include <netinet/in.h>
 #include <curl/curl.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/socket.h>
 #include <netdb.h>
 
@@ -89,7 +90,15 @@ int pushto(int sock, char *filename)
 {
   FILE *in, *out;
   char buffer[BUFSIZ];
+  struct stat st;
+  int filesize;
+  int i;
   
+  if (stat(filename, &st)) {
+    LOG(LOG_WARNING, "%s: %m", filename);
+    return(0);
+  }
+  filesize = (int) st.st_size;
   if ((in = fopen(filename, "r")) == NULL) {
     LOG(LOG_WARNING, "can't open %s", filename);
     return(0);
@@ -116,17 +125,43 @@ int pushto(int sock, char *filename)
     fclose(out);
     return(0);
   }
+  fprintf(out, "DATA %d\n", filesize);
+  if (fgets(buffer, sizeof(buffer), out) == NULL || buffer[0] != '+') {
+    LOG(LOG_WARNING, buffer);
+    fclose(in);
+    fclose(out);
+    return(0);
+  }
   //fprintf(stderr, "%s", buffer);
-  while (fgets(buffer, sizeof(buffer), in)) {
-    if (fprintf(out, "%s", buffer) == 0) {
-      LOG(LOG_WARNING, "socket write error");
+  while ((i = fread(buffer, 1, sizeof(buffer), in)) == sizeof(buffer)) {
+    if (fwrite(buffer, sizeof(buffer), 1, out) != 1) {
+      LOG(LOG_WARNING, "socket write error: %m");
       fclose(in);
       fclose(out);
       return(0);
     }
   }
+  if (!feof(in)) {
+    LOG(LOG_WARNING, "fread: %m");
+    fclose(in);
+    fclose(out);
+    return(0);
+  }
+  if (fwrite(buffer, i, 1, out) != 1) {
+    LOG(LOG_WARNING, "socket write error: %m");
+    fclose(in);
+    fclose(out);
+    return(0);
+  }
   fclose(in);
-  fprintf(out, ".\n");
+  if (fgets(buffer, sizeof(buffer), out) == NULL || buffer[0] != '+') {
+    LOG(LOG_WARNING, buffer);
+    fclose(in);
+    fclose(out);
+    return(0);
+  }
+  //fprintf(stderr, "%s", buffer);
+  fprintf(out, "QUIT\n");
   if (fgets(buffer, sizeof(buffer), out) == NULL || buffer[0] != '+') {
     LOG(LOG_WARNING, buffer);
     fclose(in);

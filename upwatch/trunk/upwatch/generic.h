@@ -52,4 +52,5 @@ extern int daemonize;
 /* list of probes */
 #define PROBE_PING 1
 #define PROBE_HTTPGET 2
+#define PROBE_IPTRAF 3
 

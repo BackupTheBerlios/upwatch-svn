@@ -9,6 +9,7 @@
 
 extern int process_ping(xmlDocPtr, xmlNodePtr, xmlNsPtr);
 extern int process_httpget(xmlDocPtr, xmlNodePtr, xmlNsPtr);
+extern int process_iptraf(xmlDocPtr, xmlNodePtr, xmlNsPtr);
 
 struct _probe_proc {
   char *name;
@@ -16,6 +17,7 @@ struct _probe_proc {
 } prob_proc[] = {
   { "ping",         process_ping },
   { "httpget",      process_httpget },
+  { "iptraf",       process_iptraf},
   { NULL,  NULL }
 };
 

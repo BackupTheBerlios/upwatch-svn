@@ -144,18 +144,25 @@ int main( int argc, char** argv )
   atexit(exit_function);
   if (!init()) exit(1);
 
-  /* set up SIGTERM handler */
+  /* set up SIGTERM/SIGINT handler */
   new_action.sa_handler = termination_handler;
   sigemptyset (&new_action.sa_mask);
   new_action.sa_flags = 0;
   sigaction (SIGTERM, &new_action, NULL);
+  new_action.sa_handler = termination_handler;
+  sigemptyset (&new_action.sa_mask);
+  new_action.sa_flags = 0;
   sigaction (SIGINT, &new_action, NULL);
 
-  /* ignore SIGHUP */
+  /* ignore SIGHUP/SIGPIPE */
   new_action.sa_handler = SIG_IGN;
   sigemptyset (&new_action.sa_mask);
   new_action.sa_flags = 0;
   sigaction (SIGHUP, &new_action, NULL);
+  new_action.sa_handler = SIG_IGN;
+  sigemptyset (&new_action.sa_mask);
+  new_action.sa_flags = 0;
+  sigaction (SIGPIPE, &new_action, NULL);
 
   if (debug < 3 && daemonize) daemon(0, 0);
   switch(every) {

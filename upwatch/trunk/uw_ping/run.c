@@ -160,7 +160,7 @@ int run(void)
     MYSQL_ROW row;
     char *qry = 
       "SELECT pr_ping_def.id, pr_ping_def.count, pr_ping_def.yellowmiss, " 
-      "       pr_ping_def.redmiss, server.name, pr_ping_def.address as ip, "
+      "       pr_ping_def.redmiss, server.name, pr_ping_def.ipaddress as ip, "
       "       pr_ping_def.freq "
       "FROM   pr_ping_def, server "
       "WHERE  pr_ping_def.server = server.id ";

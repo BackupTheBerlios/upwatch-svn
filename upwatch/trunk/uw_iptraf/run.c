@@ -57,8 +57,10 @@ void writeXMLresult(struct ipnetw *ipnets, int count_ipnets)
       sprintf(buffer, "%s", inet_ntoa(ip));  xmlSetProp(iptraf, "id", buffer);
       sprintf(buffer, "%d", (int) now);           xmlSetProp(iptraf, "date", buffer);
       sprintf(buffer, "%d", ((int)now)+(2*60));   xmlSetProp(iptraf, "expires", buffer);
-      sprintf(buffer, "%u", net->count[j].in);    xmlNewChild(iptraf, NULL, "incoming", buffer);
-      sprintf(buffer, "%u", net->count[j].out);   xmlNewChild(iptraf, NULL, "outgoing", buffer);
+      if (net->count[j].in || net->count[j].out) {
+        sprintf(buffer, "%u", net->count[j].in);    xmlNewChild(iptraf, NULL, "in", buffer);
+        sprintf(buffer, "%u", net->count[j].out);   xmlNewChild(iptraf, NULL, "out", buffer);
+      }
     }
     free(net->count);
   }
@@ -132,13 +134,34 @@ int init(void)
   return 1;
 }
 
+gpointer pcap_thread(gpointer data)
+{
+  char *dev = (char *) data;
+  char errbuf[PCAP_ERRBUF_SIZE];
+  pcap_t *handle;
+extern int forever;                // will be set to zero by TERM signal
+
+  handle = pcap_open_live(dev, BUFSIZ, 1, 0, errbuf); // promiscuous, no timeout
+  if (!handle) {
+    LOG(LOG_ERR, "open pcap device %s: %s", dev, errbuf);
+    return 0;
+  }
+  if (debug) LOG(LOG_INFO, "capturing on %s", dev);
+  free(dev);
+
+  while (forever) {
+    pcap_dispatch(handle, 1, incoming_packet, NULL);
+  }
+  pcap_close(handle);
+  return(NULL);
+}
+
 int run(void)
 {
   GError *error;
   GThread *wt;
-  char *dev, errbuf[PCAP_ERRBUF_SIZE];
-  pcap_t *handle;
-extern int forever;                // will be set to zero by TERM signal
+  GThread *pt;
+  char *dev;
 
   wt = g_thread_create(iptraf_write, NULL, TRUE, &error);
   if (wt == NULL) {
@@ -149,21 +172,15 @@ extern int forever;                // will be set to zero by TERM signal
   if (HAVE_OPT(INTERFACE)) {
     dev = OPT_ARG(INTERFACE);
   } else {
+    char errbuf[PCAP_ERRBUF_SIZE];
+
     dev = pcap_lookupdev(errbuf);
   }
-  handle = pcap_open_live(dev, BUFSIZ, 0, 1000, errbuf); // not promiscuous, timeout 1sec
-  if (!handle) {
-    LOG(LOG_ERR, "open pcap device %s: %s", dev, errbuf);
+  pt = g_thread_create(pcap_thread, strdup(dev), 0, &error);
+  if (pt == NULL) {
+    LOG(LOG_NOTICE, "g_thread_create: %s", error);
     return 0;
   }
-  if (debug) LOG(LOG_INFO, "capturing on %s", dev);
-
-  ////////////////////// main loop ////////////////////
-
-  while (forever) {
-    pcap_dispatch(handle, 1, incoming_packet, NULL);
-  }
-  pcap_close(handle);
   g_thread_join(wt);
   return 1;
 }
@@ -204,6 +221,7 @@ static int reporter = 0;
       //printf("%lx & ~%lx > %x\n", ipaddr, net->mask,  net->size);
       continue;    // superfluous check?
     }
+    net->count[0].out += ntohs(ip->ip_len);  // the network address itself holds total counters
     net->count[ipaddr & ~net->mask].out += ntohs(ip->ip_len);
     break;
   }
@@ -218,6 +236,7 @@ static int reporter = 0;
       //printf("%lx & ~%lx > %x\n", ipaddr, net->mask,  net->size);
       continue;    // superfluous check?
     }
+    net->count[0].in += ntohs(ip->ip_len); // the network address itself holds total counters
     net->count[ipaddr & ~net->mask].in += ntohs(ip->ip_len);
     break;
   }

@@ -19,6 +19,15 @@ static gboolean ob_client_func (GConn* conn, GConnStatus status,
                                 gpointer user_data);
 static void ob_sig_term (int signum);
 
+static char *chop(char *s, int i)
+{
+  i--;
+  while (i > 0 && isspace(s[i])) {
+    s[i--] = 0;
+  }
+  return(s);
+}
+
 static int uw_password_ok(char *user, char *passwd) 
 {
   MYSQL_RES *result;
@@ -45,7 +54,6 @@ static int uw_password_ok(char *user, char *passwd)
 
       id = atoi(row[0]);
       if (debug) LOG(LOG_DEBUG, "user %s, pwd %s resulted in id %d", user, passwd, id);
-      printf("\n");
     }
     mysql_free_result(result);
     close_database();
@@ -67,7 +75,6 @@ int init(void)
 
 int run(void)
 {
-  int ret = 0;
   GMainLoop* main_loop;
   GInetAddr* addr;
   GServer* server;
@@ -89,6 +96,7 @@ int run(void)
 
   ob_server = server;
   signal (SIGTERM, ob_sig_term);
+  signal (SIGINT, ob_sig_term);
 
   /* Start the main loop */
   g_main_run(main_loop);
@@ -106,13 +114,16 @@ struct conn_stat {
 #define STATE_INIT 0
 #define STATE_USER 1
 #define STATE_PWD  2
-#define STATE_DATA 3
-#define STATE_EXIT 4
-#define STATE_ERROR 5	/* only for errors while spooling!! */
+#define STATE_CMD  3
+#define STATE_DATA 4
+#define STATE_EXIT 5
+#define STATE_ERROR 6	/* only for errors while spooling!! */
   int state;
   char user[16];
   char pwd[16];
+  int length;
   void *sp_info;
+  void *buffer;
 };
 
 static char *hello = "+OK UpWatch Acceptor v0.1. Please login\n";
@@ -121,11 +132,16 @@ static char *bye = "+OK Nice talking to you. Bye!\n";
 static char *errbye = "+ERR Nice talking to you. Bye!\n";
 static char *askpwd = "+OK Please enter password\n";
 static char *erraskpwd = "+ERR Please enter password\n";
-static char *askdata= "+OK start sending DATA, end with a single dot\n";
+static char *erraskcmd = "+ERR unknown command\n";
+static char *askcmd = "+OK logged in, enter command\n";
+static char *askdata = "+OK start sending your file\n";
+static char *datain = "+OK Thank you. Enter command\n";
 static char *spoolerr = "-ERR Sorry, error spooling file - please try later\n";
 
 static void ob_server_func (GServer* server, GServerStatus status, struct _GConn* conn, gpointer user_data)
 {
+  struct conn_stat *st;
+
   switch (status)
     {
     case GNET_SERVER_STATUS_CONNECT:
@@ -134,9 +150,11 @@ static void ob_server_func (GServer* server, GServerStatus status, struct _GConn
           LOG(LOG_DEBUG, "New connection from %s", gnet_inetaddr_get_canonical_name(conn->inetaddr));
         }
         conn->func = ob_client_func;
-        conn->user_data = calloc(1, sizeof(struct conn_stat));
+        st = calloc(1, sizeof(struct conn_stat));
+        st->buffer = malloc(4192);
+        conn->user_data = st;
         gnet_conn_write (conn, strdup(hello), strlen(hello), 0);
-        gnet_conn_readline (conn, NULL, 1024, 30000);
+        gnet_conn_readline (conn, st->buffer, 4192, 30000 /* 30 seconds */);
         break;
       }
 
@@ -153,13 +171,10 @@ int ob_client_func (GConn* conn, GConnStatus status,
                 gchar* buffer, gint length, gpointer user_data)
 {
   struct conn_stat *cs = (struct conn_stat *)user_data;
-  int i = length-1;
+  int i;
+  char *targ;
 
-  // remove trailing spaces. IS this really a sensible thing to do?
-  while (i > 0 && isspace(buffer[i])) {
-    buffer[i--] = 0;
-  }
-
+  //LOG(LOG_NOTICE, "state=%d, got buffer(%d): %s", cs->state, length, buffer);
   switch (status) {
     case GNET_CONN_STATUS_READ:
       {
@@ -174,7 +189,12 @@ int ob_client_func (GConn* conn, GConnStatus status,
 	case STATE_INIT:
           cs->state = STATE_USER;
         case STATE_USER:
+          chop(buffer, length);
           if (strncasecmp(buffer, "USER ", 5)) {
+            if (debug > 1) {
+              LOG(LOG_DEBUG, buffer);
+              LOG(LOG_DEBUG, errhello);
+            }
             gnet_conn_write (conn, strdup(errhello), strlen(errhello), 0);
           } else {
             strncpy(cs->user, buffer+5, sizeof(cs->user));
@@ -183,7 +203,12 @@ int ob_client_func (GConn* conn, GConnStatus status,
           }
           break;
         case STATE_PWD: 
+          chop(buffer, length);
           if (strncasecmp(buffer, "PASS ", 5)) {
+            if (debug > 1) {
+              LOG(LOG_DEBUG, buffer);
+              LOG(LOG_DEBUG, erraskpwd);
+            }
             gnet_conn_write (conn, strdup(erraskpwd), strlen(erraskpwd), 0);
             break;
           }
@@ -195,32 +220,70 @@ int ob_client_func (GConn* conn, GConnStatus status,
             cs->state = STATE_EXIT;
             break;
           }
-          cs->state = STATE_DATA;
+          gnet_conn_write (conn, strdup(askcmd), strlen(askcmd), 0);
+          cs->state = STATE_CMD;
+          break;
+        case STATE_CMD:
+          if (strncasecmp(buffer, "DATA ", 5)) {
+            if (debug > 1) {
+              LOG(LOG_DEBUG, buffer);
+              LOG(LOG_DEBUG, erraskcmd);
+            }
+            gnet_conn_write (conn, strdup(erraskcmd), strlen(erraskcmd), 0);
+            break;
+          }
+          cs->length = atoi(buffer + 5);
+          if (cs->length < 1) {
+            if (debug > 1) {
+              LOG(LOG_DEBUG, buffer);
+              LOG(LOG_DEBUG, erraskcmd);
+            }
+            gnet_conn_write (conn, strdup(erraskcmd), strlen(erraskcmd), 0);
+            cs->length = 0;
+            break;
+          }
           cs->sp_info = spool_open(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT));
           if (cs->sp_info == NULL) {
+            if (debug > 1) {
+              LOG(LOG_DEBUG, buffer);
+              LOG(LOG_DEBUG, spoolerr);
+            }
             gnet_conn_write (conn, strdup(spoolerr), strlen(spoolerr), 0);
             cs->state = STATE_EXIT;
             break;
           }
           gnet_conn_write (conn, strdup(askdata), strlen(askdata), 0);
+          memset(cs->buffer, 0, 4192);
+          gnet_conn_readany (conn, cs->buffer, cs->length > 4192 ? 4192 : cs->length, 10000 /* 10 seconds */);
+          cs->state = STATE_DATA;
+          return FALSE; // stop reading
           break;
         case STATE_DATA:
-          if (!strncasecmp(buffer, ".", 1)) {
-            char *targfilename = strdup(spool_targfilename(cs->sp_info));
-            if (!spool_close(cs->sp_info, TRUE)) {
-              gnet_conn_write (conn, strdup(spoolerr), strlen(spoolerr), 0);
-            } else {
-              if (debug) LOG(LOG_DEBUG, "spooled to %s", targfilename);
+          if (spool_write(cs->sp_info, buffer, length) == -1) {
+            if (debug > 1) {
+              LOG(LOG_DEBUG, spoolerr);
             }
-            free(targfilename);
+            gnet_conn_write (conn, strdup(spoolerr), strlen(spoolerr), 0);
+            spool_close(cs->sp_info, FALSE);
             gnet_conn_write (conn, strdup(bye), strlen(bye), 0);
             cs->state = STATE_EXIT;
-          } else {
-            if (!spool_printf(cs->sp_info, "%s\n", buffer)) {
-              spool_close(cs->sp_info, FALSE);
-              cs->state = STATE_ERROR;
-            }
+            break;
           }
+          memset(cs->buffer, 0, length);
+          cs->length -= length;
+          if (cs->length > 0) break; // not totally ready yet?
+          targ = strdup(spool_targfilename(cs->sp_info));
+          if (!spool_close(cs->sp_info, TRUE)) {
+            if (debug > 1) {
+              LOG(LOG_DEBUG, spoolerr);
+            }
+            gnet_conn_write (conn, strdup(spoolerr), strlen(spoolerr), 0);
+          } else {
+            if (debug) LOG(LOG_DEBUG, "spooled to %s", targ);
+          }
+          free(targ);
+          gnet_conn_write (conn, strdup(datain), strlen(datain), 0);
+          cs->state = STATE_CMD;
           break;
         case STATE_ERROR:
           if (!strncasecmp(buffer, ".", 1)) {
@@ -233,11 +296,11 @@ int ob_client_func (GConn* conn, GConnStatus status,
 
     case GNET_CONN_STATUS_WRITE:
       {
-        g_free (buffer);
         if (cs->state == STATE_EXIT) {
           if (debug) {
             LOG(LOG_DEBUG, "%s closed connection", gnet_inetaddr_get_canonical_name(conn->inetaddr));
           }
+          g_free (buffer);
           free(conn->user_data);
           gnet_conn_delete (conn, TRUE);
         }
@@ -258,6 +321,7 @@ int ob_client_func (GConn* conn, GConnStatus status,
             LOG(LOG_DEBUG, "%s unexpected close", gnet_inetaddr_get_canonical_name(conn->inetaddr));
           }
         }
+        if (buffer) g_free (buffer);
         free(conn->user_data);
         gnet_conn_delete (conn, TRUE);
         break;

@@ -5,6 +5,8 @@
 CREATE TABLE pr_iptraf_def (
   id int(8) NOT NULL auto_increment,
   server int(8) NOT NULL default '0',
+  ipaddress varchar(80) NOT NULL default '',
+  description text NOT NULL default '',
   notify int(11) NOT NULL default '1',
   yellowkb int(11) unsigned NOT NULL default '300',
   redkb int(11) unsigned NOT NULL default '500',
@@ -13,7 +15,10 @@ CREATE TABLE pr_iptraf_def (
   color smallint(5) unsigned NOT NULL default '0',
   lasthist int(10) unsigned NOT NULL default '0',
   message text NOT NULL,
-  PRIMARY KEY  (id)
+  PRIMARY KEY  (id),
+  KEY server (server),
+  KEY notify (notify),
+  KEY ipaddress (ipaddress)
 ) TYPE=MyISAM;
 
 --

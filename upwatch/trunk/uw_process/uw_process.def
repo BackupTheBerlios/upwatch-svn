@@ -6,9 +6,7 @@ prog-title    = "Upwatch parallel probe daemon";
 version       = "0.1";
 homerc        = "/etc/upwatch.d/uw_process.conf";
 detail        = 
-'uw_process sends all files in the queue to a central server using 
-the uw_process protocol. This is a very simple protocol and looks
-something like POP3.';
+'uw_process reads probe resultfiles, and stores them in the database';
 
 // this section is for the generated specfile
 spec-requires = "mysql glib2";
@@ -25,10 +23,9 @@ flag = {
     arg_type  = string;
     descrip   = "maildir-type spooldirectory for result files";
     doc       =
-'This probe generates files with data. These are put in maildir style
-spooldirectories. This parameter denotes the basedirectory. Inside
+'This parameter denotes the basedirectory for reading input files. Inside
 this directory a directory `tmp` and `new` should exist. All files
-will finally reside in `new`. You should set up some cron job that
+will be read from `new`. You should set up some cron job that
 removes any files in `tmp` that are older then 36 hours. For some more info
 about maildir see http://www.qmail.org/man/man5/maildir.html.';
 };
@@ -50,7 +47,7 @@ flag = {
     descrip   = "file to copy all transactions to";
     doc       =
 'You can copy all transactions to the specified queue, for inspecting
-then later';
+them later';
 };
 
 flag = {
