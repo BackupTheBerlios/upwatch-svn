@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.12 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.13 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -113,9 +113,20 @@ AC_SUBST(LIBNET_LIBS)
 CFLAGS="$CFLAGS $LIBNET_CFLAGS"
 
 ################## GLIB2
-# glib2 - always need thread libraries
-LIBGLIB2_CFLAGS="`pkg-config --cflags gthread-2.0`"
-LIBGLIB2_LIBS="`pkg-config --libs gthread-2.0`"
+# glib2 - with thread libraries
+LIBGTHREAD2_CFLAGS="`pkg-config --cflags gthread-2.0`"
+LIBGTHREAD2_LIBS="`pkg-config --libs gthread-2.0`"
+if test -z "$LIBGTHREAD2_LIBS"
+then
+  AC_MSG_ERROR([You really need libglib2-devel to compile upwatch])
+fi
+AC_SUBST(LIBGTHREAD2_CFLAGS)
+AC_SUBST(LIBGTHREAD2_LIBS)
+CFLAGS="$CFLAGS $LIBGTHREAD2_CFLAGS"
+
+# glib2 - without thread libraries
+LIBGLIB2_CFLAGS="`pkg-config --cflags glib-2.0`"
+LIBGLIB2_LIBS="`pkg-config --libs glib-2.0`"
 if test -z "$LIBGLIB2_LIBS"
 then
   AC_MSG_ERROR([You really need libglib2-devel to compile upwatch])

@@ -18,8 +18,9 @@ int pushto(st_netfd_t rmt_nfd, char *filename);
 int init(void)
 {
   struct hostent *hp;
+  char *hostname = OPT_ARG(HOST);
 
-  if ((hp = gethostbyname(OPT_ARG(HOST))) == (struct hostent *) 0) {
+  if ((hp = gethostbyname(hostname)) == (struct hostent *) 0) {
     LOG(LOG_NOTICE, "can't resolve %s: %s", OPT_ARG(HOST), hstrerror(h_errno));
     return 0;
   } 
@@ -64,8 +65,9 @@ void *push(void *data)
   struct sockaddr_in server;
   st_netfd_t rmt_nfd;
   char *filename = (char *)data;
+  char *hostname = OPT_ARG(HOST);
 
-  if ((hp = gethostbyname(OPT_ARG(HOST))) == (struct hostent *) 0) {
+  if ((hp = gethostbyname(hostname)) == (struct hostent *) 0) {
     LOG(LOG_NOTICE, "can't resolve %s: %s", OPT_ARG(HOST), hstrerror(h_errno));
     free(filename);
     thread_count--;
@@ -170,7 +172,7 @@ int pushto(st_netfd_t rmt_nfd, char *filename)
   } 
 
   sprintf(buffer, "PASS %s\n", OPT_ARG(UWPASSWD));
-  uw_setproctitle("%s:%d %s", OPT_ARG(HOST), OPT_VALUE_PORT, buffer);
+  uw_setproctitle("%s:%d PASS xxxxxxxx", OPT_ARG(HOST), OPT_VALUE_PORT);
   if (debug > 3) fprintf(stderr, "> %s", buffer);
   len = st_write(rmt_nfd, buffer, strlen(buffer), TIMEOUT);
   if (len == ETIME) {

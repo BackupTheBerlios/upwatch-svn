@@ -5,7 +5,7 @@ uw_process_SOURCES = run.c process.c cmd_options.c cmd_options.h uw_process.h mo
 BUILT_SOURCES = cmd_options.h $(program).spec-generic $(program).init $(program).spec-install
 INCLUDES = -I../upwatch 
 EXTRA_DIST = cmd_options.def $(program).conf
-LDADD = $(DB_O) $(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @MYSQL_LIBS@ @LIBGLIB2_LIBS@ @LIBXML2_LIBS@
+LDADD = $(DB_O) $(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @MYSQL_LIBS@ @LIBGTHREAD2_LIBS@ @LIBXML2_LIBS@
 include $(top_srcdir)/Makefile.am.common
 
 run.c: ../probes.enum

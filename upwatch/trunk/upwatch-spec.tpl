@@ -1,9 +1,9 @@
 [+ AutoGen5 template spec +]
-Summary: UpWatch - The Best monitoring framework
+Summary: UpWatch - A High performance monitoring framwork
 Vendor: http://www.upwatch.com
 Name: upwatch
 Version: [+ version +]
-Release: 5
+Release: 7
 Source: http://www.upwatch.com/%{name}-%{version}.tar.gz
 Packager: Ron Arts <raarts@upwatch.com>
 Copyright: Proprietary
@@ -19,8 +19,9 @@ Prefix: %{__prefix}
 
 %description
 Upwatch is a full-fledged monitoring and report engine for
-internet hosts. It boasts support for various services, long-time
-history, graphs, and notification
+internet hosts. It is built for high-volume sites.
+It boasts support for various services, long-time
+history, graphs, and notification. 
 
 This package contains all upwatch documentation, plus supporting files
 like the database schema.
