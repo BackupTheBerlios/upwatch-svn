@@ -3,14 +3,14 @@ Summary: UpWatch - A High performance monitoring framwork
 Vendor: http://www.upwatch.com
 Name: upwatch
 Version: [+ version +]
-Release: 12
+Release: 0
 Source: http://www.upwatch.com/%{name}-%{version}.tar.gz
 Packager: Ron Arts <raarts@upwatch.com>
 Copyright: Proprietary - Redistribution Prohibited
 Group: Application/Monitoring
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 Requires: libxml2 >= 2.4.19
-BuildRequires: gzip glib2-devel mysql-devel curl-devel autogen libxslt docbook-style-xsl lynx libnet openssl-devel
+BuildRequires: gzip glib2-devel mysql-devel autogen libxslt lynx 
 
 %define strip_binaries 1
 %define gzip_man 1
@@ -72,20 +72,33 @@ mkdir -p $RPM_BUILD_ROOT/usr/lib
 install -m 660 config/upwatch.conf $RPM_BUILD_ROOT/etc/
 mkdir -p $RPM_BUILD_ROOT/usr/lib/upwatch/dtd
 install -m 660 config/result.dtd $RPM_BUILD_ROOT/usr/lib/upwatch/dtd
+mkdir -p $RPM_BUILD_ROOT/usr/lib/upwatch/redhat
+mkdir -p $RPM_BUILD_ROOT/usr/lib/upwatch/suse
 mkdir -p $RPM_BUILD_ROOT/etc/logrotate.d
 install -m 660 config/logrotate $RPM_BUILD_ROOT/etc/logrotate.d/upwatch
 mkdir -p $RPM_BUILD_ROOT/etc/cron.daily
 install -m 700 config/cron.daily $RPM_BUILD_ROOT/etc/cron.daily/upwatch
 
-mkdir -p $RPM_BUILD_ROOT/etc/rc.d/init.d
-install -m 770 config/upwatch.init $RPM_BUILD_ROOT/etc/rc.d/init.d/upwatch
+mkdir -p $RPM_BUILD_ROOT/etc/init.d
+install -m 770 config/upwatch.init $RPM_BUILD_ROOT/usr/lib/upwatch/redhat/upwatch
+install -m 770 config/upwatch.init-suse $RPM_BUILD_ROOT/usr/lib/upwatch/suse/upwatch
 
-cp /usr/lib/libopts.so $RPM_BUILD_ROOT/usr/lib
-cp /usr/lib/libopts.so.9 $RPM_BUILD_ROOT/usr/lib
+if [ -f /usr/lib/libopts.so ]
+then
+  cp /usr/lib/libopts.so $RPM_BUILD_ROOT/usr/lib
+  cp /usr/lib/libopts.so.9 $RPM_BUILD_ROOT/usr/lib
+fi
+
+if [ -f /usr/local/lib/libopts.so ]
+then
+  cp /usr/local/lib/libopts.so $RPM_BUILD_ROOT/usr/lib
+  cp /usr/local/lib/libopts.so.9 $RPM_BUILD_ROOT/usr/lib
+fi
 
 [+ FOR program +]
 # package specific files for [+program+]
-install -m 770 [+program+]/[+program+].init $RPM_BUILD_ROOT/etc/rc.d/init.d/[+program+]
+install -m 770 [+program+]/[+program+].init $RPM_BUILD_ROOT/usr/lib/upwatch/redhat/[+program+]
+install -m 770 [+program+]/[+program+].init-suse $RPM_BUILD_ROOT/usr/lib/upwatch/suse/[+program+]
 install -m 660 [+program+]/[+program+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+program+].conf
 [+ ENDFOR +]
 
@@ -115,13 +128,25 @@ install -m 660 [+program+]/[+program+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+prog
         -c "Upwatch" -u 78 -g 78 upwatch > /dev/null 2>&1 || :
 
 %post
-/sbin/chkconfig --del upwatch 2>/dev/null || true # Make sure old versions aren't there anymore
-/sbin/chkconfig --add upwatch || true
+if [ -f /etc/redhat-release ]
+then
+  DISTR=redhat
+fi
+if [ -f /etc/SuSE-release ]
+then
+  DISTR=suse
+fi
+# install initscripts
+ln -sf /etc/init.d/upwatch /usr/lib/upwatch/$DISTR/upwatch
+
+%postun
+if [ "$1" -eq "0" ]; then
+  rm -f /etc/init.d/upwatch
+fi
 
 %files
 %defattr(0660,root,upwatch,0770)
 %attr(0644,root,root) %doc AUTHORS COPYING ChangeLog NEWS README upwatch.mysql doc/upwatch.html doc/upwatch.txt doc/upwatch.pdf
-%attr(0755,root,root) /etc/rc.d/init.d/upwatch
 %attr(0755,root,root) /usr/lib/libopts.so
 %attr(0755,root,root) /usr/lib/libopts.so.9
 %attr(0770,upwatch,upwatch) /usr/lib/upwatch

@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-AC_INIT(upwatch, 0.5, bugs@upwatch.com)
+AC_INIT(upwatch, 0.6, bugs@upwatch.com)
 AC_CONFIG_SRCDIR(upwatch/spool.c)
 VERSION=`cat VERSION`
 PACKAGE=upwatch
@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.21 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.22 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -36,6 +36,15 @@ AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_AWK
 
+AC_PATH_PROG(RPMBUILD, rpmbuild)
+if test -z "$RPMBUILD"
+then
+  AC_PATH_PROG(RPMBUILD, rpm)
+fi
+if test -z "$RPMBUILD"
+then
+  AC_PATH_PROG(RPMBUILD, echo)
+fi
  
 AC_ARG_ENABLE(debug,
     [  --enable-debug          Turn on compiler debugging information (default=no)],
@@ -111,16 +120,20 @@ fi
 
 ################## LIBNET
 # libnet
-LIBNET_CFLAGS="`libnet-config --cflags`"
-LIBNET_CFLAGS="$LIBNET_CFLAGS `libnet-config --defines`"
-LIBNET_LIBS="`libnet-config --libs`"
+AC_CHECK_PROG([HAVE_LIBNET], [libnet-config], ["yes"], ["no"])
+if test "$HAVE_LIBNET" = "yes"
+then
+  LIBNET_CFLAGS="`libnet-config --cflags`"
+  LIBNET_CFLAGS="$LIBNET_CFLAGS `libnet-config --defines`"
+  LIBNET_LIBS="`libnet-config --libs`"
+fi
 if test -z "$LIBNET_LIBS"
 then
   HAVE_LIBNET="0"
 else
   HAVE_LIBNET="1"
 fi
-AM_CONDITIONAL(HAVE_LIBNET, test $HAVE_LIBNET -eq 0)
+AM_CONDITIONAL(HAVE_LIBNET, test $HAVE_LIBNET -eq 1)
 AC_SUBST(LIBNET_CFLAGS)
 AC_SUBST(LIBNET_LIBS)
 
@@ -134,7 +147,7 @@ then
 else
   HAVE_LIBGTHREAD2="1"
 fi
-AM_CONDITIONAL(HAVE_LIBGTHREAD2, test $HAVE_LIBGTHREAD2 -eq 0)
+AM_CONDITIONAL(HAVE_LIBGTHREAD2, test $HAVE_LIBGTHREAD2 -eq 1)
 AC_SUBST(LIBGTHREAD2_CFLAGS)
 AC_SUBST(LIBGTHREAD2_LIBS)
 
@@ -143,8 +156,12 @@ LIBGLIB2_CFLAGS="`pkg-config --cflags glib-2.0`"
 LIBGLIB2_LIBS="`pkg-config --libs glib-2.0`"
 if test -z "$LIBGLIB2_LIBS"
 then
-  AC_MSG_ERROR([You really need libglib2-devel to compile upwatch])
+  HAVE_LIBGLIB2="0"
+else
+  HAVE_LIBGLIB2="1"
 fi
+AM_CONDITIONAL(HAVE_LIBGLIB2, test $HAVE_LIBGLIB2 -eq 1)
+AC_SUBST(LIBGLIB2_CFLAGS)
 AC_SUBST(LIBGLIB2_CFLAGS)
 AC_SUBST(LIBGLIB2_LIBS)
 
@@ -163,32 +180,52 @@ AC_CHECK_LIB([pthread], [pthread_create],
   [LIBPTHREAD_LIBS=-lpthread],[AC_MSG_ERROR([Sorry, we need -lpthread to continue])] )
 AC_SUBST(LIBPTHREAD_LIBS)
 
-AC_CHECK_LIB([curl], [curl_easy_init],
-  [LIBCURL_LIBS=-lcurl], [AC_MSG_ERROR([Sorry, we need -lcurl to continue])])
-AC_SUBST(LIBCURL_LIBS)
-
-AC_CHECK_LIB([pcap], [pcap_close],
-  [LIBPCAP_LIBS=-lpcap], [AC_MSG_ERROR([Sorry, we need -lpcap to continue])])
+AC_CHECK_LIB([pcap], [pcap_close], [HAVE_LIBPCAP=1], [HAVE_LIBPCAP=0])
+if test $HAVE_LIBPCAP -eq 1
+then
+	LIBPCAP_LIBS=-lpcap
+fi
+AM_CONDITIONAL(HAVE_LIBPCAP, test $HAVE_LIBPCAP -eq 1)
 AC_SUBST(LIBPCAP_LIBS)
 
-AC_CHECK_LIB([gdbm], [gdbm_close],
-  [LIBGDBM_LIBS=-lgdbm], [AC_MSG_ERROR([Sorry, we need -lgdbm to continue])])
+AC_CHECK_LIB([gdbm], [gdbm_close], [HAVE_LIBGDBM=1], [HAVE_LIBGDBM=0])
+if test $HAVE_LIBGDBM -eq 1
+then
+	LIBGDBM_LIBS=-lgdbm
+fi
+AM_CONDITIONAL(HAVE_LIBGDBM, test $HAVE_LIBGDBM -eq 1)
 AC_SUBST(LIBGDBM_LIBS)
 
-AC_CHECK_LIB([crypto], [SSLeay_version],
-  [LIBCRYPTO_LIBS=-lcrypto], [AC_MSG_ERROR([Sorry, we need -lcrypto to continue])])
+AC_CHECK_LIB([crypto], [SSLeay_version], [HAVE_LIBCRYPTO=1], [HAVE_LIBCRYPTO=0])
+if test $HAVE_LIBCRYPTO -eq 1
+then
+	LIBCRYPTO_LIBS=-lcrypto
+fi
+AM_CONDITIONAL(HAVE_LIBCRYPTO, test $HAVE_LIBCRYPTO -eq 1)
 AC_SUBST(LIBCRYPTO_LIBS)
 
-AC_CHECK_LIB([snmp], [snmp_open],
-  [LIBSNMP_LIBS=-lsnmp], [AC_MSG_ERROR([Sorry, we need -lsnmp to continue])], [-lcrypto])
+AC_CHECK_LIB([snmp], [snmp_open], [HAVE_LIBSNMP=1], [HAVE_LIBSNMP=0])
+if test $HAVE_LIBSNMP -eq 1
+then
+	LIBSNMP_LIBS=-lsnmp
+fi
+AM_CONDITIONAL(HAVE_LIBSNMP, test $HAVE_LIBSNMP -eq 1)
 AC_SUBST(LIBSNMP_LIBS)
 
-AC_CHECK_LIB([tds], [tds_alloc_login],
-  [LIBTDS_LIBS=-ltds], [AC_MSG_ERROR([Sorry, we need -ltds to continue])])
+AC_CHECK_LIB([tds], [tds_alloc_login], [HAVE_LIBTDS=1], [HAVE_LIBTDS=0])
+if test $HAVE_LIBTDS -eq 1
+then
+	LIBTDS_LIBS=-ltds
+fi
+AM_CONDITIONAL(HAVE_LIBTDS, test $HAVE_LIBTDS -eq 1)
 AC_SUBST(LIBTDS_LIBS)
 
-AC_CHECK_LIB([pq], [PQclear],
-  [LIBPQ_LIBS=-lpq], [AC_MSG_ERROR([Sorry, we need -lpq to continue])])
+AC_CHECK_LIB([pq], [PQclear], [HAVE_LIBPQ=1], [HAVE_LIBPQ=0])
+if test $HAVE_LIBPQ -eq 1
+then
+	LIBPQ_LIBS=-lpq
+fi
+AM_CONDITIONAL(HAVE_LIBPQ, test $HAVE_LIBPQ -eq 1)
 AC_SUBST(LIBPQ_LIBS)
 
 #LIBOPTS_LDADD=-lopts
@@ -217,6 +254,51 @@ AC_FUNC_STAT
 AC_FUNC_STRFTIME
 AC_CHECK_FUNCS([alarm atexit dup2 gethostbyname gethostname gettimeofday inet_ntoa memset putenv regcomp select socket strchr strdup strerror strncasecmp strrchr strstr strtol strtoul tzset uname])
 
+
+echo 
+echo "*********************************************************"
+echo "* CONFIGURATION:                                        *"
+echo "*                                                       *"
+echo "* using RPM program: $RPMBUILD                        *"
+
+if test $HAVE_LIBNET -eq 0
+then
+echo "* libnet not found, uw_investigate will not be built    *"
+else
+AC_CONFIG_FILES([uw_investigate/Makefile])
+fi
+if test $HAVE_LIBPCAP -eq 0
+then
+echo "* libpcap not found, uw_iptraf will not be built        *"
+else
+AC_CONFIG_FILES([uw_iptraf/Makefile])
+fi
+if test $HAVE_LIBCRYPTO -eq 0
+then
+echo "* -lcrypto not found, some things will not be built     *"
+fi
+if test $HAVE_LIBSNMP -eq 0
+then
+echo "* snmp libs not found, no SNMP support                  *"
+else
+AC_CONFIG_FILES([uw_snmpget/Makefile])
+fi
+if test $HAVE_LIBTDS -eq 0
+then
+echo "* TDS lib not found, no MS-SQL support                  *"
+else
+AC_CONFIG_FILES([uw_mssql/Makefile])
+fi
+if test $HAVE_LIBPQ -eq 0
+then
+echo "* PostgreSQL not found, no PostgreSQL support           *"
+else
+AC_CONFIG_FILES([uw_postgresql/Makefile])
+fi
+
+echo "*********************************************************"
+echo 
+
 AC_CONFIG_FILES([Makefile
                  doc/Makefile
                  upwatch/Makefile
@@ -226,40 +308,18 @@ AC_CONFIG_FILES([Makefile
                  uw_accept/Makefile
                  uw_acceptbb/Makefile
                  uw_httpget/Makefile
-                 uw_investigate/Makefile
-                 uw_iptraf/Makefile
                  uw_notify/Makefile
                  uw_ping/Makefile
                  uw_process/Makefile
                  uw_send/Makefile
                  uw_sysstat/Makefile
                  uw_mysql/Makefile
-                 uw_postgresql/Makefile
                  uw_pop3/Makefile
-                 uw_snmpget/Makefile
-                 uw_mssql/Makefile
                  uw_imap/Makefile
                  compat/Makefile
                  compat/bb/Makefile
                  compat/bb/bbhimport/Makefile
                  compat/sometests/Makefile
                  compat/sometests/setproctitle/Makefile])
-
-echo 
-echo "*******************************************************"
-echo "* CONFIGURATION:                                      *"
-echo "*                                                     *"
-
-if test $HAVE_PCAP -eq 0
-then
-echo "* libpcap not found, uw_iptraf will not be built      *"
-fi
-if test $HAVE_LIBNET -eq 0
-then
-echo "* libnet not found, uw_investigate will not be built  *"
-fi
-
-echo "*******************************************************"
-echo 
 
 AC_OUTPUT

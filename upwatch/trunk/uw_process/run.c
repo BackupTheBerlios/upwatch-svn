@@ -5,7 +5,6 @@
 #include <unistd.h>
 
 #include <netinet/in.h>
-#include <curl/curl.h>
 #include <netdb.h>
 
 #include <generic.h>

@@ -19,6 +19,7 @@ upwatch.txt: ${XMLSOURCE}
 # So I'll just ignore any ererors from jw
 upwatch.pdf: ${XMLSOURCE}
 	-jw -c /etc/sgml/catalog -f docbook -b pdf -d style.dsl upwatch.xml
+	touch upwatch.pdf
 
 CLEANFILES = upwatch.pdf upwatch.txt upwatch.html Makefile.in
 

@@ -1,7 +1,6 @@
 #include "config.h"
 #include <netinet/in_systm.h>
 #include <netinet/in.h>
-#include <curl/curl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
