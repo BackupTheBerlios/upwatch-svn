@@ -114,6 +114,15 @@ The command should print the termperature in Celsius to standard output';
 };
 
 flag = {
+    name      = df_command;
+    arg_type  = string;   /* option argument indication  */
+    arg_default = "df -k";
+    descrip   = "command for running `df`";
+    doc       =
+'This command is used to run a `df` report';
+};
+
+flag = {
     name      = top_command;
     arg_type  = string;   /* option argument indication  */
     arg_default = "top -b -n 1 | head -30";

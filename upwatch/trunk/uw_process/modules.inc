@@ -11,6 +11,7 @@ extern module postgresql_module;
 extern module snmpget_module;
 extern module mssql_module;
 extern module errlog_module;
+extern module diskfree_module;
 
 module *modules[] = {
   &httpget_module,
@@ -21,6 +22,7 @@ module *modules[] = {
   &pop3_module,
   &imap_module,
   &errlog_module,
+  &diskfree_module,
   &bb_cpu_module,
   &bb_module,
 #if HAVE_LIBPQ

@@ -29,7 +29,7 @@ init_DATA = $(INITFILES)
 uw_process_SOURCES = run.c process.c generic_ct.c cmd_options.h cmd_options.c \
  insertcache.c uw_process.h modules.inc $(SPECFILES) $(INITFILES) \
  ping.c httpget.c iptraf.c sysstat.c mysql.c bb_cpu.c bb.c pop3.c $(USE_LIBPQ) \
- $(USE_LIBSNMP) $(USE_LIBTDS) imap.c errlog.c
+ $(USE_LIBSNMP) $(USE_LIBTDS) imap.c errlog.c diskfree.c
 uw_process_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ \
   $(DEF_LIBPQ) $(DEF_LIBSNMP) $(DEF_LIBTDS) # -DUSE_THREADS
 BUILT_SOURCES = cmd_options.h cmd_options.c $(SPECFILES) $(INITFILES)

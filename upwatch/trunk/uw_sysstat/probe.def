@@ -199,3 +199,41 @@ probe = {
   };
 };
 
+probe = {
+  name = "diskfree";
+  id = 13;
+  descrip = "Free disk space";
+  addbyhand = "no";
+  class = "";
+  graphgroup = "";
+  graphtypes = "default";
+  comment = "";
+
+  attribute = {
+    name = "ipaddress";
+    default = "127.0.0.1";
+    descrip = "target ip address";
+  };
+
+  attribute = {
+    name = "date";
+    required = true;
+    descrip = "date/time for this result";
+  };
+
+  attribute = {
+    name = "expires";
+    required = true;
+    descrip = "when this result expires";
+  };
+
+  element = {
+    name = "host";
+    descrip = "host where this element originated";
+  };
+
+  element = {
+    name = "color";
+    descrip = "color as this probe thinks it should be";
+  };
+};

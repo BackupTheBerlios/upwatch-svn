@@ -163,6 +163,7 @@ int init(void)
     return 0;
   }
 
+  // compile & store the regular expressions for the loglines to be ignored
   if (HAVE_OPT(SYSLOG_IGNORE)) {
     struct regexspec *spec = NULL;
     int     ct  = STACKCT_OPT( SYSLOG_IGNORE );
@@ -188,6 +189,7 @@ int init(void)
     }
   }
 
+  // compile & store the regular expressions for the loglines that are code red
   if (HAVE_OPT(SYSLOG_RED)) {
     struct regexspec *spec = NULL;
     int     ct  = STACKCT_OPT( SYSLOG_RED );
@@ -219,6 +221,7 @@ int init(void)
     printf("color = %d\n", logcolor);
     exit(0);
   }
+
   // determine ip address for default gateway interface
   setsin(&to, inet_addr("1.1.1.1"));
   msg = findsaddr(&to, &from);
@@ -240,13 +243,13 @@ int init(void)
 int run(void)
 {
   xmlDocPtr doc;
-  xmlNodePtr subtree, sysstat, errlog;
+  xmlNodePtr subtree, sysstat, errlog, diskfree;
   int ret = 0;
   int color = STAT_GREEN;
-  int logcolor = STAT_GREEN;
 static int prv_color = STAT_GREEN;
   time_t now;
   char buffer[1024];
+  float fullest = 0.0;
   char info[32768];
   int systemp = 0;
   long long rt=0, wt=0;
@@ -268,7 +271,7 @@ extern int forever;
   // compute sysstat
   //
   get_stats();
-  { 
+  if (st.diskio != NULL) { 
     diskio_stat_t *diskio_stat_ptr = st.diskio;
     int counter;
 
@@ -281,11 +284,12 @@ extern int forever;
       diskio_stat_ptr++;
     }
   }
-  if (st.load->min1 > 5.0) color = STAT_RED;
 
-  {
+  if (st.load->min1 > 0.5) { // if loadavg > 0.5 give `top` listing
     char cmd[1024];
     FILE *in;
+
+    if (st.load->min1 > 5.0) color = STAT_RED;
 
     sprintf(cmd, "%s > /tmp/.uw_sysstat.tmp", OPT_ARG(TOP_COMMAND));
     if (debug > 2) LOG(LOG_NOTICE, cmd);
@@ -293,15 +297,18 @@ extern int forever;
     system(cmd);
     in = fopen("/tmp/.uw_sysstat.tmp", "r");
     if (in) {
-      signed char *s;
+      signed char *s = info;
+      size_t len;
 
-      fread(info, sizeof(info)-1, 1, in); 
-      info[sizeof(info)-1] = 0;
-      fclose(in);
-
-      for (s = info; *s; s++) { // clean up strange characters
-        if (*s < 0) *s = ' ';
+      for (len=0; len < sizeof(info)-1; len++) {
+        char c;
+        if ((c = fgetc(in)) != EOF) {
+          if (c < 0) c = ' ';
+          *s++ = c;
+        }
       }
+      *s = 0;
+      fclose(in);
     } else {
       strcpy(info, strerror(errno));
     }
@@ -322,8 +329,6 @@ extern int forever;
     }
     unlink("tmp/.uw_sysstat.tmp");
   }
-
-  log = check_log(OPT_ARG(SYSLOG_FILE), &logcolor, FALSE);
 
   doc = UpwatchXmlDoc("result");
   xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
@@ -363,16 +368,72 @@ extern int forever;
   sprintf(buffer, "%d", systemp);		subtree = xmlNewChild(sysstat, NULL, "systemp", buffer);
   subtree = xmlNewTextChild(sysstat, NULL, "info", info);
 
+  color = STAT_GREEN;
+  log = check_log(OPT_ARG(SYSLOG_FILE), &color, FALSE);
   errlog = xmlNewChild(xmlDocGetRootElement(doc), NULL, "errlog", NULL);
   sprintf(buffer, "%ld", OPT_VALUE_SERVERID);	xmlSetProp(errlog, "server", buffer);
   xmlSetProp(errlog, "ipaddress", ipaddress);
   sprintf(buffer, "%d", (int) now);		xmlSetProp(errlog, "date", buffer);
   sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60));
     xmlSetProp(errlog, "expires", buffer);
-  sprintf(buffer, "%d", logcolor);		subtree = xmlNewChild(errlog, NULL, "color", buffer);
+  sprintf(buffer, "%d", color);			subtree = xmlNewChild(errlog, NULL, "color", buffer);
   if (log && log->str && strlen(log->str) > 0) {
     subtree = xmlNewTextChild(errlog, NULL, "info", log->str);
   }
+
+  // see which filesystems are full
+  color = STAT_GREEN;
+  if (st.disk != NULL) {
+    disk_stat_t *disk_stat_ptr = st.disk;
+    int counter;
+
+    for (counter=0; counter < st.disk_entries; counter++){
+      float use;
+      use = 100.00 * ((float) disk_stat_ptr->used / (float) (disk_stat_ptr->used + disk_stat_ptr->avail));
+      if (use > fullest) fullest = use;
+      disk_stat_ptr++;
+    }
+  }
+
+  if (fullest > 80) { // if some disk is more then 80% full give `df` listing
+    char cmd[1024];
+    FILE *in;
+
+    if (fullest > 90) color = STAT_YELLOW;
+    if (fullest > 95) color = STAT_RED;
+
+    sprintf(cmd, "%s > /tmp/.uw_sysstat.tmp", OPT_ARG(DF_COMMAND));
+    if (debug > 2) LOG(LOG_NOTICE, cmd);
+    uw_setproctitle("running %s", OPT_ARG(DF_COMMAND));
+    system(cmd);
+    in = fopen("/tmp/.uw_sysstat.tmp", "r");
+    if (in) {
+      signed char *s = info;
+      size_t len;
+
+      for (len=0; len < sizeof(info)-1; len++) {
+        char c;
+        if ((c = fgetc(in)) != EOF) {
+          if (c < 0) c = ' ';
+          *s++ = c;
+        }
+      }
+      *s = 0;
+      fclose(in);
+    } else {
+      strcpy(info, strerror(errno));
+    }
+    unlink("/tmp/.uw_sysstat.tmp");
+  }
+
+  diskfree = xmlNewChild(xmlDocGetRootElement(doc), NULL, "diskfree", NULL);
+  sprintf(buffer, "%ld", OPT_VALUE_SERVERID);	xmlSetProp(diskfree, "server", buffer);
+  xmlSetProp(diskfree, "ipaddress", ipaddress);
+  sprintf(buffer, "%d", (int) now);		xmlSetProp(diskfree, "date", buffer);
+  sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60));
+    xmlSetProp(diskfree, "expires", buffer);
+  sprintf(buffer, "%d", color);			subtree = xmlNewChild(diskfree, NULL, "color", buffer);
+  subtree = xmlNewTextChild(diskfree, NULL, "info", info);
 
   if (HAVE_OPT(HPQUEUE)) {
     if (color != prv_color) {
