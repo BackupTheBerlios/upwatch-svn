@@ -82,6 +82,19 @@
        to test if this is supported) and the <command>errlog</command> parameters tell 
        <command>uw_sysstat</command> which files to monitor and their format.</para>
     </sect1>
+    <sect1 id="troubleshooting">
+       <title>Trouble shooting</title>
+       <sect2 id="uw_send_crash">
+       <title>uw_send crashes immediately when it is started</title>
+       <para>Most probably you have an libxml2 with compiled-in thread support on your system. 
+       libxml2 should not be compiled with thread support, so you'll have to replace it. You 
+       can check this with:</para>
+       <literallayout>
+       # ldd /usr/lib/libxml2.so
+       </literallayout>
+       <para>The output should not contain any threading libraries.</para>
+       </sect2>
+    </sect1>
     <sect1 id="Monitoring_specific_logfiles">
        <title>Monitoring specific logfiles</title>
        <para>uw_sysstat is special in that it allows you to scan every (line-oriented) logfile

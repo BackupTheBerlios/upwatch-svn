@@ -27,8 +27,12 @@ Ron Arts
    3. Configuration
 
         3.1. Configuration Files
-        3.2. Monitoring specific logfiles
-        3.3. Maintenance and Upgrades
+        3.2. Trouble shooting
+
+              3.2.1. uw_send crashes immediately when it is started
+
+        3.3. Monitoring specific logfiles
+        3.4. Maintenance and Upgrades
 
    4. Utilities
 
@@ -180,10 +184,20 @@ Chapter 3. Configuration
    Table of Contents
 
    3.1. Configuration Files
-   3.2. Monitoring specific logfiles
-   3.3. Maintenance and Upgrades
+   3.2. Trouble shooting
+
+        3.2.1. uw_send crashes immediately when it is started
+
+   3.3. Monitoring specific logfiles
+   3.4. Maintenance and Upgrades
 
 3.1. Configuration Files
+
+   First: it is extremely important your host clock is set correctly, and
+   please  use NTP to keep it up-to-date. If you don't, you will see very
+   strange  things  happening,  and  what's  more,  if this gets into the
+   database,  it  will  be impossible to correct (apart from deleting all
+   results alltogether).
 
    The  directory structure for configuration files is as follows. At the
    toplevel is upwatch.conf (usually residing in /etc). This file is read
@@ -255,7 +269,19 @@ Chapter 3. Configuration
    errlog  parameters  tell  uw_sysstat  which files to monitor and their
    format.
 
-3.2. Monitoring specific logfiles
+3.2. Trouble shooting
+
+3.2.1. uw_send crashes immediately when it is started
+
+   Most  probably  you have an libxml2 with compiled-in thread support on
+   your  system.  libxml2  should not be compiled with thread support, so
+   you'll have to replace it. You can check this with:
+
+          # ldd /usr/lib/libxml2.so
+
+   The output should not contain any threading libraries.
+
+3.3. Monitoring specific logfiles
 
    uw_sysstat   is   special   in  that  it  allows  you  to  scan  every
    (line-oriented) logfile you want. It uses regular expressions to set a
@@ -322,7 +348,7 @@ Chapter 3. Configuration
        regular  expressions  for  such  lines.  You don't need to restart
        uw_sysstat, it will notice the file was modified.
 
-3.3. Maintenance and Upgrades
+3.4. Maintenance and Upgrades
 
    The  RPM  files  contain  logrotate.d  files  to  rotate  the  upwatch
    logfiles, other platforms should supply their own.
