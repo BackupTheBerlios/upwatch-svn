@@ -114,7 +114,6 @@ static int in_cksum(u_short *p, int n);
 static void exit_probes(void)
 {
   if (sock != -1) close(sock);
-  close_database();
 }
 
 int init(void)
@@ -148,6 +147,7 @@ int init(void)
 
 int run(void)
 {
+  MYSQL *mysql;
   xmlDocPtr doc, red;
   int id = 0, redcount = 0;
   struct hostinfo **newh = NULL;
@@ -157,7 +157,9 @@ int run(void)
   tm = gmtime(&now);
   if (debug > 0) LOG(LOG_DEBUG, "reading ping info from database");
   uw_setproctitle("reading ping info from database");
-  while (open_database() == 0) {
+  mysql = open_database(OPT_ARG(DBHOST), OPT_ARG(DBNAME), OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
+                        OPT_VALUE_DBCOMPRESS);
+  while (mysql) {
     MYSQL_RES *result;
     MYSQL_ROW row;
     char qry[256]; 
@@ -173,13 +175,13 @@ int run(void)
 
     if (mysql_query(mysql, qry)) {
       LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql));
-      close_database();
+      close_database(mysql);
       break;
     }
     result = mysql_store_result(mysql);
     if (!result) {
       if (debug) LOG(LOG_DEBUG, "%s: no result", qry);
-      close_database();
+      close_database(mysql);
       break;
     }
     newh = calloc(mysql_num_rows(result), sizeof(struct hostinfo));
@@ -220,6 +222,8 @@ int run(void)
       id++;
     }
     mysql_free_result(result);
+    close_database(mysql);
+    if (debug > 0) LOG(LOG_DEBUG, "done reading");
 
     newh[id] = NULL;
     num_hosts = id;
@@ -237,8 +241,6 @@ int run(void)
       free(hosts);
     }
     hosts = newh; // replace with new structure
-    if (debug > 0) LOG(LOG_DEBUG, "done reading");
-    close_database();
     break;
   }
   if (hosts == NULL || num_hosts <= 0) {

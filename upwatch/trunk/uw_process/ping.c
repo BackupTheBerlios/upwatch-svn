@@ -55,18 +55,19 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
 
   if (res->message) {
     escmsg = g_malloc(strlen(res->message) * 2 + 1);
-    mysql_real_escape_string(mysql, escmsg, res->message, strlen(res->message)) ;
+    mysql_real_escape_string(probe->db, escmsg, res->message, strlen(res->message)) ;
   } else {
     escmsg = strdup("");
   }
 
-  result = my_query("insert into pr_ping_raw "
+  result = my_query(probe->db, 0,
+                    "insert into pr_ping_raw "
                     "set    probe = '%u', yellow = '%f', red = '%f', stattime = '%u', color = '%u', "
                     "       value = '%f', lowest = '%f', highest = '%f', message = '%s'",
                     def->probeid, def->yellow, def->red, res->stattime, res->color, 
                     res->value, res->lowest, res->highest, escmsg);
   mysql_free_result(result);
-  if (mysql_affected_rows(mysql) > 0) { // something was actually inserted
+  if (mysql_affected_rows(probe->db) > 0) { // something was actually inserted
     already_there = FALSE;
   }
   g_free(escmsg);
@@ -76,7 +77,7 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
 //*******************************************************************
 // SUMMARIZE A TABLE INTO AN OLDER PERIOD
 //*******************************************************************
-static void summarize(void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh)
+static void summarize(module *probe, void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint ignore_dupes)
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
@@ -88,7 +89,8 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
 
   stattime = slotlow + ((slothigh-slotlow)/2);
 
-  result = my_query("select avg(lowest), avg(value), avg(highest), "
+  result = my_query(probe->db, 0,
+                    "select avg(lowest), avg(value), avg(highest), "
                     "       max(color), avg(yellow), avg(red) " 
                     "from   pr_ping_%s use index(probtime) "
                     "where  probe = '%d' and stattime >= %d and stattime < %d",
@@ -104,7 +106,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   row = mysql_fetch_row(result);
   if (!row) {
     mysql_free_result(result);
-    LOG(LOG_ERR, mysql_error(mysql));
+    LOG(LOG_ERR, mysql_error(probe->db));
     return;
   }
   if (row[0] == NULL) {
@@ -121,7 +123,8 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   avg_red     = atof(row[5]);
   mysql_free_result(result);
 
-  result = my_query("insert into pr_ping_%s " 
+  result = my_query(probe->db, ignore_dupes,
+                    "insert into pr_ping_%s " 
                     "set    value = %f, lowest = %f, highest = %f, probe = %d, color = '%u', " 
                     "       stattime = %d, yellow = '%f', red = '%f', slot = '%u'",
                     into, avg_value, min_lowest, max_highest, def->probeid, 
@@ -141,6 +144,7 @@ module ping_module  = {
   NULL,
   NULL,
   store_raw_result,
-  summarize
+  summarize,
+  NULL
 };
 

@@ -30,9 +30,12 @@ static char *chop(char *s, int i)
 
 static int uw_password_ok(char *user, char *passwd) 
 {
+  MYSQL *mysql;
   MYSQL_RES *result;
 
-  if (open_database() == 0) {
+  mysql = open_database(OPT_ARG(DBHOST), OPT_ARG(DBNAME), OPT_ARG(DBUSER), OPT_ARG(DBPASSWD), 
+                        OPT_VALUE_DBCOMPRESS);
+  if (mysql) {
     gchar buffer[256];
     MYSQL_ROW row;
 
@@ -40,13 +43,13 @@ static int uw_password_ok(char *user, char *passwd)
     if (debug > 1) LOG(LOG_DEBUG, buffer);
     if (mysql_query(mysql, buffer)) {
       LOG(LOG_ERR, "buffer: %s", mysql_error(mysql));
-      close_database();
+      close_database(mysql);
       return(FALSE);
     }
     result = mysql_store_result(mysql);
     if (!result || mysql_num_rows(result) < 1) {
       if (debug) LOG(LOG_DEBUG, "user %s, pwd %s not found", user, passwd);
-      close_database();
+      close_database(mysql);
       return(FALSE);
     }
     if ((row = mysql_fetch_row(result))) {
@@ -56,9 +59,9 @@ static int uw_password_ok(char *user, char *passwd)
       if (debug>1) LOG(LOG_DEBUG, "user %s, pwd %s resulted in id %d", user, passwd, id);
     }
     mysql_free_result(result);
-    close_database();
+    close_database(mysql);
   } else {
-    close_database();
+    close_database(mysql);
     return(FALSE); // couldn't open database
   }
   return(TRUE);

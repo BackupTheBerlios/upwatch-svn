@@ -42,10 +42,13 @@ int run_actual_probes(int count);
   xmlDocPtr doc, red;
   int id=0, redcount=0;
   time_t now;
+  MYSQL *mysql;
 
   if (debug > 0) LOG(LOG_DEBUG, "reading info from database");
   uw_setproctitle("reading info from database");
-  while (open_database() == 0) {
+  mysql = open_database(OPT_ARG(DBHOST), OPT_ARG(DBNAME), OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
+                        OPT_VALUE_DBCOMPRESS);
+  while (mysql) {
     MYSQL_RES *result;
     MYSQL_ROW row;
     char qry[1024];
@@ -58,9 +61,9 @@ int run_actual_probes(int count);
             OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_NAME_FIELD),
             OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_ID_FIELD));
 
-    if (mysql_query(mysql, qry)) {
+    if (my_query(mysql, 1, qry)) {
       LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql)); // if we can't read info from the database, use cached info
-      close_database();
+      close_database(mysql);
       break;
     }
 
@@ -98,13 +101,13 @@ int run_actual_probes(int count);
       }
       hosts = newh; // replace with new structure
     }
-    close_database();
+    close_database(mysql);
     if (debug > 0) LOG(LOG_DEBUG, "%d probes read", num_hosts);
     break;
   }
   if (hosts == NULL) {
     LOG(LOG_ERR, "no database, no cached info - bailing out");
-    close_database();
+    close_database(mysql);
     return 0;
   }
 

@@ -13,6 +13,7 @@
 #define GNET_EXPERIMENTAL
 #include <gnet/gnet.h>
 #include "cmd_options.h"
+#include "probe.def_h"
 
 static GServer* ob_server = NULL;
 static void ob_server_func(GServer* server, GServerStatus status,

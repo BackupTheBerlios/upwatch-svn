@@ -37,9 +37,11 @@ struct probe_def{
 #include "../common/common.h"
 };
 
+#define STANDARD_MODULE_STUFF(a) PROBE_##a, #a, NULL, NULL, sizeof(struct a##_result)
 typedef struct _module {
   int class;
   char *module_name;
+  MYSQL *db;
   GHashTable *cache;
   int res_size;
   void (*free_def)(void *def);
@@ -52,7 +54,9 @@ typedef struct _module {
   int  (*fix_result)(struct _module *probe, void *res);
   void *(*get_def)(struct _module *probe, void *res);
   gint (*store_results)(struct _module *probe, void *def, void *res);
-  void (*summarize)(void *def, void *res, char *from, char *into, guint slot, guint slotlow, guint slothigh);
+  void (*summarize)(struct _module *probe, void *def, void *res, char *from, char *into, 
+                    guint slot, guint slotlow, guint slothigh, gint ignoredupes);
+  void (*end_run)(void);
 } module;
 
 extern module *modules[];
@@ -66,6 +70,5 @@ typedef struct transaction {
   void *def;		// probe definition data
 } trx;
 
-#define STANDARD_MODULE_STUFF(a) PROBE_##a, #a, NULL, sizeof(struct a##_result)
 #endif /* __UW_PROCESS_H */
 

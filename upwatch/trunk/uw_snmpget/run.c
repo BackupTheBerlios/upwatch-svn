@@ -54,20 +54,25 @@ int init(void)
   return(1);
 }
 
-void refresh_database(void);
+void refresh_database(MYSQL *mysql);
 void run_actual_probes(void);
 void write_results(void);
 
 int run(void)
 {
+  MYSQL *mysql;
+
   if (!cache) {
     cache = g_hash_table_new_full(g_int_hash, g_int_equal, g_free, free_probe);
   }
   
   if (debug > 0) LOG(LOG_DEBUG, "reading info from database");
   uw_setproctitle("reading info from database");
-  if (open_database() == 0) {
-    refresh_database();
+  mysql = open_database(OPT_ARG(DBHOST), OPT_ARG(DBNAME), OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
+                        OPT_VALUE_DBCOMPRESS);
+  if (mysql) {
+    refresh_database(mysql);
+    close_database(mysql);
   }
 
   if (debug > 0) LOG(LOG_DEBUG, "running %d probes", g_hash_table_size(cache));
@@ -81,7 +86,7 @@ int run(void)
   return(g_hash_table_size(cache));
 }
 
-void refresh_database(void)
+void refresh_database(MYSQL *mysql)
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
@@ -96,15 +101,13 @@ void refresh_database(void)
           OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_NAME_FIELD),
           OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_ID_FIELD));
 
-  if (mysql_query(mysql, qry)) {
+  if (my_query(mysql, 1, qry)) {
     LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql)); 
-    close_database();
     return;
   }
   result = mysql_store_result(mysql);
   if (!result) {
     LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql)); 
-    close_database();
     return;
   }
     

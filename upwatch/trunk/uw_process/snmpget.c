@@ -47,12 +47,13 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
 
   if (res->message) {
     escmsg = g_malloc(strlen(res->message) * 2 + 1);
-    mysql_real_escape_string(mysql, escmsg, res->message, strlen(res->message)) ;
+    mysql_real_escape_string(probe->db, escmsg, res->message, strlen(res->message)) ;
   } else {
     escmsg = strdup("");
   }
     
-  result = my_query("insert into pr_snmpget_raw "
+  result = my_query(probe->db, 0,
+                    "insert into pr_snmpget_raw "
                     "set    probe = '%u', yellow = '%f', red = '%f', stattime = '%u', color = '%u', "
                     "       value = '%f', "
                     "       message = '%s' ",
@@ -60,7 +61,7 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
                     res->value, escmsg);
 
   mysql_free_result(result);
-  if (mysql_affected_rows(mysql) > 0) { // something was actually inserted
+  if (mysql_affected_rows(probe->db) > 0) { // something was actually inserted
     already_there = FALSE;
   }
   g_free(escmsg);
@@ -70,7 +71,7 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
 //*******************************************************************
 // SUMMARIZE A TABLE INTO AN OLDER PERIOD
 //*******************************************************************
-static void summarize(void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh)
+static void summarize(module *probe, void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint ignore_dupes)
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
@@ -82,7 +83,8 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
 
   stattime = slotlow + ((slothigh-slotlow)/2);
 
-  result = my_query("select avg(value), "
+  result = my_query(probe->db, 0,
+                    "select avg(value), "
                     "       max(color), avg(yellow), avg(red) "
                     "from   pr_snmpget_%s use index(probtime) "
                     "where  probe = '%d' and stattime >= %d and stattime < %d",
@@ -98,7 +100,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   row = mysql_fetch_row(result);
   if (!row) {
     mysql_free_result(result);
-    LOG(LOG_ERR, mysql_error(mysql));
+    LOG(LOG_ERR, mysql_error(probe->db));
     return;
   }
   if (row[0] == NULL) {
@@ -113,7 +115,8 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   avg_red     = atof(row[3]);
   mysql_free_result(result);
 
-  result = my_query("insert into pr_snmpget_%s "
+  result = my_query(probe->db, ignore_dupes,
+                    "insert into pr_snmpget_%s "
                     "set    value = '%f', "
                     "       probe = %d, color = '%u', stattime = %d, "
                     "       yellow = '%f', red = '%f', slot = '%u'",
@@ -135,6 +138,7 @@ module snmpget_module  = {
   NULL,
   NULL,
   store_raw_result,
-  summarize
+  summarize,
+  NULL
 };
 

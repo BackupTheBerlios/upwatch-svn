@@ -52,5 +52,4 @@ removes any files in `tmp` that are older then 36 hours. For some more info
 about maildir see http://www.qmail.org/man/man5/maildir.html.';
 };
 
-#include dbase_options.def
 #include ../common/generic_options.def

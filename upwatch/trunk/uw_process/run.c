@@ -32,21 +32,66 @@ static void free_res(void *res)
   g_free(r);
 }
 
-static void cleanup(void)
+static void modules_end_run(void)
 {
   int i;
 
   for (i = 0; modules[i]; i++) {
+    if (modules[i]->end_run) {
+      modules[i]->end_run();
+    }
+    close_database(modules[i]->db);
+    modules[i]->db = NULL;
+  }
+}
+
+static void modules_cleanup(void)
+{
+  int i;
+
+  for (i = 0; modules[i]; i++) {
+/*
+    if (modules[i]->cleanup) {
+      modules[i]->cleanup();
+    }
+*/
     if (modules[i]->cache) {
       g_hash_table_destroy(modules[i]->cache);
     }
   }
 }
 
-int init(void)
+static void modules_start_run(void)
 {
   int i;
 
+  for (i = 0; modules[i]; i++) {
+    modules[i]->db = open_database(OPT_ARG(DBHOST), OPT_ARG(DBNAME),
+                                     OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
+                                     OPT_VALUE_DBCOMPRESS);
+    if (modules[i]->start_run) {
+      modules[i]->start_run();
+    }
+  }
+}
+
+static void modules_init(void)
+{
+  int i;
+
+  for (i = 0; modules[i]; i++) {
+    if (modules[i]->init) {
+      modules[i]->init();
+    }
+    if (modules[i]->cache == NULL) {
+      modules[i]->cache = g_hash_table_new_full(g_int_hash, g_int_equal, g_free, 
+                            modules[i]->free_def? modules[i]->free_def : g_free);
+    }
+  }
+}
+
+int init(void)
+{
   daemonize = TRUE;
   if (HAVE_OPT(RUN_QUEUE) || HAVE_OPT(SUMMARIZE)) {
     every = ONE_SHOT;
@@ -77,12 +122,8 @@ int init(void)
   }
   //g_thread_init(NULL);
   xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
-  atexit(cleanup);
-  for (i = 0; modules[i]; i++) {
-    if (modules[i]->init) {
-      modules[i]->init();
-    }
-  }
+  modules_init();
+  atexit(modules_cleanup);
   return(1);
 }
 
@@ -148,26 +189,21 @@ static int resummarize(void);
   while ((filename = g_dir_read_name(dir)) != NULL) {
     char buffer[PATH_MAX];
 
-    if (open_database() != 0) { // will do nothing if already open
-      break;
-    }
     if (filename[0] == '.') continue;  // skip hidden files
     sprintf(buffer, "%s/%s", path, filename);
     g_ptr_array_add(arr, strdup(buffer));
     files++;
   }
   g_dir_close(dir);
-  if (files) {
-    int i;
 
-    g_ptr_array_sort(arr, mystrcmp);
-    for (i = 0; modules[i]; i++) {
-      if (modules[i]->start_run) {
-        modules[i]->start_run();
-      }
-    }
+  if (!files) {
+    g_ptr_array_free(arr, TRUE);
+    return 0;
   }
 
+  g_ptr_array_sort(arr, mystrcmp);
+
+  modules_start_run();
   for (i=0; i < arr->len && forever; i++) {
     //printf("%s\n", g_ptr_array_index(arr,i));
     if (!got_fatal) {
@@ -176,12 +212,15 @@ static int resummarize(void);
     free(g_ptr_array_index(arr,i));
     count++;
   }
+  modules_end_run();
 
   g_ptr_array_free(arr, TRUE);
-  close_database();
   return(count);
 }
 
+/*
+ * Reads a results file
+*/
 static int handle_file(gpointer data, gpointer user_data)
 {
   char *filename = (char *)data;
@@ -417,7 +456,8 @@ static void *get_def(module *probe, struct probe_result *res)
     def->stamp    = time(NULL);
     def->probeid  = res->probeid;
 
-    result = my_query("select server, color, stattime, yellow, red "
+    result = my_query(probe->db, 0,
+                      "select server, color, stattime, yellow, red "
                       "from   pr_status "
                       "where  class = '%u' and probe = '%u'", probe->class, def->probeid);
     if (result) {
@@ -437,7 +477,8 @@ static void *get_def(module *probe, struct probe_result *res)
     if (!def->server) { 
       // couldn't find pr_status record? Will be created later, 
       // but get the server and yellow/red info from the def record for now
-      result = my_query("select server, yellow, red "
+      result = my_query(probe->db, 0,
+                        "select server, yellow, red "
                         "from   pr_%s_def "
                         "where  id = '%u'", res->name, def->probeid);
       if (!result) return(NULL);
@@ -454,7 +495,8 @@ static void *get_def(module *probe, struct probe_result *res)
         // ourselves. For that we need to fill in the server id and the ipaddress
         // and we look into the result if the is anything useful in there.
 /*
-        result = my_query("insert into pr_%s_def set server = '%d', "
+        result = my_query(probe->db, 0,
+                          "insert into pr_%s_def set server = '%d', "
                           "        ipaddress = '%s', description = 'auto-added by system'",
                           res->name, res->server, res->ipaddress);
         mysql_free_result(result);
@@ -462,7 +504,8 @@ static void *get_def(module *probe, struct probe_result *res)
           LOG(LOG_NOTICE, "insert missing pr_%s_def id %u: %s", 
                            res->name, def->probeid, mysql_error(mysql));
         }
-        result = my_query("select id, yellow, red "
+        result = my_query(probe->db, 0,
+                          "select id, yellow, red "
                           "from   pr_%s_def "
                           "where  server = '%u'", res->name, res->server);
         if (!result) return(NULL);
@@ -477,7 +520,8 @@ static void *get_def(module *probe, struct probe_result *res)
       mysql_free_result(result);
     }
 
-    result = my_query("select stattime from pr_%s_raw use index(probtime) "
+    result = my_query(probe->db, 0,
+                      "select stattime from pr_%s_raw use index(probtime) "
                       "where probe = '%u' order by stattime desc limit 1",
                        res->name, def->probeid);
     if (result) {
@@ -511,7 +555,8 @@ static struct probe_result *get_previous_record(module *probe, struct probe_def 
 
   if (!probe->store_results) return(prv); // we probably don't have a xxxx_raw table
 
-  result = my_query("select   color, stattime "
+  result = my_query(probe->db, 0,
+                    "select   color, stattime "
                     "from     pr_%s_raw use index(probtime) "
                     "where    probe = '%u' and stattime < '%u' "
                     "order by stattime desc limit 1", 
@@ -544,7 +589,8 @@ static struct probe_result *get_following_record(module *probe, struct probe_def
 
   if (!probe->store_results) return(nxt); // we probably don't have a xxxx_raw table
 
-  result = my_query("select   color, stattime "
+  result = my_query(probe->db, 0,
+                    "select   color, stattime "
                     "from     pr_%s_raw use index(probtime) "
                     "where    probe = '%u' and stattime < '%u' "
                     "order by stattime desc limit 1", 
@@ -562,30 +608,32 @@ static struct probe_result *get_following_record(module *probe, struct probe_def
 //*******************************************************************
 // UPDATE PR_STATUS
 //*******************************************************************
-static void update_pr_status(int class, struct probe_def *def, struct probe_result *res)
+static void update_pr_status(module *probe, struct probe_def *def, struct probe_result *res)
 {
   MYSQL_RES *result;
   char *escmsg = strdup("");
 
   if (res->message) {
     escmsg = g_malloc(strlen(res->message) * 2 + 1);
-    mysql_real_escape_string(mysql, escmsg, res->message, strlen(res->message)) ;
+    mysql_real_escape_string(probe->db, escmsg, res->message, strlen(res->message)) ;
   }
 
-  result = my_query("update pr_status "
+  result = my_query(probe->db, 0,
+                    "update pr_status "
                     "set    stattime = '%u', expires = '%u', color = '%d', " 
                     "       message = '%s', yellow = '%f', red = '%f' "
                     "where  probe = '%u' and class = '%u'",
                     res->stattime, res->expires, res->color, 
-                    escmsg, def->yellow, def->red, def->probeid, class);
+                    escmsg, def->yellow, def->red, def->probeid, probe->class);
   mysql_free_result(result);
-  if (mysql_affected_rows(mysql) == 0) { // nothing was actually updated, it was probably already there
+  if (mysql_affected_rows(probe->db) == 0) { // nothing was actually updated, probably already there
     LOG(LOG_NOTICE, "update_pr_status failed, inserting new record (class=%u, probe=%u)", 
-                    class, def->probeid);
-    result = my_query("insert into pr_status "
+                    probe->class, def->probeid);
+    result = my_query(probe->db, 0,
+                      "insert into pr_status "
                       "set    class =  '%u', probe = '%u', stattime = '%u', expires = '%u', "
                       "       server = '%u', color = '%u', message = '%s', yellow = '%f', red = '%f'",
-                      class, def->probeid, res->stattime, res->expires, def->server, res->color, 
+                      probe->class, def->probeid, res->stattime, res->expires, def->server, res->color, 
                       escmsg, def->yellow, def->red);
     mysql_free_result(result);
   }
@@ -595,30 +643,34 @@ static void update_pr_status(int class, struct probe_def *def, struct probe_resu
 //*******************************************************************
 // CREATE PR_STATUS RECORD
 //*******************************************************************
-static void insert_pr_status(int class, struct probe_def *def, struct probe_result *res)
+static void insert_pr_status(module *probe, struct probe_def *def, struct probe_result *res)
 {
   MYSQL_RES *result;
   char *escmsg = strdup("");
 
   if (res->message) {
     escmsg = g_malloc(strlen(res->message) * 2 + 1);
-    mysql_real_escape_string(mysql, escmsg, res->message, strlen(res->message)) ;
+    mysql_real_escape_string(probe->db, escmsg, res->message, strlen(res->message)) ;
   }
 
-  result = my_query("insert into pr_status "
+  result = my_query(probe->db, 0,
+                    "insert into pr_status "
                     "set    class =  '%u', probe = '%u', stattime = '%u', expires = '%u', "
                     "       color = '%u', server = '%u', message = '%s', yellow = '%f', red = '%f'",
-                    class, def->probeid, res->stattime, res->expires, def->color, res->server, 
+                    probe->class, def->probeid, res->stattime, res->expires, def->color, res->server, 
                     escmsg, def->yellow, def->red);
   mysql_free_result(result);
-  if (mysql_affected_rows(mysql) == 0 || (mysql_errno(mysql) == ER_DUP_ENTRY)) { 
+  if (mysql_affected_rows(probe->db) == 0 || (mysql_errno(probe->db) == ER_DUP_ENTRY)) { 
     // nothing was actually inserted, it was probably already there
-    LOG(LOG_NOTICE, "insert_pr_status failed, updating current record (class=%u, probe=%u)", class, def->probeid);
-    result = my_query("update pr_status "
+    LOG(LOG_NOTICE, "insert_pr_status failed, updating current record (class=%u, probe=%u)", 
+                    probe->class, def->probeid);
+    result = my_query(probe->db, 0,
+                      "update pr_status "
                       "set    stattime = '%u', expires = '%u', color = '%d', "
                       "       message = '%s', yellow = '%f', red = '%f' "
                       "where  probe = '%u' and class = '%u'",
-                      res->stattime, res->expires, res->color, escmsg, def->yellow, def->red, def->probeid, class);
+                      res->stattime, res->expires, res->color, escmsg, 
+                      def->yellow, def->red, def->probeid, probe->class);
     mysql_free_result(result);
   }
   g_free(escmsg);
@@ -627,20 +679,21 @@ static void insert_pr_status(int class, struct probe_def *def, struct probe_resu
 //*******************************************************************
 // CREATE PR_HIST
 //*******************************************************************
-static void create_pr_hist(int class, struct probe_def *def, struct probe_result *res, struct probe_result *prv)
+static void create_pr_hist(module *probe, struct probe_def *def, struct probe_result *res, struct probe_result *prv)
 {
   MYSQL_RES *result;
   char *escmsg = strdup("");
 
   if (res->message) {
     escmsg = g_malloc(strlen(res->message) * 2 + 1);
-    mysql_real_escape_string(mysql, escmsg, res->message, strlen(res->message)) ;
+    mysql_real_escape_string(probe->db, escmsg, res->message, strlen(res->message)) ;
   }
 
-  result = my_query("insert into pr_hist "
+  result = my_query(probe->db, 0,
+                    "insert into pr_hist "
                     "set    server = '%u', class = '%u', probe = '%u', stattime = '%u', "
                     "       prv_color = '%d', color = '%d', message = '%s'",
-                    def->server, class, def->probeid, res->stattime,
+                    def->server, probe->class, def->probeid, res->stattime,
                     prv->color, res->color, escmsg);
   mysql_free_result(result);
   g_free(escmsg);
@@ -649,28 +702,31 @@ static void create_pr_hist(int class, struct probe_def *def, struct probe_result
 //*******************************************************************
 // REMOVE ALL OCCURRENCES OF A PROBE IN THE HISTORY FILES
 //*******************************************************************
-static void delete_history(int class, struct probe_def *def, struct probe_result *nxt)
+static void delete_history(module *probe, struct probe_def *def, struct probe_result *nxt)
 {
   MYSQL_RES *result;
 
-  result = my_query("delete from pr_hist "
+  result = my_query(probe->db, 0,
+                    "delete from pr_hist "
                     "where stattime = '%u' and probe = '%u' and class = '%d'",
-                    nxt->stattime, def->probeid, class);
+                    nxt->stattime, def->probeid, probe->class);
   mysql_free_result(result);
-  result = my_query("delete from pr_status "
+  result = my_query(probe->db, 0,
+                    "delete from pr_status "
                     "where stattime = '%u' and probe = '%u' and class = '%d'",
-                    nxt->stattime, def->probeid, class);
+                    nxt->stattime, def->probeid, probe->class);
   mysql_free_result(result);
 }
 
 //*******************************************************************
 // UPDATE SERVER COLOR
 //*******************************************************************
-static void update_server_color(struct probe_def *def, struct probe_result *res)
+static void update_server_color(module *probe, struct probe_def *def, struct probe_result *res)
 {
   MYSQL_RES *result;
 
-  result = my_query("update %s set %s = '%u' where %s = '%u'",
+  result = my_query(probe->db, 0,
+                    "update %s set %s = '%u' where %s = '%u'",
                      OPT_ARG(SERVER_TABLE_NAME), OPT_ARG(SERVER_TABLE_COLOR_FIELD), 
                      res->color, OPT_ARG(SERVER_TABLE_ID_FIELD), def->server);
   mysql_free_result(result);
@@ -679,14 +735,15 @@ static void update_server_color(struct probe_def *def, struct probe_result *res)
 //*******************************************************************
 // HAS THE LAST RECORD FOR THIS SLOT BEEN SEEN?
 //*******************************************************************
-int have_records_later_than(char *name, guint probe, char *from, guint slothigh)
+int have_records_later_than(module *probe, char *name, guint probeid, char *from, guint slothigh)
 {
   MYSQL_RES *result;
   int val = FALSE;
 
-  result = my_query("select id from pr_%s_%s use index(probtime) "
+  result = my_query(probe->db, 0,
+                    "select id from pr_%s_%s use index(probtime) "
                     "where  probe = '%u' and stattime > '%u' limit 1",
-                    name, from, probe, slothigh);
+                    name, from, probeid, slothigh);
   if (!result) return(FALSE);
   if (mysql_num_rows(result) > 0) {
     val = TRUE;
@@ -757,15 +814,6 @@ static int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
   struct probe_def *def=NULL;
   struct probe_result *res=NULL, *prv=NULL;
 
-  if (open_database() != 0) {
-    return -1; // fatal error
-  }
-
-  if (!probe->cache) {
-    probe->cache = g_hash_table_new_full(g_int_hash, g_int_equal, g_free, 
-            probe->free_def? probe->free_def : g_free);
-  }
-
   res = extract_info_from_xml(probe, doc, cur, ns); // EXTRACT INFO FROM XML NODE
   if (!res) return 1;
 
@@ -802,24 +850,24 @@ static int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
   }
 
   if (def->newest == 0) { // IF THIS IS THE FIRST RESULT EVER FOR THIS PROBE
-    insert_pr_status(probe->class, def, res);
+    insert_pr_status(probe, def, res);
     must_update_def = TRUE;
   } else {
     if (!seen_before) {
       // IF COLOR DIFFERS FROM PRECEDING RAW RECORD
       if (res->color != prv->color) {
         struct probe_result *nxt;
-        create_pr_hist(probe->class, def, res, prv); // CREATE PR_HIST
+        create_pr_hist(probe, def, res, prv); // CREATE PR_HIST
         nxt = get_following_record(probe, def, res); // RETRIEVE FOLLOWING RAW RECORD
         if (nxt && nxt->color) { // IF FOUND
           if (nxt->color == res->color) {  // IF COLOR OF FOLLOWING IS THE SAME AS CURRENT
-            delete_history(probe->class, def, nxt); // DELETE POSSIBLE HISTORY RECORDS FOR FOLLOWING RECORD
+            delete_history(probe, def, nxt); // DELETE POSSIBLE HISTORY RECORDS FOR FOLLOWING RECORD
           }
           g_free(nxt);
         }
         if (res->stattime > def->newest) { // IF THIS RAW RECORD IS THE MOST RECENT EVER RECEIVED
-          update_pr_status(probe->class, def, res);  // UPDATE PR_STATUS
-          update_server_color(def, res); // UPDATE SERVER COLOR
+          update_pr_status(probe, def, res);  // UPDATE PR_STATUS
+          update_server_color(probe, def, res); // UPDATE SERVER COLOR
           must_update_def = TRUE;
         }
       } else {
@@ -843,7 +891,8 @@ static int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
               //                 cur_slot, res->stattime, prev_slot, prv->stattime,
               //                 summ_info[i].from, slotlow, slothigh);
               //}
-              probe->summarize(def, res, summ_info[i].from, summ_info[i].to, cur_slot, slotlow, slothigh);
+              probe->summarize(probe, def, res, summ_info[i].from, summ_info[i].to, 
+                               cur_slot, slotlow, slothigh, 0);
             }
           }
         } else {
@@ -854,11 +903,12 @@ static int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
 
           for (i=0; summ_info[i].period > 0; i++) { // FOR EACH PERIOD
             cur_slot = uw_slot(summ_info[i].period, res->stattime, &slotlow, &slothigh);
-            if (slothigh > not_later_then) continue; // we already know there are no records later then this
+            if (slothigh > not_later_then) continue; // we already know there are none later then this
             // IF THE LAST RECORD FOR THIS SLOT HAS BEEN SEEN
-            if (have_records_later_than(res->name, def->probeid, summ_info[i].from, slothigh)) { 
+            if (have_records_later_than(probe, res->name, def->probeid, summ_info[i].from, slothigh)) { 
               // RE-SUMMARIZE CURRENT SLOT
-              probe->summarize(def, res, summ_info[i].from, summ_info[i].to, cur_slot, slotlow, slothigh);
+              probe->summarize(probe, def, res, summ_info[i].from, summ_info[i].to, 
+                               cur_slot, slotlow, slothigh, 0);
             } else {
               not_later_then = slothigh;
             }
@@ -892,6 +942,7 @@ static int resummarize(void)
   struct probe_result res;
   char *probename = strtok(OPT_ARG(SUMMARIZE), ",");
   res.stattime = atoi(strtok(NULL, ""));
+  MYSQL *mysql;
   MYSQL_RES *result;
   MYSQL_ROW row;
 extern int forever;
@@ -912,14 +963,17 @@ extern int forever;
     sprintf(buf, "unknown probe %s", probename);
     fprintf(stderr, "%s\n", buf);
     LOG(LOG_NOTICE, buf);
-    return(0);
+    return 0;
   }
-  if (open_database() != 0) {
-    fprintf(stderr, "Cannot open database\n");
-    return(0);
+
+  mysql = open_database(OPT_ARG(DBHOST), OPT_ARG(DBNAME), OPT_ARG(DBUSER), OPT_ARG(DBPASSWD),
+                        OPT_VALUE_DBCOMPRESS);
+  if (!mysql) {
+    return 0;
   }
+  modules_start_run();
   found = 0;
-  result = my_query("select id, server from pr_%s_def where id > 1", probename);
+  result = my_query(mysql, 1, "select id, server from pr_%s_def where id > 1", probename);
   if (result == NULL) return(0);
   while ((row = mysql_fetch_row(result)) && forever) {
     MYSQL_RES *presult;
@@ -929,7 +983,8 @@ extern int forever;
     def.server = atoi(row[1]);
     //printf("%u server %u\n", def.probeid, def.server);
 
-    presult = my_query("select stattime from pr_%s_raw where probe = '%u'", probename, def.probeid);
+    presult = my_query(mysql, 1, "select stattime from pr_%s_raw "
+                                 "where probe = '%u'", probename, def.probeid);
     if (presult == NULL) continue;
     while ((prow = mysql_fetch_row(presult)) && forever) {
       guint cur_slot, prev_slot;
@@ -948,10 +1003,8 @@ extern int forever;
         cur_slot = uw_slot(summ_info[i].period, res.stattime, &dummy_low, &dummy_high);
 
         if (cur_slot != prev_slot) {
-extern int ignore_dup_entries;
-
-          ignore_dup_entries = 1;
-          modules[idx]->summarize(&def, &res, summ_info[i].from, summ_info[i].to, cur_slot, slotlow, slothigh);
+          modules[idx]->summarize(modules[idx], &def, &res, summ_info[i].from, summ_info[i].to, 
+                                  cur_slot, slotlow, slothigh, 1 /* don't log dupes */);
           //printf("\ncurslot=%u, prev=%u\n", cur_slot, prev_slot);
         }
       }
@@ -965,6 +1018,7 @@ extern int ignore_dup_entries;
 
   }
   mysql_free_result(result);
-  close_database();
+  modules_end_run();
+  close_database(mysql);
   return(found);
 }

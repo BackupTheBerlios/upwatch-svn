@@ -110,7 +110,8 @@ static void *get_def(module *probe, void *probe_res)
     def->stamp = time(NULL);
     def->server = res->server;
     
-    result = my_query("select id, yellow, red "
+    result = my_query(probe->db, 0,
+                      "select id, yellow, red "
                       "from   pr_%s_def "
                       "where  server = '%u'", res->name, res->server);
     if (!result) return(NULL);
@@ -122,15 +123,17 @@ static void *get_def(module *probe, void *probe_res)
                          res->name, def->probeid);
         return(NULL);
       }
-      result = my_query("insert into pr_%s_def set server = '%d', "
+      result = my_query(probe->db, 0,
+                        "insert into pr_%s_def set server = '%d', "
                         "        ipaddress = '127.0.0.1', description = 'auto-added by system'", 
                         res->name, res->server);
       mysql_free_result(result);
-      if (mysql_affected_rows(mysql) == 0) { // nothing was actually inserted
+      if (mysql_affected_rows(probe->db) == 0) { // nothing was actually inserted
         LOG(LOG_NOTICE, "insert missing pr_%s_def id %u: %s", 
-                         res->name, def->probeid, mysql_error(mysql));
+                         res->name, def->probeid, mysql_error(probe->db));
       }
-      result = my_query("select id, yellow, red "
+      result = my_query(probe->db, 0,
+                        "select id, yellow, red "
                         "from   pr_%s_def "
                         "where  server = '%u'", res->name, res->server);
       if (!result) return(NULL);
@@ -146,7 +149,8 @@ static void *get_def(module *probe, void *probe_res)
     if (row[2]) def->red      = atoi(row[2]);
     mysql_free_result(result);
 
-    result = my_query("select server, color, stattime "
+    result = my_query(probe->db, 0,
+                      "select server, color, stattime "
                       "from   pr_status "
                       "where  class = '%d' and probe = '%d'", probe->class, def->probeid);
     if (result) {
@@ -161,7 +165,8 @@ static void *get_def(module *probe, void *probe_res)
       // couldn't find pr_status record? Will be created later,
       // but get the server from the def record for now
       LOG(LOG_NOTICE, "pr_status record for %s id %u not found", res->name, def->probeid);
-      result = my_query("select server "
+      result = my_query(probe->db, 0,
+                        "select server "
                         "from   pr_%s_def " 
                         "where  id = '%u'", res->name, def->probeid);
       if (!result) return(NULL);
@@ -175,7 +180,8 @@ static void *get_def(module *probe, void *probe_res)
       mysql_free_result(result);
     }
 
-    result = my_query("select stattime from pr_%s_raw use index(probtime) "
+    result = my_query(probe->db, 0,
+                      "select stattime from pr_%s_raw use index(probtime) "
                       "where probe = '%u' order by stattime desc limit 1",
                        res->name, def->probeid);
     if (result) {
@@ -205,12 +211,13 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
 
   if (res->message) {
     escmsg = g_malloc(strlen(res->message) * 2 + 1);
-    mysql_real_escape_string(mysql, escmsg, res->message, strlen(res->message)) ;
+    mysql_real_escape_string(probe->db, escmsg, res->message, strlen(res->message)) ;
   } else {
     escmsg = strdup("");
   }
     
-  result = my_query("insert into pr_sysstat_raw "
+  result = my_query(probe->db, 0,
+                    "insert into pr_sysstat_raw "
                     "set    probe = '%u', yellow = '%f', red = '%f', stattime = '%u', color = '%u', "
                     "       loadavg = '%f', user = '%u', system = '%u', idle = '%u', "
                     "       swapin = '%u', swapout = '%u', blockin = '%u', blockout = '%u', "
@@ -222,7 +229,7 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
                     res->swapped, res->free, res->buffered, res->cached,
                     res->used, res->systemp, escmsg);
   mysql_free_result(result);
-  if (mysql_affected_rows(mysql) > 0) { // something was actually inserted
+  if (mysql_affected_rows(probe->db) > 0) { // something was actually inserted
     already_there = FALSE;
   }
   g_free(escmsg);
@@ -232,7 +239,7 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
 //*******************************************************************
 // SUMMARIZE A TABLE INTO AN OLDER PERIOD
 //*******************************************************************
-static void summarize(void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh)
+static void summarize(module *probe, void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint ignore_dupes)
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
@@ -247,7 +254,8 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
 
   stattime = slotlow + ((slothigh-slotlow)/2);
 
-  result = my_query("select avg(loadavg), avg(user), avg(system), avg(idle), "
+  result = my_query(probe->db, 0,
+                    "select avg(loadavg), avg(user), avg(system), avg(idle), "
                     "       avg(swapin), avg(swapout), avg(blockin), avg(blockout), "
                     "       avg(swapped), avg(free), avg(buffered), avg(cached), "
                     "       avg(used), avg(systemp), max(color), avg(yellow), avg(red) " 
@@ -264,7 +272,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   row = mysql_fetch_row(result);
   if (!row) {
     mysql_free_result(result);
-    LOG(LOG_ERR, mysql_error(mysql));
+    LOG(LOG_ERR, mysql_error(probe->db));
     return;
   }
   if (row[0] == NULL) {
@@ -292,7 +300,8 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
   avg_red     = atof(row[16]);
   mysql_free_result(result);
 
-  result = my_query("insert into pr_sysstat_%s " 
+  result = my_query(probe->db, ignore_dupes,
+                    "insert into pr_sysstat_%s " 
                     "set    loadavg = '%f', user = '%u', system = '%u', idle = '%u', "
                     "       swapin = '%u', swapout = '%u', blockin = '%u', blockout = '%u', "
                     "       swapped = '%u', free = '%u', buffered = '%u', cached = '%u', "
@@ -319,6 +328,7 @@ module sysstat_module  = {
   NULL,
   get_def,
   store_raw_result,
-  summarize
+  summarize,
+  NULL
 };
 

@@ -1,8 +1,6 @@
 #include <mysql.h>
 #include <mysqld_error.h>
 
-extern MYSQL *mysql;
-int open_database(void);
-void close_database(void);
-MYSQL_RES *my_query(char *qry, ...);
-void my_transaction(char *qry);
+MYSQL *open_database(char *dbhost, char *dbname, char *dbuser, char *dbpasswd, int options);
+void close_database(MYSQL *mysql);
+MYSQL_RES *my_query(MYSQL *mysql, int log_dupes, char *qry, ...);

@@ -45,7 +45,8 @@ static void *get_def(module *probe, void *probe_res)
   MYSQL_ROW row;
 
   // first we find the serverid, this will be used to find the probe definition in the hashtable
-  result = my_query(OPT_ARG(SERVERQUERY), res->hostname, res->hostname, 
+  result = my_query(probe->db, 0,
+                    OPT_ARG(SERVERQUERY), res->hostname, res->hostname, 
                     res->hostname, res->hostname, res->hostname);
   if (!result) return(NULL);
   row = mysql_fetch_row(result);
@@ -62,7 +63,8 @@ static void *get_def(module *probe, void *probe_res)
   def->stamp    = time(NULL);
 
   // first find the definition based on the serverid
-  result = my_query("select id from pr_bb_generic_def "
+  result = my_query(probe->db, 0,
+                    "select id from pr_bb_generic_def "
                     "where  bbname = '%s' and server = '%u'", res->name, res->name, res->server);
   if (!result) {
     g_free(def);
@@ -73,7 +75,8 @@ static void *get_def(module *probe, void *probe_res)
     // definition found, get the pr_status
     res->probeid = atoi(row[0]);
     mysql_free_result(result);
-    result = my_query("select color, stattime "
+    result = my_query(probe->db, 0,
+                      "select color, stattime "
                       "from   pr_status "
                       "where  class = '%u' and probe = '%u'", probe->class, res->probeid);
     if (result) {
@@ -93,11 +96,12 @@ static void *get_def(module *probe, void *probe_res)
   } else {
     // no def record found? Create one. pr_status will be done later.
     mysql_free_result(result);
-    result = my_query("insert into pr_bb_generic_def set server = '%u', " 
+    result = my_query(probe->db, 0,
+                      "insert into pr_bb_generic_def set server = '%u', " 
                       "       description = '%s', bbname = '%s'", 
                        res->name, res->server, res->hostname, res->name);
     mysql_free_result(result);
-    res->probeid = mysql_insert_id(mysql);
+    res->probeid = mysql_insert_id(probe->db);
     LOG(LOG_NOTICE, "pr_generic_def %s created for %s, id = %u", res->name, res->hostname, res->probeid);
   }
   def->probeid = res->probeid;
@@ -117,6 +121,7 @@ module bb_generic_module  = {
   NULL,
   fix_result,
   get_def,
+  NULL,
   NULL,
   NULL
 };

@@ -89,7 +89,8 @@ static void *get_def(module *probe, void *probe_res)
     def = g_malloc0(sizeof(struct iptraf_def));
     def->stamp = time(NULL);
 
-    result = my_query("select id, yellow, red "
+    result = my_query(probe->db, 0,
+                      "select id, yellow, red "
                       "from   pr_%s_def "
                       "where  ipaddress = '%s'", res->name, res->ip);
     if (!result) return(NULL);
@@ -101,15 +102,17 @@ static void *get_def(module *probe, void *probe_res)
                          res->name, res->ip);
         return(NULL);
       }
-      result = my_query("insert into pr_%s_def set ipaddress = '%s', "
+      result = my_query(probe->db, 0,
+                        "insert into pr_%s_def set ipaddress = '%s', "
                         "        description = 'auto-added by system'",
                         res->name, res->ip);
       mysql_free_result(result);
-      if (mysql_affected_rows(mysql) == 0) { // nothing was actually inserted
+      if (mysql_affected_rows(probe->db) == 0) { // nothing was actually inserted
         LOG(LOG_NOTICE, "insert missing pr_%s_def id %s: %s", 
-                         res->name, res->ip, mysql_error(mysql));
+                         res->name, res->ip, mysql_error(probe->db));
       }
-      result = my_query("select id, yellow, red "
+      result = my_query(probe->db, 0,
+                        "select id, yellow, red "
                         "from   pr_%s_def "
                         "where  ipaddress = '%s'", res->name, res->ipaddress);
       if (!result) return(NULL);
@@ -125,7 +128,8 @@ static void *get_def(module *probe, void *probe_res)
     def->red      = atof(row[2]);
     mysql_free_result(result);
 
-    result = my_query("select server, color, stattime "
+    result = my_query(probe->db, 0,
+                      "select server, color, stattime "
                       "from   pr_status "
                       "where  class = '%d' and probe = '%d'", probe->class, def->probeid);
     if (result) {
@@ -143,7 +147,8 @@ static void *get_def(module *probe, void *probe_res)
     if (!def->server) {
       // couldn't find pr_status record? Will be created later,
       // but get the server from the def record for now
-      result = my_query("select server "
+      result = my_query(probe->db, 0,
+                        "select server "
                         "from   pr_%s_def "
                         "where  id = '%u'", res->name, def->probeid);
       if (result) {
@@ -154,7 +159,9 @@ static void *get_def(module *probe, void *probe_res)
     }
 
     uw_slot(SLOT_DAY, res->stattime, &slotlow, &slothigh);
-    result = my_query("select sum(in_total), sum(out_total), max(color), avg(yellow), avg(red), max(stattime) "
+    result = my_query(probe->db, 0,
+                      "select sum(in_total), sum(out_total), max(color), avg(yellow), avg(red), "
+                      "       max(stattime) "
                       "from   pr_iptraf_raw use index(probtime) "
                       "where  probe = '%u' and stattime >= '%u' and stattime < '%u'",
                       def->probeid, slotlow, slothigh);
@@ -207,13 +214,14 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
     def->slotday_max_color = res->color;
   }
 
-  result = my_query("insert into pr_iptraf_raw "
+  result = my_query(probe->db, 0,
+                    "insert into pr_iptraf_raw "
                     "set    probe = '%u', yellow = '%f', red = '%f', stattime = '%u', color = '%u', "
                     "       in_total = '%f', out_total = '%f'",
                     def->probeid, def->yellow, def->red, res->stattime, res->color, 
                     res->in_total, res->out_total);
   mysql_free_result(result);
-  if (mysql_affected_rows(mysql) > 0) { // something was actually inserted
+  if (mysql_affected_rows(probe->db) > 0) { // something was actually inserted
     already_there = FALSE;
   }
   return(already_there); // the record was already in the database
@@ -222,7 +230,7 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
 //*******************************************************************
 // SUMMARIZE A TABLE INTO AN OLDER PERIOD
 //*******************************************************************
-static void summarize(void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh)
+static void summarize(module *probe, void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint ignore_dupes)
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
@@ -247,7 +255,8 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
     def->slotday_avg_yellow = def->yellow;
     def->slotday_avg_red = def->red;
   } else {
-    result = my_query("select sum(in_total), sum(out_total), max(color), avg(yellow), avg(red) "
+    result = my_query(probe->db, 0,
+                      "select sum(in_total), sum(out_total), max(color), avg(yellow), avg(red) "
                       "from   pr_iptraf_%s use index(probtime) "
                       "where  probe = '%u' and stattime >= '%u' and stattime < '%u'",
                       from, def->probeid, slotlow, slothigh);
@@ -262,7 +271,7 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
     row = mysql_fetch_row(result);
     if (!row) {
       mysql_free_result(result);
-      LOG(LOG_ERR, mysql_error(mysql));
+      LOG(LOG_ERR, mysql_error(probe->db));
       return;
     }
     if (row[0] == NULL) {
@@ -279,7 +288,8 @@ static void summarize(void *probe_def, void *probe_res, char *from, char *into, 
     mysql_free_result(result);
   }
 
-  result = my_query("insert into pr_iptraf_%s "
+  result = my_query(probe->db, ignore_dupes,
+                    "insert into pr_iptraf_%s "
                     "set    in_total = '%f', out_total = '%f', "
                     "       probe = '%u', color = '%u', stattime = '%u', "
                     "       yellow = '%f', red = '%f', slot = '%u'",
@@ -300,6 +310,7 @@ module iptraf_module  = {
   NULL,
   get_def,
   store_raw_result,
-  summarize
+  summarize,
+  NULL
 };
 

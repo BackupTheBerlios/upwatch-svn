@@ -8,63 +8,33 @@
 #include "dmalloc.h"
 #endif
 
-MYSQL *mysql;
-
 /****************************
  database functions. 
  NOTE: Don't use with multithreaded programs!
  ***************************/
-void close_database(void)
+void close_database(MYSQL *mysql)
 {
   if (mysql) {
     //my_transaction("rollback");
     mysql_close(mysql);
-    free(mysql);
-    mysql = NULL;
   }
 }
 
-int open_database(void)
+MYSQL *open_database(char *dbhost, char *dbname, char *dbuser, char *dbpasswd, int options)
 {
-  char *dbhost, *dbuser, *dbpasswd, *dbname;
+  MYSQL *mysql;
 
-  if (mysql) {
-    if (mysql_ping(mysql) != 0) {
-      LOG(LOG_ERR, "%s", mysql_error(mysql));
-      close_database();
-      return(1);
-    }
-    return(0); // already open
-  }
-  if ((mysql = (MYSQL *)malloc(sizeof(MYSQL))) == NULL) {
-    LOG(LOG_ERR, "malloc: %m");
-    return(1);
-  }
-
-  dbhost = OPT_ARG(DBHOST);
-  dbuser = OPT_ARG(DBUSER);
-  dbpasswd = OPT_ARG(DBPASSWD);
-  dbname = OPT_ARG(DBNAME);
-
-  mysql_init(mysql);
-  mysql_options(mysql,MYSQL_OPT_COMPRESS,0);
+  mysql = mysql_init(NULL);
+  mysql_options(mysql, options, 0);
   if (!mysql_real_connect(mysql, dbhost, dbuser, dbpasswd, dbname, 0, NULL, 0)) {
     LOG(LOG_ERR, "%s dbhost=%s,dbname=%s,dbuser=%s,dbpasswd=%s",
            mysql_error(mysql), dbhost, dbname, dbuser, dbpasswd);
-    return(1);
+    return(NULL);
   }
-  return(0);
+  return(mysql);
 }
 
-void my_transaction(char *what)
-{
-  if (!mysql) return;
-  mysql_query(mysql, what);
-}
-
-int ignore_dup_entries = 0; // if true don't log dup entry errors. Reset every time.
-
-MYSQL_RES *my_query(char *fmt, ...)
+MYSQL_RES *my_query(MYSQL *mysql, int log_dupes, char *fmt, ...)
 {
   MYSQL_RES *result;
   char qry[65535];
@@ -80,10 +50,7 @@ MYSQL_RES *my_query(char *fmt, ...)
   if (mysql_query(mysql, qry)) {
     switch (mysql_errno(mysql)) {
     case ER_DUP_ENTRY:
-      if (ignore_dup_entries) {
-        ignore_dup_entries = 0;
-        break;
-      }
+        if (!log_dupes) break;
     default:
       LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql));
       break;
