@@ -10,7 +10,7 @@ ADMIN_SOURCE = admin-guide.xml administration.xml configuration.xml \
   installation.xml about.xml
 
 PROGRAM_SOURCE = program-guide.xml addingaprobe.xml \
-  howitallworks.xml interfaces.xml probesspecs.xml about.xml
+  howitallworks.xml interfaces.xml probesspecs.xml about.xml ../uw_*/*.xml
 
 XMLSOURCE = ${UPWATCH_SOURCE} ${ADMIN_SOURCE} ${PROGRAM_SOURCE}
 
