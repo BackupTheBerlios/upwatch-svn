@@ -8,7 +8,12 @@ if FREEBSD
 FREEBSDLIBS = -lkvm -ldevstat
 endif
 
-AM_CFLAGS += -I$(INCL_STATGRAB) -I../xmbmon203
+if XMBMON
+XMBMON_LIB = ../xmbmon203/xmbmon.a
+XMBMON_CFLAGS = -DUSE_XMBMON -I../xmbmon203
+endif
+
+AM_CFLAGS += -I$(INCL_STATGRAB) $(XMBMON_CFLAGS)
 program = uw_sysstat
 sbin_PROGRAMS = uw_sysstat
 man_MANS = uw_sysstat.1
@@ -17,7 +22,7 @@ init_DATA = $(INITFILES)
 
 uw_sysstat_SOURCES = run.c uw_sysstat.c uw_sysstat.h $(PROBFILES) $(SPECFILES) $(INITFILES)
 uw_sysstat_CFLAGS = @MYSQL_CFLAGS@ @LIBXML2_CFLAGS@ @LIBGLIB2_CFLAGS@ $(AM_CFLAGS) @LIBPCRE_CFLAGS@
-uw_sysstat_LDADD = uw_sysstat_$(MAIN_O) ../xmbmon203/xmbmon.a $(LIBOPTS) \
+uw_sysstat_LDADD = uw_sysstat_$(MAIN_O) $(XMBMON_LIB) $(LIBOPTS) \
   $(FREEBSDLIBS) $(SOLARISLIBS) $(LIBSTATGRAB) \
   $(LIBUPWATCH) @LIBXML2_LIBS@ @LIBGLIB2_LIBS@ @LIBPCRE_LIBS@
 

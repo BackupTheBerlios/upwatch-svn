@@ -15,7 +15,11 @@ detail        =
 // this section is for the generated specfile
 spec-requires = "glib2";
 spec-files = `echo "%attr(4770,root,upwatch)" $sbindir/uw_sysstat`;
+#ifdef XMBMON
+spec-files = `echo "%attr(4755,root,root)" /usr/local/bin/mbmon`;
+#endif
 spec-files = `echo "%dir" $confdir/uw_sysstat.d`;
+
 // repeat these two lines for every logfile format
 spec-files = `echo "%dir" $confdir/uw_sysstat.d/syslog`;
 spec-files = `for i in \`find uw_sysstat.d/syslog -type f | grep -v CVS\` ; do echo $confdir/$i; done`;

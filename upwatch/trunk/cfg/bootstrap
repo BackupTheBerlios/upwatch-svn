@@ -17,3 +17,8 @@ aclocal \
 && libtoolize \
 && automake --gnu --add-missing \
 && autoconf
+
+cd xmbmon203
+autoconf
+cd ..
+

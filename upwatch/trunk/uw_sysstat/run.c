@@ -15,7 +15,9 @@
 #include <fcntl.h>
 #include <findsaddr.h>
 #include <logregex.h>
+#if USE_XMBMON
 #include "mbmon.h"
+#endif
 
 char ipaddress[24];
 
@@ -47,6 +49,7 @@ typedef struct {
 } stats_t;
 stats_t st;
 
+#if USE_XMBMON
 typedef struct {
   float temp1;
   float temp2;
@@ -63,6 +66,7 @@ typedef struct {
   int rot3;
 } hwstats_t;
 hwstats_t hw;
+#endif
 
 int get_stats(void)
 {
@@ -92,6 +96,7 @@ int get_stats(void)
   return 1;
 }
 
+#if USE_XMBMON
 int get_hwstats(void)
 {
   getTemp(&hw.temp1, &hw.temp2, &hw.temp3);
@@ -102,6 +107,7 @@ int get_hwstats(void)
   //printf(" Vcore = %4.2f, %4.2f; Volt. = %4.2f, %4.2f, %5.2f, %6.2f, %5.2f\n", 
   //       hw.vc0, hw.vc1, hw.v33, hw.v50p, hw.v12p, hw.v12n, hw.v50n);
 }
+#endif
 
 #define STATFILE "/var/run/upwatch/uw_sysstat.stat"
 int check_log(GString *string, int idx, int *color)
@@ -237,6 +243,7 @@ int init(void)
     }
   }
 
+#if USE_XMBMON
   if (OPT_VALUE_HWSTATS) {
     if ((i = InitMBInfo(' ')) != 0) {
       LOG(LOG_ERR, "InitMBInfo: %m");
@@ -247,6 +254,7 @@ int init(void)
   } else {
     LOG(LOG_INFO,"Hardware stats will not be generated");
   }
+#endif
 
   // determine ip address for default gateway interface
   setsin(&to, inet_addr("1.1.1.1"));
@@ -289,6 +297,7 @@ xmlNodePtr newnode(xmlDocPtr doc, char *name)
   return node;
 }
 
+#if USE_XMBMON
 void add_hwstat(xmlNodePtr node)
 {
   char buffer[24];
@@ -313,6 +322,7 @@ void add_hwstat(xmlNodePtr node)
     xmlSetProp(node, "color", "500");
   }
 }
+#endif
 
 void add_loadavg(xmlNodePtr node)
 {
@@ -448,7 +458,7 @@ void add_sysstat_info(xmlNodePtr node)
         size_t len;
 
         for (len=0; len < sizeof(info)-1; len++) {
-          char c;
+          int c;
           if ((c = fgetc(in)) != EOF) {
             if (c < 0) c = ' ';
             *s++ = c;
@@ -501,7 +511,7 @@ void add_diskfree_info(xmlNodePtr node)
       size_t len;
 
       for (len=0; len < sizeof(info)-1; len++) {
-        char c;
+        int c;
         if ((c = fgetc(in)) != EOF) {
           if (c < 0) c = ' ';
           *s++ = c;
@@ -556,7 +566,7 @@ extern int forever;
   add_sysstat_info(node);
   color = xmlGetPropInt(node, "color");
   if (color > highest_color) highest_color = color;
-
+#if USE_XMBMON
   if (OPT_VALUE_HWSTATS) {
     // do the hwstat
     get_hwstats();
@@ -565,6 +575,7 @@ extern int forever;
     color = xmlGetPropInt(node, "color");
     if (color > highest_color) highest_color = color;
   }
+#endif
 
   // do the errlog
   node = newnode(doc, "errlog");

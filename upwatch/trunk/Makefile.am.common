@@ -24,7 +24,7 @@ SPECFILES = $(program:%=%.spec-requires) $(program:%=%.spec-buildrequires) $(pro
 INITFILES = $(program:%=%.redhat) $(program:%=%.suse) $(program:%=%.solaris)
 PROBFILES  = probe.def_h probe.res_h probe.enum probe.def_mysql probe.raw_mysql probe.xml probe.dtd probe.dtd-inc
 AGDEFINES = -Dconfdir=$(confdir) -Dsysconfdir=$(sysconfdir) -Dsbindir=$(sbindir) \
- -Dlogdir=$(logdir) -Dspooldir=$(spooldir)
+ -Dlogdir=$(logdir) -Dspooldir=$(spooldir) $(ag_xmbmon)
 
 %_main.o: $(top_srcdir)/common/main.c $(@:%_main.o=%.def) $(CMDDEF)
 	$(COMPILE) -include $(@:%_main.o=%.h) -o $@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ \

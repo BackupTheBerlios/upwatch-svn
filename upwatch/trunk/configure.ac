@@ -7,7 +7,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.66 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.67 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -101,6 +101,13 @@ AM_CONDITIONAL(LINUX, test x$linux = xtrue)
 AM_CONDITIONAL(FREEBSD, test x$freebsd = xtrue)
 AM_CONDITIONAL(SOLARIS, test x$solaris = xtrue)
 AM_CONDITIONAL(CYGWIN, test x$cygwin = xtrue)
+
+case $host in
+  i?86-*-linux* | i?86-*-freebsd*) 
+  enable_xmbmon=yes
+  ;;
+esac
+AM_CONDITIONAL(XMBMON, test x$enable_xmbmon = xyes)
 
 # ----------------------------------------------------------------------
 # check for various programs used during the build.
@@ -605,6 +612,9 @@ fi
 cp patches/libstatgrab-configure.gnu libstatgrab/configure.gnu
 ( cd libstatgrab ; ./configure --disable-manpages --disable-examples ; cd .. )
 
-( cd xmbmon203 ; ./configure ; cd .. )
+if test "$enable_xmbmon" = "yes"
+then
+  ( cd xmbmon203 ; ./configure ; cd .. )
+fi
 
 AC_OUTPUT
