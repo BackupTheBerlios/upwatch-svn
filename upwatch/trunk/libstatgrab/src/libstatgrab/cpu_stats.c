@@ -1,21 +1,23 @@
-/* 
- * i-scream central monitoring system
+/*
+ * i-scream libstatgrab
  * http://www.i-scream.org
- * Copyright (C) 2000-2003 i-scream
+ * Copyright (C) 2000-2004 i-scream
  * 
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+ *
+ * $Id: cpu_stats.c,v 1.2 2004/05/30 19:56:28 raarts Exp $
  */
 
 #ifdef HAVE_CONFIG_H
@@ -24,6 +26,7 @@
 
 #include <time.h>
 #include "statgrab.h"
+#include "tools.h"
 #ifdef SOLARIS
 #include <kstat.h>
 #include <sys/sysinfo.h>
@@ -32,7 +35,7 @@
 #if defined(LINUX) || defined(CYGWIN)
 #include <stdio.h>
 #endif
-#ifdef FREEBSD
+#if defined(FREEBSD) || defined(DFBSD)
 #include <sys/sysctl.h>
 #include <sys/dkstat.h>
 #endif
@@ -42,22 +45,27 @@
 #include <sys/sysctl.h>
 #include <sys/sched.h>
 #endif
+#ifdef OPENBSD
+#include <sys/param.h>
+#include <sys/sysctl.h>
+#include <sys/dkstat.h>
+#endif
 
-static cpu_states_t cpu_now;
+static sg_cpu_stats cpu_now;
 static int cpu_now_uninit=1;
 
-cpu_states_t *get_cpu_totals(){
+sg_cpu_stats *sg_get_cpu_stats(){
 
 #ifdef SOLARIS
-        kstat_ctl_t *kc;
-        kstat_t *ksp;
+	kstat_ctl_t *kc;
+	kstat_t *ksp;
 	cpu_stat_t cs;
 #endif
 #if defined(LINUX) || defined(CYGWIN)
 	FILE *f;
 #endif
 #ifdef ALLBSD
-#ifndef FREEBSD
+#if defined(NETBSD) || defined(OPENBSD)
 	int mib[2];
 #endif
 #ifdef NETBSD
@@ -67,7 +75,7 @@ cpu_states_t *get_cpu_totals(){
 #endif
 	size_t size;
 #endif
-        
+
 	cpu_now.user=0;
 	/* Not stored in linux or freebsd */
 	cpu_now.iowait=0;
@@ -80,14 +88,15 @@ cpu_states_t *get_cpu_totals(){
 	cpu_now.nice=0;
 
 #ifdef SOLARIS
-        if ((kc = kstat_open()) == NULL) {
-                return NULL;
-        }
-        for (ksp = kc->kc_chain; ksp!=NULL; ksp = ksp->ks_next) {
-                if ((strcmp(ksp->ks_module, "cpu_stat")) != 0) continue;
-                if (kstat_read(kc, ksp, &cs) == -1) {
-                        continue;
-                }
+	if ((kc = kstat_open()) == NULL) {
+		sg_set_error(SG_ERROR_KSTAT_OPEN, NULL);
+		return NULL;
+	}
+	for (ksp = kc->kc_chain; ksp!=NULL; ksp = ksp->ks_next) {
+		if ((strcmp(ksp->ks_module, "cpu_stat")) != 0) continue;
+		if (kstat_read(kc, ksp, &cs) == -1) {
+			continue;
+		}
 		cpu_now.user+=(long long)cs.cpu_sysinfo.cpu[CPU_USER];
 		cpu_now.iowait+=(long long)cs.cpu_sysinfo.cpu[CPU_WAIT];
 		cpu_now.kernel+=(long long)cs.cpu_sysinfo.cpu[CPU_KERNEL];
@@ -97,10 +106,11 @@ cpu_states_t *get_cpu_totals(){
 
 	cpu_now.total=cpu_now.user+cpu_now.iowait+cpu_now.kernel+cpu_now.idle+cpu_now.swap;
 	
-        kstat_close(kc);
+	kstat_close(kc);
 #endif
 #if defined(LINUX) || defined(CYGWIN)
 	if ((f=fopen("/proc/stat", "r" ))==NULL) {
+		sg_set_error(SG_ERROR_OPEN, "/proc/stat");
 		return NULL;
 	}
 	/* The very first line should be cpu */
@@ -109,6 +119,7 @@ cpu_states_t *get_cpu_totals(){
 		&cpu_now.nice, \
 		&cpu_now.kernel, \
 		&cpu_now.idle)) != 4){
+		sg_set_error(SG_ERROR_PARSE, "cpu");
 		fclose(f);
 		return NULL;
 	}
@@ -118,16 +129,26 @@ cpu_states_t *get_cpu_totals(){
 	cpu_now.total=cpu_now.user+cpu_now.nice+cpu_now.kernel+cpu_now.idle;
 #endif
 #ifdef ALLBSD
-#ifdef FREEBSD
+#if defined(FREEBSD) || defined(DFBSD)
 	size = sizeof cp_time;
 	if (sysctlbyname("kern.cp_time", &cp_time, &size, NULL, 0) < 0){
+		sg_set_error(SG_ERROR_SYSCTLBYNAME, "kern.cp_time");
 		return NULL;
   	}
 #else
 	mib[0] = CTL_KERN;
+#ifdef NETBSD
 	mib[1] = KERN_CP_TIME;
+#else
+	mib[1] = KERN_CPTIME;
+#endif
 	size = sizeof cp_time;
 	if (sysctl(mib, 2, &cp_time, &size, NULL, 0) < 0) {
+#ifdef NETBSD
+		sg_set_error(SG_ERROR_SYSCTL, "CTL_KERN.KERN_CP_TIME");
+#else
+		sg_set_error(SG_ERROR_SYSCTL, "CTL_KERN.KERN_CPTIME");
+#endif
 		return NULL;
 	}
 #endif
@@ -148,29 +169,29 @@ cpu_states_t *get_cpu_totals(){
 	return &cpu_now;
 }
 
-cpu_states_t *get_cpu_diff(){
-	static cpu_states_t cpu_diff;
-	cpu_states_t cpu_then, *cpu_tmp;
+sg_cpu_stats *sg_get_cpu_stats_diff(){
+	static sg_cpu_stats cpu_diff;
+	sg_cpu_stats cpu_then, *cpu_tmp;
 
 	if (cpu_now_uninit){
-		if((cpu_tmp=get_cpu_totals())==NULL){
-		/* Should get_cpu_totals fail */
+		if((cpu_tmp=sg_get_cpu_stats())==NULL){
+			/* Should sg_get_cpu_stats fail */
 			return NULL;
 		}
 		return cpu_tmp;
 	}
 
 
-        cpu_then.user=cpu_now.user;
-        cpu_then.kernel=cpu_now.kernel;
-        cpu_then.idle=cpu_now.idle;
-        cpu_then.iowait=cpu_now.iowait;
-        cpu_then.swap=cpu_now.swap;
-        cpu_then.nice=cpu_now.nice;
-        cpu_then.total=cpu_now.total;
-        cpu_then.systime=cpu_now.systime;
+	cpu_then.user=cpu_now.user;
+	cpu_then.kernel=cpu_now.kernel;
+	cpu_then.idle=cpu_now.idle;
+	cpu_then.iowait=cpu_now.iowait;
+	cpu_then.swap=cpu_now.swap;
+	cpu_then.nice=cpu_now.nice;
+	cpu_then.total=cpu_now.total;
+	cpu_then.systime=cpu_now.systime;
 
-	if((cpu_tmp=get_cpu_totals())==NULL){
+	if((cpu_tmp=sg_get_cpu_stats())==NULL){
 		return NULL;
 	}
 
@@ -186,11 +207,11 @@ cpu_states_t *get_cpu_diff(){
 	return &cpu_diff;
 }
 
-cpu_percent_t *cpu_percent_usage(){
-	static cpu_percent_t cpu_usage;
-	cpu_states_t *cs_ptr;
+sg_cpu_percents *sg_get_cpu_percents(){
+	static sg_cpu_percents cpu_usage;
+	sg_cpu_stats *cs_ptr;
 
-	cs_ptr=get_cpu_diff();
+	cs_ptr=sg_get_cpu_stats_diff();
 	if(cs_ptr==NULL){
 		return NULL;
 	}

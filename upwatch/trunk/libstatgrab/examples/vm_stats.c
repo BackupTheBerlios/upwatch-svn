@@ -1,7 +1,7 @@
 /*
- * i-scream central monitoring system
+ * i-scream libstatgrab
  * http://www.i-scream.org
- * Copyright (C) 2000-2003 i-scream
+ * Copyright (C) 2000-2004 i-scream
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,6 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * $Id: vm_stats.c,v 1.2 2004/05/30 19:56:28 raarts Exp $
  */
 
 #include <stdio.h>
@@ -24,26 +26,22 @@
 #include <unistd.h>
 
 int main(int argc, char **argv){
-	
-	extern char *optarg;
-        extern int optind;
-        int c;
 
-	int delay = 1;
-	mem_stat_t *mem_stats;
-	swap_stat_t *swap_stats;
+	sg_mem_stats *mem_stats;
+	sg_swap_stats *swap_stats;
 
 	long long total, free;
 
-	while ((c = getopt(argc, argv, "d:")) != -1){
-                switch (c){
-                        case 'd':
-                                delay = atoi(optarg);
-                                break;
-		}
+	/* Initialise statgrab */
+	sg_init();
+
+	/* Drop setuid/setgid privileges. */
+	if (sg_drop_privileges() != 0) {
+		perror("Error. Failed to drop privileges");
+		return 1;
 	}
 
-	if( ((mem_stats=get_memory_stats()) != NULL) && (swap_stats=get_swap_stats()) != NULL){
+	if( ((mem_stats=sg_get_mem_stats()) != NULL) && (swap_stats=sg_get_swap_stats()) != NULL){
 		printf("Total memory in bytes : %lld\n", mem_stats->total);
 		printf("Used memory in bytes : %lld\n", mem_stats->used);
 		printf("Cache memory in bytes : %lld\n", mem_stats->cache);
@@ -59,8 +57,9 @@ int main(int argc, char **argv){
 		printf("Total VM usage : %5.2f%%\n", 100 - (((float)total/(float)free)));
 
 	}
+	else {
+		printf("Unable to get VM stats: %s\n", sg_str_error(sg_get_error()));
+		exit(1);
+	}
 	exit(0);
 }
-
-
-

@@ -1,7 +1,7 @@
 /*
- * i-scream central monitoring system
+ * i-scream libstatgrab
  * http://www.i-scream.org
- * Copyright (C) 2000-2003 i-scream
+ * Copyright (C) 2000-2004 i-scream
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,6 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * $Id: os_info.c,v 1.2 2004/05/30 19:56:28 raarts Exp $
  */
 
 #include <stdio.h>
@@ -24,10 +26,19 @@
 #include <unistd.h>
 
 int main(int argc, char **argv){
-	
-	general_stat_t *general_stats;
 
-	general_stats = get_general_stats();
+	sg_host_info *general_stats;
+
+	/* Initialise statgrab */
+	sg_init();
+
+	/* Drop setuid/setgid privileges. */
+	if (sg_drop_privileges() != 0) {
+		perror("Error. Failed to drop privileges");
+		return 1;
+	}
+
+	general_stats = sg_get_host_info();
 
 	if(general_stats == NULL){
 		fprintf(stderr, "Failed to get os stats\n");
@@ -43,6 +54,3 @@ int main(int argc, char **argv){
 
 	exit(0);
 }
-
-
-

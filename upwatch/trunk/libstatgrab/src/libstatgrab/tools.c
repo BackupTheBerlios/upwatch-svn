@@ -1,21 +1,24 @@
-/* 
- * i-scream central monitoring system
+/*
+ * i-scream libstatgrab
  * http://www.i-scream.org
- * Copyright (C) 2000-2003 i-scream
+ * Copyright (C) 2000-2004 i-scream
  * 
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+ * 02111-1307 USA
+ *
+ * $Id: tools.c,v 1.2 2004/05/30 19:56:28 raarts Exp $
  */
 
 #ifdef HAVE_CONFIG_H
@@ -25,20 +28,28 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 #include <sys/types.h>
-#include <regex.h>
 #ifdef ALLBSD
 #include <fcntl.h>
-#include <kvm.h>
 #endif
-#ifdef NETBSD
+#if (defined(FREEBSD) && !defined(FREEBSD5)) || defined(DFBSD)
+#include <kvm.h>
+#include <paths.h>
+#endif
+#if defined(NETBSD) || defined(OPENBSD)
 #include <uvm/uvm_extern.h>
+#include <sys/param.h>
+#include <sys/sysctl.h>
 #endif
 
 #include "tools.h"
+#include "statgrab.h"
 
 #ifdef SOLARIS
+#ifdef HAVE_LIBDEVINFO_H
 #include <libdevinfo.h>
+#endif
 #include <kstat.h>
 #include <unistd.h>
 #include <ctype.h>
@@ -50,7 +61,7 @@
 #include <dirent.h>
 #endif
 
-#ifdef SOLARIS
+#if defined(SOLARIS) && defined(HAVE_LIBDEVINFO_H)
 struct map{
 	char *bsd;
 	char *svr;
@@ -60,24 +71,26 @@ struct map{
 typedef struct map mapping_t;
 
 static mapping_t *mapping = NULL; 
+#endif
 
-char *get_svr_from_bsd(char *bsd){
+#ifdef SOLARIS
+const char *sg_get_svr_from_bsd(const char *bsd){
+#ifdef HAVE_LIBDEVINFO_H
 	mapping_t *map_ptr;
 	for(map_ptr = mapping; map_ptr != NULL; map_ptr = map_ptr->next)
 		if(!strcmp(map_ptr->bsd, bsd)) return map_ptr->svr;
-
+#endif
 	return bsd;
 }
+#endif
 
-void add_mapping(char *bsd, char *svr){
+#if defined(SOLARIS) && defined(HAVE_LIBDEVINFO_H)
+static void add_mapping(char *bsd, char *svr){
 	mapping_t *map_ptr;
 	mapping_t *map_end_ptr;
 
-	bsd = strdup(bsd);
-	svr = strdup(svr);
-
 	if (mapping == NULL){
-		mapping = malloc(sizeof(mapping_t));
+		mapping = sg_malloc(sizeof(mapping_t));
 		if (mapping == NULL) return;
 		map_ptr = mapping;
 	}else{
@@ -92,23 +105,28 @@ void add_mapping(char *bsd, char *svr){
 		/* We've reached end of list and not found the entry.. So we need to malloc
 		 * new mapping_t
 		 */
-		map_end_ptr->next = malloc(sizeof(mapping_t));
+		map_end_ptr->next = sg_malloc(sizeof(mapping_t));
 		if (map_end_ptr->next == NULL) return;
 		map_ptr = map_end_ptr->next;
 	}
 
 	map_ptr->next = NULL;
-	map_ptr->bsd = bsd;
-	map_ptr->svr = svr;
+	map_ptr->bsd = NULL;
+	map_ptr->svr = NULL;
+	if (sg_update_string(&map_ptr->bsd, bsd) < 0
+	    || sg_update_string(&map_ptr->svr, svr) < 0) {
+		return;
+	}
 
 	return;
 }
 
-char *read_dir(char *disk_path){
+
+static char *read_dir(char *disk_path){
 	DIR *dirp;
 	struct dirent *dp;
 	struct stat stbuf;
-	char *svr_name;
+	char *svr_name = NULL;
 	char current_dir[MAXPATHLEN];
 	char file_name[MAXPATHLEN];
 	char temp_name[MAXPATHLEN];
@@ -135,7 +153,10 @@ char *read_dir(char *disk_path){
 			x = readlink(dir_dname, file_name, sizeof(file_name));
 			file_name[x] = '\0';
 			if (strcmp(file_name, temp_name) == 0) {
-				svr_name = strdup(dp->d_name);
+				if (sg_update_string(&svr_name,
+						     dp->d_name) < 0) {
+					return NULL;
+				}
 				closedir(dirp);
 				return svr_name;
 			}
@@ -146,8 +167,7 @@ char *read_dir(char *disk_path){
 }
 
 
-
-int get_alias(char *alias){
+static int get_alias(char *alias){
 	char file[MAXPATHLEN];
 	di_node_t root_node;
 	di_node_t node;
@@ -158,8 +178,7 @@ int get_alias(char *alias){
 	char *value;
 	int instance;
 	if ((root_node = di_init("/", DINFOCPYALL)) == DI_NODE_NIL) {
-		fprintf(stderr, "di_init() failed\n");
-		exit(1);
+		return -1;
 	}
 	node = di_drv_first_node(alias, root_node);
 	while (node != DI_NODE_NIL) {
@@ -169,10 +188,10 @@ int get_alias(char *alias){
 			minor_name = di_minor_name(minor);
 			strcpy(tmpnode, alias);
 			sprintf(tmpnode, "%s%d", tmpnode, instance);
-			strcpy(file, "/devices");
-			strcat(file, phys_path);
-			strcat(file, ":");
-			strcat(file, minor_name);
+			sg_strlcpy(file, "/devices", sizeof file);
+			sg_strlcat(file, phys_path, sizeof file);
+			sg_strlcat(file, ":", sizeof file);
+			sg_strlcat(file, minor_name, sizeof file);
 			value = read_dir(file);
 			if (value != NULL){
 				add_mapping(tmpnode, value);
@@ -184,18 +203,24 @@ int get_alias(char *alias){
 		}
 	}
 	di_fini(root_node);
-	return (-1);
+	return 0;
 }
 
-void build_mapping(){
-	char device_name[512];
+
+#define BIG_ENOUGH 512
+static int build_mapping(){
+	char device_name[BIG_ENOUGH];
 	int x;
 	kstat_ctl_t *kc;
 	kstat_t *ksp;
 	kstat_io_t kios;
 
+	char driver_list[BIG_ENOUGH][BIG_ENOUGH];
+	int list_entries = 0;
+	int found;
+
 	if ((kc = kstat_open()) == NULL) {
-		return;
+		return -1;
 	}
 
 	for (ksp = kc->kc_chain; ksp; ksp = ksp->ks_next) {
@@ -210,18 +235,38 @@ void build_mapping(){
 			}
 			if(x == sizeof device_name) x--;
 			device_name[x] = '\0';
-			get_alias(device_name);
+
+			/* Check if we've not already looked it up */
+			found = 0;
+			for(x=0;x<list_entries;x++){
+				if (x>=BIG_ENOUGH){
+					/* We've got bigger than we thought was massive */
+					/* If we hit this.. Make big enough bigger */
+					return -1;
+				}
+				if( !strncmp(driver_list[x], device_name, BIG_ENOUGH)){
+					found = 1;
+					break;
+				}
+			}
+
+			if(!found){
+				if((get_alias(device_name)) != 0){
+					return -1;
+				}
+				strncpy(driver_list[x], device_name, BIG_ENOUGH);
+				list_entries++;
+			}
 		}
 	}
 
-	return;
+	return 0;
 }
 
 #endif
 
-
-
-char *f_read_line(FILE *f, const char *string){
+#if defined(LINUX) || defined(CYGWIN)
+char *sg_f_read_line(FILE *f, const char *string){
 	/* Max line length. 8k should be more than enough */
 	static char line[8192];
 
@@ -231,12 +276,13 @@ char *f_read_line(FILE *f, const char *string){
 		}
 	}
 
+	sg_set_error(SG_ERROR_PARSE, NULL);
 	return NULL;
 }
 
-char *get_string_match(char *line, regmatch_t *match){
+char *sg_get_string_match(char *line, regmatch_t *match){
 	int len=match->rm_eo - match->rm_so;
-	char *match_string=malloc(len+1);
+	char *match_string=sg_malloc(len+1);
 
 	match_string=strncpy(match_string, line+match->rm_so, len);
 	match_string[len]='\0';
@@ -244,7 +290,16 @@ char *get_string_match(char *line, regmatch_t *match){
 	return match_string;
 }
 
+long long sg_get_ll_match(char *line, regmatch_t *match){
+	char *ptr;
+	long long num;
 
+	ptr=line+match->rm_so;
+	num=atoll(ptr);
+
+	return num;
+}
+#endif
 
 #ifndef HAVE_ATOLL
 static long long atoll(const char *s) {
@@ -266,18 +321,126 @@ static long long atoll(const char *s) {
 }
 #endif
 
-long long get_ll_match(char *line, regmatch_t *match){
-	char *ptr;
-	long long num;
+/*      $OpenBSD: strlcpy.c,v 1.8 2003/06/17 21:56:24 millert Exp $     */
 
-	ptr=line+match->rm_so;
-	num=atoll(ptr);
+/*
+ * Copyright (c) 1998 Todd C. Miller <Todd.Miller@courtesan.com>
+ *
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
 
-	return num;
+/*
+ * Copy src to string dst of size siz.  At most siz-1 characters
+ * will be copied.  Always NUL terminates (unless siz == 0).
+ * Returns strlen(src); if retval >= siz, truncation occurred.
+ */
+size_t sg_strlcpy(char *dst, const char *src, size_t siz){
+	register char *d = dst;
+	register const char *s = src;
+	register size_t n = siz;
+
+	/* Copy as many bytes as will fit */
+	if (n != 0 && --n != 0) {
+		do {
+			if ((*d++ = *s++) == 0)
+				break;
+		} while (--n != 0);
+	}
+
+	/* Not enough room in dst, add NUL and traverse rest of src */
+	if (n == 0) {
+		if (siz != 0)
+			*d = '\0';	      /* NUL-terminate dst */
+		while (*s++)
+			;
+	}
+
+	return(s - src - 1);    /* count does not include NUL */
 }
 
-#ifdef ALLBSD
-kvm_t *get_kvm() {
+/*      $OpenBSD: strlcat.c,v 1.11 2003/06/17 21:56:24 millert Exp $    */
+
+/*
+ * Copyright (c) 1998 Todd C. Miller <Todd.Miller@courtesan.com>
+ *
+ * Permission to use, copy, modify, and distribute this software for any
+ * purpose with or without fee is hereby granted, provided that the above
+ * copyright notice and this permission notice appear in all copies.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
+ * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
+ * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
+ * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
+ * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
+ * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
+ * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ */
+
+/*
+ * Appends src to string dst of size siz (unlike strncat, siz is the
+ * full size of dst, not space left).  At most siz-1 characters
+ * will be copied.  Always NUL terminates (unless siz <= strlen(dst)).
+ * Returns strlen(src) + MIN(siz, strlen(initial dst)).
+ * If retval >= siz, truncation occurred.
+ */
+size_t sg_strlcat(char *dst, const char *src, size_t siz){
+	register char *d = dst;
+	register const char *s = src;
+	register size_t n = siz;
+	size_t dlen;
+
+	/* Find the end of dst and adjust bytes left but don't go past end */
+	while (n-- != 0 && *d != '\0')
+		d++;
+	dlen = d - dst;
+	n = siz - dlen;
+
+	if (n == 0)
+		return(dlen + strlen(s));
+	while (*s != '\0') {
+		if (n != 1) {
+			*d++ = *s;
+			n--;
+		}
+		s++;
+	}
+	*d = '\0';
+
+	return(dlen + (s - src));       /* count does not include NUL */
+}
+
+int sg_update_string(char **dest, const char *src) {
+	char *new;
+
+	if (src == NULL) {
+		/* We're being told to set it to NULL. */
+		free(*dest);
+		*dest = NULL;
+		return 0;
+	}
+
+	new = sg_realloc(*dest, strlen(src) + 1);
+	if (new == NULL) {
+		return -1;
+	}
+
+	strcpy(new, src);
+	*dest = new;
+	return 0;
+}
+
+#if (defined(FREEBSD) && !defined(FREEBSD5)) || defined(DFBSD)
+kvm_t *sg_get_kvm() {
 	static kvm_t *kvmd = NULL;
 
 	if (kvmd != NULL) {
@@ -285,54 +448,86 @@ kvm_t *get_kvm() {
 	}
 
 	kvmd = kvm_openfiles(NULL, NULL, NULL, O_RDONLY, NULL);
+	if(kvmd == NULL) {
+		sg_set_error(SG_ERROR_KVM_OPENFILES, NULL);
+	}
 	return kvmd;
+}
+
+/* Can't think of a better name for this function */
+kvm_t *sg_get_kvm2() {
+	static kvm_t *kvmd2 = NULL;
+
+	if (kvmd2 != NULL) {
+		return kvmd2;
+	}
+
+	kvmd2 = kvm_openfiles(_PATH_DEVNULL, _PATH_DEVNULL, NULL, O_RDONLY, NULL);
+	if(kvmd2 == NULL) {
+		sg_set_error(SG_ERROR_KVM_OPENFILES, NULL);
+	}
+	return kvmd2;
 }
 #endif
 
-#ifdef NETBSD
-struct uvmexp *get_uvmexp() {
-	static u_long addr = 0;
+#if defined(NETBSD) || defined(OPENBSD)
+struct uvmexp *sg_get_uvmexp() {
+	int mib[2];
+	size_t size = sizeof(struct uvmexp);
 	static struct uvmexp uvm;
-	kvm_t *kvmd = get_kvm();
+	struct uvmexp *new;
 
-	if (kvmd == NULL) {
+	mib[0] = CTL_VM;
+	mib[1] = VM_UVMEXP;
+
+	if (sysctl(mib, 2, &uvm, &size, NULL, 0) < 0) {
+		sg_set_error(SG_ERROR_SYSCTL, "CTL_VM.VM_UVMEXP");
 		return NULL;
 	}
 
-	if (addr == 0) {
-		struct nlist symbols[] = {
-			{ "_uvmexp" },
-			{ NULL }
-		};
-
-		if (kvm_nlist(kvmd, symbols) != 0) {
-			return NULL;
-		}
-		addr = symbols[0].n_value;
-	}
-
-	if (kvm_read(kvmd, addr, &uvm, sizeof uvm) != sizeof uvm) {
-		return NULL;
-	}
 	return &uvm;
 }
 #endif
 
-int statgrab_init(){
-#ifdef ALLBSD 
-	{ 
-		kvm_t *kvmd = get_kvm(); 
-		if (kvmd == NULL) return 1;
+int sg_init(){
+#if (defined(FREEBSD) && !defined(FREEBSD5)) || defined(DFBSD)
+	if (sg_get_kvm() == NULL) {
+		return -1;
 	}
-#endif
-#ifdef NETBSD
-	{
-		struct uvmexp *uvm = get_uvmexp();
-		if (uvm == NULL) return 1;
+	if (sg_get_kvm2() == NULL) {
+		return -1;
 	}
 #endif
 #ifdef SOLARIS
+	/* On solaris 7, this will fail if you are not root. But, everything
+	 * will still work, just no disk mappings. So we will ignore the exit
+	 * status of this, and carry on merrily.
+	 */
+#ifdef HAVE_LIBDEVINFO_H
 	build_mapping();
+#endif
 #endif
 	return 0;
 }
+
+int sg_drop_privileges() {
+	if (setegid(getgid()) != 0) {
+		sg_set_error(SG_ERROR_SETEGID, NULL);
+		return -1;
+	}
+	if (seteuid(getuid()) != 0) {
+		sg_set_error(SG_ERROR_SETEUID, NULL);
+		return -1;
+	}
+	return 0;
+}
+
+void *sg_realloc(void *ptr, size_t size) {
+	void *tmp = NULL;
+	tmp = realloc(ptr, size);
+	if(tmp == NULL) {
+		sg_set_error(SG_ERROR_MALLOC, NULL);
+	}
+	return tmp;
+}
+

@@ -1,7 +1,7 @@
 dnl Available from the GNU Autoconf Macro Archive at:
 dnl http://www.gnu.org/software/ac-archive/htmldoc/mp_with_curses.html
 dnl (Hacked by tdb for libstatgrab)
-dnl $Id: acinclude.m4,v 1.1 2003/12/04 18:59:16 raarts Exp $
+dnl $Id: acinclude.m4,v 1.2 2004/05/30 19:56:28 raarts Exp $
 AC_DEFINE([HAVE_CURSES_H], [], [Define to 1 if you have the <curses.h> header file.])
 AC_DEFINE([HAVE_NCURSES_H], [], [Define to 1 if you have the <ncurses.h> header file.])
 AC_DEFUN([MP_WITH_CURSES],

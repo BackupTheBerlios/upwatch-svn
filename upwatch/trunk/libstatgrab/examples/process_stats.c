@@ -1,7 +1,7 @@
 /*
- * i-scream central monitoring system
+ * i-scream libstatgrab
  * http://www.i-scream.org
- * Copyright (C) 2000-2003 i-scream
+ * Copyright (C) 2000-2004 i-scream
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,6 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * $Id: process_stats.c,v 1.2 2004/05/30 19:56:28 raarts Exp $
  */
 
 #include <stdio.h>
@@ -24,23 +26,31 @@
 #include <unistd.h>
 
 int main(int argc, char **argv){
-	
+
 	extern char *optarg;
-        extern int optind;
-        int c;
+	int c;
 
 	int delay = 1;
-	process_stat_t *process_stat;
+	sg_process_count *process_stat;
 
 	while ((c = getopt(argc, argv, "d:")) != -1){
-                switch (c){
-                        case 'd':
-                                delay = atoi(optarg);
-                                break;
+		switch (c){
+			case 'd':
+				delay = atoi(optarg);
+				break;
 		}
 	}
 
-	while( (process_stat = get_process_stats()) != NULL){
+	/* Initialise statgrab */
+	sg_init();
+
+	/* Drop setuid/setgid privileges. */
+	if (sg_drop_privileges() != 0) {
+		perror("Error. Failed to drop privileges");
+		return 1;
+	}
+
+	while( (process_stat = sg_get_process_count()) != NULL){
 		printf("Running:%3d \t", process_stat->running);
 		printf("Sleeping:%5d \t",process_stat->sleeping);
 		printf("Stopped:%4d \t", process_stat->stopped);
@@ -51,6 +61,3 @@ int main(int argc, char **argv){
 
 	exit(0);
 }
-
-
-

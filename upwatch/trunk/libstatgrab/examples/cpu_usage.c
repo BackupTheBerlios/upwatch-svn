@@ -1,7 +1,7 @@
 /*
- * i-scream central monitoring system
+ * i-scream libstatgrab
  * http://www.i-scream.org
- * Copyright (C) 2000-2003 i-scream
+ * Copyright (C) 2000-2004 i-scream
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,6 +16,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * $Id: cpu_usage.c,v 1.2 2004/05/30 19:56:28 raarts Exp $
  */
 
 #include <stdio.h>
@@ -24,29 +26,37 @@
 #include <unistd.h>
 
 int main(int argc, char **argv){
-	
+
 	extern char *optarg;
-        extern int optind;
-        int c;
+	int c;
 
 	int delay = 1;
-	cpu_percent_t *cpu_percent;
-
-	/* Throw away the first reading as thats averaged over the machines uptime */
-	cpu_percent = cpu_percent_usage();
+	sg_cpu_percents *cpu_percent;
 
 	while ((c = getopt(argc, argv, "d:")) != -1){
-                switch (c){
-                        case 'd':
-                                delay = atoi(optarg);
-                                break;
+		switch (c){
+			case 'd':
+				delay = atoi(optarg);
+				break;
 		}
 	}
 
-	 /* Clear the screen ready for display the cpu usage */
-        printf("\033[2J");
+	/* Initialise statgrab */
+	sg_init();
 
-	while( (cpu_percent = cpu_percent_usage()) != NULL){
+	/* Drop setuid/setgid privileges. */
+	if (sg_drop_privileges() != 0) {
+		perror("Error. Failed to drop privileges");
+		return 1;
+	}
+
+	/* Throw away the first reading as thats averaged over the machines uptime */
+	cpu_percent = sg_get_cpu_percents();
+
+	/* Clear the screen ready for display the cpu usage */
+	printf("\033[2J");
+
+	while( (cpu_percent = sg_get_cpu_percents()) != NULL){
 		printf("\033[2;2H%-12s : %6.2f", "User CPU", cpu_percent->user);
 		printf("\033[3;2H%-12s : %6.2f", "Kernel CPU", cpu_percent->kernel);
 		printf("\033[4;2H%-12s : %6.2f", "IOWait CPU", cpu_percent->iowait);
@@ -59,6 +69,3 @@ int main(int argc, char **argv){
 
 	exit(0);
 }
-
-
-

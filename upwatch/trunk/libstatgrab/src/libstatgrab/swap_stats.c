@@ -1,21 +1,24 @@
-/* 
- * i-scream central monitoring system
+/*
+ * i-scream libstatgrab
  * http://www.i-scream.org
- * Copyright (C) 2000-2003 i-scream
+ * Copyright (C) 2000-2004 i-scream
  * 
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or (at your option) any later version.
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
  * 
- * This program is distributed in the hope that it will be useful,
+ * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  * 
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
+ * 02111-1307 USA
+ *
+ * $Id: swap_stats.c,v 1.2 2004/05/30 19:56:28 raarts Exp $
  */
 
 #ifdef HAVE_CONFIG_H
@@ -33,15 +36,27 @@
 #include <stdio.h>
 #include <string.h>
 #endif
-#ifdef FREEBSD
-#include <unistd.h>
+#if defined(FREEBSD) || defined(DFBSD)
+#ifdef FREEBSD5
+#include <sys/param.h>
+#include <sys/sysctl.h>
+#include <sys/user.h>
+#else
 #include <sys/types.h>
 #include <kvm.h>
 #endif
+#include <unistd.h>
+#endif
+#if defined(NETBSD) || defined(OPENBSD)
+#include <sys/param.h>
+#include <sys/time.h>
+#include <uvm/uvm.h>
+#include <unistd.h>
+#endif
 
-swap_stat_t *get_swap_stats(){
+sg_swap_stats *sg_get_swap_stats(){
 
-	static swap_stat_t swap_stat;
+	static sg_swap_stats swap_stat;
 
 #ifdef SOLARIS
 	struct anoninfo ai;
@@ -52,20 +67,28 @@ swap_stat_t *get_swap_stats(){
 	char *line_ptr;
 	unsigned long long value;
 #endif
-#ifdef FREEBSD
-	struct kvm_swap swapinfo;
+#if defined(FREEBSD) || defined(DFBSD)
 	int pagesize;
+#ifdef FREEBSD5
+	struct xswdev xsw;
+	int mib[16], n;
+	size_t mibsize, size;
+#else
+	struct kvm_swap swapinfo;
 	kvm_t *kvmd;
 #endif
-#ifdef NETBSD
+#endif
+#if defined(NETBSD) || defined(OPENBSD)
 	struct uvmexp *uvm;
 #endif
 
 #ifdef SOLARIS
 	if((pagesize=sysconf(_SC_PAGESIZE)) == -1){
+		sg_set_error(SG_ERROR_SYSCONF, "_SC_PAGESIZE");
 		return NULL;
 	}
 	if (swapctl(SC_AINFO, &ai) == -1) {
+		sg_set_error(SG_ERROR_SWAPCTL, NULL);
 		return NULL;
 	}
 	swap_stat.total = (long long)ai.ani_max * (long long)pagesize;
@@ -74,10 +97,11 @@ swap_stat_t *get_swap_stats(){
 #endif
 #if defined(LINUX) || defined(CYGWIN)
 	if ((f = fopen("/proc/meminfo", "r")) == NULL) {
+		sg_set_error(SG_ERROR_OPEN, "/proc/meminfo");
 		return NULL;
 	}
 
-	while ((line_ptr = f_read_line(f, "")) != NULL) {
+	while ((line_ptr = sg_f_read_line(f, "")) != NULL) {
 		if (sscanf(line_ptr, "%*s %llu kB", &value) != 1) {
 			continue;
 		}
@@ -93,21 +117,53 @@ swap_stat_t *get_swap_stats(){
 	fclose(f);
 	swap_stat.used = swap_stat.total - swap_stat.free;
 #endif
-#ifdef FREEBSD
-	if((kvmd = get_kvm()) == NULL){
+#if defined(FREEBSD) || defined(DFBSD)
+	pagesize=getpagesize();
+
+#ifdef FREEBSD5
+	swap_stat.total = 0;
+	swap_stat.used = 0;
+
+	mibsize = sizeof mib / sizeof mib[0];
+	if (sysctlnametomib("vm.swap_info", mib, &mibsize) < 0) {
+		sg_set_error(SG_ERROR_SYSCTLNAMETOMIB, "vm.swap_info");
+		return NULL;
+	}
+	for (n = 0; ; ++n) {
+		mib[mibsize] = n;
+		size = sizeof xsw;
+		if (sysctl(mib, mibsize + 1, &xsw, &size, NULL, NULL) < 0) {
+			break;
+		}
+		if (xsw.xsw_version != XSWDEV_VERSION) {
+			sg_set_error(SG_ERROR_XSW_VER_MISMATCH, NULL);
+			return NULL;
+		}
+		swap_stat.total += (long long) xsw.xsw_nblks;
+		swap_stat.used += (long long) xsw.xsw_used;
+	}
+	if (errno != ENOENT) {
+		sg_set_error(SG_ERROR_ENOENT, NULL);
+		return NULL;
+	}
+#else
+	if((kvmd = sg_get_kvm()) == NULL){
 		return NULL;
 	}
 	if ((kvm_getswapinfo(kvmd, &swapinfo, 1,0)) == -1){
+		sg_set_error(SG_ERROR_KVM_GETSWAPINFO, NULL);
 		return NULL;
 	}
-	pagesize=getpagesize();
 
-	swap_stat.total= (long long)swapinfo.ksw_total * (long long)pagesize;
-	swap_stat.used = (long long)swapinfo.ksw_used * (long long)pagesize;
-	swap_stat.free = swap_stat.total-swap_stat.used;
+	swap_stat.total = (long long)swapinfo.ksw_total;
+	swap_stat.used = (long long)swapinfo.ksw_used;
 #endif
-#ifdef NETBSD
-	if ((uvm = get_uvmexp()) == NULL) {
+	swap_stat.total *= pagesize;
+	swap_stat.used *= pagesize;
+	swap_stat.free = swap_stat.total - swap_stat.used;
+#endif
+#if defined(NETBSD) || defined(OPENBSD)
+	if ((uvm = sg_get_uvmexp()) == NULL) {
 		return NULL;
 	}
 
@@ -115,6 +171,7 @@ swap_stat_t *get_swap_stats(){
 	swap_stat.used = (long long)uvm->pagesize * (long long)uvm->swpginuse;
 	swap_stat.free = swap_stat.total - swap_stat.used;
 #endif
+
 	return &swap_stat;
 
 }

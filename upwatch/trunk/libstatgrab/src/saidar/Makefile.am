@@ -1,6 +1,6 @@
 # Makefile for libstatgrab/src/saidar
-# http://www.i-scream.org/
-# $Id: Makefile.am,v 1.1 2003/12/04 18:59:17 raarts Exp $
+# http://www.i-scream.org/libstatgrab/
+# $Id: Makefile.am,v 1.2 2004/05/30 19:56:28 raarts Exp $
 
 if SAIDAR
 bin_PROGRAMS = saidar
@@ -15,10 +15,15 @@ INCLUDES = @SAIDARCPPFLAGS@ -I$(top_srcdir) -I$(top_builddir) \
 LDADD = $(top_builddir)/src/libstatgrab/libstatgrab.la @SAIDARLIBS@ @LINKFLAGS@
 
 install-exec-local:
-if SETGIDBINS
 if SAIDAR
+if SETGIDBINS
 # Some operating systems need the binary to be setgid kmem
 	chgrp kmem @bindir@/saidar
 	chmod g+s @bindir@/saidar
+endif
+if SETUIDBINS
+# Some operating systems need the binary to be setuid root
+	chown root @bindir@/saidar
+	chmod u+s @bindir@/saidar
 endif
 endif

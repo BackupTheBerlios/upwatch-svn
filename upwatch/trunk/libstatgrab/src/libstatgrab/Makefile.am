@@ -1,12 +1,18 @@
 # Makefile for libstatgrab/src/libstatgrab
-# http://www.i-scream.org/
-# $Id: Makefile.am,v 1.1 2003/12/04 18:59:17 raarts Exp $
+# http://www.i-scream.org/libstatgrab/
+# $Id: Makefile.am,v 1.2 2004/05/30 19:56:28 raarts Exp $
 
-include_HEADERS = statgrab.h
+if DEPRECATED
+include_DEPRECATEDHEADERS = statgrab_deprecated.h
+endif
+include_HEADERS = statgrab.h $(include_DEPRECATEDHEADERS)
 lib_LTLIBRARIES = libstatgrab.la
 
-libstatgrab_la_LDFLAGS = -version-info 2:0:1
+libstatgrab_la_LDFLAGS = -version-info 5:0:0
 
-libstatgrab_la_SOURCES = cpu_stats.c disk_stats.c load_stats.c memory_stats.c network_stats.c os_info.c page_stats.c process_stats.c swap_stats.c user_stats.c tools.c
+if DEPRECATED
+libstatgrab_la_DEPRECATEDSOURCES = statgrab_deprecated.c
+endif
+libstatgrab_la_SOURCES = cpu_stats.c disk_stats.c load_stats.c memory_stats.c network_stats.c os_info.c page_stats.c process_stats.c swap_stats.c user_stats.c tools.c vector.c error.c $(libstatgrab_la_DEPRECATEDSOURCES)
 
-noinst_HEADERS = tools.h
+noinst_HEADERS = tools.h vector.h

@@ -6,6 +6,9 @@
 /* Building on Cygwin */
 #undef CYGWIN
 
+/* Building on DragonFlyBSD */
+#undef DFBSD
+
 /* Building on FreeBSD */
 #undef FREEBSD
 
@@ -29,6 +32,9 @@
 
 /* Define to 1 if you have the <kstat.h> header file. */
 #undef HAVE_KSTAT_H
+
+/* Define to 1 if you have the <libdevinfo.h> header file. */
+#undef HAVE_LIBDEVINFO_H
 
 /* Define to 1 if your system has a GNU libc compatible `malloc' function, and
    to 0 otherwise. */
@@ -56,6 +62,9 @@
 /* Define to 1 if you have the <string.h> header file. */
 #undef HAVE_STRING_H
 
+/* Define to 1 if you have the <sys/loadavg.h> header file. */
+#undef HAVE_SYS_LOADAVG_H
+
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #undef HAVE_SYS_STAT_H
 
@@ -70,6 +79,12 @@
 
 /* Building on NetBSD */
 #undef NETBSD
+
+/* Building on NetBSD 2.x */
+#undef NETBSD2
+
+/* Building on OpenBSD */
+#undef OPENBSD
 
 /* Name of package */
 #undef PACKAGE
@@ -89,7 +104,7 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
-/* Building on Solaris 2.7 */
+/* Building on Solaris 2.6 or 2.7 */
 #undef SOL7
 
 /* Building on Solaris 2.x */

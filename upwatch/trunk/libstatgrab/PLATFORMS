@@ -1,14 +1,70 @@
-# $Id: PLATFORMS,v 1.1 2003/12/04 18:59:16 raarts Exp $
+libstatgrab PLATFORMS
+http://www.i-scream.org/libstatgrab/
+
+$Id: PLATFORMS,v 1.2 2004/05/30 19:56:28 raarts Exp $
+
+Supported Platforms
+===================
 
 libstatgrab has been tested to work on the following platforms:
 
 Cygwin ?.?
-FreeBSD 4
-FreeBSD 5
+DragonFly BSD 1.x
+FreeBSD 4.x
+FreeBSD 5.x
 Linux 2.2
 Linux 2.4
 Linux 2.6
-NetBSD 1.6
+NetBSD 1.x
+NetBSD 2.x
+OpenBSD 3.x
+Solaris 2.6
 Solaris 2.7
-Solaris 2.8
-Solaris 2.9
+Solaris 2.8 (sparc & x86)
+Solaris 2.9 (sparc & x86)
+
+Platform Specific Notes
+=======================
+
+Unless explicitly mentioned below assume that libstatgrab will run on
+any of the platforms above without any elevated privileges.
+
+Linux
+-----
+
+On Linux root privileges are required to get the statistics returned
+by the get_network_iface_stats function. Not having these privileges
+results in NULL being returned.
+
+Also note that this cannot be solved by calling statgrab_init and then
+statgrab_drop_privileges at this stage.
+
+FreeBSD 4
+---------
+
+On FreeBSD 4 (not on 5) programs need to be setgid kmem to get swap
+statistics. It is sufficient to give a program these privileges, call
+statgrab_init, and then drop the privileges using statgrab_drop_privileges.
+
+The get_swap_stats function will return NULL if this hasn't been done.
+
+Solaris 2.6/2.7
+---------------
+
+On Solaris 2.6 and 2.7 root privileges are required to build the drive
+mapping list (eg. mapping ssd0 on to c0t0d0s0). If these privileges
+aren't available the names will be left as ssd0, for example.
+
+It is sufficient to use statgrab_init and statgrab_drop_privileges.
+
+Cygwin
+------
+
+Full support for libstatgrab isn't yet provided on cygwin - there are
+some stats which we just can't get. In these cases the functions will
+return NULL to indicate failure.
+
+If you have installed libncurses-devel but the configure script can't
+find ncurses.h, you've most likely hit a bug in the cygwin package. To
+fix this run: /etc/postinstall/libncurses-devel.sh.done
+
