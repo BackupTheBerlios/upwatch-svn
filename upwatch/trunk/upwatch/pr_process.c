@@ -63,6 +63,7 @@ int extract_info_from_xml(trx *t)
   res->stattime = xmlGetPropUnsigned(t->cur, (const xmlChar *) "date");
   res->expires = xmlGetPropUnsigned(t->cur, (const xmlChar *) "expires");
   res->color = xmlGetPropUnsigned(t->cur, (const xmlChar *) "color");
+  res->interval = xmlGetPropUnsigned(t->cur, (const xmlChar *) "interval");
   res->received = xmlGetPropUnsigned(t->cur, (const xmlChar *) "received");
   res->ipaddress = xmlGetProp(t->cur, (const xmlChar *) "ipaddress");
   res->domain = xmlGetProp(t->cur, (const xmlChar *) "domain");

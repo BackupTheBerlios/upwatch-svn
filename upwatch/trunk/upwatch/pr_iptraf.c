@@ -25,7 +25,6 @@ void iptraf_xml_result_node(trx *t)
   if (res->ipaddress) {
     inet_aton(res->ipaddress, &res->ipaddr);
   }
-  res->interval = xmlGetPropUnsigned(t->cur, (const xmlChar *) "interval");
 }
 
 //*******************************************************************

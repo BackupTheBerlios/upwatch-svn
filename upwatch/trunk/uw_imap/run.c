@@ -47,7 +47,11 @@ gboolean return_seen(gpointer key, gpointer value, gpointer user_data)
 {
   struct probedef *probe = (struct probedef *)value;
 
-  return(probe->seen == 0);
+  if (probe->seen == 0) {
+    LOG(LOG_INFO, "removed probe %s:%u from list", probe->domain, probe->probeid);
+    return 1;
+  }
+  return(0);
 }
 
 int init(void)
@@ -145,6 +149,7 @@ void refresh_database(MYSQL *mysql)
   }
   mysql_free_result(result);
   if (mysql_errno(mysql)) {
+    LOG(LOG_INFO, "saw an error: not removing any probes");
     g_hash_table_foreach(cache, reset_seen, NULL);
   } else {
     g_hash_table_foreach_remove(cache, return_seen, NULL);

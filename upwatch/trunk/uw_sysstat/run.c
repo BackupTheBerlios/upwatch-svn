@@ -347,6 +347,7 @@ extern int forever;
   sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60));
     xmlSetProp(sysstat, "expires", buffer);
   sprintf(buffer, "%d", color);  		xmlSetProp(sysstat, "color", buffer);
+  sprintf(buffer, "%ld", OPT_VALUE_INTERVAL);	xmlSetProp(sysstat, "interval", buffer);
 
   sprintf(buffer, "%.1f", st.load->min1);	
     subtree = xmlNewChild(sysstat, NULL, "loadavg", buffer);
@@ -386,6 +387,7 @@ extern int forever;
   sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60));
     xmlSetProp(errlog, "expires", buffer);
   sprintf(buffer, "%d", color);			subtree = xmlNewChild(errlog, NULL, "color", buffer);
+  sprintf(buffer, "%ld", OPT_VALUE_INTERVAL);	xmlSetProp(sysstat, "interval", buffer);
   if (log && log->str && strlen(log->str) > 0) {
     subtree = xmlNewTextChild(errlog, NULL, "info", log->str);
   }
@@ -446,6 +448,7 @@ extern int forever;
   sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60));
     xmlSetProp(diskfree, "expires", buffer);
   sprintf(buffer, "%d", color);			subtree = xmlNewChild(diskfree, NULL, "color", buffer);
+  sprintf(buffer, "%ld", OPT_VALUE_INTERVAL);	xmlSetProp(sysstat, "interval", buffer);
   subtree = xmlNewTextChild(diskfree, NULL, "info", info);
 
   if (HAVE_OPT(HPQUEUE)) {

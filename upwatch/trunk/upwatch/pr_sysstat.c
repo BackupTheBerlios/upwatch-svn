@@ -130,8 +130,9 @@ void *sysstat_get_def(trx *t, int create)
       }
       result = my_query(t->probe->db, 0,
                         "insert into pr_%s_def set server = '%d', "
-                        "        ipaddress = '127.0.0.1', description = '%s'", 
-                        res->name, res->server, t->fromhost ? t->fromhost : "automatically added");
+                        "        ipaddress = '%s', description = '%s'", 
+                        res->name, res->server, t->res->ipaddress ? t->res->ipaddress : "127.0.0.1", 
+                        t->fromhost ? t->fromhost : "automatically added");
       mysql_free_result(result);
       if (mysql_affected_rows(t->probe->db) == 0) { // nothing was actually inserted
         LOG(LOG_NOTICE, "insert missing pr_%s_def id %u: %s", 

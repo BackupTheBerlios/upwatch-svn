@@ -14,7 +14,7 @@ detail        =
 
 // this section is for the generated specfile
 spec-requires = "libpcap glib2 >= 2.0.4";
-spec-files = `echo "%attr(0770,root,upwatch)" $sbindir/uw_iptraf`;
+spec-files = `echo "%attr(4770,root,upwatch)" $sbindir/uw_iptraf`;
 
 // describe commandline flags
 flag = {
