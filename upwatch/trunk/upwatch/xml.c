@@ -28,7 +28,7 @@ xmlDocPtr UpwatchXmlDoc(const char *root)
   time_t now = time(NULL);
 
   xmlKeepBlanksDefault(0);
-  doc = xmlNewDoc("1.0");
+  doc = xmlNewDoc((unsigned char *)"1.0");
   xmlCreateIntSubset(doc, root, NULL, PATH_RESULT_DTD);
 
   tree = xmlNewChild((xmlNodePtr)doc, NULL, root, NULL);

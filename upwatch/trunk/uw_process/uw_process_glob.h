@@ -65,8 +65,10 @@ typedef struct _module {
 extern module *modules[];
 
 struct summ_spec {
-  int period;
-  char *from, *to;
+  int period;   // 
+  int perslot;  // # of recs per slot in the from table
+  char *from;   // summarize from table
+  char *to;     // summarize into this table
 }; 
 
 typedef struct transaction {
@@ -82,7 +84,7 @@ typedef struct transaction {
 extern void ct_get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res);
 extern gint ct_store_raw_result(struct _module *probe, void *probe_def, void *probe_res);
 extern void ct_summarize(module *probe, void *probe_def, void *probe_res, char *from, char *into, 
-                         guint slot, guint slotlow, guint slothigh, gint ignore_dupes);
+                         guint slot, guint slotlow, guint slothigh, gint resummarize);
 
 #endif /* __UW_PROCESS_H */
 

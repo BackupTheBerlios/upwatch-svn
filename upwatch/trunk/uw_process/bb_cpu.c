@@ -191,7 +191,7 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
 //*******************************************************************
 // SUMMARIZE A TABLE INTO AN OLDER PERIOD
 //*******************************************************************
-static void summarize(module *probe, void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint ignore_dupes)
+static void summarize(module *probe, void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint resummarize)
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
@@ -251,6 +251,13 @@ static void summarize(module *probe, void *probe_def, void *probe_res, char *fro
   avg_red     = atof(row[15]);
   mysql_free_result(result);
 
+  if (resummarize) {
+    // delete old values
+    result = my_query(probe->db, 0,
+                    "delete from pr_bb_cpu_%s where probe = '%u' and stattime = '%u'",
+                    into, def->probeid, stattime);
+    mysql_free_result(result);
+  }
   result = my_query(probe->db, 0,
                     "insert into pr_bb_cpu_%s " 
                     "set    loadavg = '%f', user = '%u', system = '%u', idle = '%u', "

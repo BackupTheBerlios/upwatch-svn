@@ -18,12 +18,12 @@
 #endif
 
 struct summ_spec summ_info[] = {
-  { SLOT_DAY,   "raw",   "day"   },
-  { SLOT_WEEK,  "day",   "week"  },
-  { SLOT_MONTH, "week",  "month" },
-  { SLOT_YEAR,  "month", "year"  },
-  { SLOT_YEAR5, "year",  "5year" },
-  { 0,          NULL,    NULL    }
+  { SLOT_DAY,   0,  "raw",   "day"   },
+  { SLOT_WEEK,  7,  "day",   "week"  },
+  { SLOT_MONTH, 4,  "week",  "month" },
+  { SLOT_YEAR,  12, "month", "year"  },
+  { SLOT_YEAR5, 5,  "year",  "5year" },
+  { -1,         0,  NULL,    NULL    }
 };
 
 static void free_res(void *res)
@@ -181,10 +181,10 @@ static void *get_def(module *probe, struct probe_result *res)
                           "        ipaddress = '%s', description = 'auto-added by system'",
                           res->name, res->server, res->ipaddress?res->ipaddress:"");
         mysql_free_result(result);
-        res->probeid = mysql_last_insert_id(probe->db);
-        if (mysql_affected_rows(mysql) == 0) { // nothing was actually inserted
+        res->probeid = mysql_insert_id(probe->db);
+        if (mysql_affected_rows(probe->db) == 0) { // nothing was actually inserted
           LOG(LOG_NOTICE, "insert missing pr_%s_def id %u: %s", 
-                           res->name, res->probeid, mysql_error(mysql));
+                           res->name, res->probeid, mysql_error(probe->db));
         }
         result = my_query(probe->db, 0,
                           "select server, yellow, red "
@@ -415,20 +415,29 @@ static void update_server_color(module *probe, struct probe_def *def, struct pro
 }
 
 //*******************************************************************
-// HAS THE LAST RECORD FOR THIS SLOT BEEN SEEN?
+// IS THIS SLOT COMPLETELY FILLED?
 //*******************************************************************
-int have_records_later_than(module *probe, char *name, guint probeid, char *from, guint slothigh)
+int slot_is_complete(module *probe, char *name, guint probeid, int i, guint slotlow, guint slothigh)
 {
   MYSQL_RES *result;
+  MYSQL_ROW row;
   int val = FALSE;
 
+  /* 
+   * don't know how many raw records go into a day slot, 
+   * so we fake it is filled, so it'll always be summarized
+   */
+  if (i == 0) return 1;
   result = my_query(probe->db, 0,
-                    "select id from pr_%s_%s use index(probstat) "
-                    "where  probe = '%u' and stattime > '%u' limit 1",
-                    name, from, probeid, slothigh);
+                    "select count(*) from pr_%s_%s use index(probstat) "
+                    "where  probe = '%u' and stattime >= '%u' and stattime <= '%u'",
+                    name, summ_info[i].from, probeid, slotlow, slothigh);
   if (!result) return(FALSE);
-  if (mysql_num_rows(result) > 0) {
-    val = TRUE;
+  row = mysql_fetch_row(result);
+  if (row && row[0]) {
+    if (atoi(row[0]) >= summ_info[i].perslot) {
+      val = TRUE;
+    }
   }
   mysql_free_result(result);
   return(val);
@@ -552,7 +561,7 @@ int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
           gulong dummy_low, dummy_high;
           gint i;
 
-          for (i=0; summ_info[i].period > 0; i++) { // FOR EACH PERIOD
+          for (i=0; summ_info[i].period != -1; i++) { // FOR EACH PERIOD
             prev_slot = uw_slot(summ_info[i].period, prv->stattime, &slotlow, &slothigh);
             cur_slot = uw_slot(summ_info[i].period, res->stattime, &dummy_low, &dummy_high);
             if (cur_slot != prev_slot) { // IF WE ENTERED A NEW SLOT, SUMMARIZE PREVIOUS SLOT
@@ -575,11 +584,11 @@ int process(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
             LOG(LOG_DEBUG, "stattime = %u, newest = %u for %s %u", res->stattime, def->newest,
               res->name, res->probeid);
           }
-          for (i=0; summ_info[i].period > 0; i++) { // FOR EACH PERIOD
+          for (i=0; summ_info[i].period != -1; i++) { // FOR EACH PERIOD
             cur_slot = uw_slot(summ_info[i].period, res->stattime, &slotlow, &slothigh);
             if (slothigh > not_later_then) continue; // we already know there are none later then this
-            // IF THE LAST RECORD FOR THIS SLOT HAS BEEN SEEN
-            if (have_records_later_than(probe, res->name, def->probeid, summ_info[i].from, slothigh)) { 
+            // IF THIS SLOT IS COMPLETE
+            if (slot_is_complete(probe, res->name, def->probeid, i, slotlow, slothigh)) {
               // RE-SUMMARIZE CURRENT SLOT
               probe->summarize(probe, def, res, summ_info[i].from, summ_info[i].to, 
                                cur_slot, slotlow, slothigh, 0);

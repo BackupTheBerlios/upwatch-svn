@@ -23,14 +23,10 @@
       <para>The probe result file is in XML format, described in <filename>/usr/lib/upwatch/dtdt/result.dtd</filename>.
       </para>
    </sect2>
-   <sect1 id="uw_accept_protocol">
+   <sect2 id="uw_accept_protocol">
       <title>uw_accept protocol</title>
       <para>The protocol used by uw_accept is almost exactly like the POP3 protocol. login with USER and PASS, then
-      enter DATA <&lt;filesize&gt; and start uploading</para>
-   </sect1>
-   <sect1 id="uw_acceptbb_protocol">
-      <title>uw_acceptbb protocol</title>
-      <para>The protocol used by uw_acceptbb is exactly like the Big Brother protocol (see <ulink url="http://www.bb4.com"></ulink>
-      The only BB requesst supported is currently the <varname>status</varname> request.</para>.
+      enter DATA filesize and start uploading</para>
+   </sect2>
    </sect1>
 </appendix>

@@ -442,13 +442,13 @@ extern int forever;
 
       //printf("stattime = %u, prev = %u\n", res.stattime, def.newest);
 
-      for (i=0; summ_info[i].period > 0; i++) { // FOR EACH PERIOD
+      for (i=0; summ_info[i].period != -1; i++) { // FOR EACH PERIOD
         prev_slot = uw_slot(summ_info[i].period, def.newest, &slotlow, &slothigh);
         cur_slot = uw_slot(summ_info[i].period, res.stattime, &dummy_low, &dummy_high);
 
         if (cur_slot != prev_slot) {
           modules[idx]->summarize(modules[idx], &def, &res, summ_info[i].from, summ_info[i].to, 
-                                  cur_slot, slotlow, slothigh, 1 /* don't log dupes */);
+                                  cur_slot, slotlow, slothigh, 1 /* delete any previous values */);
           //printf("\ncurslot=%u, prev=%u\n", cur_slot, prev_slot);
         }
       }

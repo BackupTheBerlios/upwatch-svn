@@ -3,7 +3,7 @@ Summary: UpWatch - A High performance monitoring framwork
 Vendor: http://www.upwatch.com
 Name: upwatch
 Version: [+ version +]
-Release: 7
+Release: 10
 Source: http://www.upwatch.com/%{name}-%{version}.tar.gz
 Packager: Ron Arts <raarts@upwatch.com>
 Copyright: Proprietary
@@ -48,6 +48,7 @@ mkdir -p $RPM_BUILD_ROOT/var/lib/upwatch
 mkdir -p $RPM_BUILD_ROOT/var/log/upwatch
 mkdir -p $RPM_BUILD_ROOT/var/run/upwatch
 mkdir -p $RPM_BUILD_ROOT/usr/bin
+mkdir -p $RPM_BUILD_ROOT/usr/lib
 install -m 660 config/upwatch.conf $RPM_BUILD_ROOT/etc/
 mkdir -p $RPM_BUILD_ROOT/usr/lib/upwatch/dtd
 install -m 660 config/result.dtd $RPM_BUILD_ROOT/usr/lib/upwatch/dtd
@@ -58,6 +59,8 @@ install -m 700 config/cron.daily $RPM_BUILD_ROOT/etc/cron.daily/upwatch
 
 mkdir -p $RPM_BUILD_ROOT/etc/rc.d/init.d
 install -m 770 config/upwatch.init $RPM_BUILD_ROOT/etc/rc.d/init.d/upwatch
+
+cp /usr/lib/libopts.so $RPM_BUILD_ROOT/usr/lib
 
 [+ FOR program +]
 # package specific files for [+program+]
@@ -101,6 +104,7 @@ install -m 660 [+program+]/[+program+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+prog
 %attr(0755,root,root) /usr/bin/bbhimport
 %attr(0755,root,root) /usr/bin/ctime
 %attr(0755,root,root) /usr/bin/slot
+%attr(0755,root,root) /usr/lib/libopts.so
 /usr/share/man/man1/ctime.1.gz
 /usr/share/man/man1/slot.1.gz
 /usr/share/man/man1/bbhimport.1.gz

@@ -13,17 +13,17 @@ static int month_len_in_days(struct tm *tm)
   int days_in_month;
 
   switch (tm->tm_mon) {
-    case 1: // februari
-      if (tm->tm_year % 4 == 0) { // leap year?
+    case 1: /* februari */
+      if (tm->tm_year % 4 == 0) { /* leap year? */
         days_in_month = 29;
       } else {
         days_in_month = 28;
       }
       break;
-    case 3:  // april
-    case 5:  // june 
-    case 8:  // september 
-    case 10: // november
+    case 3:  /* april */
+    case 5:  /* june */
+    case 8:  /* september */ 
+    case 10: /* november */
       days_in_month = 30;
       break;
     default:
@@ -37,7 +37,7 @@ static int year_len_in_days(struct tm *tm)
 {
   int days_in_year;
 
-  if (tm->tm_year % 4 == 0) { // leap year?
+  if (tm->tm_year % 4 == 0) { /* leap year? */
     days_in_year = 366;
   } else {
     days_in_year = 365;
@@ -69,13 +69,14 @@ int uw_slot(int type, gulong when, gulong *lowest, gulong *highest)
   int seconds_per_slot;
   int slot;
 
-  //printf(ctime(&when));
+  /*printf(ctime(&when));*/
 
   tm = localtime((time_t *)&when);
 
-  //printf("tm_sec = %d tm_min=%d tm_hour=%d tm_mday=%d tm_mon=%d tm_year=%d tm_wday=%d tm_wday=%d tm_yday=%d tm_isdst=%d\n", 
-  //  tm->tm_sec, tm->tm_min, tm->tm_hour, tm->tm_mday, tm->tm_mon, tm->tm_year, tm->tm_wday, tm->tm_yday, tm->tm_isdst);
-
+  /*
+  printf("tm_sec = %d tm_min=%d tm_hour=%d tm_mday=%d tm_mon=%d tm_year=%d tm_wday=%d tm_wday=%d tm_yday=%d tm_isdst=%d\n", 
+    tm->tm_sec, tm->tm_min, tm->tm_hour, tm->tm_mday, tm->tm_mon, tm->tm_year, tm->tm_wday, tm->tm_yday, tm->tm_isdst);
+  */
   tm->tm_sec = 0;
   tm->tm_min = 0;
   tm->tm_hour =0;
@@ -107,16 +108,17 @@ int uw_slot(int type, gulong when, gulong *lowest, gulong *highest)
   }
   seconds_per_slot = seconds_per_period / 100;
 
-  *lowest = (gulong) mktime(tm);            // period start time
-  diff = difftime(when, (time_t)*lowest);   // # of seconds since period started
-  slot = diff/seconds_per_slot;             // slotnumber within this period
+  *lowest = (gulong) mktime(tm);            /* period start time */
+  diff = difftime(when, (time_t)*lowest);   /* # of seconds since period started */
+  slot = diff/seconds_per_slot;             /* slotnumber within this period */
 
-  *lowest += (slot * seconds_per_slot);     // starttime of this slot.
-  *highest = *lowest + seconds_per_slot -1; // endtime of this slot
+  *lowest += (slot * seconds_per_slot);     /* starttime of this slot. */
+  *highest = *lowest + seconds_per_slot -1; /* endtime of this slot */
 
-  //printf(ctime((time_t*)lowest));
-  //printf(ctime((time_t*)highest));
-
+/*
+  printf(ctime((time_t*)lowest));
+  printf(ctime((time_t*)highest));
+*/
   return(slot);
 }
 

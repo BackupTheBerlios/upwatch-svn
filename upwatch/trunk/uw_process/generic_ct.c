@@ -70,7 +70,7 @@ gint ct_store_raw_result(struct _module *probe, void *probe_def, void *probe_res
 //*******************************************************************
 // SUMMARIZE A TABLE INTO AN OLDER PERIOD
 //*******************************************************************
-void ct_summarize(module *probe, void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint ignore_dupes)
+void ct_summarize(module *probe, void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint resummarize)
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
@@ -116,7 +116,15 @@ void ct_summarize(module *probe, void *probe_def, void *probe_res, char *from, c
   avg_red     = atof(row[4]);
   mysql_free_result(result);
 
-  result = my_query(probe->db, ignore_dupes,
+  if (resummarize) {
+    // delete old values
+    result = my_query(probe->db, 0,
+                    "delete from pr_%s_%s where probe = '%u' and stattime = '%u'",
+                    res->name, into, def->probeid, stattime);
+    mysql_free_result(result);
+  }
+
+  result = my_query(probe->db, 0,
                     "insert into pr_%s_%s "
                     "set    connect = '%f', total = '%f', "
                     "       probe = %d, color = '%u', stattime = %d, "
