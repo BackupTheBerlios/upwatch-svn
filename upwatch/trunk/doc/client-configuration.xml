@@ -2,8 +2,84 @@
 
 <chapter id="Configuration">
     <title>Configuration</title>
-    <sect1 id="uw_sysstat_configuration">
-       <title>Tailoring uw_sysstat</title>
+    <sect1 id="Configuration_Files">
+       <title>Configuration Files</title>
+       <para>The directory structure for configuration file is as follows. At
+       the toplevel is <filename>upwatch.conf</filename> (usually residing in /etc). This
+       file is read by all programs, and contains global parameters, and parameters
+       you want to make globally known. At the same level is the directory 
+       <filename>upwatch.d</filename>. This contains config files for every program.
+       The <filename>upwatch.conf</filename> file looks like this:</para>
+       <literallayout>
+       # Upwatch configuration file
+       # contains defaults for all modules 
+       # these can be overridden in /etc/upwatch.d/&lt;module&gt;.conf
+       #
+
+       debug 2
+       syslog no
+       stderr no
+
+       logfile /var/log/upwatch/messages
+
+       spooldir /var/spool/upwatch
+       </literallayout>
+       <para>All values in this file can be overridden or augmented in program-specific
+       files. <command>debug</command> speaks for itself. Never set it higher than two. Zero
+       suppresses all debugging except the most critical ones, 'debug 1' will output
+       only warnings, 'debug 2' will send progress information to the log.
+       <command>syslog yes</command> will enable logging to the system log, 
+       <command>stderr</command> is really not very useful because the commandline 
+       parameter <command>-e1</command> accomplishes the same for every program.
+       The <command>logfile</command> value denotes where logging will takes place. 
+       This file should be writable by the user <command>upwatch</command>. The same
+       holds for the <command>spooldir</command> base directory. It should contain 
+       subdirectories of the maildir format (meaning: each having a <filename>new</filename>
+       and <filename>tmp</filename> subdirectory).</para>
+       <para>On the average client two processes will be running continuously: 
+       <command>uw_sysstat</command> and <command>uw_send</command>. The first program
+       collects info on your system, and writes an XML file, the second sends it to
+       the central database. <filename>upwatch.d</filename> will contain the files
+       <filename>uw_sysstat.conf</filename> and <filename>uw_send.conf</filename>. Lets first
+       look at uw_send. It looks like this:</para>
+       <literallayout>
+       # where to send to
+       host cms-db.office.netland.nl
+       port 1985
+       uwuser 20010631
+       uwpasswd SaSNF8bu
+       debug 2
+       threads 1
+       # where to read from
+       input uw_send
+       </literallayout>
+       <para><command>Host</command> and <command>port</command> refer to the central
+       database location. You need <command>uwuser</command> and <command>uwpasswd</command>
+       to log into that. The <command>debug</command> setting determines the amount of
+       logging that the program does, <command>threads</command> how many files to send
+       at the same time, and finally, the <command>input</command> tells <command>uw_send</command>
+       where to find its XML files to send out. Pretty straightforward.</para>
+       <para>The <filename>uw_sysstat.conf</filename> file is comparable:</para>
+       <literallayout>
+       realm netland
+       serverid 381
+       output uw_send
+       hwstats on
+       errlog syslog /var/log/messages
+       errlog maillog /var/log/maillog
+       </literallayout>
+       <para>The <command>realm</command> is basically a short name for your company. It
+       tells the central processor in which database to store data from this server. The 
+       <command>serverid</command> is the numerical id of this server in that particular 
+       database. Without <command>output</command> it would not know where to store
+       the XML result file. <command>hwstats</command> determines (where supported) if 
+       <command>uw_sysstat</command> will try to talk to the motherboard to get
+       hardware values like temperature and fanspeed (run <command>mbmon</command> first
+       to test if this is supported) and the <command>errlog</command> parameters tell 
+       <command>uw_sysstat</command> which files to monitor and their format.</para>
+    </sect1>
+    <sect1 id="Monitoring_specific_logfiles">
+       <title>Monitoring specific logfiles</title>
        <para>uw_sysstat is special in that it allows you to scan every (line-oriented) logfile
        you want. It uses regular expressions to set a yellow or red state. It works as follows:</para>
        <para>On startup it reads <filename>/etc/upwatch.d/uw_sysstat.conf</filename>, and

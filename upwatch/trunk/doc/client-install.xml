@@ -26,7 +26,13 @@
                 <listitem><para>libncurses 5.2</para></listitem>
                 <listitem><para>libreadline 4.3</para></listitem>
             </itemizedlist>
-            <para>Delivered with upwatch are libstatgrab (0.7), xmbmon 2.03, and the State Threads Library (1,4).</para>
+            <para>Delivered with upwatch are 
+            <ulink url="http://www.i-scream.org/libstatgrab/">libstatgrab (0.10)</ulink>, to retrieve
+            critical operating system values, 
+            <ulink url="http://www.nt.phys.kyushu-u.ac.jp/shimizu/download/download.html">xmbmon 2.03</ulink> 
+            for harware statistics, 
+            and the <ulink url="http://state-threads.sourceforge.net/">State Threads Library (1,4)</ulink> for
+            fast and efficient multithreading.</para>
         </sect2>
         <sect2 id="Build_requirements">
             <title>Build requirements</title>

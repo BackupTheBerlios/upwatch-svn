@@ -4,6 +4,7 @@
 <!ENTITY client-about SYSTEM "client-about.xml">
 <!ENTITY client-install SYSTEM "client-install.xml">
 <!ENTITY client-configuration SYSTEM "client-configuration.xml">
+<!ENTITY utilities SYSTEM "utilities.xml">
 ]>
 
 <book id="upwatch" lang="en" status="draft">
@@ -26,6 +27,7 @@
     &client-about;
     &client-install;
     &client-configuration;
+    &utilities;
     <index>
     </index>
 </book>
