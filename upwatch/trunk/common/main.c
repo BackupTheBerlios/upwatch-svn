@@ -252,10 +252,10 @@ static unsigned prv;
 
 static void _ll_lograw(int level, const char *msg)
 {
-  if (OPT_VALUE_STDERR && (level-3 > debug)) {
+  if (OPT_VALUE_STDERR && (level-debug < 5)) {
     fprintf(stderr, "%s\n", msg);
   }
-  if (HAVE_OPT(LOGFILE) && (level-3 > debug)) {
+  if (HAVE_OPT(LOGFILE) && (level-debug < 5)) {
     FILE *out;
     struct tm *tms;
     time_t now;
