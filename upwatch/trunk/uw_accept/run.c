@@ -180,7 +180,7 @@ void handle_session(st_netfd_t rmt_nfd, char *remotehost)
   char *targ;
   int length, len;
 
-  sprintf(buffer, "+OK UpWatch Acceptor v0.3. Please login\n");
+  sprintf(buffer, "+OK UpWatch Acceptor v" UW_ACCEPT_VERSION ". Please login\n");
 login:
   uw_setproctitle("%s: %s", remotehost, buffer);
   if (debug > 3) fprintf(stderr, "> %s", buffer);
