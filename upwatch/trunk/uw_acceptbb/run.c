@@ -139,7 +139,7 @@ extern int forever;
       continue;
     }
     remote = strdup(inet_ntoa(from.sin_addr));
-    LOG(LOG_NOTICE, "New connection from: %s", remote);
+    if (debug > 1) LOG(LOG_NOTICE, "New connection from: %s", remote);
 
     memset(buffer, 0, sizeof(buffer));
     len = st_read(cli_nfd, buffer, sizeof(buffer), TIMEOUT);
@@ -212,7 +212,8 @@ void add_to_xml_document(char *hostname, char *probename, char *colorstr, struct
   }
 
   sprintf(buffer, "%d", (int) date);          xmlSetProp(probe, "date", buffer);
-  sprintf(buffer, "%d", ((int)date)+(200*60));xmlSetProp(probe, "expires", buffer); // 200 minutes
+  sprintf(buffer, "%d", ((int)date)+(OPT_VALUE_EXPIRES*60));
+  xmlSetProp(probe, "expires", buffer); // 200 minutes
   host = xmlNewChild(probe, NULL, "host", NULL);
   sprintf(buffer, "%s", hostname);     subtree = xmlNewChild(host, NULL, "hostname", buffer);
   //sprintf(buffer, "%s", inet_ntoa(hosts[id]->saddr.sin_addr));

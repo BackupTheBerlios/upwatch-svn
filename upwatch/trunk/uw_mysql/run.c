@@ -195,7 +195,7 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   sprintf(buffer, "%d", probe->id);           xmlSetProp(mysql, "id", buffer);
   sprintf(buffer, "%s", probe->ipaddress);    xmlSetProp(mysql, "ipaddress", buffer);
   sprintf(buffer, "%d", (int) now);           xmlSetProp(mysql, "date", buffer);
-  sprintf(buffer, "%d", ((int)now)+(2*60));   xmlSetProp(mysql, "expires", buffer);
+  sprintf(buffer, "%d", ((int)now)+(OPT_VALUE_EXPIRES*60));   xmlSetProp(mysql, "expires", buffer);
   sprintf(buffer, "%d", color);               subtree = xmlNewChild(mysql, NULL, "color", buffer);
   sprintf(buffer, "%f", probe->connect);      subtree = xmlNewChild(mysql, NULL, "connect", buffer);
   sprintf(buffer, "%f", probe->total);        subtree = xmlNewChild(mysql, NULL, "total", buffer);

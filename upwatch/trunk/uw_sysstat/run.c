@@ -192,7 +192,7 @@ int run(void)
   sprintf(buffer, "%ld", OPT_VALUE_SERVERID);	xmlSetProp(sysstat, "server", buffer);
   sprintf(buffer, "%s", "127.0.0.1");		xmlSetProp(sysstat, "ipaddress", buffer);
   sprintf(buffer, "%d", (int) now);		xmlSetProp(sysstat, "date", buffer);
-  sprintf(buffer, "%d", ((int)now)+(2*60));	xmlSetProp(sysstat, "expires", buffer);
+  sprintf(buffer, "%d", ((int)now)+(OPT_VALUE_EXPIRES*60));	xmlSetProp(sysstat, "expires", buffer);
   sprintf(buffer, "%d", color);			subtree = xmlNewChild(sysstat, NULL, "color", buffer);
   sprintf(buffer, "%.1f", lavg);		subtree = xmlNewChild(sysstat, NULL, "loadavg", buffer);
   sprintf(buffer, "%u", duse);			subtree = xmlNewChild(sysstat, NULL, "user", buffer);

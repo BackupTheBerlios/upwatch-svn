@@ -297,7 +297,7 @@ int run(void)
     sprintf(buffer, "%d", hosts[id]->id);	xmlSetProp(ping, "id", buffer);
     sprintf(buffer, "%d", (int) now); 		xmlSetProp(ping, "date", buffer);
     sprintf(buffer, "%s", inet_ntoa(hosts[id]->saddr.sin_addr)); xmlSetProp(ping, "ipaddress", buffer);
-    sprintf(buffer, "%d", ((int)now)+(2*60)); 	xmlSetProp(ping, "expires", buffer);
+    sprintf(buffer, "%d", ((int)now)+(OPT_VALUE_EXPIRES*60)); 	xmlSetProp(ping, "expires", buffer);
     if (color == STAT_RED) xmlSetProp(ping, "investigate", "icmptraceroute");
     sprintf(buffer, "%d", color); 		subtree = xmlNewChild(ping, NULL, "color", buffer);
     sprintf(buffer, "%f", ((float) hosts[id]->min_reply) * 0.000001);

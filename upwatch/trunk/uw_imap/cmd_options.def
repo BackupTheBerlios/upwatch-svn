@@ -20,6 +20,16 @@ spec-files = "%attr(0770,root,upwatch) /usr/sbin/uw_imap";
 
 // describe commandline flags
 flag = {
+    name      = expires;
+    arg_default  = 5;  /* option argument indication  */
+    arg_type  = number;   /* option argument indication  */
+    descrip   = "Probe results expire time in minutes";
+    doc       =
+'When no results have been received from a probe after this many
+minutes, its color will turn to blue.';
+};
+
+flag = {
     name      = begin;
     value     = b;
     arg_type  = numeric;

@@ -92,8 +92,9 @@ typedef struct transaction {
   xmlDocPtr doc; 	// the Xml doc structure
   xmlNodePtr node;	// current node in the Xml doc
   xmlNsPtr ns;		// current namespace
-  void *res;		// probe result pointer
   void *def;		// probe definition data
+  void *loc;		// local data ptr
+  void *res;		// probe result pointer
 } trx;
 
 /* generic functions */

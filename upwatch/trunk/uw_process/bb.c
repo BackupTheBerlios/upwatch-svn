@@ -109,20 +109,21 @@ static void *get_def(module *probe, void *probe_res)
     return(NULL);
   }
 
-  // definition found, get the pr_status
   if (row[0])  def->probeid = atoi(row[0]);
   if (row[1])  def->contact = atoi(row[1]);
   strcpy(def->hide, row[2] ? row[2] : "no");
   mysql_free_result(result);
 
+  // definition found, get the pr_status
   result = my_query(probe->db, 0,
-                    "select color "
+                    "select color, stattime "
                     "from   pr_status "
                     "where  class = '%u' and probe = '%u'", probe->class, def->probeid);
   if (result) {
     row = mysql_fetch_row(result);
     if (row) {
       if (row[0]) def->color  = atoi(row[0]);
+      if (row[1]) def->newest = atoi(row[1]);
     } else {
       LOG(LOG_NOTICE, "pr_status record for %s id %u (server %s) not found", 
                        res->name, def->probeid, res->hostname);

@@ -190,7 +190,7 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   sprintf(buffer, "%d", probe->id);           xmlSetProp(pop3, "id", buffer);
   sprintf(buffer, "%s", probe->ipaddress);    xmlSetProp(pop3, "ipaddress", buffer);
   sprintf(buffer, "%d", (int) now);           xmlSetProp(pop3, "date", buffer);
-  sprintf(buffer, "%d", ((int)now)+(2*60));   xmlSetProp(pop3, "expires", buffer);
+  sprintf(buffer, "%d", ((int)now)+(OPT_VALUE_EXPIRES*60));   xmlSetProp(pop3, "expires", buffer);
   sprintf(buffer, "%d", color);               subtree = xmlNewChild(pop3, NULL, "color", buffer);
   sprintf(buffer, "%f", probe->connect);      subtree = xmlNewChild(pop3, NULL, "connect", buffer);
   sprintf(buffer, "%f", probe->total);        subtree = xmlNewChild(pop3, NULL, "total", buffer);
