@@ -318,10 +318,6 @@ void add_hwstat(xmlNodePtr node)
   sprintf(buffer, "%.2f", hw.v50n);      xmlNewChild(node, NULL, "v50n", buffer);
   sprintf(buffer, "%.2f", hw.v12p);      xmlNewChild(node, NULL, "v12p", buffer);
   sprintf(buffer, "%.2f", hw.v12n);      xmlNewChild(node, NULL, "v12n", buffer);
-
-  if (hw.temp1 > 60.0 || hw.temp2 > 60.0 || hw.rot1 < 100 || hw.rot2 < 100) {
-    xmlSetProp(node, "color", "500");
-  }
 }
 #endif
 
@@ -597,16 +593,15 @@ extern int forever;
   color = xmlGetPropInt(node, "color");
   if (color > highest_color) highest_color = color;
 
-  if (HAVE_OPT(HPQUEUE)) {
-    if (highest_color != prv_highest_color) {
-      // if status changed, it needs to be sent immediately. So drop into
-      // the high priority queue. Else just drop in the normal queue where
-      // uw_send in batched mode will pick it up later
-      spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(HPQUEUE), doc, NULL);
+  if (HAVE_OPT(HPQUEUE) && (highest_color != prv_highest_color)) {
+    // if status changed, it needs to be sent immediately. So drop into
+    // the high priority queue. Else just drop in the normal queue where
+    // uw_send in batched mode will pick it up later
+    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(HPQUEUE), doc, NULL);
+  } else {
+    for (i=0; i < ct; i++) {
+      spool_result(OPT_ARG(SPOOLDIR), output[i], doc, NULL);
     }
-  }
-  for (i=0; i < ct; i++) {
-    spool_result(OPT_ARG(SPOOLDIR), output[i], doc, NULL);
   }
   prv_highest_color = highest_color; // remember for next time
   xmlFreeDoc(doc);
