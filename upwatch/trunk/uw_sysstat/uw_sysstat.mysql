@@ -1,8 +1,8 @@
 --
--- Table structure for table 'pr_cpuload_def'
+-- Table structure for table 'pr_sysstat_def'
 --
 
-CREATE TABLE pr_cpuload_def (
+CREATE TABLE pr_sysstat_def (
   id int unsigned NOT NULL auto_increment,
   server int unsigned NOT NULL default '1',
   notify int unsigned NOT NULL default '1',
@@ -19,17 +19,27 @@ CREATE TABLE pr_cpuload_def (
 ) TYPE=MyISAM;
 
 --
--- Table structure for table 'pr_cpuload_raw'
+-- Table structure for table 'pr_sysstat_raw'
 --
 
-CREATE TABLE pr_cpuload_raw (
+CREATE TABLE pr_sysstat_raw (
   id bigint unsigned NOT NULL auto_increment,
   probe int unsigned NOT NULL default '1',
   stattime int unsigned NOT NULL default '0',
   color smallint unsigned NOT NULL default '200',
+  loadavg float NOT NULL default '0',
   user tinyint unsigned NOT NULL default '0',
   system tinyint unsigned NOT NULL default '0',
   idle tinyint unsigned NOT NULL default '0',
+  swapin int unsigned NOT NULL default '0',
+  swapout int unsigned NOT NULL default '0',
+  blockin int unsigned NOT NULL default '0',
+  blockout int unsigned NOT NULL default '0',
+  swapped int unsigned NOT NULL default '0',
+  free int unsigned NOT NULL default '0',
+  buffered int unsigned NOT NULL default '0',
+  cached int unsigned NOT NULL default '0',
+  used int unsigned NOT NULL default '0',
   message text,
   PRIMARY KEY (id),
   UNIQUE KEY probtime (probe,stattime),
@@ -38,18 +48,28 @@ CREATE TABLE pr_cpuload_raw (
 ) TYPE=MyISAM;
 
 --
--- Table structure for table 'pr_cpuload_day'
+-- Table structure for table 'pr_sysstat_day'
 --
 
-CREATE TABLE pr_cpuload_day (
+CREATE TABLE pr_sysstat_day (
   id bigint unsigned NOT NULL auto_increment,
   probe int unsigned NOT NULL default '1',
   slot smallint unsigned NOT NULL default '0',
   stattime int unsigned NOT NULL default '0',
   color smallint unsigned NOT NULL default '200',
+  loadavg float NOT NULL default '0',
   user tinyint unsigned NOT NULL default '0',
   system tinyint unsigned NOT NULL default '0',
   idle tinyint unsigned NOT NULL default '0',
+  swapin int unsigned NOT NULL default '0',
+  swapout int unsigned NOT NULL default '0',
+  blockin int unsigned NOT NULL default '0',
+  blockout int unsigned NOT NULL default '0',
+  swapped int unsigned NOT NULL default '0',
+  free int unsigned NOT NULL default '0',
+  buffered int unsigned NOT NULL default '0',
+  cached int unsigned NOT NULL default '0',
+  used int unsigned NOT NULL default '0',
   PRIMARY KEY (id),
   UNIQUE KEY probtime (probe,stattime),
   KEY probe (probe),
@@ -58,18 +78,28 @@ CREATE TABLE pr_cpuload_day (
 ) TYPE=MyISAM;
 
 --
--- Table structure for table 'pr_cpuload_week'
+-- Table structure for table 'pr_sysstat_week'
 --
 
-CREATE TABLE pr_cpuload_week (
+CREATE TABLE pr_sysstat_week (
   id bigint unsigned NOT NULL auto_increment,
   probe int unsigned NOT NULL default '1',
   slot smallint unsigned NOT NULL default '0',
   stattime int unsigned NOT NULL default '0',
   color smallint unsigned NOT NULL default '200',
+  loadavg float NOT NULL default '0',
   user tinyint unsigned NOT NULL default '0',
   system tinyint unsigned NOT NULL default '0',
   idle tinyint unsigned NOT NULL default '0',
+  swapin int unsigned NOT NULL default '0',
+  swapout int unsigned NOT NULL default '0',
+  blockin int unsigned NOT NULL default '0',
+  blockout int unsigned NOT NULL default '0',
+  swapped int unsigned NOT NULL default '0',
+  free int unsigned NOT NULL default '0',
+  buffered int unsigned NOT NULL default '0',
+  cached int unsigned NOT NULL default '0',
+  used int unsigned NOT NULL default '0',
   PRIMARY KEY (id),
   UNIQUE KEY probtime (probe,stattime),
   KEY probe (probe),
@@ -78,18 +108,28 @@ CREATE TABLE pr_cpuload_week (
 ) TYPE=MyISAM;
 
 --
--- Table structure for table 'pr_cpuload_month'
+-- Table structure for table 'pr_sysstat_month'
 --
 
-CREATE TABLE pr_cpuload_month (
+CREATE TABLE pr_sysstat_month (
   id bigint unsigned NOT NULL auto_increment,
   probe int unsigned NOT NULL default '1',
   slot smallint unsigned NOT NULL default '0',
   stattime int unsigned NOT NULL default '0',
   color smallint unsigned NOT NULL default '200',
+  loadavg float NOT NULL default '0',
   user tinyint unsigned NOT NULL default '0',
   system tinyint unsigned NOT NULL default '0',
   idle tinyint unsigned NOT NULL default '0',
+  swapin int unsigned NOT NULL default '0',
+  swapout int unsigned NOT NULL default '0',
+  blockin int unsigned NOT NULL default '0',
+  blockout int unsigned NOT NULL default '0',
+  swapped int unsigned NOT NULL default '0',
+  free int unsigned NOT NULL default '0',
+  buffered int unsigned NOT NULL default '0',
+  cached int unsigned NOT NULL default '0',
+  used int unsigned NOT NULL default '0',
   PRIMARY KEY (id),
   UNIQUE KEY probtime (probe,stattime),
   KEY probe (probe),
@@ -98,18 +138,28 @@ CREATE TABLE pr_cpuload_month (
 ) TYPE=MyISAM;
 
 --
--- Table structure for table 'pr_cpuload_year'
+-- Table structure for table 'pr_sysstat_year'
 --
 
-CREATE TABLE pr_cpuload_year (
+CREATE TABLE pr_sysstat_year (
   id bigint unsigned NOT NULL auto_increment,
   probe int unsigned NOT NULL default '1',
   slot smallint unsigned NOT NULL default '0',
   stattime int unsigned NOT NULL default '0',
   color smallint unsigned NOT NULL default '200',
+  loadavg float NOT NULL default '0',
   user tinyint unsigned NOT NULL default '0',
   system tinyint unsigned NOT NULL default '0',
   idle tinyint unsigned NOT NULL default '0',
+  swapin int unsigned NOT NULL default '0',
+  swapout int unsigned NOT NULL default '0',
+  blockin int unsigned NOT NULL default '0',
+  blockout int unsigned NOT NULL default '0',
+  swapped int unsigned NOT NULL default '0',
+  free int unsigned NOT NULL default '0',
+  buffered int unsigned NOT NULL default '0',
+  cached int unsigned NOT NULL default '0',
+  used int unsigned NOT NULL default '0',
   PRIMARY KEY (id),
   UNIQUE KEY probtime (probe,stattime),
   KEY probe (probe),
@@ -118,18 +168,28 @@ CREATE TABLE pr_cpuload_year (
 ) TYPE=MyISAM;
 
 --
--- Table structure for table 'pr_cpuload_5year'
+-- Table structure for table 'pr_sysstat_5year'
 --
 
-CREATE TABLE pr_cpuload_5year (
+CREATE TABLE pr_sysstat_5year (
   id bigint unsigned NOT NULL auto_increment,
   probe int unsigned NOT NULL default '1',
   slot smallint unsigned NOT NULL default '0',
   stattime int unsigned NOT NULL default '0',
   color smallint unsigned NOT NULL default '200',
+  loadavg float NOT NULL default '0',
   user tinyint unsigned NOT NULL default '0',
   system tinyint unsigned NOT NULL default '0',
   idle tinyint unsigned NOT NULL default '0',
+  swapin int unsigned NOT NULL default '0',
+  swapout int unsigned NOT NULL default '0',
+  blockin int unsigned NOT NULL default '0',
+  blockout int unsigned NOT NULL default '0',
+  swapped int unsigned NOT NULL default '0',
+  free int unsigned NOT NULL default '0',
+  buffered int unsigned NOT NULL default '0',
+  cached int unsigned NOT NULL default '0',
+  used int unsigned NOT NULL default '0',
   PRIMARY KEY (id),
   UNIQUE KEY probtime (probe,stattime),
   KEY probe (probe),

@@ -2,6 +2,7 @@
 
 #include <generic.h>
 #include "cmd_options.h"
+#include "sysinfo.h"
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -91,6 +92,16 @@ void getrunners(unsigned int *running, unsigned int *blocked,
 #endif
 }
 
+void getmeminfo(unsigned *memfree, unsigned *membuff, unsigned *swapused, unsigned *memcache, unsigned *memused) {
+  unsigned long long** mem;
+  if (!(mem = meminfo())) return;
+  *memfree  = mem[meminfo_main][meminfo_free]    >> 10; /* bytes to k */
+  *membuff  = mem[meminfo_main][meminfo_buffers] >> 10;
+  *swapused = mem[meminfo_swap][meminfo_used]    >> 10;
+  *memcache = mem[meminfo_main][meminfo_cached]  >> 10;
+  *memused  = mem[meminfo_main][meminfo_used]    >> 10;
+}
+
 int init(void)
 {
   daemonize = TRUE;
@@ -104,24 +115,28 @@ int init(void)
 int run(void)
 {
   xmlDocPtr doc;
-  xmlNodePtr subtree, cpuload;
+  xmlNodePtr subtree, sysstat;
   int ret = 0;
   int color = 200;
-  unsigned int hz;
+  double lavg, dummy;
   time_t now;
+  FILE *in;
   char buffer[1024];
+  char info[32768];
   unsigned int duse,dsys,didl,div,divo2;
-extern int sleep_seconds;
+  unsigned int memfree,membuff,swapused, memcache, memused;
+  unsigned int kb_per_page = sysconf(_SC_PAGESIZE) / 1024;
+  unsigned int hz = sysconf(_SC_CLK_TCK); /* get ticks/s from system */
 
-  hz = sysconf(_SC_CLK_TCK); /* get ticks/s from system */
-
-  // compute cpuload
+  // compute sysstat
   //
   tog = !tog; // use alternating variables
 
   getstat(cpu_use+tog,cpu_nic+tog,cpu_sys+tog,cpu_idl+tog,
         pgpgin+tog,pgpgout+tog,pswpin+tog,pswpout+tog,
         inter+tog,ticks+tog,ctxt+tog);
+  getmeminfo(&memfree,&membuff,&swapused,&memcache,&memused);
+  loadavg(&lavg, &dummy, &dummy);
 
   duse = *(cpu_use+tog)-*(cpu_use+!tog)+*(cpu_nic+tog)-*(cpu_nic+!tog);
   dsys = *(cpu_sys+tog)-*(cpu_sys+!tog);
@@ -133,17 +148,45 @@ extern int sleep_seconds;
   didl = (100*didl+divo2)/div;
   //printf("%3u %3u %3u\n", duse,dsys,didl);
 
+  if (lavg > 5.0) color = STAT_RED;
+
+  if (color >= STAT_RED) {
+    system("top -b -n 1 > /tmp/.uw_sysstat.tmp");
+    in = fopen("/tmp/.uw_sysstat.tmp", "r");
+    if (in) {
+      fread(info, sizeof(info)-1, 1, in); 
+      info[sizeof(info)-1] = 0;
+      fclose(in);
+    }
+    unlink("tmp/.uw_sysstat.tmp");
+  }
   doc = UpwatchXmlDoc("result");
   now = time(NULL);
 
-  cpuload = xmlNewChild(xmlDocGetRootElement(doc), NULL, "cpuload", NULL);
-  sprintf(buffer, "%d", OPT_VALUE_SERVERID);	xmlSetProp(cpuload, "id", buffer);
-  sprintf(buffer, "%d", (int) now);		xmlSetProp(cpuload, "date", buffer);
-  sprintf(buffer, "%d", ((int)now)+(2*60));	xmlSetProp(cpuload, "expires", buffer);
-  sprintf(buffer, "%d", color);			subtree = xmlNewChild(cpuload, NULL, "color", buffer);
-  sprintf(buffer, "%u", duse);			subtree = xmlNewChild(cpuload, NULL, "user", buffer);
-  sprintf(buffer, "%u", dsys);			subtree = xmlNewChild(cpuload, NULL, "system", buffer);
-  sprintf(buffer, "%u", didl);			subtree = xmlNewChild(cpuload, NULL, "idle", buffer);
+  sysstat = xmlNewChild(xmlDocGetRootElement(doc), NULL, "sysstat", NULL);
+  sprintf(buffer, "%ld", OPT_VALUE_SERVERID);	xmlSetProp(sysstat, "server", buffer);
+  sprintf(buffer, "%d", (int) now);		xmlSetProp(sysstat, "date", buffer);
+  sprintf(buffer, "%d", ((int)now)+(2*60));	xmlSetProp(sysstat, "expires", buffer);
+  sprintf(buffer, "%d", color);			subtree = xmlNewChild(sysstat, NULL, "color", buffer);
+  sprintf(buffer, "%.1lf", lavg);		subtree = xmlNewChild(sysstat, NULL, "loadavg", buffer);
+  sprintf(buffer, "%u", duse);			subtree = xmlNewChild(sysstat, NULL, "user", buffer);
+  sprintf(buffer, "%u", dsys);			subtree = xmlNewChild(sysstat, NULL, "system", buffer);
+  sprintf(buffer, "%u", didl);			subtree = xmlNewChild(sysstat, NULL, "idle", buffer);
+  sprintf(buffer, "%u", ((*(pswpin+tog)-*(pswpin+(!tog)))*kb_per_page+30)/60);
+    subtree = xmlNewChild(sysstat, NULL, "swapin", buffer);
+  sprintf(buffer, "%u", ((*(pswpout+tog)-*(pswpout+(!tog)))*kb_per_page+30)/60);
+    subtree = xmlNewChild(sysstat, NULL, "swapout", buffer);
+  sprintf(buffer, "%u", (*(pgpgin+tog)-*(pgpgin+(!tog))+30)/60);
+    subtree = xmlNewChild(sysstat, NULL, "blockin", buffer);
+  sprintf(buffer, "%u", (*(pgpgout+tog)-*(pgpgout+(!tog))+30)/60);
+    subtree = xmlNewChild(sysstat, NULL, "blockout", buffer);
+  sprintf(buffer, "%u", swapused);		subtree = xmlNewChild(sysstat, NULL, "swapped", buffer);
+  sprintf(buffer, "%u", memfree);		subtree = xmlNewChild(sysstat, NULL, "free", buffer);
+  sprintf(buffer, "%u", membuff);		subtree = xmlNewChild(sysstat, NULL, "buffered", buffer);
+  sprintf(buffer, "%u", memcache);		subtree = xmlNewChild(sysstat, NULL, "cached", buffer);
+  sprintf(buffer, "%u", memused);		subtree = xmlNewChild(sysstat, NULL, "used", buffer);
+    subtree = xmlNewChild(sysstat, NULL, "info", info);
+
   spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc, NULL);
   xmlFreeDoc(doc);
   return(ret);
