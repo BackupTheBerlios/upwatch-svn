@@ -22,7 +22,7 @@ extern module httpget_module;
 // GET THE INFO FROM THE XML FILE
 // Caller must free the pointer it returns
 //*******************************************************************
-static void *extract_info_from_xml_node(xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
+static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
 {
   struct httpget_result *res;
 

@@ -20,7 +20,7 @@ typedef struct _module {
   GHashTable *cache;
   void (*free_def)(void *def);
   void (*free_res)(void *res);
-  void *(*extract_from_xml)(xmlDocPtr, xmlNodePtr, xmlNsPtr);
+  void *(*extract_from_xml)(struct _module *probe, xmlDocPtr, xmlNodePtr, xmlNsPtr);
   void *(*get_def)(struct _module *probe, void *res);
   gint (*store_results)(struct _module *probe, void *def, void *res);
   void (*summarize)(void *def, void *res, char *from, char *into, guint slotlow, guint slothigh);

@@ -27,7 +27,7 @@ static void free_res(void *res)
 // GET THE INFO FROM THE XML FILE
 // Caller must free the pointer it returns
 //*******************************************************************
-static void *extract_info_from_xml_node(xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
+static void *extract_info_from_xml_node(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
 {
   struct bb_generic_result *res;
 
@@ -68,6 +68,8 @@ static void *extract_info_from_xml_node(xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr 
       }
     }
   }
+  if (debug) LOG(LOG_DEBUG, "%s: %s %d stattime %u expires %u", 
+                 probe->name, res->hostname, res->color, res->stattime, res->expires);
   return(res);
 }
 
@@ -87,7 +89,7 @@ static void *get_def(module *probe, void *probe_res)
   time_t now = time(NULL);
 
   // first we find the serverid, this will be used to find the probe definition in the hashtable
-  result = my_query("select id from server where name = '%s'", res->hostname);
+  result = my_query(OPT_ARG(SERVERQUERY), res->hostname, res->hostname, res->hostname, res->hostname, res->hostname);
   if (!result) {
     return(NULL);
   }
@@ -125,14 +127,14 @@ static void *get_def(module *probe, void *probe_res)
       mysql_free_result(result);
       result = my_query("select color, stattime "
                         "from   pr_status "
-                        "where  class = '%u' and probe = '%u'", probe->class, def->probeid);
+                        "where  class = '%u' and probe = '%u'", probe->class, res->probeid);
       if (result) {
         row = mysql_fetch_row(result);
         if (row) {
           if (row[0]) def->color    = atoi(row[0]);
           if (row[1]) def->stattime = atoi(row[1]);
         } else {
-          LOG(LOG_NOTICE, "pr_status record for %s id %u not found", probe->name, def->probeid);
+          LOG(LOG_NOTICE, "pr_status record for %s id %u (%s) not found", probe->name, res->probeid, def->server);
         }
         mysql_free_result(result);
       } else {
@@ -141,13 +143,13 @@ static void *get_def(module *probe, void *probe_res)
         def->stattime = res->stattime;
       }
     } else {
-      // no def record found? Create one. And a pr_status record too.
+      // no def record found? Create one. pr_status will be done later.
       mysql_free_result(result);
       result = my_query("insert into pr_%s_def set server = '%u', description = '%s'", 
                          probe->name, res->server, res->hostname);
       mysql_free_result(result);
       res->probeid = mysql_insert_id(mysql);
-      LOG(LOG_NOTICE, "pr_status and pr_%s_def created for %s, id = %u", probe->name, res->hostname, res->probeid);
+      LOG(LOG_NOTICE, "pr_%s_def created for %s, id = %u", probe->name, res->hostname, res->probeid);
     }
     def->probeid = res->probeid;
     def->server = res->server;

@@ -67,6 +67,27 @@ flag = {
 them later';
 };
 
+// describe commandline flags
+flag = {
+    name      = run_queue;
+    value     = q;
+    descrip   = "Process the queue once, and then exit";
+    doc       =
+'You might just want to process the files in the queue, and then exit.
+This is useful is you want to run uw_process under cron or for debugging.';
+};
+
+flag = {
+    name      = serverquery;
+    arg_type  = string;
+    arg_default = "select id from server where name like '%%%s%%' or names like '%%%s%%'";
+    descrip   = "SQL query to find the id of a server given the servername";
+    doc       =
+'Sometimes a probe only gives a servername, and no id (Big Brother clients do this).
+This query will be issued to find the numeric server id in the database. You can specify 
+up to five `%s` sequences in the query, they will be replaced with the servername.';
+};
+
 flag = {
     must-set;
     name      = dbtype;

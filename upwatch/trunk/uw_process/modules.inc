@@ -4,7 +4,6 @@ extern module iptraf_module;
 extern module sysstat_module;
 extern module bb_cpu_module;
 extern module bb_disk_module;
-extern module bb_disk_module; 
 extern module bb_bgp_module;
 extern module bb_conn_module;
 extern module bb_dhcp_module;
