@@ -1,5 +1,19 @@
 #include "generic.h"
 
+void UpwatchXmlGenericErrorFunc(void *ctx, const char *fmt, ...)
+{
+  char buffer[BUFSIZ];
+  va_list arg;
+
+  if (fmt == NULL) fmt = "(null)";
+
+  va_start(arg, fmt);
+  vsnprintf(buffer, BUFSIZ, fmt, arg);
+  va_end(arg);
+
+  LOG(LOG_NOTICE, buffer);
+}
+
 xmlDocPtr UpwatchXmlDoc(const char *root)
 {
   xmlDocPtr doc;

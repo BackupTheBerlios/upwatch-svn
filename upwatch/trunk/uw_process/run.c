@@ -26,6 +26,7 @@ int init(void)
   daemonize = TRUE;
   every = EVERY_5SECS;
   g_thread_init(NULL);
+  xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
   return(1);
 }
 
@@ -71,6 +72,7 @@ int run(void)
   for (i=0; i < arr->len; i++) {
     //printf("%s\n", g_ptr_array_index(arr,i));
     process(g_ptr_array_index(arr,i), NULL);
+    free(g_ptr_array_index(arr,i));
     count++;
   }
 
@@ -97,25 +99,29 @@ void process(gpointer data, gpointer user_data)
     return;
   }
 
+  if (HAVE_OPT(COPY)) {
+    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(COPY), doc);
+  }
+
   cur = xmlDocGetRootElement(doc);
   if (cur == NULL) {
     LOG(LOG_NOTICE, "%s: empty document", filename);
     xmlFreeDoc(doc);
+    unlink(filename);
     return;
   }
   ns = xmlSearchNsByHref(doc, cur, (const xmlChar *) NAMESPACE_URL);
   if (ns == NULL) {
     LOG(LOG_NOTICE, "%s: wrong type, result namespace not found", filename);
     xmlFreeDoc(doc);
+    unlink(filename);
     return;
   }
   if (xmlStrcmp(cur->name, (const xmlChar *) "result")) {
     LOG(LOG_NOTICE, "%s: wrong type, root node is not 'result'", filename);
     xmlFreeDoc(doc);
+    unlink(filename);
     return;
-  }
-  if (HAVE_OPT(COPY)) {
-    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(COPY), doc);
   }
   /*
    * Now, walk the tree.
@@ -128,6 +134,7 @@ void process(gpointer data, gpointer user_data)
   if (cur == 0) {
     LOG(LOG_NOTICE, "%s: wrong type, empty file'", filename);
     xmlFreeDoc(doc);
+    unlink(filename);
     return;
   }
   /* Second level is a list of probes, but be laxist */
@@ -159,7 +166,6 @@ void process(gpointer data, gpointer user_data)
   if (debug > 1) LOG(LOG_DEBUG, "Processed %d probes", probe_count);
   if (debug > 1) LOG(LOG_DEBUG, "unlink(%s)", filename);
   unlink(filename);
-  free(filename);
   return;
 }
 

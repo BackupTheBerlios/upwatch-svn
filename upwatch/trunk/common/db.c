@@ -31,7 +31,7 @@ int open_database(void)
 void close_database(void)
 {
   if (mysql) {
-    my_transaction("rollback");
+    //my_transaction("rollback");
     mysql_close(mysql);
     free(mysql);
     mysql = NULL;

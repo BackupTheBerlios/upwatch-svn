@@ -213,6 +213,7 @@ long timeval_diff(struct timeval *a,struct timeval *b)
  ***************************/
 
 #include <time.h>
+#include <ctype.h>
 
 pthread_mutex_t _logmutex = PTHREAD_MUTEX_INITIALIZER;
 char *_logsrce;
@@ -231,6 +232,11 @@ void _LOG(int level, const char *fmt, ...)
   va_start(arg, fmt);
   vsnprintf(buffer, BUFSIZ, fmt, arg);
   va_end(arg);
+
+  // kill trailing blanks (xml errors have this a lot)
+  for (p = &buffer[strlen(buffer) - 1]; isspace(*p); p--) {
+    *p = 0;
+  }
 
   if ((p = strrchr(_logsrce, '/')) != NULL) {
     file = ++p;

@@ -141,6 +141,7 @@ int init(void)
     LOG(LOG_ERR, "must not be run as root and executable must be set-user-id root");
     return(0);
   }
+  xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
   return(1);
 }
 

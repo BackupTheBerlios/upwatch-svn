@@ -8,3 +8,5 @@ gfloat xmlGetPropFloat(xmlNodePtr node, const xmlChar *name);
 
 xmlDocPtr UpwatchXmlDoc(const char *root);
 
+void UpwatchXmlGenericErrorFunc(void *ctx, const char *fmt, ...);
+

@@ -39,6 +39,7 @@ int init(void)
   every = EVERY_MINUTE;
   startsec = OPT_VALUE_BEGIN;
   g_thread_init(NULL);
+  xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
   return(1);
 }
 
