@@ -2,8 +2,13 @@
 
 # patch libstatgrab
 pushd libstatgrab-0.7
-patch -p1 < ../patches/libstatgrab-cygwin.patch
-cp ../patches/libstatgrab-configure.gnu .
+if [ ! -f libstatgrab-cygwin.patch ]
+then
+  cp ../patches/libstatgrab-cygwin.patch .
+  patch -p1 < libstatgrab-cygwin.patch
+  cp ../patches/libstatgrab-configure.gnu .
+  autoconf
+fi
 popd
 
 aclocal \
