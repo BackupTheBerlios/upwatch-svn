@@ -101,9 +101,22 @@ static void handle_file(gpointer data, gpointer user_data)
   xmlNodePtr cur;
   int found=0, failures=0;
   int probe_count = 0;
+  struct stat st;
+  int filesize;
   int i;
 
   if (debug) LOG(LOG_DEBUG, "Processing %s", filename);
+
+  if (stat(filename, &st)) {
+    LOG(LOG_WARNING, "%s: %m", filename);
+    return;
+  }
+  filesize = (int) st.st_size;
+  if (filesize == 0) {
+    unlink(filename);
+    LOG(LOG_WARNING, "%s: size 0, removed", filename);
+    return;
+  }
 
   doc = xmlParseFile(filename);
   if (doc == NULL) {
