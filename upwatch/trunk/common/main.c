@@ -261,15 +261,15 @@ char *_logfile;
 
 void _LOG(int level, const char *fmt, ...)
 {
-  char buffer[BUFSIZ];
-  char msg[2*BUFSIZ];
+  char buffer[65536];
+  char msg[2*65536];
   char *p, *file;
   va_list arg;
 
   if (fmt == NULL) fmt = "(null)";
 
   va_start(arg, fmt);
-  vsnprintf(buffer, BUFSIZ, fmt, arg);
+  vsnprintf(buffer, sizeof(buffer), fmt, arg);
   va_end(arg);
 
   // kill trailing blanks (xml errors have this a lot)

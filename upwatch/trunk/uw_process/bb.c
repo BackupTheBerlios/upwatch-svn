@@ -32,7 +32,6 @@ static void xml_result_node(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsP
   struct bb_result *res = (struct bb_result *)probe_res;
 
   res->bbname = xmlGetProp(cur, (const xmlChar *) "bbname");
-  res->ipaddress = xmlGetProp(cur, (const xmlChar *) "ipaddress");
 }
 
 //*******************************************************************

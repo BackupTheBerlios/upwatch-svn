@@ -169,7 +169,11 @@ ESAC type +][+ ENDFOR result+]
   message text NOT NULL default '',
   PRIMARY KEY (id),
   UNIQUE KEY probstat (probe,stattime)
-) TYPE=MyISAM;
+) TYPE=MyISAM [+
+IF max_rows +] MAX_ROWS=[+max_rows+] [+
+ENDIF+][+
+IF avg_row_length +] AVG_ROW_LENGTH=[+avg_row_length+][+
+ENDIF +];
 
 [+ FOR period +]
 --

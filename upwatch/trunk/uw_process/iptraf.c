@@ -38,7 +38,6 @@ static void xml_result_node(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsP
 {
   struct iptraf_result *res = (struct iptraf_result *)probe_res;
 
-  res->ipaddress = xmlGetProp(cur, (const xmlChar *) "ipaddress");
   inet_aton(res->ipaddress, &res->ipaddr);
 }
 

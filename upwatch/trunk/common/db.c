@@ -43,7 +43,7 @@ MYSQL_RES *my_query(MYSQL *mysql, int log_dupes, char *fmt, ...)
   if (!mysql) return(NULL);
 
   va_start(arg, fmt);
-  vsnprintf(qry, sizeof(qry), fmt, arg);
+  vsnprintf(qry, sizeof(qry)-1, fmt, arg);
   va_end(arg);
   if (debug > 3) LOG(LOG_DEBUG, qry);
 
