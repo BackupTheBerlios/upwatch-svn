@@ -149,6 +149,9 @@ int main( int argc, char** argv, char **envp )
       break;
     case EVERY_5SECS:
       sleep_seconds = 5;
+      if (debug > 3) { 
+        LOG(LOG_DEBUG, "sleeping for %d seconds", sleep_seconds);
+      }
       break;
     case EVERY_MINUTE:
       time(&now_t);
@@ -157,7 +160,6 @@ int main( int argc, char** argv, char **envp )
   
       if (debug > 3) { 
         sleep_seconds = 3;
-        fprintf(stderr, "waiting %d seconds..\n", sleep_seconds);
       } else {
         if (now >= startsec) {
           sleep_seconds = startsec - now + 60;
@@ -165,13 +167,13 @@ int main( int argc, char** argv, char **envp )
           sleep_seconds = startsec - now;
         }
       }
+      if (debug > 3) { 
+        LOG(LOG_DEBUG, "sleeping for %d seconds", sleep_seconds);
+      }
       break;
     case ONE_SHOT:
     default:
       break;
-    }
-    if (debug > 3) { 
-      LOG(LOG_DEBUG, "sleeping for %d seconds", sleep_seconds);
     }
     for (i=0; i < sleep_seconds && forever; i++) {
       sleep(1);
@@ -252,25 +254,26 @@ static unsigned prv;
 
 static void _ll_lograw(int level, const char *msg)
 {
+  struct tm *tms;
+  time_t now;
+  char timebuf[30];
+  char hostname[256];
+  char *p;
+
+  time(&now);
+  tms = gmtime(&now);
+  strftime(timebuf, sizeof(timebuf), "%b %e %H:%M:%S", tms);
+ 
+  gethostname(hostname, sizeof(hostname));
+  p = strchr(hostname, '.');
+  if (p) *p = 0;
+
   if (OPT_VALUE_STDERR && (level-debug < 5)) {
-    fprintf(stderr, "%s\n", msg);
+    fprintf(stderr, "%s %s %s\n", timebuf, hostname, msg);
   }
   if (HAVE_OPT(LOGFILE) && (level-debug < 5)) {
     FILE *out;
-    struct tm *tms;
-    time_t now;
-    char timebuf[30];
-    char hostname[256];
-    char *p;
     char *logfile = OPT_ARG(LOGFILE);
-
-    time(&now);
-    tms = gmtime(&now);
-    strftime(timebuf, sizeof(timebuf), "%b %e %H:%M:%S", tms);
- 
-    gethostname(hostname, sizeof(hostname));
-    p = strchr(hostname, '.');
-    if (p) *p = 0;
 
     out = fopen(logfile, "a");
     if (out) {

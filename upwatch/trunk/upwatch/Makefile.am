@@ -11,7 +11,7 @@ pr_process.c: probe.h
 probe.h: ../uw_acceptbb/probe.res_h  ../uw_acceptbb/probe.res_h ../uw_httpget/probe.res_h \
  ../uw_imap/probe.res_h ../uw_iptraf/probe.res_h ../uw_mssql/probe.res_h ../uw_mysql/probe.res_h \
  ../uw_ping/probe.res_h ../uw_pop3/probe.res_h ../uw_postgresql/probe.res_h ../uw_snmpget/probe.res_h \
- ../uw_sysstat/probe.res_h
+ ../uw_sysstat/probe.res_h ../uw_smtp/probe.res_h ../uw_tcpconnect/probe.res_h
 
 %/probe.res_h:
 	( cd $(@:%/probe.res_h=%) ; make probe.res_h )

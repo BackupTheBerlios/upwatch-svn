@@ -580,6 +580,7 @@ diskio_stat_t *get_diskio_stats(int *entries){
 		/* This is an older kernel without stats in /proc/partitions.
 		   Read what we can from /proc/stat instead. */
 
+		if (f) fclose(f);
 		f = fopen("/proc/stat", "r");
 		if (f == NULL) goto out;
 		now = time(NULL);

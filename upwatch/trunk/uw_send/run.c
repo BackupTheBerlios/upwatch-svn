@@ -82,22 +82,22 @@ int init(void)
       g_hash_table_insert(hash, strdup(input[i]), q);
     }
 
-    if (!host[i]) {
+    if (!host || !host[i]) {
       fprintf(stderr, "missing host option for input %s\n", input[i]);
       return 0;
     } else if (strcmp(host[i], "none") == 0) {
       g_hash_table_remove(hash, host[i]);
       continue;
     }
-    if (!port[i]) {
+    if (!port || !port[i]) {
       fprintf(stderr, "missing port option for input queue %s\n", input[i]);
       return 0;
     }
-    if (!user[i]) {
+    if (!user || !user[i]) {
       fprintf(stderr, "missing uwuser option for input queue %s\n", input[i]);
       return 0;
     }
-    if (!pwd[i]) {
+    if (!pwd || !pwd[i]) {
       fprintf(stderr, "missing uwpasswd option for input %s\n", input[i]);
       return 0;
     }

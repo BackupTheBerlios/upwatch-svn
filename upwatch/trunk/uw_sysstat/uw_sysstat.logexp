@@ -70,6 +70,8 @@ syslog-ignore no longer listening on
 syslog-ignore exiting
 syslog-ignore denied
 syslog-ignore refresh: failure trying master
+syslog-ignore refresh: retry limit for master
+syslog-ignore refresh: non-authoritative answer from master
 syslog-ignore points to a CNAME
 syslog-ignore points to CNAME
 syslog-ignore No default TTL set using SOA minimum instead
@@ -108,6 +110,7 @@ syslog-ignore sshd\[[0-9]*\]: Failed password for
 syslog-ignore sshd\[[0-9]*\]: Generating
 syslog-ignore sshd\[[0-9]*\]: RSA key generation complete
 syslog-ignore sshd\[[0-9]*\]: Disconnecting: Too many authentication failures for
+syslog-ignore sshd(pam_unix)\[[0-9]*\]: check pass; user unknown
 syslog-ignore authentication failure;
 syslog-ignore error: PAM: Authentication failure
 syslog-ignore Accepted password for
@@ -248,6 +251,10 @@ syslog-ignore retransmission; will wait
 syslog-ignore regenerating DH private secret
 syslog-ignore ipsec_setup: Using
 
+# pure-ftpd
+syslog-ignore pure-ftpd: \([-_a-zA-Z0-9@.]*\) \[NOTICE\] Deleted
+syslog-ignore [WARNING] Too many connections
+
 # nbs
 syslog-ignore firewall_start: Creating firewall lock
 syslog-ignore firewall_start: removing lock file
@@ -273,6 +280,7 @@ syslog-ignore ftpd\[[0-9]*\]: User [-0-9a-zA-Z.]* timed out after [0-9]* seconds
 syslog-ignore ftpd\[[0-9]*\]: FTP session closed
 syslog-ignore ftpd\[[0-9]*\]: lost connection to
 syslog-ignore Wget error on IDE update
+syslog-ignore virus IDEs added
 
 # various
 syslog-ignore backup done
