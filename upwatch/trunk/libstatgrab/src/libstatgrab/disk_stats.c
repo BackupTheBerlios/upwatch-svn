@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA
  * 02111-1307 USA
  *
- * $Id: disk_stats.c,v 1.4 2004/06/09 17:34:39 raarts Exp $
+ * $Id: disk_stats.c,v 1.5 2004/06/14 14:37:35 raarts Exp $
  */
 
 #ifdef HAVE_CONFIG_H
@@ -414,7 +414,6 @@ sg_disk_io_stats *sg_get_disk_io_stats(int *entries){
 		rbytes = wbytes = stats[i].dk_bytes;
 #endif
 #else
-		rbytes = wbytes = stats[i].ds_bytes;
 #ifdef HAVE_DS_BYTES
                 rbytes = wbytes = stats[i].ds_bytes;
 #else

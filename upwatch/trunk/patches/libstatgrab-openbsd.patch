@@ -20,7 +20,7 @@ diff -uNr libstatgrab-orig/src/libstatgrab/disk_stats.c libstatgrab/src/libstatg
 @@ -415,6 +415,12 @@
  #endif
  #else
- 		rbytes = wbytes = stats[i].ds_bytes;
+
 +#ifdef HAVE_DS_BYTES
 +                rbytes = wbytes = stats[i].ds_bytes;
 +#else
