@@ -71,14 +71,13 @@ static void *get_def(module *probe, void *probe_res)
     res->probeid = atoi(row[0]);
     mysql_free_result(result);
     result = my_query(probe->db, 0,
-                      "select color, stattime "
+                      "select color "
                       "from   pr_status "
                       "where  class = '%u' and probe = '%u'", probe->class, res->probeid);
     if (result) {
       row = mysql_fetch_row(result);
       if (row) {
         if (row[0]) def->color  = atoi(row[0]);
-        if (row[1]) def->newest = atoi(row[1]);
       } else {
         LOG(LOG_NOTICE, "pr_status record for %s id %u (%s) not found", res->name, res->probeid, def->server);
       }
@@ -86,7 +85,6 @@ static void *get_def(module *probe, void *probe_res)
     } else {
       // bad error on the select query
       def->color  = res->color;
-      def->newest = res->stattime;
     }
   } else {
     // no def record found? Create one. pr_status will be done later.
@@ -101,6 +99,7 @@ static void *get_def(module *probe, void *probe_res)
   }
   def->probeid = res->probeid;
   def->server = res->server;
+  def->newest = res->stattime;
 
   return(def);
 }

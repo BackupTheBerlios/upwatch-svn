@@ -197,10 +197,10 @@ static void *get_def(module *probe, struct probe_result *res)
                       "select stattime from pr_%s_raw use index(probstat) "
                       "where probe = '%u' order by stattime desc limit 1",
                        res->name, res->probeid);
-    if (result) {
+    if (result && mysql_num_rows(result) > 0) {
       row = mysql_fetch_row(result);
-      if (row && mysql_num_rows(result) > 0) {
-        if (row[0]) def->newest = atoi(row[0]);
+      if (row && row[0]) {
+        def->newest = atoi(row[0]);
       }
       mysql_free_result(result);
     }

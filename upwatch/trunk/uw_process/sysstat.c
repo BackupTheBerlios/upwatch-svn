@@ -150,44 +150,25 @@ static void *get_def(module *probe, void *probe_res)
     mysql_free_result(result);
 
     result = my_query(probe->db, 0,
-                      "select server, color, stattime "
+                      "select color "
                       "from   pr_status "
                       "where  class = '%d' and probe = '%d'", probe->class, def->probeid);
     if (result) {
       row = mysql_fetch_row(result);
       if (row) {
-        def->server = atoi(row[0]);
-        def->color  = atoi(row[1]); 
-        def->newest = atoi(row[2]); // just in case the next query fails
+        def->color  = atoi(row[0]); 
       }
       mysql_free_result(result);
-    } else {
-      // couldn't find pr_status record? Will be created later,
-      // but get the server from the def record for now
-      LOG(LOG_NOTICE, "pr_status record for %s id %u not found", res->name, def->probeid);
-      result = my_query(probe->db, 0,
-                        "select server "
-                        "from   pr_%s_def " 
-                        "where  id = '%u'", res->name, def->probeid);
-      if (!result) return(NULL);
-      row = mysql_fetch_row(result);
-      if (!row || !row[0] || mysql_num_rows(result) == 0) {
-        LOG(LOG_NOTICE, "pr_%s_def id %u not found - bailing out", res->name, def->probeid);
-        mysql_free_result(result);
-        return(NULL);
-      }
-      def->server  = atoi(row[0]);
-      mysql_free_result(result);
-    }
+    } 
 
     result = my_query(probe->db, 0,
                       "select stattime from pr_%s_raw use index(probstat) "
                       "where probe = '%u' order by stattime desc limit 1",
                        res->name, def->probeid);
-    if (result) {
+    if (result && mysql_num_rows(result) > 0) {
       row = mysql_fetch_row(result);
-      if (row && mysql_num_rows(result) > 0) {
-        if (row[0]) def->newest = atoi(row[0]);
+      if (row && row[0]) {
+        def->newest = atoi(row[0]);
       }
       mysql_free_result(result);
     }

@@ -54,8 +54,7 @@ void writeXMLresult(struct ipnetw *ipnets, int count_ipnets)
 
       ip.s_addr = htonl(net->network + j);
       iptraf = xmlNewChild(xmlDocGetRootElement(cur), NULL, "iptraf", NULL);
-      sprintf(buffer, "%s", inet_ntoa(ip));       xmlSetProp(iptraf, "id", buffer);
-                                                  xmlSetProp(iptraf, "ipaddress", buffer);
+      sprintf(buffer, "%s", inet_ntoa(ip));       xmlSetProp(iptraf, "ipaddress", buffer);
       sprintf(buffer, "%d", (int) now);           xmlSetProp(iptraf, "date", buffer);
       sprintf(buffer, "%d", ((int)now)+(2*60));   xmlSetProp(iptraf, "expires", buffer);
       if (net->count[j].in || net->count[j].out) {
