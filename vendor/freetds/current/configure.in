@@ -1,0 +1,459 @@
+dnl Process this file with autoconf to produce a configure script.
+
+dnl ------------------------------------------------------------
+dnl $Id: configure.in,v 1.127.2.7 2004/06/13 22:52:13 jklowden Exp $
+dnl If you're trying to create a new configure test, try
+dnl
+dnl 	http://autogen.sourceforge.net/conftest.html
+dnl ------------------------------------------------------------
+
+dnl ------------------------------------------------------------
+dnl Initialization
+dnl ------------------------------------------------------------
+AC_INIT(src/dblib/dblib.c)
+AC_PREREQ(2.53)
+
+define(TDSDATE, esyscmd(echo -n $(date +"%Y%m%d")))
+
+dnl  AM_INIT_AUTOMAKE(freetds, 0.62.5.dev.TDSDATE) dnl Use this line between releases.
+AM_INIT_AUTOMAKE(freetds, 0.62.4) dnl Update this line for a release, else disable.
+
+AM_CONFIG_HEADER(include/config.h)
+	dnl configuration directory will be /usr/local/etc
+AC_PREFIX_DEFAULT(/usr/local)
+
+dnl ------------------------------------------------------------
+dnl Host-specific configuration
+dnl ------------------------------------------------------------
+AC_CANONICAL_HOST
+netdb_reentrant=no
+case $host in
+  *-*-osf*)
+    CPPFLAGS="$CPPFLAGS -D_OSF_SOURCE -D_XOPEN_SOURCE_EXTENDED -D_POSIX_C_SOURCE=199506L"
+    netdb_reentrant=yes
+    ;;
+  *-*-hpux11*)
+    CPPFLAGS="$CPPFLAGS -D_XOPEN_SOURCE_EXTENDED"
+    netdb_reentrant=yes
+    ;;
+  *-*-cygwin*)
+    netdb_reentrant=yes
+    ;;
+esac
+
+if test $netdb_reentrant = yes; then 
+    AC_DEFINE(NETDB_REENTRANT, 1, [Define to 1 if the BSD-style netdb interface is reentrant.])
+fi
+
+AC_GNU_SOURCE
+
+dnl ------------------------------------------------------------
+dnl Flag to include library-private definitions
+dnl ------------------------------------------------------------
+CPPFLAGS="$CPPFLAGS -D_FREETDS_LIBRARY_SOURCE"
+
+dnl ------------------------------------------------------------
+dnl Checks for programs.
+dnl ------------------------------------------------------------
+AC_PROG_CC
+AC_PROG_CPP
+AM_PROG_LIBTOOL
+
+AC_ARG_ENABLE(libiconv,
+	AC_HELP_STRING([--disable-libiconv], [do not attempt to include libiconv]),
+	[use_libiconv=$enableval], [use_libiconv=yes])
+  
+if test "$use_libiconv" = "yes" ; then
+	AM_ICONV
+else 
+	AC_MSG_NOTICE(libiconv disabled)	
+fi
+
+
+dnl test if we have doxygen installed
+AC_CHECK_PROG(DOXYGEN,doxygen,doxygen)
+AM_CONDITIONAL(HAVE_DOXYGEN, [test -n "$DOXYGEN"])
+
+dnl ------------------------------------------------------------
+dnl Checks for libraries.
+dnl ------------------------------------------------------------
+OLDLIBS="$LIBS"
+LIBS=""
+AC_SEARCH_LIBS(socket, socket)
+AC_SEARCH_LIBS(gethostbyname, nsl)
+NETWORK_LIBS="$LIBS"
+LIBS="$OLDLIBS"
+AC_SUBST(NETWORK_LIBS)
+
+dnl readline test
+dnl Readline is needed by the tty session. Set up a special RL_LIBS
+dnl substitution for it.
+OLDLIBS="$LIBS"
+dnl Readline is linked with curses, and on some systems termcap must be
+dnl linked in. Others (inc debian) have termcap built into ncurses.
+LIBS=""
+AC_SEARCH_LIBS(tgetent, [readline ncurses curses termcap])
+AC_CHECK_LIB([readline], [readline], [LIBS="$LIBS -lreadline"
+  AC_DEFINE(HAVE_READLINE, 1, [Define to 1 if you have the GNU Readline library.])] )
+READLINE_LIBS="$LIBS"
+AC_SUBST(READLINE_LIBS)
+LIBS="$OLDLIBS"
+
+
+dnl ------------------------------------------------------------
+dnl Checks for header files.
+dnl ------------------------------------------------------------
+AC_HEADER_STDC
+AC_HEADER_TIME
+AC_CHECK_HEADERS([unistd.h errno.h wchar.h sys/time.h malloc.h sys/types.h \
+sys/socket.h arpa/inet.h netdb.h netinet/in.h netinet/tcp.h langinfo.h \
+paths.h sys/ioctl.h libgen.h sys/param.h locale.h odbcss.h sys/select.h])
+AC_HAVE_INADDR_NONE
+
+dnl ------------------------------------------------------------
+dnl Checks for integers/floats of different sizes
+dnl ------------------------------------------------------------
+AC_CHECK_SIZEOF(char)
+AC_CHECK_SIZEOF(short)
+AC_CHECK_SIZEOF(long)
+AC_CHECK_SIZEOF(int)
+AC_CHECK_SIZEOF(float)
+AC_CHECK_SIZEOF(double)
+AC_CHECK_SIZEOF(long double)
+AC_CHECK_SIZEOF(long long)
+AC_CHECK_SIZEOF(__int64)
+AC_CHECK_SIZEOF(void *)
+
+case 2 in
+$ac_cv_sizeof_short)   tds_sysdep_int16_type=short;;
+$ac_cv_sizeof_int)     tds_sysdep_int16_type=int;;
+*)                     AC_ERROR(No 16-bit int found.)
+esac
+
+case 4 in
+$ac_cv_sizeof_short)   tds_sysdep_int32_type=short;;
+$ac_cv_sizeof_int)     tds_sysdep_int32_type=int;;
+$ac_cv_sizeof_long)    tds_sysdep_int32_type=long;;
+*)                     AC_ERROR(No 32-bit int found.)
+esac
+
+case 4 in
+$ac_cv_sizeof_float)       tds_sysdep_real32_type=float;;
+$ac_cv_sizeof_double)      tds_sysdep_real32_type=double;;
+$ac_cv_sizeof_long_double) tds_sysdep_real32_type="long double";;
+*)                     AC_ERROR(No 32-bit real found.)
+esac
+
+case 8 in
+$ac_cv_sizeof_float)       tds_sysdep_real64_type=float;;
+$ac_cv_sizeof_double)      tds_sysdep_real64_type=double;;
+$ac_cv_sizeof_long_double) tds_sysdep_real64_type="long double";;
+*)                     AC_ERROR(No 64-bit real found.)
+esac
+
+case 8 in
+$ac_cv_sizeof_long)      tds_sysdep_int64_type=long;;
+$ac_cv_sizeof_long_long) tds_sysdep_int64_type="long long";;
+$ac_cv_sizeof___int64)   tds_sysdep_int64_type=__int64;;
+esac
+if test "$tds_sysdep_int64_type"; then
+    AC_DEFINE(HAVE_INT64, 1, [Define to 1 if you have a 64-bit integral type.])
+else
+    tds_sysdep_int64_type=long
+    AC_MSG_WARN([SQL Server 2000 "bigint" 8-byte integer will not work])
+fi
+
+case $ac_cv_sizeof_void_p in
+$ac_cv_sizeof_short)     tds_sysdep_intptr_type=short;;
+$ac_cv_sizeof_int)       tds_sysdep_intptr_type=int;;
+$ac_cv_sizeof_long)      tds_sysdep_intptr_type=long;;
+$ac_cv_sizeof_long_long) tds_sysdep_intptr_type="long long";;
+$ac_cv_sizeof___int64)   tds_sysdep_intptr_type=__int64;;
+*)                     AC_ERROR(No intptr type found.)
+esac
+
+AC_SUBST(tds_sysdep_int16_type)
+AC_SUBST(tds_sysdep_int32_type)
+AC_SUBST(tds_sysdep_real32_type)
+AC_SUBST(tds_sysdep_real64_type)
+AC_SUBST(tds_sysdep_int64_type)
+AC_SUBST(tds_sysdep_intptr_type)
+
+dnl ------------------------------------------------------------
+dnl Checks for typedefs and structures
+dnl ------------------------------------------------------------
+
+dnl ---- Solaris needs -DBSD_COMP to get FIONBIO defined ----
+AC_MSG_CHECKING(is FIONBIO defined)
+AC_EGREP_CPP(yes,
+[#include <sys/ioctl.h>
+#ifdef FIONBIO
+ yes
+#endif
+],
+    AC_MSG_RESULT(yes),
+    [ AC_EGREP_CPP(yes,
+[#define BSD_COMP
+#include <sys/ioctl.h>
+#ifdef FIONBIO
+ yes
+#endif
+],
+    AC_DEFINE(BSD_COMP, 1, [Define to 1 if you need BSD_COMP defined to get FIONBIO defined.]) AC_MSG_RESULT(need -DBSD_COMP),
+    AC_MSG_RESULT(no))
+    ])
+
+TYPE_SOCKLEN_T
+
+dnl ------------------------------------------------------------
+dnl Checks for compiler characteristics.
+dnl ------------------------------------------------------------
+AC_C_BIGENDIAN
+AC_C_CONST
+
+dnl ------------------------------------------------------------
+dnl Checks for library functions.
+dnl ------------------------------------------------------------
+AC_CHECK_FUNCS([vsnprintf gettimeofday \
+nl_langinfo locale_charset setenv putenv \
+getuid getpwuid getpwuid_r])
+OLD_LIBS="$LIBS"
+LIBS="$LIBS $NETWORK_LIBS"
+AC_CHECK_FUNCS([inet_ntoa_r getipnodebyaddr getipnodebyname freehostent \
+getaddrinfo getnameinfo inet_ntop inet_pton \
+gethostname sethostent_r gethostent_r])
+LIBS="$OLD_LIBS"
+AC_REPLACE_FUNCS(asprintf vasprintf atoll strtok_r)
+
+dnl ------------------------------------------------------------
+dnl Checks for library variables.
+dnl ------------------------------------------------------------
+AC_HAVE_MALLOC_OPTIONS
+
+dnl ------------------------------------------------------------
+dnl Compile time options
+dnl ------------------------------------------------------------
+AC_MSG_RESULT(checking compile-time options)
+
+AC_ARG_WITH(tdsver,
+AC_HELP_STRING([--with-tdsver=VERSION], [TDS protocol version (4.2/4.6/5.0/7.0/8.0) [5.0]]))
+if test "$with_tdsver" = "4.2"; then
+	AC_DEFINE(TDS42, 1, [Define to use TDS 4.2 by default])
+elif test "$with_tdsver" = "4.6"; then
+	AC_DEFINE(TDS46, 1, [Define to use TDS 4.6 by default])
+elif test "$with_tdsver" = "7.0"; then
+	AC_DEFINE(TDS70, 1, [Define to use TDS 7.0 by default])
+elif test "$with_tdsver" = "8.0"; then
+	AC_DEFINE(TDS80, 1, [Define to use TDS 8.0 by default])
+else
+	AC_DEFINE(TDS50, 1, [Define to use TDS 5.0 by default])
+fi
+
+AC_ARG_WITH(iodbc,
+AC_HELP_STRING([--with-iodbc=DIR], [build odbc driver against iODBC in DIR]))
+if test "$with_iodbc"; then
+	if echo "$with_iodbc" | grep -v '^/'; then
+		with_iodbc="$PWD/$with_iodbc"
+	fi
+	CPPFLAGS="$CPPFLAGS -DIODBC"
+	ODBC_INC="-I$with_iodbc/include"
+	LDFLAGS="$LDFLAGS -L$with_iodbc/lib"
+	ODBCLIB="-liodbc"
+	odbc=true
+	iodbc=true
+fi
+
+AC_ARG_WITH(unixodbc,
+AC_HELP_STRING([--with-unixodbc=DIR], [build odbc driver against unixODBC in DIR]))
+if test "$with_unixodbc"; then
+	if echo "$with_unixodbc" | grep -v '^/'; then
+		with_unixodbc="$PWD/$with_unixodbc"
+	fi
+	CPPFLAGS="$CPPFLAGS -DUNIXODBC"
+	ODBC_INC="-I$with_unixodbc/include"
+	LDFLAGS="$LDFLAGS -L$with_unixodbc/lib"
+	ODBCLIB="-lodbc"
+	odbc=true
+	unixodbc=true
+fi
+
+AC_ARG_WITH(odbc_nodm,
+AC_HELP_STRING([--with-odbc-nodm=DIR], [build odbc without driver manager (headers in DIR)]))
+if test "$with_odbc_nodm"; then
+	if echo "$with_odbc_nodm" | grep -v '^/'; then
+		with_odbc_nodm="$PWD/$with_odbc_nodm"
+	fi
+	CPPFLAGS="$CPPFLAGS -DTDS_NO_DM"
+	ODBC_INC="-I$with_odbc_nodm/include"
+	# The next line is for linking the unittests. Here the ODBC driver
+	#  itself is treated as the driver manager to be linked.
+	# Can't use ODBCLIB/LDFLAGS variables since they are used in building
+	#  other directories.
+	ODBCNODMLIB="-L.. -ltdsodbc"
+	odbc=true
+fi
+
+build_odbc=yes
+if test "$odbc" != "true"; then
+AC_ARG_ENABLE(odbc,
+	AC_HELP_STRING([--disable-odbc], [do not attempt to build odbc the driver]),
+	[build_odbc=$enableval], [build_odbc=yes])
+fi
+AM_CONDITIONAL(INCODBC, test "$build_odbc" = "yes")
+  
+if test "$build_odbc" = "yes"
+then
+	# odbc not specified, try to detect it
+	echo looking for installed odbc driver manager
+	if test "$odbc" != "true"; then
+		AC_CHECK_LIB(iodbc, SQLConnect, [AC_CHECK_HEADER([isql.h], [odbc=true
+	iodbc=true
+	CPPFLAGS="$CPPFLAGS -DIODBC"
+	ODBCLIB="-liodbc"])], 
+		[AC_CHECK_LIB(odbc, SQLConnect, [AC_CHECK_HEADER([sql.h], [odbc=true
+	unixodbc=true
+	CPPFLAGS="$CPPFLAGS -DUNIXODBC"
+	ODBCLIB="-lodbc"])] )] )
+	fi
+	if test "$odbc" = "true"; then
+		if test "$unixodbc" = "true"; then
+			AC_CHECK_LIB(odbcinst, SQLGetPrivateProfileString, [ODBCINSTLIB="-lodbcinst"
+	AC_DEFINE_UNQUOTED(HAVE_SQLGETPRIVATEPROFILESTRING, 1, [Define to 1 if you have the SQLGetPrivateProfileString function.])])
+		elif test "$iodbc" = "true"; then
+			AC_CHECK_LIB(iodbcinst, SQLGetPrivateProfileString, [ODBCINSTLIB="-liodbcinst"
+	AC_DEFINE_UNQUOTED(HAVE_SQLGETPRIVATEPROFILESTRING, 1, [Define to 1 if you have the SQLGetPrivateProfileString function.])])
+		fi
+	fi
+	if test "$iodbc" = "true"; then
+		save_cppflags="$CPPFLAGS"
+		CPPFLAGS="$CPPFLAGS $ODBC_INC"
+		AC_CHECK_HEADERS(iodbcinst.h)
+		CPPFLAGS="$save_cppflags"
+	fi
+else 
+	AC_MSG_NOTICE(odbc disabled)	
+fi
+
+AM_CONDITIONAL(ODBC, test "$odbc" = "true")
+AM_CONDITIONAL(UNIXODBC, test "$unixodbc" = "true")
+AC_SUBST(ODBC)
+AC_SUBST(ODBC_INC)
+AC_SUBST(ODBCLIB)
+AC_SUBST(ODBCINSTLIB)
+AC_SUBST(ODBCNODMLIB)
+
+AC_ARG_ENABLE(apps,
+	AC_HELP_STRING([--disable-apps], [skip build of src/apps (including tsql)]))
+AM_CONDITIONAL(INCAPPS, test "$enable_apps" != "no")
+
+AC_ARG_ENABLE(server,
+	AC_HELP_STRING([--disable-server], [skip build of src/server directory]))
+AM_CONDITIONAL(INCSERVER, test "$enable_server" != "no")
+
+AC_ARG_ENABLE(pool,
+	AC_HELP_STRING([--disable-pool], [skip build of src/pool directory]))
+ AM_CONDITIONAL(INCPOOL, test "$enable_pool" != "no")
+
+AC_ARG_ENABLE(msdblib,
+  AC_HELP_STRING([--enable-msdblib], [for MS style dblib]))
+
+if test "$enable_msdblib" = "yes" ; then
+	CPPFLAGS="$CPPFLAGS -DMSDBLIB"
+fi
+
+AC_ARG_ENABLE(sybase-compat,
+  AC_HELP_STRING([--enable-sybase-compat], [enable increased Open Client binary compatibility]))
+AM_CONDITIONAL(SYBASE_COMPAT, test x$enable_sybase_compat = xyes)
+
+AC_MSG_CHECKING(threadsafety)
+# Enable or disable thread safetiness
+# This option is enabled by default because most OS's support it.   
+# A more sophisticated approach would be to set the default per-OS.  
+AC_ARG_ENABLE(threadsafe,
+	AC_HELP_STRING([--disable-threadsafe], [disable calls to threadsafe fuctions e.g.,gethostbyname_r ]),
+	[use_threadsafe=$enableval], [use_threadsafe=yes])
+
+if test "$enable_threadsafe" != "no" ; then
+	CPPFLAGS="$CPPFLAGS -D_REENTRANT -D_THREAD_SAFE"
+	AC_MSG_RESULT(enabled)
+else
+	AC_MSG_RESULT(disabled)
+fi
+
+AC_caolan_FUNC_WHICH_GETHOSTBYNAME_R
+AC_raf_FUNC_WHICH_GETSERVBYNAME_R
+AC_tds_FUNC_WHICH_GETHOSTBYADDR_R
+AC_tds_FUNC_WHICH_GETPWUID_R
+AC_tds_FUNC_WHICH_LOCALTIME_R
+
+AC_ARG_ENABLE(debug,
+	AC_HELP_STRING([--disable-debug], [disable assert and other things]),
+	[use_debug=$enableval], [use_debug=yes])
+  
+if test "$use_debug" = "yes" ; then
+	AC_MSG_NOTICE(debug enabled)	
+	CPPFLAGS="$CPPFLAGS -DDEBUG=1"
+
+	AC_ARG_ENABLE(extra-checks,
+	  AC_HELP_STRING([--enable-extra-checks], [enable extra checks on code]))
+	if test "$enable_extra_checks" = "yes" ; then
+		AC_DEFINE_UNQUOTED(ENABLE_EXTRA_CHECKS, 1, [Define to enable extra checks on code])
+	fi
+else
+	AC_MSG_NOTICE(debug disabled)	
+	CPPFLAGS="$CPPFLAGS -DNDEBUG=1"
+fi
+
+AC_ARG_ENABLE(developing,
+  AC_HELP_STRING([--enable-developing], [enable code still in develop]))
+if test "$enable_developing" = "yes" ; then
+	AC_DEFINE_UNQUOTED(ENABLE_DEVELOPING, 1, [Define to enable work in progress code])
+fi
+
+AC_ARG_ENABLE(distcheck_build,
+  AC_HELP_STRING([--enable-distcheck-build], [used internally for testing]))
+if test "$enable_distcheck_build" = "yes" ; then
+	AM_CONDITIONAL(DISTCHECK_BUILD, true)
+else
+	AM_CONDITIONAL(DISTCHECK_BUILD, false)
+fi
+
+dnl ------------------------------------------------------------
+dnl LTLIBOBJS hack (for autoconf-2.53)
+dnl ------------------------------------------------------------
+# This is necessary so that .o files in LIBOBJS are also built via
+# the ANSI2KNR-filtering rules.
+LIB@&t@OBJS=`echo "$LIB@&t@OBJS" |
+             sed 's,\.[[^.]]* ,$U&,g;s,\.[[^.]]*$,$U&,'`
+LTLIBOBJS=`echo "$LIB@&t@OBJS" |
+           sed 's,\.[[^.]]* ,.lo ,g;s,\.[[^.]]*$,.lo,'`
+AC_SUBST(LTLIBOBJS)
+
+# enable some warning for gcc
+if test "$ac_compiler_gnu" = "yes" ; then
+	CPPFLAGS="$CPPFLAGS -Wall -Wstrict-prototypes -Wmissing-prototypes -Wno-long-long"
+fi
+
+AC_MSG_RESULT(done)
+dnl ------------------------------------------------------------
+dnl Final output
+dnl ------------------------------------------------------------
+AC_OUTPUT(include/tdsver.h \
+	include/tds_sysdep_public.h \
+	Makefile \
+	include/Makefile \
+	doc/Makefile \
+	samples/Makefile \
+	src/Makefile \
+		src/tds/Makefile src/tds/unittests/Makefile \
+		src/dblib/Makefile src/dblib/unittests/Makefile \
+		src/ctlib/Makefile src/ctlib/unittests/Makefile \
+		src/replacements/Makefile \
+	src/server/Makefile \
+	src/pool/Makefile \
+	src/odbc/Makefile \
+	src/odbc/unittests/Makefile \
+	src/apps/Makefile \
+	freetds.spec \
+	win32/Makefile win32/msvc6/Makefile win32/dev-cpp/Makefile
+)

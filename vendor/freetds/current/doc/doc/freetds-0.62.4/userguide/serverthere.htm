@@ -1,0 +1,295 @@
+<HTML
+><HEAD
+><TITLE
+>Is the server there?</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.57"><LINK
+REL="HOME"
+TITLE="FreeTDS User Guide"
+HREF="index.htm"><LINK
+REL="UP"
+TITLE="Troubleshooting"
+HREF="troubleshooting.htm"><LINK
+REL="PREVIOUS"
+TITLE="Troubleshooting"
+HREF="troubleshooting.htm"><LINK
+REL="NEXT"
+TITLE="Logging"
+HREF="logging.htm"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+><SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> User Guide: A Guide to Installing, Configuring, and Running <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="troubleshooting.htm"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 7. Troubleshooting</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="logging.htm"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="SERVERTHERE"
+>Is the server there?</A
+></H1
+><P
+>First ping the host to make sure you can talk to the machine the server resides on.  
+<PRE
+CLASS="SCREEN"
+><TT
+CLASS="PROMPT"
+>$ </TT
+><TT
+CLASS="USERINPUT"
+><B
+>ping -c1 myhost</B
+></TT
+>
+<TT
+CLASS="COMPUTEROUTPUT"
+>PING myhost (127.0.0.1) from 127.0.0.1 : 56(84) bytes of data.
+64 bytes from myhost (127.0.0.1): icmp_seq=0 ttl=255 time=250 usec</TT
+></PRE
+>
+			</P
+><P
+>If the machine pinged successfully, attempt to telnet to the host and port to verify that the dataserver is listening.
+<PRE
+CLASS="SCREEN"
+><TT
+CLASS="PROMPT"
+>$ </TT
+><TT
+CLASS="USERINPUT"
+><B
+>telnet <TT
+CLASS="REPLACEABLE"
+><I
+>myhost 1433</I
+></TT
+></B
+></TT
+>
+<TT
+CLASS="COMPUTEROUTPUT"
+>Trying 127.0.0.1...
+Connected to myhost.
+Escape character is '^]'.</TT
+></PRE
+>
+If you get output like this the dataserver is listening.  If you get a 'Connection Refused' message then either the dataserver is down, you have the port wrong, or you're talking to the wrong host.
+			</P
+><P
+>If telnet works, the next step is to run <B
+CLASS="COMMAND"
+>tsql</B
+>.  <B
+CLASS="COMMAND"
+>tsql</B
+> can be run in two ways, one which uses <TT
+CLASS="FILENAME"
+>freetds.conf</TT
+> and one which connects directly using the host and port.  First attempt a connection using host and port.
+<PRE
+CLASS="SCREEN"
+><TT
+CLASS="PROMPT"
+>$ </TT
+><TT
+CLASS="USERINPUT"
+><B
+>cd src/apps</B
+></TT
+>
+<TT
+CLASS="PROMPT"
+>$ </TT
+><TT
+CLASS="USERINPUT"
+><B
+>./tsql -H <TT
+CLASS="REPLACEABLE"
+><I
+>myhost</I
+></TT
+> -p <TT
+CLASS="REPLACEABLE"
+><I
+>1433</I
+></TT
+> -U <TT
+CLASS="REPLACEABLE"
+><I
+>user</I
+></TT
+></B
+></TT
+></PRE
+>
+If you receive a message of 'Login Failed.' then your connectivity is OK, but you have a authentication issue.</P
+><P
+>If you receive a message like
+<PRE
+CLASS="SCREEN"
+><TT
+CLASS="COMPUTEROUTPUT"
+> Msg. No.: 18450 Severity: 14 State: 1 Login failed- User: loginid Reason: Not defined as a valid user of a trusted SQL Server connection</TT
+></PRE
+>
+<SPAN
+CLASS="PRODUCTNAME"
+>SQL Server</SPAN
+> is accepting only <SPAN
+CLASS="QUOTE"
+>"domain"</SPAN
+> logins.  This applies only to Microsoft <SPAN
+CLASS="PRODUCTNAME"
+>SQL Server</SPAN
+> and you'll need to have your DBA verify that <SPAN
+CLASS="QUOTE"
+>"server logins"</SPAN
+> are allowed, or use a <A
+HREF="domains.htm"
+>domain login</A
+>.  
+
+			</P
+><P
+>Finally, if you received a prompt, then try <B
+CLASS="COMMAND"
+>tsql</B
+> using the dataserver name.
+<PRE
+CLASS="SCREEN"
+><TT
+CLASS="PROMPT"
+>$ </TT
+><TT
+CLASS="USERINPUT"
+><B
+>./tsql -S <TT
+CLASS="REPLACEABLE"
+><I
+>myserver</I
+></TT
+> -U <TT
+CLASS="REPLACEABLE"
+><I
+>user</I
+></TT
+></B
+></TT
+></PRE
+>
+If this fails, FreeTDS is either not finding your <TT
+CLASS="FILENAME"
+>freetds.conf</TT
+> file, finding the wrong one, or there is an error in the file.
+			</P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="troubleshooting.htm"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.htm"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="logging.htm"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Troubleshooting</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="troubleshooting.htm"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Logging</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,604 @@
+<HTML
+><HEAD
+><TITLE
+>Connection attributes</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.57"><LINK
+REL="HOME"
+TITLE="FreeTDS User Guide"
+HREF="index.htm"><LINK
+REL="UP"
+TITLE="Preparing ODBC"
+HREF="prepodbc.htm"><LINK
+REL="PREVIOUS"
+TITLE="Preparing ODBC"
+HREF="prepodbc.htm"><LINK
+REL="NEXT"
+TITLE="DSN-less configuration"
+HREF="dsnless.htm"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+><SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> User Guide: A Guide to Installing, Configuring, and Running <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="prepodbc.htm"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 4. Preparing ODBC</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="dsnless.htm"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="ODBCCONNATTR"
+>Connection attributes</A
+></H1
+><P
+>The following table defines all possible ODBC connection attributes for the <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> ODBC driver.  Which ones you'll need depends on how you set yourself up.  They may appear in your connection string, or in <TT
+CLASS="FILENAME"
+>odbc.ini</TT
+>, as indicated in the final column.    
+			</P
+><P
+><DIV
+CLASS="TABLE"
+><A
+NAME="TAB.CONNECTION.ATTRIBUTES"
+></A
+><P
+><B
+>Table 4-1. Connection attributes</B
+></P
+><TABLE
+BORDER="1"
+CLASS="CALSTABLE"
+><THEAD
+><TR
+><TH
+ALIGN="LEFT"
+VALIGN="TOP"
+>Name</TH
+><TH
+ALIGN="LEFT"
+VALIGN="TOP"
+>Meaning</TH
+><TH
+ALIGN="LEFT"
+VALIGN="TOP"
+>Possible Values</TH
+><TH
+ALIGN="LEFT"
+VALIGN="TOP"
+>Default</TH
+><TH
+ALIGN="LEFT"
+VALIGN="TOP"
+>In <TT
+CLASS="FILENAME"
+>odbc.ini</TT
+></TH
+></TR
+></THEAD
+><TBODY
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><TT
+CLASS="LITERAL"
+>DSN</TT
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Use DSN. <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> will search <TT
+CLASS="FILENAME"
+>odbc.ini</TT
+> for entry. 
+		It lets you specify a connection like <TT
+CLASS="FUNCTION"
+>SQLConnect</TT
+>, but using
+		<TT
+CLASS="FUNCTION"
+>SQLDriverConnect</TT
+>.  
+		Do not use <TT
+CLASS="LITERAL"
+>Servername</TT
+> and <TT
+CLASS="LITERAL"
+>DSN</TT
+> together.
+		Can be specified only in a connection string, not in <TT
+CLASS="FILENAME"
+>odbc.ini</TT
+>.
+	</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>A valid DSN entry</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>none</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>no</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><TT
+CLASS="LITERAL"
+>Servername</TT
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>A <TT
+CLASS="FILENAME"
+>freetds.conf</TT
+> servername, not a hostname as known to DNS.
+		If you want to use ODBC-only configuration, use 
+		<TT
+CLASS="LITERAL"
+>Server</TT
+> instead.</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>A valid <TT
+CLASS="FILENAME"
+>freetds.conf</TT
+> server section</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>none</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>yes</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><TT
+CLASS="LITERAL"
+>Server</TT
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Hostname of a server. Used in an ODBC-only configuration.</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>A server name or (ip) address</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>none</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>yes</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><TT
+CLASS="LITERAL"
+>Port</TT
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>The TCP port  where the dataserver is listening.  </TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Any TCP port</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Depends on the TDS version specified with <B
+CLASS="COMMAND"
+>configure</B
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>yes</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><TT
+CLASS="LITERAL"
+>UID</TT
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Can be specified only for a DSN-less connection. 
+		(For security reasons, do not store username/password in a configuration file).
+		To use domain authentication, specify the domain using the format 
+		<TT
+CLASS="REPLACEABLE"
+><I
+>domain\password</I
+></TT
+>.</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Any valid username</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>none</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>no</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><TT
+CLASS="LITERAL"
+>PWD</TT
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Can be specified only for a DSN-less connection. 
+		(For security reasons, do not store username/password in a configuration file).
+		Clear text password (use domain password for domain authentication).</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Any</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>empty</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>no</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><TT
+CLASS="LITERAL"
+>TDS_Version</TT
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>TDS protocol version to use (e.g., 5.0, 7.0).</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Any valid protocol version</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Depends on the TDS version specified with <B
+CLASS="COMMAND"
+>configure</B
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>yes</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><TT
+CLASS="LITERAL"
+>APP</TT
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Application name.  Identifies the connecting application to the server.  </TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Free form text, up to 30 characters.  </TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>none</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>yes</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><TT
+CLASS="LITERAL"
+>WSID</TT
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Name of the local computer, sent to server.  
+		Can be specified only for a DSN-less connection.</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Any</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Computer name</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>no</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><TT
+CLASS="LITERAL"
+>LANGUAGE</TT
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>(Human) language the server should use for error messages.</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Any</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>us_english</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>yes</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><TT
+CLASS="LITERAL"
+>Address</TT
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>IP address of the dataserver. 
+		Useful if you want to specify a server by address, rather than by name.</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Any</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>none</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>yes</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><TT
+CLASS="LITERAL"
+>Database</TT
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Specify which database you want to access. 
+		If database do not exists or you haven't permission to access it, 
+		the connection will fail.</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Any</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>none</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>yes</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><TT
+CLASS="LITERAL"
+>TextSize</TT
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Maximum size returned from server for blobs.</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Any</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>DB dependent</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>yes</TD
+></TR
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><TT
+CLASS="LITERAL"
+>PacketSize</TT
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Size of packets to server. 
+		Usually you shouldn't set this parameters. 
+		Some users saw some performance gain increasing this value.</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>Any</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>DB dependent</TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+>yes</TD
+></TR
+></TBODY
+></TABLE
+></DIV
+></P
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="prepodbc.htm"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.htm"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="dsnless.htm"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Preparing ODBC</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="prepodbc.htm"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>DSN-less configuration</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

@@ -1,0 +1,270 @@
+<HTML
+><HEAD
+><TITLE
+>Advanced Configurations</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.57"><LINK
+REL="HOME"
+TITLE="FreeTDS User Guide"
+HREF="index.htm"><LINK
+REL="PREVIOUS"
+TITLE="Troubleshooting ODBC connections"
+HREF="odbcdiagnose.htm"><LINK
+REL="NEXT"
+TITLE="TDS 7.0 for Nonwestern Languages"
+HREF="nonwestern.htm"></HEAD
+><BODY
+CLASS="CHAPTER"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+><SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> User Guide: A Guide to Installing, Configuring, and Running <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="odbcdiagnose.htm"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+></TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="nonwestern.htm"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="CHAPTER"
+><H1
+><A
+NAME="CONFIGS"
+>Chapter 5. Advanced Configurations</A
+></H1
+><DIV
+CLASS="TOC"
+><DL
+><DT
+><B
+>Table of Contents</B
+></DT
+><DT
+><A
+HREF="configs.htm#EMULLE"
+>Big Endian Clients with Buggy <SPAN
+CLASS="PRODUCTNAME"
+>SQL Server</SPAN
+>s</A
+></DT
+><DT
+><A
+HREF="nonwestern.htm"
+><SPAN
+CLASS="ACRONYM"
+>TDS</SPAN
+> 7.0 for Nonwestern Languages</A
+></DT
+><DT
+><A
+HREF="domains.htm"
+>Domain Logins</A
+></DT
+><DT
+><A
+HREF="appendmode.htm"
+>Appending Dump Files</A
+></DT
+><DT
+><A
+HREF="tdspool.htm"
+>TDS Connection Pooling</A
+></DT
+><DT
+><A
+HREF="stunnel.htm"
+>stunnel HOWTO</A
+></DT
+></DL
+></DIV
+><P
+>This chapter details some advanced configurations that need expanded explanation.
+		</P
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="EMULLE"
+>Big Endian Clients with Buggy <SPAN
+CLASS="PRODUCTNAME"
+>SQL Server</SPAN
+>s</A
+></H1
+><P
+>Several version of Microsoft SQL server have a bug that affects big endian clients.  This includes 7.0 GA and 7.0 SP1.  Furthermore, <SPAN
+CLASS="ACRONYM"
+>TDS</SPAN
+> Protocol version 7.0 is natively little endian. <SPAN
+CLASS="PRODUCTNAME"
+>SQL Server 2000</SPAN
+> is also reported not to work from big endian clients without little endian emulation turned on.
+			</P
+><DIV
+CLASS="NOTE"
+><P
+></P
+><TABLE
+CLASS="NOTE"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="../images/note.gif"
+HSPACE="5"
+ALT="Note"></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+>If you are unfamiliar with the terms <I
+CLASS="EMPHASIS"
+>big endian</I
+> and <I
+CLASS="EMPHASIS"
+>little endian</I
+>, they are terms that come originally from Gullivers Travels.  What they refer to in computer science is the the order in which bytes are stored by a processor.  Big endian machines such as Sparc and PowerPC store the most significant byte in the first memory location of a multi-byte integer.  Little endian machines such as Intel and Alpha do it the other way around.  So the 16-bit number 258 would be 0x0102 on big endian and 0x0201 on little endian machines.</P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>In this example we want to force connections to a server named <TT
+CLASS="LITERAL"
+>mssql</TT
+> to emulate a little endian client.  We are using protocol version 4.2 here, version 7.0 and 8.0 will automatically emulate little endian mode regardless of the <TT
+CLASS="FILENAME"
+>freetds.conf</TT
+> setting.
+<I
+CLASS="EMPHASIS"
+>You shouldn't use this option, set another protocol version instead (7.0 or 8.0)</I
+>.</P
+><DIV
+CLASS="EXAMPLE"
+><A
+NAME="E.G.LITTLEENDIAN"
+></A
+><P
+><B
+>Example 5-1. Emulate Little Endian <TT
+CLASS="FILENAME"
+>freetds.conf</TT
+> setting</B
+></P
+><PRE
+CLASS="PROGRAMLISTING"
+>[mssql]
+	host = ntbox.mydomain.com
+	port = 1433
+	tds version = 4.2
+	emulate little endian = yes</PRE
+></DIV
+></DIV
+></DIV
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="odbcdiagnose.htm"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.htm"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="nonwestern.htm"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Troubleshooting ODBC connections</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+>&nbsp;</TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><SPAN
+CLASS="ACRONYM"
+>TDS</SPAN
+> 7.0 for Nonwestern Languages</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>

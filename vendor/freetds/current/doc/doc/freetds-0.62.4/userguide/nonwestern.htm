@@ -1,0 +1,403 @@
+<HTML
+><HEAD
+><TITLE
+>TDS 7.0 for Nonwestern Languages</TITLE
+><META
+NAME="GENERATOR"
+CONTENT="Modular DocBook HTML Stylesheet Version 1.57"><LINK
+REL="HOME"
+TITLE="FreeTDS User Guide"
+HREF="index.htm"><LINK
+REL="UP"
+TITLE="Advanced Configurations"
+HREF="configs.htm"><LINK
+REL="PREVIOUS"
+TITLE="Advanced Configurations"
+HREF="configs.htm"><LINK
+REL="NEXT"
+TITLE="Domain Logins"
+HREF="domains.htm"></HEAD
+><BODY
+CLASS="SECT1"
+BGCOLOR="#FFFFFF"
+TEXT="#000000"
+LINK="#0000FF"
+VLINK="#840084"
+ALINK="#0000FF"
+><DIV
+CLASS="NAVHEADER"
+><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TH
+COLSPAN="3"
+ALIGN="center"
+><SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> User Guide: A Guide to Installing, Configuring, and Running <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+></TH
+></TR
+><TR
+><TD
+WIDTH="10%"
+ALIGN="left"
+VALIGN="bottom"
+><A
+HREF="configs.htm"
+>Prev</A
+></TD
+><TD
+WIDTH="80%"
+ALIGN="center"
+VALIGN="bottom"
+>Chapter 5. Advanced Configurations</TD
+><TD
+WIDTH="10%"
+ALIGN="right"
+VALIGN="bottom"
+><A
+HREF="domains.htm"
+>Next</A
+></TD
+></TR
+></TABLE
+><HR
+ALIGN="LEFT"
+WIDTH="100%"></DIV
+><DIV
+CLASS="SECT1"
+><H1
+CLASS="SECT1"
+><A
+NAME="NONWESTERN"
+><SPAN
+CLASS="ACRONYM"
+>TDS</SPAN
+> 7.0 for Nonwestern Languages</A
+></H1
+><P
+><SPAN
+CLASS="ACRONYM"
+>TDS</SPAN
+> 7.0 uses 2-byte Unicode (technically, <SPAN
+CLASS="ACRONYM"
+>UCS-2</SPAN
+>) to transfer character data between servers and clients.  Included in <SPAN
+CLASS="QUOTE"
+>"character data"</SPAN
+> are query text (i.e., <SPAN
+CLASS="ACRONYM"
+>SQL</SPAN
+>), metadata (table names and such), and <I
+CLASS="FOREIGNPHRASE"
+>bona fide</I
+> data of datatypes <TT
+CLASS="LITERAL"
+>nchar</TT
+>, <TT
+CLASS="LITERAL"
+>nvarchar</TT
+>, and <TT
+CLASS="LITERAL"
+>ntext</TT
+>.
+			</P
+><P
+>Since most Unix tools and languages do not support <SPAN
+CLASS="ACRONYM"
+>UCS-2</SPAN
+>, <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> allows conversion by the client to other character sets using the <A
+HREF="http://www.opengroup.org/onlinepubs/7908799/xsh/iconv.html"
+TARGET="_top"
+>iconv</A
+> standard.  Background information on Unicode and how it affects <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> can be found in the <A
+HREF="unicode.htm"
+>appendix</A
+>.  If no iconv library is found, or if it is explicitly disabled, <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> will use its built-in iconv substitute, and will be capable of converting between only <SPAN
+CLASS="ACRONYM"
+>ISO-8859-1</SPAN
+> and <SPAN
+CLASS="ACRONYM"
+>UCS-2</SPAN
+>.  
+			</P
+><P
+>To learn what character set the client is using, <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> examines the <A
+HREF="freetdsconf.htm#CLIENTCHARSET"
+><TT
+CLASS="FILENAME"
+>freetds.conf</TT
+></A
+> entry.  If it finds nothing there, it assumes the client is using <SPAN
+CLASS="ACRONYM"
+>ISO-8859-1</SPAN
+>.   That is generally a safe assumption for western languages such as English or French, but produces garbage for other languages.
+			</P
+><P
+>To list all supported iconv character sets try <B
+CLASS="COMMAND"
+>iconv</B
+>(1).  GNU's does: 
+			</P
+><PRE
+CLASS="SCREEN"
+><TT
+CLASS="PROMPT"
+>$ </TT
+><TT
+CLASS="USERINPUT"
+><B
+>iconv --list</B
+></TT
+></PRE
+><P
+>For other systems, consult your documentation (most likely <B
+CLASS="COMMAND"
+>man iconv</B
+> will give you some hints).
+			</P
+><P
+>In this example a server named <TT
+CLASS="LITERAL"
+>mssql</TT
+> will return data encoded in the GREEK character set.
+			</P
+><DIV
+CLASS="EXAMPLE"
+><A
+NAME="E.G.GREEK"
+></A
+><P
+><B
+>Example 5-2. Configuring for GREEK <TT
+CLASS="FILENAME"
+>freetds.conf</TT
+> setting</B
+></P
+><PRE
+CLASS="PROGRAMLISTING"
+>[mssql]
+	host = ntbox.mydomain.com
+	port = 1433
+	tds version = 7.0
+	client charset = GREEK</PRE
+></DIV
+><P
+>If <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> runs into a character it can not convert, its behavior varies according to the severity of the problem.  On retrieving data from the server, <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> substitutes an <SPAN
+CLASS="ACRONYM"
+>ASCII</SPAN
+> '?' in the character's place, and emits a warning message stating that some characters could not be converted.  On sending data to the server, <SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> aborts the query and emits an error message.  It is well to ensure that the data contained in the database is representable in the client's character set.</P
+><P
+>If you have a mix of character data that can not be contained in a single byte character set, you may wish to use <SPAN
+CLASS="ACRONYM"
+>UTF-8</SPAN
+>.  <SPAN
+CLASS="ACRONYM"
+>UTF-8</SPAN
+> is a variable length unicode encoding that is compatible with <SPAN
+CLASS="ACRONYM"
+>ASCII</SPAN
+> in the range 0 to 127.  With <SPAN
+CLASS="ACRONYM"
+>UTF-8</SPAN
+>, you are guaranteed to never have an unconvertible character.</P
+><DIV
+CLASS="IMPORTANT"
+><P
+></P
+><TABLE
+CLASS="IMPORTANT"
+WIDTH="100%"
+BORDER="0"
+><TR
+><TD
+WIDTH="25"
+ALIGN="CENTER"
+VALIGN="TOP"
+><IMG
+SRC="../images/important.gif"
+HSPACE="5"
+ALT="Important"></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+><P
+><SPAN
+CLASS="PRODUCTNAME"
+>FreeTDS</SPAN
+> is not fully compatible with multi-byte character sets such as <SPAN
+CLASS="ACRONYM"
+>UCS-2</SPAN
+>.  You must use an ASCII-extension charset (e.g., UTF-8, ISO-8859-*)<A
+NAME="AEN1885"
+HREF="#FTN.AEN1885"
+>[1]</A
+>. Extreme care should be taken with testing applications using these encodings. Specifically, many applications do not expect the number of characters returned to exceed the column size (in bytes).  On the other hand, support of <SPAN
+CLASS="ACRONYM"
+>UTF-8</SPAN
+> and <SPAN
+CLASS="ACRONYM"
+>UCS-2</SPAN
+> is a high priority for the developers.  Patches and bug reports in this area are especially welcome.  </P
+></TD
+></TR
+></TABLE
+></DIV
+><P
+>In the following example, a server named <TT
+CLASS="LITERAL"
+>mssql</TT
+> will return data encoded in the <SPAN
+CLASS="ACRONYM"
+>UTF-8</SPAN
+> character set.
+			</P
+><DIV
+CLASS="EXAMPLE"
+><A
+NAME="E.G.UTF8"
+></A
+><P
+><B
+>Example 5-3. Configuring for <SPAN
+CLASS="ACRONYM"
+>UTF-8</SPAN
+> <TT
+CLASS="FILENAME"
+>freetds.conf</TT
+> setting</B
+></P
+><PRE
+CLASS="PROGRAMLISTING"
+>[mssql]
+	host = ntbox.mydomain.com
+	port = 1433
+	tds version = 7.0
+	client charset = UTF-8</PRE
+></DIV
+><P
+>It is also worth clarifying that <SPAN
+CLASS="ACRONYM"
+>TDS 7.0</SPAN
+> and above do not accept any specified character set during login, as 4.2 does.  A <SPAN
+CLASS="ACRONYM"
+>TDS 7.0</SPAN
+> login packet uses <SPAN
+CLASS="ACRONYM"
+>UCS-2</SPAN
+>.  
+			</P
+></DIV
+><H3
+CLASS="FOOTNOTES"
+>Notes</H3
+><TABLE
+BORDER="0"
+CLASS="FOOTNOTES"
+WIDTH="100%"
+><TR
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="5%"
+><A
+NAME="FTN.AEN1885"
+HREF="nonwestern.htm#AEN1885"
+>[1]</A
+></TD
+><TD
+ALIGN="LEFT"
+VALIGN="TOP"
+WIDTH="95%"
+><P
+>not EBCDIC or other weird charsets</P
+></TD
+></TR
+></TABLE
+><DIV
+CLASS="NAVFOOTER"
+><HR
+ALIGN="LEFT"
+WIDTH="100%"><TABLE
+WIDTH="100%"
+BORDER="0"
+CELLPADDING="0"
+CELLSPACING="0"
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+><A
+HREF="configs.htm"
+>Prev</A
+></TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="index.htm"
+>Home</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+><A
+HREF="domains.htm"
+>Next</A
+></TD
+></TR
+><TR
+><TD
+WIDTH="33%"
+ALIGN="left"
+VALIGN="top"
+>Advanced Configurations</TD
+><TD
+WIDTH="34%"
+ALIGN="center"
+VALIGN="top"
+><A
+HREF="configs.htm"
+>Up</A
+></TD
+><TD
+WIDTH="33%"
+ALIGN="right"
+VALIGN="top"
+>Domain Logins</TD
+></TR
+></TABLE
+></DIV
+></BODY
+></HTML
+>
