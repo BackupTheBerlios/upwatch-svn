@@ -29,6 +29,8 @@ spec-files = `echo "%dir" $confdir/uw_sysstat.d/mysql`;
 spec-files = `for i in \`find uw_sysstat.d/mysql -type f | grep -v .svn\` ; do echo $confdir/$i; done`;
 spec-files = `echo "%dir" $confdir/uw_sysstat.d/upwatch`;
 spec-files = `for i in \`find uw_sysstat.d/upwatch -type f | grep -v .svn\` ; do echo $confdir/$i; done`;
+spec-files = `echo "%dir" $confdir/uw_sysstat.d/quagga`;
+spec-files = `for i in \`find uw_sysstat.d/quagga -type f | grep -v .svn\` ; do echo $confdir/$i; done`;
 
 // describe commandline flags
 flag = {

@@ -1,0 +1,7 @@
+# macros for log2regex 
+# they are very much like the ones in the 'macros' file, but
+# specifically designed to extract rules from existing logfiles
+LOGDATE [0-9][0-9][0-9][0-9]/[0-9][0-9]/[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]
+IPADDR	(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])){3}
+PID 	\[[0-9]+\]
+NUM	[-+]?(0x)?\d+

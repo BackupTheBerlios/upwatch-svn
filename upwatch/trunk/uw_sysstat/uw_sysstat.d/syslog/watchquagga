@@ -1,0 +1,14 @@
+green [LOGDATE] watchquagga[PID]: bgpd: slow echo response finally received after [NUM]\.[NUM] seconds
+green [LOGDATE] watchquagga[PID]: bgpd state -> up : echo response received after [NUM]\.[NUM] seconds
+green [LOGDATE] watchquagga[PID]: Terminating on signal
+green [LOGDATE] watchquagga: watchquagga shutdown succeeded
+green [LOGDATE] watchquagga: watchquagga startup succeeded
+green [LOGDATE] watchquagga[PID]: watchquagga [NUM]\.[NUM]\.[NUM] watching \[zebra bgpd\], mode \[monitor\]
+green [LOGDATE] watchquagga[PID]: bgpd state -> up : connect succeeded
+green [LOGDATE] watchquagga[PID]: zebra state -> up : connect succeeded
+green [LOGDATE] watchquagga[PID]: Terminating on signal
+green [LOGDATE] watchquagga: watchquagga shutdown succeeded
+green [LOGDATE] watchquagga[PID]: watchquagga [NUM]\.[NUM]\.[NUM] watching \[zebra bgpd\], mode \[monitor\]
+green [LOGDATE] watchquagga: watchquagga startup succeeded
+green [LOGDATE] watchquagga[PID]: zebra state -> up : connect succeeded
+green [LOGDATE] watchquagga[PID]: bgpd state -> up : connect succeeded
