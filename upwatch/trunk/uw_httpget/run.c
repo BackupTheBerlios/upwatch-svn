@@ -91,6 +91,7 @@ int run_actual_probes(int count);
     if (hosts != NULL) {
       for (id=0; hosts[id]; id++) {
         printf("%s\n", hosts[id]->name);
+        if (hosts[id]->ipaddress) free(hosts[id]->ipaddress);
         free(hosts[id]->name);
         free(hosts[id]->hostname);
         free(hosts[id]->uri);
