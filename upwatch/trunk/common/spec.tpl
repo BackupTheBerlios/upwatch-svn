@@ -23,19 +23,20 @@ spec-files +]
 [+ ENDFOR +]
 
 %post [+prog-name+]
+# install initscript
 if [ -f /etc/redhat-release ]
 then
   DISTR=redhat
+  ln -sf /usr/lib/upwatch/$DISTR/[+prog-name+] /etc/init.d/[+prog-name+]
 fi
 if [ -f /etc/SuSE-release ]
 then
   DISTR=suse
+  ln -sf /usr/lib/upwatch/$DISTR/[+prog-name+] /etc/init.d/[+prog-name+]
+  pushd /usr/sbin
+  ln -sf ../../etc/init.d/[+prog-name+] rc[+prog-name+]
+  popd
 fi
-# install initscript
-ln -sf /usr/lib/upwatch/$DISTR/[+prog-name+] /etc/init.d/[+prog-name+]
-pushd /usr/sbin
-ln -sf ../../etc/init.d/[+prog-name+] rc[+prog-name+]
-popd
 if [ -x /sbin/chkconfig ]; then
   /sbin/chkconfig --add [+prog-name+] 2>/dev/null || true
 fi

@@ -128,20 +128,23 @@ install -m 660 [+program+]/[+program+].conf $RPM_BUILD_ROOT/etc/upwatch.d/[+prog
         -c "Upwatch" -u 78 -g 78 upwatch > /dev/null 2>&1 || :
 
 %post
+# install initscripts
 if [ -f /etc/redhat-release ]
 then
   DISTR=redhat
+  ln -sf /etc/init.d/upwatch /usr/lib/upwatch/$DISTR/upwatch
+  ln -sf /etc/init.d/upwatch /usr/sbin/rcupwatch
 fi
 if [ -f /etc/SuSE-release ]
 then
   DISTR=suse
+  ln -sf /etc/init.d/upwatch /usr/lib/upwatch/$DISTR/upwatch
 fi
-# install initscripts
-ln -sf /etc/init.d/upwatch /usr/lib/upwatch/$DISTR/upwatch
 
 %postun
 if [ "$1" -eq "0" ]; then
   rm -f /etc/init.d/upwatch
+  rm -f /usr/sbin/rcupwatch
 fi
 
 %files
