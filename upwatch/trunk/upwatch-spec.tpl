@@ -111,17 +111,17 @@ mkdir -p $RPM_BUILD_ROOT/etc/init.d
 install -m 770 config/upwatch.init $RPM_BUILD_ROOT/usr/lib/upwatch/redhat/upwatch
 install -m 770 config/upwatch.init-suse $RPM_BUILD_ROOT/usr/lib/upwatch/suse/upwatch
 
-if [ -f /usr/lib/libopts.so ]
-then
-  cp /usr/lib/libopts.so $RPM_BUILD_ROOT/usr/lib
-  cp /usr/lib/libopts.so.9 $RPM_BUILD_ROOT/usr/lib
-fi
+#if [ -f /usr/lib/libopts.so ]
+#then
+#  cp /usr/lib/libopts.so $RPM_BUILD_ROOT/usr/lib
+#  cp /usr/lib/libopts.so.9 $RPM_BUILD_ROOT/usr/lib
+#fi
 
-if [ -f /usr/local/lib/libopts.so ]
-then
-  cp /usr/local/lib/libopts.so $RPM_BUILD_ROOT/usr/lib
-  cp /usr/local/lib/libopts.so.9 $RPM_BUILD_ROOT/usr/lib
-fi
+#if [ -f /usr/local/lib/libopts.so ]
+#then
+#  cp /usr/local/lib/libopts.so $RPM_BUILD_ROOT/usr/lib
+#  cp /usr/local/lib/libopts.so.9 $RPM_BUILD_ROOT/usr/lib
+#fi
 
 [+ FOR monitorprog +]# package specific files for [+monitorprog+]
 install -m 770 [+monitorprog+]/[+monitorprog+].init $RPM_BUILD_ROOT/usr/lib/upwatch/redhat/[+monitorprog+]
@@ -301,8 +301,8 @@ fi
 %files
 %defattr(0660,root,upwatch,0770)
 %attr(0644,root,root) %doc AUTHORS COPYING ChangeLog NEWS README upwatch.mysql doc/upwatch.html doc/upwatch.txt doc/upwatch.pdf
-%attr(0755,root,root) /usr/lib/libopts.so
-%attr(0755,root,root) /usr/lib/libopts.so.9
+#%attr(0755,root,root) /usr/lib/libopts.so
+#%attr(0755,root,root) /usr/lib/libopts.so.9
 %attr(0770,upwatch,upwatch) %dir /usr/lib/upwatch
 %attr(0770,upwatch,upwatch) %dir /usr/lib/upwatch/redhat
 %attr(0770,upwatch,upwatch) %dir /usr/lib/upwatch/suse

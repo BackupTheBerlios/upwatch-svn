@@ -8,7 +8,7 @@ AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.26 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.27 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -63,6 +63,19 @@ AC_ARG_ENABLE(profile,
 )
 
 # Checks for libraries.
+
+################# First the autogen autoopts library
+if test -f /usr/lib/libopts.a
+then
+  LIBOPTS=/usr/lib/libopts.a
+fi
+
+if test -f /usr/local/lib/libopts.a
+then
+  LIBOPTS=/usr/local/lib/libopts.a
+fi
+AC_SUBST(LIBOPTS)
+
 ################## MYSQL
 # path to libmysqlclient stuff:.
 AC_ARG_WITH(mysql-libs,

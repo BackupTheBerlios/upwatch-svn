@@ -1,8 +1,5 @@
 # included from Makefile.am in every program subdirectory
 
 LIBUPWATCH = $(top_srcdir)/upwatch/libupwatch.a @LIBXML2_LIBS@
-#LIBOPTS = /usr/lib/libopts.a
-LIBOPTS = -lopts
 LIBST = $(top_srcdir)/st-1.4/libst.a
 INCL_ST = $(top_srcdir)/st-1.4
-#LIBST = -lst
