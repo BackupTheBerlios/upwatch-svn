@@ -230,48 +230,32 @@ void write_results(void)
 
 void *probe(void *data) 
 { 
-  int sock, len;
+  int sock;
   struct sockaddr_in rmt;
   st_netfd_t rmt_nfd;
   struct probedef *probe = (struct probedef *)data;
-  char buffer[1024];
-  st_utime_t start, now;
+  st_utime_t start;
 
-  memset(&rmt, 0, sizeof(struct sockaddr_in));
-  rmt.sin_family = AF_INET;
-  rmt.sin_port = htons((uint16_t)probe->port);
-  rmt.sin_addr.s_addr = inet_addr(probe->ipaddress);
-  if (rmt.sin_addr.s_addr == INADDR_NONE) {
-    char buf[50];
+  ST_INITIATE(probe->port);
 
-    sprintf(buf, "Illegal IP address '%s'", probe->ipaddress);
-    probe->msg = strdup(buf);
-    goto done;
-  }
-
-  /* Connect to remote host */
-  if ((sock = socket(PF_INET, SOCK_STREAM, 0)) < 0) {
-    probe->msg = strdup(strerror(errno));
-    goto done;
-  }
-  if ((rmt_nfd = st_netfd_open_socket(sock)) == NULL) {
-    probe->msg = strdup(strerror(errno));
-    close(sock);
-    goto done;
-  }
   start = st_utime();
-  if (st_connect(rmt_nfd, (struct sockaddr *)&rmt, sizeof(rmt), -1) < 0) {
-    probe->msg = strdup(strerror(errno));
-    st_netfd_close(rmt_nfd);
-    goto done;
-  }
-  now = st_utime();
-  probe->connect = ((float) (now - start)) * 0.000001;
 
-close:
+  if (debug > 3) fprintf(stderr, "Connecting to: %s\n", probe->ipaddress);
+  if (st_connect(rmt_nfd, (struct sockaddr *)&rmt, sizeof(rmt), TIMEOUT) < 0) {
+    char buf[256];
+
+    sprintf(buf, "%s(%d): %s", probe->ipaddress, __LINE__, strerror(errno));
+    probe->connect = ((float) (st_utime() - start)) * 0.000001;
+    probe->msg = strdup(buf);
+    LOG(LOG_DEBUG, probe->msg);
+    if (debug > 3) fprintf(stderr, "%s: %s\n", probe->ipaddress, probe->msg);
+    goto err_close;
+  }
+  probe->connect = ((float) (st_utime() - start)) * 0.000001;
+
+err_close:
   st_netfd_close(rmt_nfd);
-  now = st_utime();
-  probe->total = ((float) (now - start)) * 0.000001;
+  probe->total = ((float) (st_utime() - start)) * 0.000001;
 
 done:
   thread_count--;

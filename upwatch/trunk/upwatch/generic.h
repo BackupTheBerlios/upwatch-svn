@@ -84,3 +84,51 @@ char *color2string(int color);
 #define STAT_PURPLE 400
 #define STAT_RED 500
 
+// not exactly the right place for these defines but i'm lazy
+#define ST_INITIATE(a) \
+  memset(&rmt, 0, sizeof(struct sockaddr_in)); \
+  rmt.sin_family = AF_INET; \
+  rmt.sin_port = htons((uint16_t)a); \
+  rmt.sin_addr.s_addr = inet_addr(probe->ipaddress); \
+  if (rmt.sin_addr.s_addr == INADDR_NONE) { \
+    char buf[50]; \
+\
+    sprintf(buf, "Illegal IP address '%s'", probe->ipaddress); \
+    probe->msg = strdup(buf); \
+    LOG(LOG_DEBUG, probe->msg); \
+    goto done; \
+  } \
+ \
+  /* Connect to remote host */ \
+  if ((sock = socket(PF_INET, SOCK_STREAM, 0)) < 0) { \
+    char buf[256]; \
+\
+    sprintf(buf, "%s: %s", probe->ipaddress, strerror(errno)); \
+    probe->msg = strdup(buf); \
+    LOG(LOG_DEBUG, probe->msg); \
+    if (debug > 3) fprintf(stderr, "%s: %s\n", probe->ipaddress, probe->msg); \
+    goto done; \
+  } \
+  if ((rmt_nfd = st_netfd_open_socket(sock)) == NULL) { \
+    char buf[256]; \
+\
+    sprintf(buf, "%s: %s", probe->ipaddress, strerror(errno)); \
+    probe->msg = strdup(buf); \
+    LOG(LOG_DEBUG, probe->msg); \
+    if (debug > 3) fprintf(stderr, "%s: %s\n", probe->ipaddress, probe->msg); \
+    close(sock); \
+    goto done; \
+  } 
+
+#define ST_ERROR(a, b) \
+  { char buf[256]; \
+  if (errno == ETIME) { \
+    sprintf(buf, "%s(%d): %s timeout after %u seconds", \
+            probe->ipaddress, __LINE__, a, (unsigned) (b / 1000000L)); \
+  } else { \
+    sprintf(buf, "%s(%d): %s", probe->ipaddress, __LINE__, strerror(errno)); \
+  } \
+  probe->msg = strdup(buf); \
+  LOG(LOG_DEBUG, probe->msg); \
+  if (debug > 3) fprintf(stderr, "%s: %s\n", probe->ipaddress, probe->msg); }
+
