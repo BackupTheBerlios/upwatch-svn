@@ -21,6 +21,7 @@ struct spoolinfo {
 FILE *fd;
 char *temp_filename;
 char *targ_filename;
+int none; // if TRUE target was "none", so fake it but don't really do it.
 } spoolinfo;
 static char *temp_filename;
 
@@ -40,17 +41,18 @@ int spool_result(char *basedir, char *target, xmlDocPtr doc, char **targetname)
   if (si == NULL) {
     return 0; 
   }
+  if (strcmp(target, "none") == 0) return 1;
 
   /* Step 1:  Check that the supplied directories are OK. */
   sprintf(buffer, "%s/%s/tmp", basedir, target); // I know, no bounds checking..
   if (!stat_dir(buffer)) {
-    LOG(LOG_ERR, "Cannot touch %s", buffer);
+    LOG(LOG_ERR, "%s: %m", buffer);
     free(si);
     return 0;
   }
   sprintf(buffer, "%s/%s/new", basedir, target);
   if (!stat_dir(buffer)) {
-    LOG(LOG_ERR, "Cannot touch %s", buffer);
+    LOG(LOG_ERR, "%s: %m", buffer);
     free(si);
     return 0;
   }
@@ -58,10 +60,11 @@ int spool_result(char *basedir, char *target, xmlDocPtr doc, char **targetname)
   /* Step 2:  Stat the temporary file.  Wait for ENOENT as a response. */
   for(count=1;;count++) {
     /* Get the temporary filename to use now for dumping data. */
-    outfile = mk_tempfile(); // returns malloc'ed string
+    /* OR use the supplied one */
+    outfile = (targetname && *targetname) ? strdup(*targetname) : mk_tempfile(); // returns malloc'ed string
     if (outfile == NULL) {
       free(si);
-      LOG(LOG_ERR, "can not construct temp filename");
+      LOG(LOG_ERR, "mk_tempfile: %m");
       return 0;
     }
     sprintf(buffer, "%s/%s/tmp/%s", basedir, target, outfile);
@@ -101,7 +104,7 @@ int spool_result(char *basedir, char *target, xmlDocPtr doc, char **targetname)
 
   /* Step 5:  Link the temp file to its final destination. */
   if(link(si->temp_filename, si->targ_filename) == -1) {
-    LOG(LOG_ERR, "could not link %s to %s", si->temp_filename, si->targ_filename);
+    LOG(LOG_ERR, "link(%s, %s): %m", si->temp_filename, si->targ_filename);
     free(si->temp_filename);
     free(si->targ_filename);
     free(si);
@@ -134,17 +137,23 @@ void *spool_open(char *basedir, char *target, char *basename)
   if (si == NULL) {
     return(NULL);
   }
+  if (strcmp(target, "none") == 0) {
+    si->none = TRUE;
+    si->temp_filename = strdup("(none)");
+    si->targ_filename = strdup("(none)");
+    return (void *)si;
+  }
 
   /* Step 1:  Check that the supplied directories are OK. */
   sprintf(buffer, "%s/%s/tmp", basedir, target); // I know, no bounds checking..
   if (!stat_dir(buffer)) {
-    LOG(LOG_ERR, "Cannot touch %s", buffer);
+    LOG(LOG_ERR, "%s: %m", buffer);
     free(si);
     return(NULL);
   }
   sprintf(buffer, "%s/%s/new", basedir, target);
   if (!stat_dir(buffer)) {
-    LOG(LOG_ERR, "Cannot touch %s", buffer);
+    LOG(LOG_ERR, "%s: %m", buffer);
     free(si);
     return(NULL);
   }
@@ -155,7 +164,7 @@ void *spool_open(char *basedir, char *target, char *basename)
     outfile = basename ? strdup(basename) : mk_tempfile(); // returns malloc'ed string
     if (outfile == NULL) {
       free(si);
-      LOG(LOG_ERR, "can not construct temp filename");
+      LOG(LOG_ERR, "mk_tempfile: %m");
       return(NULL);
     }
     sprintf(buffer, "%s/%s/tmp/%s", basedir, target, outfile);
@@ -166,10 +175,10 @@ void *spool_open(char *basedir, char *target, char *basename)
       free(outfile);
       break;
     }
+    LOG(LOG_ERR, "stat %s: %m", buffer);
 
     /* Try up to 5 times, every 2 seconds. */
     if(count == 5) {
-      LOG(LOG_ERR, "stat %s: %m", buffer);
       free(si);
       return(NULL);
     }
@@ -185,7 +194,7 @@ void *spool_open(char *basedir, char *target, char *basename)
   alarm(86400);
   outfd = open(si->temp_filename,O_WRONLY | O_EXCL | O_CREAT,0644);
   if(outfd == -1) {
-    LOG(LOG_ERR, "couldn't create %s", si->temp_filename);
+    LOG(LOG_ERR, "create %s: %m", si->temp_filename);
     free(si->temp_filename);
     free(si->targ_filename);
     free(si);
@@ -194,7 +203,7 @@ void *spool_open(char *basedir, char *target, char *basename)
   }
   si->fd = fdopen(outfd, "w");
   if (si->fd == NULL) {
-    LOG(LOG_ERR, "could not create %s", si->temp_filename);
+    LOG(LOG_ERR, "create %s: %m", si->temp_filename);
     free(si->temp_filename);
     free(si->targ_filename);
     free(si);
@@ -222,6 +231,9 @@ int spool_write(void *sp_info, char *buffer, int len)
 {
   struct spoolinfo *si = (struct spoolinfo *)sp_info;
 
+  if (si->none) { // fake it
+    return(len);
+  }
   if (fwrite(buffer, len, 1, si->fd) != 1) {
     return(-1);
   }
@@ -239,6 +251,9 @@ int spool_printf(void *sp_info, char *fmt, ...)
   len = vsnprintf(buffer, BUFSIZ, fmt, arg);
   va_end(arg);
 
+  if (si->none) { // fake it
+    return(len);
+  }
   if (fwrite(buffer, len, 1, si->fd) != 1) {
     return(-1);
   }
@@ -250,6 +265,10 @@ int spool_close(void *sp_info, int complete)
   int ok = 1;
   struct spoolinfo *si = (struct spoolinfo *)sp_info;
 
+  if (si->none) { // fake it
+    goto success;
+  }
+
   if (!complete) { // abort spooling
     LOG(LOG_ERR, "%s: spooling aborted", si->temp_filename);
     fclose(si->fd);
@@ -257,24 +276,24 @@ int spool_close(void *sp_info, int complete)
   }
   
   if (ok && fflush(si->fd) != 0) {  // flushing fails 
-    LOG(LOG_ERR, "%s: flush failed (%m)", si->temp_filename);
+    LOG(LOG_ERR, "flush(%s): %m", si->temp_filename);
     fclose(si->fd);
     ok = FALSE;
   }
   if (ok && fsync(fileno(si->fd)) != 0) { // syncing fails
-    LOG(LOG_ERR, "%s: sync failed (%m)", si->temp_filename);
+    LOG(LOG_ERR, "fsync(%s): %m", si->temp_filename);
     fclose(si->fd);
     ok = FALSE;
   }
   if (ok && fclose(si->fd) != 0) { // fclose fails
-    LOG(LOG_ERR, "%s: close failed (%m)", si->temp_filename);
+    LOG(LOG_ERR, "close(%s): %m", si->temp_filename);
     ok = FALSE;
   }
 
   if (ok) { // succesfull so far?
     /* Step 6:  Link the temp file to its final destination. */
     if(link(si->temp_filename, si->targ_filename) == -1) {
-      LOG(LOG_ERR, "could not link %s to %s", si->temp_filename, si->targ_filename);
+      LOG(LOG_ERR, "link(%s,%s): %m", si->temp_filename, si->targ_filename);
       ok = FALSE;
     }
     /* We've succeeded!  Now, no matter what, we return "success" */
@@ -283,6 +302,7 @@ int spool_close(void *sp_info, int complete)
   /* Okay, delete the temporary file. If it fails, bummer. */
   unlink(si->temp_filename);
 
+success:
   free(si->temp_filename);
   free(si->targ_filename);
   free(si);

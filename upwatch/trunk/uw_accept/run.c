@@ -99,7 +99,15 @@ int run(void)
   memset(&serv_addr, 0, sizeof(serv_addr));
   serv_addr.sin_family = AF_INET;
   serv_addr.sin_port = htons(OPT_VALUE_LISTEN);
-  serv_addr.sin_addr.s_addr = INADDR_ANY;
+  if (HAVE_OPT(BIND)) {
+    if (strcmp(OPT_ARG(BIND), "*") == 0) {
+      serv_addr.sin_addr.s_addr = INADDR_ANY;
+    } else {
+      inet_aton(OPT_ARG(BIND), &serv_addr.sin_addr);
+    }
+  } else {
+    serv_addr.sin_addr.s_addr = INADDR_ANY;
+  }
   if (serv_addr.sin_addr.s_addr == INADDR_NONE) {
     struct hostent *hp;
     /* not dotted-decimal */

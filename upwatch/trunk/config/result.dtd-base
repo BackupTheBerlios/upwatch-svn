@@ -7,10 +7,11 @@
 <!ELEMENT hostname      (#PCDATA)>
 <!ELEMENT ipaddress     (#PCDATA)>
 
+<!ELEMENT prevcolor     (#PCDATA)>
 <!ELEMENT info          (#PCDATA)>
 
 <!-- notify record -->
-<!ELEMENT notify (info?)>
+<!ELEMENT notify (prevcolor,info?)>
 <!ATTLIST notify  proto NMTOKEN  #REQUIRED
         target NMTOKEN #REQUIRED
         date NMTOKEN

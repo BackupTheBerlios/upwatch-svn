@@ -43,7 +43,7 @@ set the interval in seconds.';
 // describe commandline flags
 flag = {
     name      = expires;
-    arg_default  = 5;  /* option argument indication  */
+    arg_default  = 15;  /* option argument indication  */
     arg_type  = number;   /* option argument indication  */
     descrip   = "Probe results expire time in minutes";
     doc       =

@@ -2,219 +2,31 @@
 #include <string.h>
 #include <generic.h>
 #include "slot.h"
-#ifdef UW_PROCESS
 #include "uw_process_glob.h"
-#endif
-#ifdef UW_NOTIFY
-#include "uw_notify_glob.h"
-#endif
 
 #ifdef DMALLOC
 #include "dmalloc.h"
 #endif
 
-struct sysstat_result {
-  STANDARD_PROBE_RESULT;
-#include "../uw_sysstat/probe.res_h"
-};
-struct sysstat_def {
-  STANDARD_PROBE_DEF;
-#include "../common/common.h"
-};
-
-extern module sysstat_module;
-
-//*******************************************************************
-// GET THE INFO FROM THE XML FILE
-// Caller must free the pointer it returns
-//*******************************************************************
-static void sysstat_get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
-{
-  struct sysstat_result *res = (struct sysstat_result *)probe_res;
-
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "loadavg")) && (cur->ns == ns)) {
-    res->loadavg = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
-    return;
-  }
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "user")) && (cur->ns == ns)) {
-    res->user = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-    return;
-  }
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "system")) && (cur->ns == ns)) {
-    res->system = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-    return;
-  }
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "idle")) && (cur->ns == ns)) {
-    res->idle = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-    return;
-  }
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "swapin")) && (cur->ns == ns)) {
-    res->swapin = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-    return;
-  }
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "swapout")) && (cur->ns == ns)) {
-    res->swapout = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-    return;
-  }
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "blockin")) && (cur->ns == ns)) {
-    res->blockin = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-    return;
-  }
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "blockout")) && (cur->ns == ns)) {
-    res->blockout = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-    return;
-  }
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "swapped")) && (cur->ns == ns)) {
-    res->swapped = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-    return;
-  }
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "free")) && (cur->ns == ns)) {
-    res->free = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-    return;
-  }
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "buffered")) && (cur->ns == ns)) {
-    res->buffered = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-    return;
-  }
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "cached")) && (cur->ns == ns)) {
-    res->cached = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-    return;
-  }
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "used")) && (cur->ns == ns)) {
-    res->used = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-    return;
-  }
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "systemp")) && (cur->ns == ns)) {
-    res->systemp = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-    return;
-  }
-}
-
-//*******************************************************************
-// find the real probeid from the ip address
-// get it from the cache. if there but too old: delete
-//*******************************************************************
-static void *sysstat_get_def(module *probe, void *probe_res, int create)
-{ 
-  struct probe_def *def;
-  struct sysstat_result *res = (struct sysstat_result *)probe_res;
-  MYSQL_RES *result;
-  MYSQL_ROW row;
-  time_t now = time(NULL);
-
-  def = g_hash_table_lookup(probe->cache, &res->server);
-  if (def && def->stamp < now - (120 + uw_rand(240))) { // older then 2 - 6 minutes?
-     g_hash_table_remove(probe->cache, &res->server);
-     def = NULL;
-  }
-  // if not there retrieve from database and insert in hash
-  if (def == NULL) {
-    def = g_malloc0(probe->def_size);
-    def->stamp = time(NULL);
-    strcpy(def->hide, "no");
-    def->server = res->server;
-    
-    result = my_query(probe->db, 0,
-                      "select id, yellow, red, contact, hide, email, redmins "
-                      "from   pr_%s_def "
-                      "where  server = '%u'", res->name, res->server);
-    if (!result) return(NULL);
-
-    if (mysql_num_rows(result) == 0) { // DEF RECORD NOT FOUND
-      mysql_free_result(result);
-      if (!create) {
-        LOG(LOG_NOTICE, "pr_%s_def id %u not found - skipped", 
-                         res->name, def->probeid);
-        return(NULL);
-      }
-      result = my_query(probe->db, 0,
-                        "insert into pr_%s_def set server = '%d', "
-                        "        ipaddress = '127.0.0.1', description = 'auto-added by system'", 
-                        res->name, res->server);
-      mysql_free_result(result);
-      if (mysql_affected_rows(probe->db) == 0) { // nothing was actually inserted
-        LOG(LOG_NOTICE, "insert missing pr_%s_def id %u: %s", 
-                         res->name, def->probeid, mysql_error(probe->db));
-      }
-      result = my_query(probe->db, 0,
-                        "select id, yellow, red, contact, hide, email, redmins "
-                        "from   pr_%s_def "
-                        "where  server = '%u'", res->name, res->server);
-      if (!result) return(NULL);
-    }
-    row = mysql_fetch_row(result); 
-    if (!row || !row[0]) {
-      LOG(LOG_NOTICE, "no pr_%s_def found for server %u - skipped", res->name, res->server);
-      mysql_free_result(result);
-      return(NULL);
-    }
-    if (row[0]) def->probeid  = atoi(row[0]);
-    if (row[1]) def->yellow   = atoi(row[1]);
-    if (row[2]) def->red      = atoi(row[2]);
-    if (row[3]) def->contact  = atoi(row[3]);
-    strcpy(def->hide, row[4] ? row[4] : "no");
-    strcpy(def->email, row[5] ? row[5] : "");
-    if (row[6]) def->redmins = atoi(row[6]);
-
-    mysql_free_result(result);
-
-    result = my_query(probe->db, 0,
-                      "select color, changed, notified "
-                      "from   pr_status "
-                      "where  class = '%d' and probe = '%d'", probe->class, def->probeid);
-    if (result) {
-      row = mysql_fetch_row(result);
-      if (row) {
-        def->color   = atoi(row[0]); 
-        def->changed = atoi(row[1]); 
-        strcpy(def->notified, row[2] ? row[2] : "no");
-      }
-      mysql_free_result(result);
-    } 
-
-    result = my_query(probe->db, 0,
-                      "select stattime from pr_%s_raw use index(probstat) "
-                      "where probe = '%u' order by stattime desc limit 1",
-                       res->name, def->probeid);
-    if (result) {
-      if (mysql_num_rows(result) > 0) {
-        row = mysql_fetch_row(result);
-        if (row && row[0]) {
-          def->newest = atoi(row[0]);
-        }
-      }
-      mysql_free_result(result);
-    }
-
-    g_hash_table_insert(probe->cache, guintdup(res->server), def);
-  }
-  // don't trust the color we get from the probe.
-  res->color = STAT_GREEN;
-  if (res->loadavg > def->yellow) res->color = STAT_YELLOW;
-  if (res->loadavg > def->red) res->color = STAT_RED;
-  return(def);
-}   
-
-#ifdef UW_PROCESS
 //*******************************************************************
 // STORE RAW RESULTS
 //*******************************************************************
-static gint sysstat_store_raw_result(struct _module *probe, void *probe_def, void *probe_res, guint *seen_before)
+static gint sysstat_store_raw_result(trx *t)
 {
   MYSQL_RES *result;
-  struct sysstat_result *res = (struct sysstat_result *)probe_res;
-  struct probe_def *def = (struct probe_def *)probe_def;
+  struct sysstat_result *res = (struct sysstat_result *)t->res;
+  struct probe_def *def = (struct probe_def *)t->def;
   char *escmsg;
 
-  *seen_before = FALSE;
+  t->seen_before = FALSE;
   if (res->message) {
     escmsg = g_malloc(strlen(res->message) * 2 + 1);
-    mysql_real_escape_string(probe->db, escmsg, res->message, strlen(res->message)) ;
+    mysql_real_escape_string(t->probe->db, escmsg, res->message, strlen(res->message)) ;
   } else {
     escmsg = strdup("");
   }
     
-  result = my_query(probe->db, 0,
+  result = my_query(t->probe->db, 0,
                     "insert into pr_sysstat_raw "
                     "set    probe = '%u', yellow = '%f', red = '%f', stattime = '%u', color = '%u', "
                     "       loadavg = '%f', user = '%u', system = '%u', idle = '%u', "
@@ -228,9 +40,9 @@ static gint sysstat_store_raw_result(struct _module *probe, void *probe_def, voi
                     res->used, res->systemp, escmsg);
   g_free(escmsg);
   if (result) mysql_free_result(result);
-  if (mysql_errno(probe->db) == ER_DUP_ENTRY) {
-    *seen_before = TRUE;
-  } else if (mysql_errno(probe->db)) {
+  if (mysql_errno(t->probe->db) == ER_DUP_ENTRY) {
+    t->seen_before = TRUE;
+  } else if (mysql_errno(t->probe->db)) {
     return 0; // other failure
   }
   return 1; // success
@@ -239,11 +51,11 @@ static gint sysstat_store_raw_result(struct _module *probe, void *probe_def, voi
 //*******************************************************************
 // SUMMARIZE A TABLE INTO AN OLDER PERIOD
 //*******************************************************************
-static void sysstat_summarize(module *probe, void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint resummarize)
+static void sysstat_summarize(trx *t, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint resummarize)
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
-  struct probe_def *def = (struct probe_def *)probe_def;
+  struct probe_def *def = (struct probe_def *)t->def;
   gfloat avg_yellow, avg_red;
   gfloat avg_loadavg;
   guint avg_user, avg_system, avg_idle, avg_swapin, avg_swapout, avg_blockin;
@@ -254,7 +66,7 @@ static void sysstat_summarize(module *probe, void *probe_def, void *probe_res, c
 
   stattime = slotlow + ((slothigh-slotlow)/2);
 
-  result = my_query(probe->db, 0,
+  result = my_query(t->probe->db, 0,
                     "select avg(loadavg), avg(user), avg(system), avg(idle), "
                     "       avg(swapin), avg(swapout), avg(blockin), avg(blockout), "
                     "       avg(swapped), avg(free), avg(buffered), avg(cached), "
@@ -272,7 +84,7 @@ static void sysstat_summarize(module *probe, void *probe_def, void *probe_res, c
   }
   row = mysql_fetch_row(result);
   if (!row) {
-    LOG(LOG_ERR, (char *)mysql_error(probe->db));
+    LOG(LOG_ERR, (char *)mysql_error(t->probe->db));
     mysql_free_result(result);
     return;
   }
@@ -304,13 +116,13 @@ static void sysstat_summarize(module *probe, void *probe_def, void *probe_res, c
 
   if (resummarize) {
     // delete old values
-    result = my_query(probe->db, 0,
+    result = my_query(t->probe->db, 0,
                     "delete from pr_sysstat_%s where probe = '%u' and stattime = '%u'",
                     into, def->probeid, stattime);
     mysql_free_result(result);
   }
 
-  result = my_query(probe->db, 0,
+  result = my_query(t->probe->db, 0,
                     "insert into pr_sysstat_%s " 
                     "set    loadavg = '%f', user = '%u', system = '%u', idle = '%u', "
                     "       swapin = '%u', swapout = '%u', blockin = '%u', blockout = '%u', "
@@ -325,7 +137,6 @@ static void sysstat_summarize(module *probe, void *probe_def, void *probe_res, c
                     avg_yellow, avg_red, slot);
   mysql_free_result(result);
 }
-#endif /* UW_PROCESS */
 
 module sysstat_module  = {
   STANDARD_MODULE_STUFF(sysstat),
@@ -336,13 +147,13 @@ module sysstat_module  = {
   NO_ACCEPT_PROBE,
   NO_XML_RESULT_NODE,
   sysstat_get_from_xml,
-  NO_FIX_RESULT,
+  NO_ACCEPT_RESULT,
   sysstat_get_def,
-#ifdef UW_PROCESS
+  sysstat_adjust_result,
+  NO_END_RESULT,
+  NO_END_RUN,
+  NO_EXIT,
   sysstat_store_raw_result,
-  sysstat_summarize,
-#endif
-  NO_END_PROBE,
-  NO_END_RUN
+  sysstat_summarize
 };
 

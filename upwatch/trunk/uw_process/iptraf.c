@@ -5,253 +5,27 @@
 #include <arpa/inet.h>
 #include <generic.h>
 #include "slot.h"
-#ifdef UW_PROCESS
 #include "uw_process_glob.h"
-#endif
-#ifdef UW_NOTIFY
-#include "uw_notify_glob.h"
-#endif
 
 #ifdef DMALLOC
 #include "dmalloc.h"
 #endif
 
-struct iptraf_result {
-  STANDARD_PROBE_RESULT;
-  struct in_addr ipaddr;
-#include "../uw_iptraf/probe.res_h"
-};
-
-struct iptraf_def {
-  STANDARD_PROBE_DEF;
-#include "../common/common.h"
-  float slotday_in;   // in-memory counters for the current slot in the 
-  float slotday_out;  // pr_iptraf_day table. To speed things up a bit.
-  guint slotday_max_color;  // same with color
-  float slotday_avg_yellow; // 
-  float slotday_avg_red;    // 
-};
-
-extern module iptraf_module;
-
 static void iptraf_end_run(module *probe)
 {
-#ifdef UW_PROCESS
   mod_ic_flush(probe, "pr_iptraf_raw");
-#endif
 }
 
-//*******************************************************************
-// GET THE INFO FROM THE XML FILE
-// Caller must free the pointer it returns
-//*******************************************************************
-static void iptraf_xml_result_node(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
-{
-  struct iptraf_result *res = (struct iptraf_result *)probe_res;
-
-  inet_aton(res->ipaddress, &res->ipaddr);
-  res->interval = xmlGetPropUnsigned(cur, (const xmlChar *) "interval");
-}
-
-//*******************************************************************
-// GET THE INFO FROM THE XML FILE
-// Caller must free the pointer it returns
-//*******************************************************************
-static void iptraf_get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
-{
-  struct iptraf_result *res = (struct iptraf_result *)probe_res;
-
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "incoming")) && (cur->ns == ns)) {
-    res->incoming = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
-    return;
-  }
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "in")) && (cur->ns == ns)) {
-    res->incoming = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
-    return;
-  }
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "outgoing")) && (cur->ns == ns)) {
-    res->outgoing = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
-    return;
-  }
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "out")) && (cur->ns == ns)) {
-    res->outgoing = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
-    return;
-  }
-}
-
-//*******************************************************************
-// find the real probeid from the ip address
-// get it from the cache. if there but too old: delete
-//*******************************************************************
-static void *iptraf_get_def(module *probe, void *probe_res, int create)
-{
-  struct iptraf_def *def;
-  struct iptraf_result *res = (struct iptraf_result *)probe_res;
-  MYSQL_RES *result;
-  MYSQL_ROW row;
-  time_t now = time(NULL);
-
-  def = g_hash_table_lookup(probe->cache, &res->ipaddr);
-  if (def && def->stamp < now - (120 + uw_rand(240))) { // older then 2 - 6 minutes?
-     g_hash_table_remove(probe->cache, &res->ipaddr);
-     def = NULL;
-  }
-  if (def == NULL) {    // if not there construct from database and insert in hash
-    gulong slotlow, slothigh;
-
-    def = g_malloc0(probe->def_size);
-    def->stamp = now;
-    strcpy(def->hide, "no");
-
-    result = my_query(probe->db, 0,
-                      "select id, server, yellow, red, contact, hide, email, redmins "
-                      "from   pr_%s_def "
-                      "where  ipaddress = '%s'", res->name, res->ipaddress);
-    if (!result) return(NULL);
-
-    if (mysql_num_rows(result) == 0) { // DEF RECORD NOT FOUND
-      mysql_free_result(result);
-      if (!create) {
-        LOG(LOG_NOTICE, "pr_%s_def ip %s not found - skipped",
-                         res->name, res->ipaddress);
-        return(NULL);
-      }
-      // okay, create a new probe definition.
-      // first try to find out the server id
-      result = my_query(probe->db, 0,
-                        OPT_ARG(QUERY_SERVER_BY_IP), res->ipaddress, res->ipaddress,
-                        res->ipaddress, res->ipaddress, res->ipaddress);
-      if (!result) return(NULL);
-      row = mysql_fetch_row(result);
-      if (row && row[0]) {
-        res->server   = atoi(row[0]);
-      } else {
-        LOG(LOG_NOTICE, "server %s not found", res->hostname);
-        mysql_free_result(result);
-        return(NULL);
-      }
-      mysql_free_result(result);
-
-      result = my_query(probe->db, 0,
-                        "insert into pr_%s_def set ipaddress = '%s', server = '%u', "
-                        "        description = 'auto-added by system'",
-                        res->name, res->server, res->ipaddress);
-      mysql_free_result(result);
-      if (mysql_affected_rows(probe->db) == 0) { // nothing was actually inserted
-        LOG(LOG_NOTICE, "insert missing pr_%s_def id %s: %s", 
-                         res->name, res->ipaddress, mysql_error(probe->db));
-      } else {
-        LOG(LOG_NOTICE, "created pr_%s_def for ipaddress %s", 
-                         res->name, res->ipaddress);
-      }
-      result = my_query(probe->db, 0,
-                        "select id, server, yellow, red, contact, hide, email, redmins "
-                        "from   pr_%s_def "
-                        "where  ipaddress = '%s'", res->name, res->ipaddress);
-      if (!result) return(NULL);
-    }
-  
-    row = mysql_fetch_row(result);
-    if (!row) {
-      mysql_free_result(result);
-      return(NULL);
-    }
-    def->probeid  = atoi(row[0]);
-    def->server   = atoi(row[1]);
-    def->yellow   = atof(row[2]);
-    def->red      = atof(row[3]);
-    def->contact  = atof(row[4]);
-    strcpy(def->hide, row[5] ? row[5] : "no");
-    strcpy(def->email, row[6] ? row[6] : "");
-    if (row[7]) def->redmins = atoi(row[7]);
-
-    mysql_free_result(result);
-
-    result = my_query(probe->db, 0,
-                      "select color, changed, notified "
-                      "from   pr_status "
-                      "where  class = '%d' and probe = '%d'", probe->class, def->probeid);
-    if (result) {
-      row = mysql_fetch_row(result);
-      if (row) {
-        def->color   = atoi(row[0]);
-        def->changed = atoi(row[1]);
-        strcpy(def->notified, row[2] ? row[2] : "no");
-      }
-      mysql_free_result(result);
-    } else {
-      LOG(LOG_NOTICE, "pr_status record for %s id %u not found", res->name, def->probeid);
-    }
-
-    result = my_query(probe->db, 0,
-                      "select stattime from pr_%s_raw use index(probstat) "
-                      "where probe = '%u' order by stattime desc limit 1",
-                       res->name, def->probeid);
-    if (result) {
-      if (mysql_num_rows(result) > 0) {
-        row = mysql_fetch_row(result);
-        if (row && row[0]) {
-          def->newest = atoi(row[0]);
-        }
-      }
-      mysql_free_result(result);
-    }
-
-    uw_slot(SLOT_DAY, res->stattime, &slotlow, &slothigh);
-    result = my_query(probe->db, 0,
-                      "select sum(incoming), sum(outgoing), max(color), avg(yellow), avg(red) "
-                      "from   pr_iptraf_raw use index(probstat) "
-                      "where  probe = '%u' and stattime >= '%u' and stattime < '%u'",
-                      def->probeid, slotlow, slothigh);
-    if (result) {
-      row = mysql_fetch_row(result);
-      if (row) {
-        if (row[0]) def->slotday_in   = atoi(row[0]);
-        if (row[1]) def->slotday_out  = atoi(row[1]);
-        if (row[2]) def->slotday_max_color  = atoi(row[2]);
-        if (row[3]) def->slotday_avg_yellow = atof(row[3]);
-        if (row[4]) def->slotday_avg_red    = atof(row[4]);
-      }
-      mysql_free_result(result);
-    } else {
-      LOG(LOG_NOTICE, "raw record for %s id %u not found between %u and %u", 
-                      res->name, def->probeid, slotlow, slothigh);
-    }
-    if (def->slotday_avg_yellow == 0) {
-      def->slotday_avg_yellow = def->yellow;
-    }
-    if (def->slotday_avg_red == 0) {
-      def->slotday_avg_red    = def->red;   
-    }
-
-    g_hash_table_insert(probe->cache, guintdup(*(unsigned *)&res->ipaddr), def);
-  }
-  if (res->color == 0) { // no color given in the result?
-    guint largest = (res->incoming > res->outgoing ? res->incoming : res->outgoing) / 8;
-    res->color = STAT_GREEN;
-    if (largest/(res->interval?res->interval:1) > (def->yellow*1024)) {
-      res->color = STAT_YELLOW;
-    }
-    if (largest/(res->interval?res->interval:1) > (def->red*1024)) {
-      LOG(LOG_NOTICE, "%u(%u): (%u/8)/%u (=%u) > %u", res->probeid, res->stattime, largest, res->interval, 
-          largest/(res->interval?res->interval:1), def->red*1024);
-      res->color = STAT_RED;
-    }
-  }
-  return(def);
-}
-
-#ifdef UW_PROCESS
 //*******************************************************************
 // STORE RAW RESULTS
 //*******************************************************************
-static gint iptraf_store_raw_result(struct _module *probe, void *probe_def, void *probe_res, guint *seen_before)
+static gint iptraf_store_raw_result(trx *t)
 {
   char buf[256];
-  struct iptraf_result *res = (struct iptraf_result *)probe_res;
-  struct iptraf_def *def = (struct iptraf_def *)probe_def;
+  struct iptraf_result *res = (struct iptraf_result *)t->res;
+  struct iptraf_def *def = (struct iptraf_def *)t->def;
     
-  *seen_before = FALSE;
+  t->seen_before = FALSE;
   def->slotday_in += res->incoming;
   def->slotday_out += res->outgoing;
   if (res->color > def->slotday_max_color) {
@@ -262,15 +36,15 @@ static gint iptraf_store_raw_result(struct _module *probe, void *probe_def, void
                res->incoming, res->outgoing);
 
   if (HAVE_OPT(MULTI_VALUE_INSERTS)) {
-    mod_ic_add(probe, "pr_iptraf_raw", strdup(buf));
+    mod_ic_add(t->probe, "pr_iptraf_raw", strdup(buf));
   } else {
     MYSQL_RES *result;
 
-    result = my_query(probe->db, 0, "insert into pr_iptraf_raw values %s", buf);
+    result = my_query(t->probe->db, 0, "insert into pr_iptraf_raw values %s", buf);
     if (result) mysql_free_result(result);
-    if (mysql_errno(probe->db) == ER_DUP_ENTRY) {
-      *seen_before = TRUE;
-    } else if (mysql_errno(probe->db)) {
+    if (mysql_errno(t->probe->db) == ER_DUP_ENTRY) {
+      t->seen_before = TRUE;
+    } else if (mysql_errno(t->probe->db)) {
       return 0; // other failure
     }
   }
@@ -280,12 +54,12 @@ static gint iptraf_store_raw_result(struct _module *probe, void *probe_def, void
 //*******************************************************************
 // SUMMARIZE A TABLE INTO AN OLDER PERIOD
 //*******************************************************************
-static void iptraf_summarize(module *probe, void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint resummarize)
+static void iptraf_summarize(trx *t, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint resummarize)
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
-  struct iptraf_def *def = (struct iptraf_def *)probe_def;
-  struct iptraf_result *res = (struct iptraf_result *)probe_res;
+  struct iptraf_def *def = (struct iptraf_def *)t->def;
+  struct iptraf_result *res = (struct iptraf_result *)t->res;
   float avg_yellow, avg_red;
   float incoming, outgoing;
   guint stattime;
@@ -305,7 +79,7 @@ static void iptraf_summarize(module *probe, void *probe_def, void *probe_res, ch
     def->slotday_avg_yellow = def->yellow;
     def->slotday_avg_red = def->red;
   } else {
-    result = my_query(probe->db, 0,
+    result = my_query(t->probe->db, 0,
                       "select sum(incoming), sum(outgoing), max(color), avg(yellow), avg(red) "
                       "from   pr_iptraf_%s use index(probstat) "
                       "where  probe = '%u' and stattime >= '%u' and stattime < '%u'",
@@ -321,7 +95,7 @@ static void iptraf_summarize(module *probe, void *probe_def, void *probe_res, ch
 
     row = mysql_fetch_row(result);
     if (!row) {
-      LOG(LOG_ERR, (char *)mysql_error(probe->db));
+      LOG(LOG_ERR, (char *)mysql_error(t->probe->db));
       mysql_free_result(result);
       return;
     }
@@ -342,12 +116,12 @@ static void iptraf_summarize(module *probe, void *probe_def, void *probe_res, ch
 
   if (resummarize) {
     // delete old values
-    result = my_query(probe->db, 0,
+    result = my_query(t->probe->db, 0,
                     "delete from pr_iptraf_%s where probe = '%u' and stattime = '%u'",
                     into, def->probeid, stattime);
     mysql_free_result(result);
   }
-  result = my_query(probe->db, 0,
+  result = my_query(t->probe->db, 0,
                     "insert into pr_iptraf_%s "
                     "set    incoming = '%f', outgoing = '%f', "
                     "       probe = '%u', color = '%u', stattime = '%u', "
@@ -356,7 +130,6 @@ static void iptraf_summarize(module *probe, void *probe_def, void *probe_res, ch
                     avg_yellow, avg_red, slot);
   mysql_free_result(result);
 }
-#endif /* UW_PROCESS */
 
 module iptraf_module  = {
   STANDARD_MODULE_STUFF(iptraf),
@@ -367,14 +140,14 @@ module iptraf_module  = {
   NO_ACCEPT_PROBE,
   iptraf_xml_result_node,
   iptraf_get_from_xml,
-  NO_FIX_RESULT,
+  NO_ACCEPT_RESULT,
   iptraf_get_def,
-#ifdef UW_PROCESS
+  iptraf_adjust_result,
+  NO_END_RESULT,
+  iptraf_end_run, 
+  NO_EXIT,
   iptraf_store_raw_result,
-  iptraf_summarize,
-#endif
-  NO_END_PROBE,
-  iptraf_end_run 
+  iptraf_summarize
 };
 
 

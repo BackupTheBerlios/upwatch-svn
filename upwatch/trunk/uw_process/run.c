@@ -4,12 +4,7 @@
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#ifdef UW_PROCESS
 #include "uw_process_glob.h"
-#endif
-#ifdef UW_NOTIFY
-#include "uw_notify_glob.h"
-#endif
 
 #include <netdb.h>
 #include <netinet/in.h>
@@ -22,8 +17,7 @@
 #include "dmalloc.h"
 #endif
 
-static int handle_file(gpointer data, gpointer user_data);
-extern  int process(module *module, trx *t);
+extern int process(trx *t);
 extern struct summ_spec summ_info[]; 
 
 static int master = 1;
@@ -70,34 +64,6 @@ static void modules_cleanup(void)
 extern void free_res(void *res);
 
   for (i = 0; modules[i]; i++) {
-/*
-    if (modules[i]->cleanup) {
-      modules[i]->cleanup();
-    }
-*/
-    if (modules[i]->queue) {
-#if 0
-      trx *t;
-
-      while (1) {
-        g_static_mutex_lock (&modules[i]->queue_mutex);
-        t = g_queue_pop_head(modules[i]->queue);
-        g_static_mutex_unlock (&modules[i]->queue_mutex);
-        if (t == NULL) break;
-
-        // free the result block
-        if (t->res) {
-          if (modules[i]->free_res) {
-            modules[i]->free_res(t->res); // the probe specific part...
-          }
-          free_res(t->res); // .. and the generic part
-        }
-        resfile_decr(t->rf);
-        g_free(t);
-      }
-#endif
-      g_queue_free(modules[i]->queue);
-    }
     if (modules[i]->insertc) {
       g_ptr_array_free(modules[i]->insertc, TRUE);
       modules[i]->insertc = NULL;
@@ -105,6 +71,9 @@ extern void free_res(void *res);
     if (modules[i]->cache) {
       g_hash_table_destroy(modules[i]->cache);
       modules[i]->cache = NULL;
+    }
+    if (modules[i]->exit) {
+      modules[i]->exit();
     }
   }
 }
@@ -158,9 +127,6 @@ static void modules_init(void)
     if (modules[i]->insertc == NULL) {
       modules[i]->insertc =  g_ptr_array_new();
     }
-    if (modules[i]->queue == NULL) {
-      modules[i]->queue = g_queue_new();
-    }
   }
 }
 
@@ -209,7 +175,9 @@ int init(void)
   } else {
     every = EVERY_5SECS;
   }
-#ifdef UW_PROCESS
+  query_server_by_name = OPT_ARG(QUERY_SERVER_BY_NAME);
+  query_server_by_ip = OPT_ARG(QUERY_SERVER_BY_IP);
+
   if (HAVE_OPT(SUMMARIZE)) {
     every = ONE_SHOT;
   }
@@ -223,7 +191,10 @@ int init(void)
     while (ct--) {
       for (i=0; modules[i]; i++) {
         if (modules[i]->accept_probe) {
-          if (modules[i]->accept_probe(modules[i], pn[ct])) {
+          trx t;
+
+          t.probe = modules[i];
+          if (modules[i]->accept_probe(&t, pn[ct])) {
             found = 1; break;
           } 
         } else {
@@ -241,7 +212,6 @@ int init(void)
       } 
     }
   }
-#endif
   if (!HAVE_OPT(INPUT)) {
     LOG(LOG_NOTICE, "Error: no input queue given");
     return(0);
@@ -267,7 +237,6 @@ int init(void)
 // return true if the given probename is trusted
 int trust(char *name)
 {
-#ifdef UW_PROCESS
   int trust;
   int     ct  = STACKCT_OPT( TRUST );
   char**  pn = STACKLST_OPT( TRUST );
@@ -283,7 +252,6 @@ int trust(char *name)
       return 1;
     }
   }
-#endif
   return 0;
 }
 
@@ -336,9 +304,58 @@ extern int forever;
   // now we have a sorted list of files 
   // 
   for (i=0; i < arr->len && forever; i++) {
+    trx t;
+    int j;
+    int output_ct = STACKCT_OPT(OUTPUT);
+    char **output_pn = STACKLST_OPT(OUTPUT);
+    char *filebase;
+
+    filebase = strrchr((char *)g_ptr_array_index(arr,i), '/');
+    if (filebase) filebase++;
+    else filebase = (char *)g_ptr_array_index(arr,i);
+
+    memset(&t, 0, sizeof(t));
+    t.process = process; // callback for each result
+    t.failed = UpwatchXmlDoc("result");
+    xmlSetDocCompressMode(t.failed, OPT_VALUE_COMPRESS);
+
     if (debug > 3) { fprintf(stderr, "%u: %s: ", i, (char *)g_ptr_array_index(arr,i)); }
     uw_setproctitle("reading %s", (char *)g_ptr_array_index(arr,i));
-    handle_file(g_ptr_array_index(arr,i), NULL); // extract probe results and queue them
+    switch (handle_result_file(g_ptr_array_index(arr,i), &t)) { // extract probe results and queue them
+    case 0: /* file not found */
+      break;
+    case 1: /* file empty */
+      unlink(g_ptr_array_index(arr,i));
+      break;
+    case 2: /* illegal contents */
+      if (HAVE_OPT(COPY) && strcmp(OPT_ARG(COPY), "none")) {
+        char *name = filebase;
+        spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(COPY), t.doc, &name);
+      }
+      unlink(g_ptr_array_index(arr,i));
+      break;
+    case 3: /* try again later */
+      break;
+    case 4: /* successfully processed */
+      if (HAVE_OPT(COPY) && strcmp(OPT_ARG(COPY), "none")) {
+        char *name = filebase;
+        spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(COPY), t.doc, &name);
+      }
+      if (t.failed_count) {
+        char *name = filebase;
+        spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(FAILURES), t.failed, &name);
+      }
+      for (j=0; j < output_ct; j++) {
+        char *name = filebase;
+        spool_result(OPT_ARG(SPOOLDIR), output_pn[j], t.doc, &name);
+      }
+      unlink(g_ptr_array_index(arr,i));
+      break;
+    }
+    free(g_ptr_array_index(arr,i));
+
+    if (t.doc) xmlFreeDoc(t.doc);
+    if (t.failed) xmlFreeDoc(t.failed);
     count++;
   }
   g_ptr_array_free(arr, TRUE);
@@ -354,14 +371,12 @@ static int resummarize(void);
 
   if (debug > 3) { LOG(LOG_DEBUG, "run()"); }
 
-#ifdef UW_PROCESS
   if (HAVE_OPT(SUMMARIZE)) {
     return(resummarize()); // --summarize
   }
-#endif
 
   // the following statement ensures the nss-*.so libraries are loaded
-  // before fork() is called. If not, AND this program is run under gdb
+  // before fork() is called. If not, AND this program is run under gdb,
   // children will get a SIGTRAP when THEY load nss-*.so libs, and will
   // be killed.
   host = gethostbyname("localhost");
@@ -375,6 +390,8 @@ static int resummarize(void);
       if (childpid[ct] == 0) { 
         pid_t pid;
 
+        sprintf(path, "%s/%s", OPT_ARG(SPOOLDIR), pn[ct]);
+        chdir(path);
         sprintf(path, "%s/%s/new", OPT_ARG(SPOOLDIR), pn[ct]);
         pid = fork();
         if (pid == -1) {
@@ -391,7 +408,10 @@ static int resummarize(void);
       }
     } 
   }
-  if (master) return 0;
+  if (master) {
+    chdir("/tmp");
+    return 0;
+  }
 
   uw_setproctitle("listing %s", path);
 
@@ -402,267 +422,12 @@ static int resummarize(void);
   return(count);
 }
 
-//*******************************************************************
-// GET THE INFO FROM THE XML FILE
-// Caller must free the pointer it returns
-//******************************************************************* 
-static void *extract_info_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns)
-{
-  struct probe_result *res;
-
-  res = g_malloc0(probe->res_size);
-  if (res == NULL) {
-    return(NULL);
-  }
-
-  res->name = strdup(cur->name);
-
-  res->server = xmlGetPropInt(cur, (const xmlChar *) "server");
-  res->probeid = xmlGetPropInt(cur, (const xmlChar *) "id");
-  res->stattime = xmlGetPropUnsigned(cur, (const xmlChar *) "date");
-  res->expires = xmlGetPropUnsigned(cur, (const xmlChar *) "expires");
-  res->ipaddress = xmlGetProp(cur, (const xmlChar *) "ipaddress");
-
-  if (probe->xml_result_node) {
-    probe->xml_result_node(probe, doc, cur, ns, res);
-  }
-
-  for (cur = cur->xmlChildrenNode; cur != NULL; cur = cur->next) {
-    char *p;
-
-    if (xmlIsBlankNode(cur)) continue;
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "color")) && (cur->ns == ns)) {
-      res->color = xmlNodeListGetInt(doc, cur->xmlChildrenNode, 1);
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "info")) && (cur->ns == ns)) {
-      p = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-      if (p) { 
-        res->message = strdup(p); 
-        xmlFree(p);
-      }
-      continue;
-    }
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) "notify")) && (cur->ns == ns)) {
-      res->proto = xmlGetProp(cur->xmlChildrenNode, (const xmlChar *) "proto");
-      res->target = xmlGetProp(cur->xmlChildrenNode, (const xmlChar *) "target");
-      continue;
-    }
-    if (probe->get_from_xml) {
-      probe->get_from_xml(probe, doc, cur, ns, res);
-    }
-  }
-  return(res);
-}
-
-/*
- * Reads a results file
-*/
-static int handle_file(gpointer data, gpointer user_data)
-{
-  char *filename = (char *)data;
-  xmlDocPtr doc, failed, notify;
-  xmlNsPtr ns;
-  xmlNodePtr cur;
-  char *p;
-  char *fromhost = NULL;
-  time_t fromdate;
-  int failures=0;
-  struct stat st;
-  int filesize;
-  int i;
-  int output_ct = STACKCT_OPT(OUTPUT);
-  char **output_pn = STACKLST_OPT(OUTPUT);
-#ifdef UW_PROCESS
-  int notify_ct = STACKCT_OPT(NOTIFY);
-  char **notify_pn = STACKLST_OPT(NOTIFY);
-#endif
-
-  if (debug) { LOG(LOG_DEBUG, "Processing %s", filename); }
-
-  if (stat(filename, &st)) {
-    LOG(LOG_WARNING, "%s: %m", filename);
-    unlink(filename);
-    free(filename);
-    return 0;
-  }
-  filesize = (int) st.st_size;
-  if (filesize == 0) {
-    LOG(LOG_WARNING, "%s: size 0, removed", filename);
-    unlink(filename);
-    free(filename);
-    return 0;
-  }
-
-  doc = xmlParseFile(filename);
-  if (doc == NULL) {
-    char cmd[2048];
-
-    LOG(LOG_NOTICE, "%s: %m", filename);
-    sprintf(cmd, "cat %s >> %s", filename, OPT_ARG(FAILURES));
-    system(cmd);
-    unlink(filename);
-    free(filename);
-    return 0;
-  }
-  if (HAVE_OPT(COPY) && strcmp(OPT_ARG(COPY), "none")) {
-    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(COPY), doc, NULL);
-  }
-
-  cur = xmlDocGetRootElement(doc);
-  if (cur == NULL) {
-    LOG(LOG_NOTICE, "%s: empty document", filename);
-    unlink(filename);
-    free(filename);
-    xmlFreeDoc(doc);
-    return 0;
-  }
-  ns = xmlSearchNsByHref(doc, cur, (const xmlChar *) NAMESPACE_URL);
-  if (ns == NULL) {
-    LOG(LOG_NOTICE, "%s: wrong type, result namespace not found", filename);
-    unlink(filename);
-    free(filename);
-    xmlFreeDoc(doc);
-    return 0;
-  }
-  if (xmlStrcmp(cur->name, (const xmlChar *) "result")) {
-    LOG(LOG_NOTICE, "%s: wrong type, root node is not 'result'", filename);
-    unlink(filename);
-    free(filename);
-    xmlFreeDoc(doc);
-    return 0;
-  }
-  p = xmlGetProp(cur, (const xmlChar *) "fromhost");
-  if (p) {
-    fromhost = strdup(p);
-    xmlFree(p);
-  }
-  fromdate = (time_t) xmlGetPropUnsigned(cur, (const xmlChar *) "date");
-
-  /*
-   * Now, walk the tree.
-   */
-  /* First level we expect just result */
-  cur = cur->xmlChildrenNode;
-  while (cur && xmlIsBlankNode(cur)) {
-    cur = cur->next;
-  }
-  if (cur == 0) {
-    LOG(LOG_NOTICE, "%s: empty file", filename);
-    unlink(filename);
-    free(filename);
-    xmlFreeDoc(doc);
-    return 0;
-  }
-  failed = UpwatchXmlDoc("result");
-  xmlSetDocCompressMode(failed, OPT_VALUE_COMPRESS);
-#ifdef UW_PROCESS
-  notify = UpwatchXmlDoc("result");
-  xmlSetDocCompressMode(notify, OPT_VALUE_COMPRESS);
-#endif
-
-  /* Second level is a list of probes, but be laxist */
-  for (failures = 0; cur != NULL;) {
-    int found = 0;
-    char buf[20];
-    int count = 0;
-    trx *t = NULL;
-
-    buf[0] = 0;
-    if (xmlIsBlankNode(cur)) {
-      cur = cur->next;
-      continue;
-    }
-    for (i = 0; modules[i]; i++) {
-      int ret;
-
-      if (modules[i]->accept_probe) {
-        if (!modules[i]->accept_probe(modules[i], cur->name)) continue;
-      } else if (strcmp(cur->name, modules[i]->module_name)) {
-        continue;
-      } 
-
-      if (cur->ns != ns) {
-        LOG(LOG_ERR, "%s: namespace %s != %s", cur->name, cur->ns, ns);
-        //continue;
-      }
-      found = 1;
-      t = (trx *)g_malloc0(sizeof(trx));
-      t->res = extract_info_from_xml(modules[i], doc, cur, ns);
-      t->doc = doc;
-      t->node = cur;
-
-      if (buf[0] == 0 || count % 100 == 0) {
-        strftime(buf, sizeof(buf), "%Y-%m-%d %T", gmtime(&fromdate));
-        uw_setproctitle("%s %s@%s", buf, t->res->name, fromhost);
-      }
-      if (debug > 3) { fprintf(stderr, "%s %s@%s", buf, t->res->name, fromhost); }
-      ret = process(modules[i], t);
-      if (ret == 0 || ret == -1) { // error in processing this probe
-        failures++; 
-        found = FALSE; // so it will go to the failed section
-      } else if (ret == -2) {
-        free(t);
-        goto errexit; // fatal database error
-      } else {
-        count++;
-      }
-      break;
-    }
-    if (found) {
-#ifdef UW_PROCESS
-      xmlNodePtr node, new;
-
-      if (t->notify) {
-        node = cur;
-        xmlUnlinkNode(node); // unlink, copy and paste
-        new = xmlCopyNode(node, 1);
-        xmlFreeNode(node);
-        xmlAddChild(xmlDocGetRootElement(notify), new);
-      }
-#endif
-    } else {
-      xmlNodePtr node, new;
-
-      LOG(LOG_ERR, "can't find method: %s, saved to %s", cur->name, OPT_ARG(FAILURES));
-      failures++;
-      node = cur;
-      xmlUnlinkNode(node); // unlink, copy and paste
-      new = xmlCopyNode(node, 1);
-      xmlFreeNode(node);
-      xmlAddChild(xmlDocGetRootElement(failed), new);
-    }
-    cur = cur->next;
-    if (t) free(t);
-  }
-  if (failures) {
-    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(FAILURES), failed, NULL);
-  }
-  for (i=0; i < output_ct; i++) {
-    spool_result(OPT_ARG(SPOOLDIR), output_pn[i], doc, NULL);
-  }
-#ifdef UW_PROCESS
-  for (i=0; i < notify_ct; i++) {
-    spool_result(OPT_ARG(SPOOLDIR), notify_pn[i], doc, NULL);
-  }
-#endif
-  unlink(filename);
-
-errexit:
-  free(filename);
-  xmlFreeDoc(doc);
-  xmlFreeDoc(notify);
-  xmlFreeDoc(failed);
-  if (fromhost) free(fromhost);
-  return 0;
-}
-
-#ifdef UW_PROCESS
 static int resummarize(void)
 {
   gint idx, found;
-  struct probe_def def;
+  trx t;
   struct probe_result res;
+  struct probe_def def;
   MYSQL *mysql;
   MYSQL_RES *result;
   MYSQL_ROW row;
@@ -680,11 +445,15 @@ extern int forever;
   
 //  printf("%s: %s", res.name, ctime(&res.stattime));
 
+  memset(&t, 0, sizeof(t));
   memset(&def, 0, sizeof(def));
   memset(&res, 0, sizeof(res));
+  t.def = &def;
+  t.res = &res;
   for (found = 0, idx = 0; modules[idx]; idx++) {
     if (modules[idx]->accept_probe) {
-      if (modules[idx]->accept_probe(modules[idx], res.name)) {
+      if (modules[idx]->accept_probe(&t, res.name)) {
+        t.probe = modules[idx];
         found = 1; break;
       }
     } else {
@@ -740,7 +509,7 @@ extern int forever;
         cur_slot = uw_slot(summ_info[i].period, res.stattime, &dummy_low, &dummy_high);
 
         if (cur_slot != prev_slot) {
-          modules[idx]->summarize(modules[idx], &def, &res, summ_info[i].from, summ_info[i].to, 
+          modules[idx]->summarize(&t, summ_info[i].from, summ_info[i].to, 
                                   cur_slot, slotlow, slothigh, 1 /* delete any previous values */);
           //printf("\ncurslot=%u, prev=%u\n", cur_slot, prev_slot);
         }
@@ -759,5 +528,4 @@ extern int forever;
   close_database(mysql);
   return(found);
 }
-#endif
 

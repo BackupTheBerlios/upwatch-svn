@@ -2,12 +2,7 @@
 #include <string.h>
 #include <generic.h>
 #include "slot.h"
-#ifdef UW_PROCESS
 #include "uw_process_glob.h"
-#endif
-#ifdef UW_NOTIFY
-#include "uw_notify_glob.h"
-#endif
 
 #ifdef DMALLOC
 #include "dmalloc.h"
@@ -20,43 +15,24 @@ struct ct_result {
 };
 
 //*******************************************************************
-// GET THE INFO FROM THE XML FILE
-// Caller must free the pointer it returns
-//*******************************************************************
-void ct_get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
-{
-  struct ct_result *res = (struct ct_result *)probe_res;
-
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "connect")) && (cur->ns == ns)) {
-    res->connect = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
-    return;
-  }
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "total")) && (cur->ns == ns)) {
-    res->total = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
-    return;
-  }
-}
-
-#ifdef UW_PROCESS
-//*******************************************************************
 // STORE RAW RESULTS
 //*******************************************************************
-gint ct_store_raw_result(module *probe, void *probe_def, void *probe_res, guint *seen_before)
+gint ct_store_raw_result(trx *t)
 {
   MYSQL_RES *result;
-  struct ct_result *res = (struct ct_result *)probe_res;
-  struct probe_def *def = (struct probe_def *)probe_def;
+  struct ct_result *res = (struct ct_result *)t->res;
+  struct probe_def *def = (struct probe_def *)t->def;
   char *escmsg;
 
-  *seen_before = FALSE;
+  t->seen_before = FALSE;
   if (res->message) {
     escmsg = g_malloc(strlen(res->message) * 2 + 1);
-    mysql_real_escape_string(probe->db, escmsg, res->message, strlen(res->message)) ;
+    mysql_real_escape_string(t->probe->db, escmsg, res->message, strlen(res->message)) ;
   } else {
     escmsg = strdup("");
   }
     
-  result = my_query(probe->db, 0,
+  result = my_query(t->probe->db, 0,
                     "insert into pr_%s_raw "
                     "set    probe = '%u', yellow = '%f', red = '%f', stattime = '%u', color = '%u', "
                     "       connect = '%f', total = '%f', "
@@ -65,9 +41,9 @@ gint ct_store_raw_result(module *probe, void *probe_def, void *probe_res, guint 
                     res->connect, res->total, escmsg);
   g_free(escmsg);
   if (result) mysql_free_result(result);
-  if (mysql_errno(probe->db) == ER_DUP_ENTRY) {
-    *seen_before = TRUE;
-  } else if (mysql_errno(probe->db)) {
+  if (mysql_errno(t->probe->db) == ER_DUP_ENTRY) {
+    t->seen_before = TRUE;
+  } else if (mysql_errno(t->probe->db)) {
     return 0; // other failure
   }
   return 1; // success
@@ -76,12 +52,12 @@ gint ct_store_raw_result(module *probe, void *probe_def, void *probe_res, guint 
 //*******************************************************************
 // SUMMARIZE A TABLE INTO AN OLDER PERIOD
 //*******************************************************************
-void ct_summarize(module *probe, void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint resummarize)
+void ct_summarize(trx *t, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint resummarize)
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
-  struct ct_result *res = (struct ct_result *)probe_res;
-  struct probe_def *def = (struct probe_def *)probe_def;
+  struct ct_result *res = (struct ct_result *)t->res;
+  struct probe_def *def = (struct probe_def *)t->def;
   float avg_yellow, avg_red;
   float avg_connect, avg_total;
   guint stattime;
@@ -89,7 +65,7 @@ void ct_summarize(module *probe, void *probe_def, void *probe_res, char *from, c
 
   stattime = slotlow + ((slothigh-slotlow)/2);
 
-  result = my_query(probe->db, 0,
+  result = my_query(t->probe->db, 0,
                     "select avg(connect), avg(total), "
                     "       max(color), avg(yellow), avg(red) "
                     "from   pr_%s_%s use index(probstat) "
@@ -106,7 +82,7 @@ void ct_summarize(module *probe, void *probe_def, void *probe_res, char *from, c
 
   row = mysql_fetch_row(result);
   if (!row) {
-    LOG(LOG_ERR, (char *) mysql_error(probe->db));
+    LOG(LOG_ERR, (char *) mysql_error(t->probe->db));
     mysql_free_result(result);
     return;
   }
@@ -126,13 +102,13 @@ void ct_summarize(module *probe, void *probe_def, void *probe_res, char *from, c
 
   if (resummarize) {
     // delete old values
-    result = my_query(probe->db, 0,
+    result = my_query(t->probe->db, 0,
                     "delete from pr_%s_%s where probe = '%u' and stattime = '%u'",
                     res->name, into, def->probeid, stattime);
     mysql_free_result(result);
   }
 
-  result = my_query(probe->db, 0,
+  result = my_query(t->probe->db, 0,
                     "insert into pr_%s_%s "
                     "set    connect = '%f', total = '%f', "
                     "       probe = %d, color = '%u', stattime = %d, "
@@ -142,5 +118,4 @@ void ct_summarize(module *probe, void *probe_def, void *probe_res, char *from, c
 
   mysql_free_result(result);
 }
-#endif /* UW_PROCESS */
 

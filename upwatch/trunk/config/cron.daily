@@ -1,13 +1,16 @@
 #!/bin/sh
 #
 # cronjob for upwatch
-# delete files in any /tmp directory that are older then 7 days
+# delete files in any /tmp directory that are older than 7 days
 
 cd /var/spool/upwatch
 for i in *
 do
 	find $i/tmp -type f -atime +7 -exec rm -f {} \;
 done
+
+# remove failed entries older than 3 days
+find /var/spool/upwatch/q_failed/new -type f -atime +3 -exec rm -f {} \;
 
 # remove old data from the database
 if [ -x /usr/bin/uw_maint.pl ]

@@ -68,7 +68,7 @@ flag = {
     value     = O;
     stack_arg;
     arg_type  = string;
-    descrip   = "name of queue to drop results";
+    descrip   = "name of queue to drop results - normally uw_notify";
     doc       =
 'The argument is taken to be a maildir under the directory `spooldir`.
 All results are (after processing) placed in this queue.
@@ -83,18 +83,6 @@ flag = {
     doc       =
 'For some reason storing results for a particular probe may fail.
 These transactions are placed in the queue given here';
-};
-
-flag = {
-    name      = notify;
-    value     = N;
-    stack_arg;
-    arg_type  = string;
-    descrip   = "name of queue to drop results with a notification on them";
-    doc       =
-'The argument is taken to be a maildir under the directory `spooldir`.
-All results for which a notofication should be sent are placed in this queue.
-This flag may be given multiple times.';
 };
 
 flag = {

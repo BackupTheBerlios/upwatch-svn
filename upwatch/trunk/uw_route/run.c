@@ -144,6 +144,11 @@ static int handle_file(gpointer data, gpointer user_data)
   int filesize;
   time_t filetime;
   int i;
+  char *filebase;
+
+  filebase = strrchr(filename, '/');
+  if (filebase) filebase++;
+  else filebase = filename;
 
   if (debug) { LOG(LOG_DEBUG, "Processing %s", filename); }
 
@@ -175,7 +180,8 @@ static int handle_file(gpointer data, gpointer user_data)
   }
   //xmlDocFormatDump(stderr, doc, TRUE);
   if (HAVE_OPT(COPY) && strcmp(OPT_ARG(COPY), "none")) {
-    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(COPY), doc, NULL);
+    char *name = filebase;
+    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(COPY), doc, &name);
   }
 
   cur = xmlDocGetRootElement(doc);
@@ -266,7 +272,14 @@ static int handle_file(gpointer data, gpointer user_data)
 
   for (i = 0; route[i].name; i++) {
     if (route[i].doc) {
-      spool_result(OPT_ARG(SPOOLDIR), route[i].queue, route[i].doc, NULL);
+      char buffer[PATH_MAX];
+      char *name = buffer;
+
+      // here we possibly (likely) split one file into several others
+      // ensure they have unique filenames, or clashes are inevitable
+      // in a queue further on in the process.
+      sprintf(buffer, "%s-%u", filebase, i);
+      spool_result(OPT_ARG(SPOOLDIR), route[i].queue, route[i].doc, &name);
       xmlFreeDoc(route[i].doc);
       route[i].doc = NULL;
     }

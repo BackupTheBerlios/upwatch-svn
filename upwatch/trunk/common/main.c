@@ -135,8 +135,19 @@ int main( int argc, char** argv, char **envp )
     struct tm *gmt;
     int sleep_seconds = 0;
 
-    sleep(1);  // ensure second rolls over
+    ++runcounter;
+    gettimeofday(&start, NULL);
+    uw_setproctitle("processing");
+    ret = run();
+    if (debug > 0 && ret) {
+      struct timeval end;
+
+      gettimeofday(&end, NULL);
+      LOG(LOG_DEBUG, "run %d: processed %d items in %f seconds", runcounter, ret, 
+                      ((float)timeval_diff(&end, &start))/1000000.0);
+    }
     uw_setproctitle("sleeping");
+    sleep(1);  // ensure second rolls over
     switch(every) {
     case EVERY_SECOND:
       // already slept 1 second
@@ -169,17 +180,6 @@ int main( int argc, char** argv, char **envp )
     }
     for (i=0; i < sleep_seconds && forever; i++) {
       sleep(1);
-    }
-    ++runcounter;
-    gettimeofday(&start, NULL);
-    uw_setproctitle("processing");
-    ret = run();
-    if (debug > 0 && ret) {
-      struct timeval end;
-
-      gettimeofday(&end, NULL);
-      LOG(LOG_DEBUG, "run %d: processed %d items in %f seconds", runcounter, ret, 
-                      ((float)timeval_diff(&end, &start))/1000000.0);
     }
   } while (forever && (every != ONE_SHOT));
   exit(ret);

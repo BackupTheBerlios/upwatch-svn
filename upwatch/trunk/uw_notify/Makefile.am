@@ -4,39 +4,41 @@ if SOLARIS
 SOLARISLIBS = -lresolv
 endif
 
+if HAVE_LIBESMTP
+DEF_LIBESMTP = -DHAVE_LIBESMTP
+endif
+
 if HAVE_LIBPQ
-USE_LIBPQ = ../uw_process/postgresql.c
+USE_LIBPQ = postgresql.c
 DEF_LIBPQ = -DHAVE_LIBPQ
 endif
 
 if HAVE_LIBSNMP
-USE_LIBSNMP = ../uw_process/snmpget.c
+USE_LIBSNMP = snmpget.c
 DEF_LIBSNMP = -DHAVE_LIBSNMP
 endif
 
 if HAVE_LIBTDS
-USE_LIBTDS = ../uw_process/mssql.c
+USE_LIBTDS = mssql.c
 DEF_LIBTDS = -DHAVE_LIBTDS
 endif
 
-program = uw_notify
-sbin_PROGRAMS = uw_notify
-man_MANS = uw_notify.1
+program = uw_notify 
+sbin_PROGRAMS = uw_notify 
+man_MANS = uw_notify.1 
 conf_DATA = $(program:%=%.conf)
 init_DATA = $(INITFILES)
 
-uw_notify_SOURCES = ../uw_process/run.c ../uw_process/ping.c ../uw_process/generic_ct.c \
- uw_notify.h uw_notify.c uw_notify_glob.h \
- ../uw_process/modules.inc ../uw_process/httpget.c ../uw_process/iptraf.c ../uw_process/sysstat.c \
- ../uw_process/mysql.c ../uw_process/bb_cpu.c ../uw_process/bb.c ../uw_process/pop3.c \
- ../uw_process/imap.c ../uw_process/errlog.c ../uw_process/diskfree.c ../uw_process/process.c \
- $(USE_LIBPQ) $(USE_LIBSNMP) $(USE_LIBTDS) $(SPECFILES) $(INITFILES)
+uw_notify_SOURCES = run.c process.c uw_notify.c notify.c \
+ ping.c httpget.c iptraf.c sysstat.c mysql.c bb_cpu.c bb.c pop3.c $(USE_LIBPQ) \
+ $(USE_LIBSNMP) $(USE_LIBTDS) imap.c errlog.c diskfree.c \
+ uw_notify.h uw_notify_glob.h modules.inc $(SPECFILES) $(INITFILES)
 uw_notify_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ $(AM_CFLAGS) \
-  $(DEF_LIBPQ) $(DEF_LIBSNMP) $(DEF_LIBTDS) $(DEF_LIBESMTP) -DUW_NOTIFY
+  $(DEF_LIBPQ) $(DEF_LIBSNMP) $(DEF_LIBTDS) $(DEF_LIBESMTP) -DUW_PROCESS
 uw_notify_LDADD = uw_notify_$(DB_O) uw_notify_$(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @MYSQL_LIBS@ \
-  @LIBGLIB2_LIBS@ @LIBXML2_LIBS@ $(SOLARISLIBS)
+  @LIBESMTP_LIBS@ @LIBGLIB2_LIBS@ @LIBXML2_LIBS@ $(SOLARISLIBS)
 
-BUILT_SOURCES = $(program:%=%.1) $(program:%=%.h) $(program:%=%.c) $(SPECFILES) $(INITFILES)
+BUILT_SOURCES = $(program:%=%.1) $(program:%=%.h) $(program:%=%.c) $(SPECFILES) $(INITFILES) ../probes.enum
 INCLUDES = -I../upwatch
 EXTRA_DIST = $(program:%=%.conf) $(program:%=%.def)
 
@@ -52,17 +54,18 @@ install-data-local:
 	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/uw_notify ;\
 	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/uw_notify/new ;\
 	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/uw_notify/tmp ;\
-	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/q_failed ;\
-	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/q_failed/new ;\
-	  ${INSTALL} -d -m 2770 -o upwatch -g upwatch ${DESTDIR}${spooldir}/q_failed/tmp ;\
 	else \
 	  mkdir -p ${DESTDIR}${spooldir}/uw_notify ;\
 	  mkdir -p ${DESTDIR}${spooldir}/uw_notify/new ;\
 	  mkdir -p ${DESTDIR}${spooldir}/uw_notify/tmp ;\
-	  mkdir -p ${DESTDIR}${spooldir}/q_failed ;\
-	  mkdir -p ${DESTDIR}${spooldir}/q_failed/new ;\
-	  mkdir -p ${DESTDIR}${spooldir}/q_failed/tmp ;\
 	fi
 
 CLEANFILES += ../probes.enum
+
+noinst_PROGRAMS = uw_tnot
+uw_tnot_SOURCES = tnotrun.c notify.c uw_tnot.h uw_tnot.c
+uw_tnot_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ \
+  $(DEF_LIBPQ) $(DEF_LIBSNMP) $(DEF_LIBTDS) $(DEF_LIBESMTP) -DTNOT
+uw_tnot_LDADD = uw_tnot_$(DB_O) uw_tnot_$(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @MYSQL_LIBS@ \
+  @LIBESMTP_LIBS@ @LIBGLIB2_LIBS@ @LIBXML2_LIBS@ $(SOLARISLIBS)
 

@@ -22,6 +22,15 @@ spec-files = `echo "%attr(0770,root,upwatch)" $sbindir/uw_accept`;
 // describe commandline flags
 flag = {
     must-set;
+    name      = bind;
+    value     = b;        /* flag style option character */
+    arg_default  = "*";
+    arg_type  = string; 
+    descrip   = "local ip address to bind to (* for all)";
+};
+
+flag = {
+    must-set;
     name      = listen;
     value     = l;        /* flag style option character */
     arg_default  = 1985;  /* option argument indication  */

@@ -14,7 +14,7 @@ CREATE TABLE pr_[+name+]_def (
   contact int unsigned NOT NULL default '1',	-- user field: pointer to contact database
   notify int unsigned NOT NULL default '1',	-- notifier id
   email varchar(64) NOT NULL default '',	-- address to send warning email to
-  redmins int unsigned NOT NULL default '1',	-- after this many minutes of red light
+  delay int unsigned NOT NULL default '1',	-- after this many minutes of red light
   disable enum('yes', 'no') not null default 'no', -- disable this probe
   hide enum('yes', 'no') not null default 'no', -- hide probe results from viewing
   ipaddress varchar(15) NOT NULL default '',	-- target ipaddress 
@@ -265,7 +265,7 @@ IF (not (exist? "noelement")) +]<!ELEMENT [+name+] (#PCDATA)>		<!-- [+descrip+] 
 +][+ FOR probe +]<!-- [+ descrip +] -->
 <!ELEMENT [+name+]	([+ FOR element+][+name+][+
 IF optional +]?[+ENDIF+],[+ ENDFOR element +][+ FOR result +][+
-IF (not (exist? "noelement")) +][+name+],[+ ENDIF element +][+ ENDFOR +]info?,notify?)>
+IF (not (exist? "noelement")) +][+name+],[+ ENDIF element +][+ ENDFOR +]info?,prevcolor?,notify?)>
 <!ATTLIST [+name+][+FOR attribute +]	[+name+] NMTOKEN [+
 IF default +] "[+default+]"[+ENDIF
 +][+IF required+] #REQUIRED[+ENDIF required+]

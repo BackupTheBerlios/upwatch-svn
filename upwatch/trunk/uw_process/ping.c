@@ -2,70 +2,31 @@
 #include <string.h>
 #include <generic.h>
 #include "slot.h"
-#ifdef UW_PROCESS
 #include "uw_process_glob.h"
-#endif
-#ifdef UW_NOTIFY
-#include "uw_notify_glob.h"
-#endif
 
 #ifdef DMALLOC
 #include "dmalloc.h"
 #endif
 
-struct ping_result {
-  STANDARD_PROBE_RESULT;
-#include "../uw_ping/probe.res_h"
-};
-struct ping_def {
-  STANDARD_PROBE_DEF;
-#include "../common/common.h"
-};
-
-extern module ping_module;
-
-//*******************************************************************
-// GET THE INFO FROM THE XML FILE
-// Caller must free the pointer it returns
-//*******************************************************************
-static void ping_get_from_xml(module *probe, xmlDocPtr doc, xmlNodePtr cur, xmlNsPtr ns, void *probe_res)
-{
-  struct ping_result *res = (struct ping_result *)probe_res;
-
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "lowest")) && (cur->ns == ns)) {
-    res->lowest = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
-    return;
-  }
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "value")) && (cur->ns == ns)) {
-    res->value = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
-    return;
-  }
-  if ((!xmlStrcmp(cur->name, (const xmlChar *) "highest")) && (cur->ns == ns)) {
-    res->highest = xmlNodeListGetFloat(doc, cur->xmlChildrenNode, 1);
-    return;
-  }
-}
-
-#ifdef UW_PROCESS
 //*******************************************************************
 // STORE RAW RESULTS
 //*******************************************************************
-static gint ping_store_raw_result(struct _module *probe, void *probe_def, void *probe_res, guint *seen_before)
+static gint ping_store_raw_result(trx *t)
 {
   MYSQL_RES *result;
-  struct ping_result *res = (struct ping_result *)probe_res;
-  struct probe_def *def = (struct probe_def *)probe_def;
+  struct ping_result *res = (struct ping_result *)t->res;
+  struct probe_def *def = (struct probe_def *)t->def;
   char *escmsg;
 
-  *seen_before = FALSE;
+  t->seen_before = FALSE;
   if (res->message) {
     escmsg = g_malloc(strlen(res->message) * 2 + 1);
-    mysql_real_escape_string(probe->db, escmsg, res->message, strlen(res->message)) ;
+    mysql_real_escape_string(t->probe->db, escmsg, res->message, strlen(res->message)) ;
   } else {
     escmsg = strdup("");
   }
 
-  result = my_query(probe->db, 0,
+  result = my_query(t->probe->db, 0,
                     "insert into pr_ping_raw "
                     "set    probe = '%u', yellow = '%f', red = '%f', stattime = '%u', color = '%u', "
                     "       value = '%f', lowest = '%f', highest = '%f', message = '%s'",
@@ -73,9 +34,9 @@ static gint ping_store_raw_result(struct _module *probe, void *probe_def, void *
                     res->value, res->lowest, res->highest, escmsg);
   g_free(escmsg);
   if (result) mysql_free_result(result);
-  if (mysql_errno(probe->db) == ER_DUP_ENTRY) {
-    *seen_before = TRUE;
-  } else if (mysql_errno(probe->db)) {
+  if (mysql_errno(t->probe->db) == ER_DUP_ENTRY) {
+    t->seen_before = TRUE;
+  } else if (mysql_errno(t->probe->db)) {
     return 0; // other failure
   }
   return 1; // success
@@ -84,11 +45,11 @@ static gint ping_store_raw_result(struct _module *probe, void *probe_def, void *
 //*******************************************************************
 // SUMMARIZE A TABLE INTO AN OLDER PERIOD
 //*******************************************************************
-static void ping_summarize(module *probe, void *probe_def, void *probe_res, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint resummarize)
+static void ping_summarize(trx *t, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint resummarize)
 {
   MYSQL_RES *result;
   MYSQL_ROW row;
-  struct probe_def *def = (struct probe_def *)probe_def;
+  struct probe_def *def = (struct probe_def *)t->def;
   float avg_yellow, avg_red;
   float avg_value, min_lowest, max_highest; 
   guint stattime;
@@ -96,7 +57,7 @@ static void ping_summarize(module *probe, void *probe_def, void *probe_res, char
 
   stattime = slotlow + ((slothigh-slotlow)/2);
 
-  result = my_query(probe->db, 0,
+  result = my_query(t->probe->db, 0,
                     "select avg(lowest), avg(value), avg(highest), "
                     "       max(color), avg(yellow), avg(red) " 
                     "from   pr_ping_%s use index(probstat) "
@@ -113,7 +74,7 @@ static void ping_summarize(module *probe, void *probe_def, void *probe_res, char
 
   row = mysql_fetch_row(result);
   if (!row) {
-    LOG(LOG_ERR, (char *)mysql_error(probe->db));
+    LOG(LOG_ERR, (char *)mysql_error(t->probe->db));
     mysql_free_result(result);
     return;
   }
@@ -134,13 +95,13 @@ static void ping_summarize(module *probe, void *probe_def, void *probe_res, char
 
   if (resummarize) {
     // delete old values
-    result = my_query(probe->db, 0,
+    result = my_query(t->probe->db, 0,
                     "delete from pr_ping_%s where probe = '%u' and stattime = '%u'",
                     into, def->probeid, stattime);
     mysql_free_result(result);
   }
 
-  result = my_query(probe->db, 0,
+  result = my_query(t->probe->db, 0,
                     "insert into pr_ping_%s " 
                     "set    value = %f, lowest = %f, highest = %f, probe = %d, color = '%u', " 
                     "       stattime = %d, yellow = '%f', red = '%f', slot = '%u'",
@@ -148,7 +109,6 @@ static void ping_summarize(module *probe, void *probe_def, void *probe_res, char
                     max_color, stattime, avg_yellow, avg_red, slot);
   mysql_free_result(result);
 }
-#endif
 
 module ping_module  = {
   STANDARD_MODULE_STUFF(ping),
@@ -159,13 +119,13 @@ module ping_module  = {
   NO_ACCEPT_PROBE,
   NO_XML_RESULT_NODE,
   ping_get_from_xml,
-  NO_FIX_RESULT,
+  NO_ACCEPT_RESULT,
   NO_GET_DEF,
-#ifdef UW_PROCESS
+  NO_ADJUST_RESULT,
+  NO_END_RESULT,
+  NO_END_RUN,
+  NO_EXIT,
   ping_store_raw_result,
-  ping_summarize,
-#endif
-  NO_END_PROBE,
-  NO_END_RUN
+  ping_summarize
 };
 
