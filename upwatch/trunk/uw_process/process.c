@@ -190,7 +190,7 @@ static void *get_def(module *probe, struct probe_result *res)
       if (row[0]) def->server   = atoi(row[0]);
       if (row[1]) def->yellow   = atof(row[1]);
       if (row[2]) def->red      = atof(row[2]);
-      if (row[3]) def->red      = atof(row[3]);
+      if (row[3]) def->contact  = atof(row[3]);
     }
     mysql_free_result(result);
 

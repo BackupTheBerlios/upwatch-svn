@@ -284,6 +284,7 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   sprintf(buffer, "%d", ((int)now)+(2*60));   xmlSetProp(snmpget, "expires", buffer);
   sprintf(buffer, "%d", color);               subtree = xmlNewChild(snmpget, NULL, "color", buffer);
   sprintf(buffer, "%f", probe->value);        subtree = xmlNewChild(snmpget, NULL, "value", buffer);
+  probe->value = 0;
   if (probe->msg) {
     subtree = xmlNewTextChild(snmpget, NULL, "info", probe->msg);
     free(probe->msg);
