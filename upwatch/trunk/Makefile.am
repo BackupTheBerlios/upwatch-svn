@@ -6,7 +6,8 @@ EXTRA_DIST = Makefile.am.common upwatch-spec.def upwatch-spec.tpl upwatch.spec u
   config/upwatch.conf config/upwatch-base.mysql config/result.dtd config/logrotate config/cron.daily \
   config/upwatch.init patches/libpcap-linux-timeout.patch \
   common/db.c common/generic_options.def common/init.tpl common/main.c common/man1.tpl common/spec.tpl \
-  doc/upwatch.xml doc/Makefile doc/upwatch.xsl doc/jadetex.cfg doc/style.dsl doc/style.xsl doc/style.css
+  doc/upwatch.xml doc/Makefile doc/upwatch.xsl doc/jadetex.cfg doc/style.dsl doc/style.xsl doc/style.css \
+  compat/bb/*.mysql
 
 BUILT_SOURCES = upwatch.mysql 
 
