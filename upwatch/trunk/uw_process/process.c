@@ -544,13 +544,15 @@ int process(trx *t)
     }
   }
 
-  // RETRIEVE LAST HIST ENTRY FOR THIS PROBE
-  get_previous_pr_hist(t);
+  if (t->def->email[0]) { // if we have an address
+    // RETRIEVE LAST HIST ENTRY FOR THIS PROBE
+    get_previous_pr_hist(t);
 
-  // notify if needed
-  if (strcmp(t->res->notified, "yes") && t->def->email[0]) { // not already notified and we have an address?
-    if (notify(t)) {
-      set_pr_hist_notified(t);
+    // notify if needed
+    if (strcmp(t->res->notified, "yes")) { // not already notified
+      if (notify(t)) {
+        set_pr_hist_notified(t);
+      }
     }
   }
 

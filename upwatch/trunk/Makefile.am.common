@@ -37,7 +37,7 @@ AGDEFINES = -Dconfdir=$(confdir) -Dsysconfdir=$(sysconfdir) -Dsbindir=$(sbindir)
 %.c %.h: %.def
 	autogen -b $(<:%.def=%) $(AGDEFINES) $(GENINCL) $<
 	
-probe.def_h probe.res_h probe.enum probe.mysql probe.dtd probe.dtd-inc probe.xml: probe.def $(PROBDEF)
+probe.def_h probe.res_h probe.enum probe.def_mysql probe.raw_mysql probe.dtd probe.dtd-inc probe.xml: probe.def $(PROBDEF)
 	autogen -b probe $(AGDEFINES) $(GENINCL) -T $(PROBTPL) probe.def
 
 %.1: %.def

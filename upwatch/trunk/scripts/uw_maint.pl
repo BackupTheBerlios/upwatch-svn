@@ -75,7 +75,7 @@ sub log_error {
     $message = "(null)";
   }
   $message =~ s/[<>'`(){}\$]//g;
-  $cmd = "logger -t fill[$$] -p mail.$facility $line $msgid $message";
+  $cmd = "logger -t uw_maint.pl[$$] -p user.$facility $line $msgid $message";
   system($cmd);
 }
 
@@ -176,6 +176,8 @@ sub main {
   my $row;		# row for hashref
 
 #  &get_fill_probe_description_lock();
+
+  log_error(__LINE__, 'notice', "start");
 
   process_options();
   parse_config("/etc/upwatch.conf");
@@ -304,6 +306,8 @@ sub main {
   $db->disconnect;
 
 #  &remove_fill_probe_description_lock();
+
+  log_error(__LINE__, 'notice', "stop");
 
   exit (0);
 }

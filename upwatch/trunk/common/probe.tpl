@@ -1,6 +1,6 @@
-[+ AutoGen5 template mysql def_h res_h enum xml dtd dtd-inc +]
+[+ AutoGen5 template def_mysql raw_mysql def_h res_h enum xml dtd dtd-inc +]
 [+ CASE (suffix) +][+
-   == mysql +]--
+   == def_mysql +]--
 [+(dne "-- ")+]
 [+ FOR probe +]
 --
@@ -9,6 +9,11 @@
 
 CREATE TABLE pr_[+name+]_def (
   id int NOT NULL auto_increment,  		-- probe unique numerical id
+-- the following fields are only used when the probe definitions are aggregated
+-- in one central database
+  domid int unsigned NOT NULL default '1',      -- the id of the database this probe belongs to
+  tblid int unsigned NOT NULL default '1',      -- the unique id of the probe in that database
+-- end aggregation fields
   pgroup int unsigned NOT NULL default '2', 	-- group id 
   server int unsigned NOT NULL default '1', 	-- server id
   contact int unsigned NOT NULL default '1',	-- user field: pointer to contact database
@@ -99,7 +104,10 @@ ESAC type +][+ ENDFOR def+]
 +]
 INSERT into pr_[+name+]_def set id = '1', description = 'empty';
 INSERT into probe set id = '[+id+]', name = '[+name+]', description = '[+descrip+]', addbyhand = '[+addbyhand+]', [+
- if (exist? "fuse") +]fuse = '[+fuse+]', [+ endif +]class = '[+class+]', graphgroup = '[+graphgroup+]', graphtypes = '[+graphtypes+]', comment = '[+comment+]';
+ if (exist? "fuse") +]fuse = '[+fuse+]', [+ endif +]class = '[+class+]', graphgroup = '[+graphgroup+]', graphtypes = '[+graphtypes+]', comment = '[+comment+]';[+ ENDFOR probe +][+
+   == raw_mysql +]--
+[+(dne "-- ")+]
+[+ FOR probe +]
 [+ IF (count "result") +]
 --
 -- Table structure for table 'pr_[+name+]_raw'

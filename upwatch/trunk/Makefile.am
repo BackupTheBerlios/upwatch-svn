@@ -56,14 +56,14 @@ export TOP_SRCDIR = $(top_srcdir)
 SUBDIRS = upwatch st-1.4 libstatgrab ${PROGNAMES} compat util scripts config common
 #DIST_SUBDIRS = ${SUBDIRS} doc
 
-doc_DATA = AUTHORS COPYING ChangeLog NEWS README upwatch.mysql
+doc_DATA = AUTHORS COPYING ChangeLog NEWS README upwatch-base.mysql upwatch-full.mysql
 
 if ENABLE_SERVER
 SERVER_DIST = probes.enum doc/upwatch.html doc/upwatch.pdf doc/upwatch.txt
 endif
 
 EXTRA_DIST = Makefile.am.common Makefile.am.libs Makefile.am.path VERSION libtool ChangeLog \
-  upwatch-spec.def upwatch-spec.tpl upwatch.spec templates upwatch.mysql \
+  upwatch-spec.def upwatch-spec.tpl upwatch.spec templates \
   patches/libpcap-linux-timeout.patch patches/libstatgrab-configure.gnu \
   ${SERVER_DIST} doc/Makefile.in \
   install-sh config.sub mkinstalldirs depcomp cfg/cvs2cl.pl
@@ -72,8 +72,11 @@ upwatch.spec: upwatch-spec.def upwatch-spec.tpl common/spec.tpl \
   uw_*/*.spec-files uw_*/*.spec-requires 
 	autogen -b upwatch -Dconfargs="$(CONFARGS)" upwatch-spec.def
 
-upwatch.mysql: config/upwatch-base.mysql uw_*/probe.mysql
-	cat $+ > upwatch.mysql
+upwatch-base.mysql: config/upwatch-base.mysql uw_*/probe.def_mysql
+	cat $+ > upwatch-base.mysql
+
+upwatch-full.mysql: config/upwatch-base.mysql config/upwatch-full.mysql uw_*/probe.def_mysql uw_*/probe.raw_mysql
+	cat $+ > upwatch-full.mysql
 
 force-changelog:
 	touch force-changelog
