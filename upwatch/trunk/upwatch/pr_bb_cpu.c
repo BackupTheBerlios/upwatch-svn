@@ -96,6 +96,7 @@ void *bb_cpu_get_def(trx *t, int create)
     def = g_malloc0(t->probe->def_size);
     def->stamp    = time(NULL);
     def->server   = res->server;
+    def->pgroup   = 1;
     strcpy(def->hide, "no");
 
     // first find the definition based on the serverid

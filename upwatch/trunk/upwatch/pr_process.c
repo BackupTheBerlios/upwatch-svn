@@ -169,7 +169,7 @@ void *get_def(trx *t, int create)
   MYSQL_RES *result;
   MYSQL_ROW row;
   time_t now = time(NULL);
-  char *def_fields = "ipaddress, description, server, yellow, red, contact, hide, email, delay";
+  char *def_fields = "ipaddress, description, server, yellow, red, contact, hide, email, delay, pgroup";
 
   def = g_hash_table_lookup(t->probe->cache, &res->probeid);
   if (def && def->stamp < now - (120 + uw_rand(240))) { // older then 2 - 6 minutes?
@@ -253,6 +253,7 @@ void *get_def(trx *t, int create)
         strcpy(def->hide, row[6] ? row[6] : "no");
         strcpy(def->email, row[7] ? row[7] : "");
         if (row[8]) def->delay = atoi(row[8]);
+        if (row[9]) def->pgroup = atoi(row[9]);
       }
     }
     mysql_free_result(result);

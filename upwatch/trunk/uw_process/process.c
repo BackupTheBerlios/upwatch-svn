@@ -205,10 +205,10 @@ static void create_pr_hist(trx *t, struct probe_result *prv)
                     "insert into pr_hist "
                     "set    server = '%u', class = '%u', probe = '%u', stattime = '%u', "
                     "       prv_color = '%d', color = '%d', message = '%s', contact = '%u', "
-                    "       hide = '%s'",
+                    "       hide = '%s', pgroup = '%u'",
                     t->def->server, t->probe->class, t->def->probeid, t->res->stattime,
                     /* (t->res->received > t->res->expires) ? STAT_PURPLE : */ prv->color, 
-                    t->res->color, escmsg, t->def->contact, t->def->hide);
+                    t->res->color, escmsg, t->def->contact, t->def->hide, t->def->pgroup);
   mysql_free_result(result);
   g_free(escmsg);
 }

@@ -10,7 +10,7 @@ AC_SUBST(VERSION)
 
 AC_DEFINE_UNQUOTED([RELEASE], ["${RELEASE}"], [Package release string])
 
-ifdef([AC_REVISION],AC_REVISION($Revision: 1.75 $),)dnl
+ifdef([AC_REVISION],AC_REVISION($Revision: 1.76 $),)dnl
 
 # ----------------------------------------------------------------------
 # If `configure' is invoked (in)directly via `make', ensure that it
@@ -133,6 +133,7 @@ AC_EXEEXT
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_AWK
+export SED=sed
 
 AC_PATH_PROG([ID], [id], [/usr/bin/id], [/usr/xpg4/bin:$PATH])
 if test -z "$ID"

@@ -326,6 +326,7 @@ green [LOGDATE] kernel: klips_info:ipsec_alg_init: calling ipsec_alg_static_init
 green [LOGDATE] kernel: klips_info:ipsec_alg_init: KLIPS alg v=[NUM]\.[NUM]\.[NUM]-[NUM] \(EALG_MAX=[NUM], AALG_MAX=[NUM]\)
 green [LOGDATE] kernel: klips_info:ipsec_init: KLIPS startup, FreeS/WAN IPSec version: 
 green [LOGDATE] kernel: klips_info:pfkey_cleanup: shutting down PF_KEY domain sockets\.
+green [LOGDATE] kernel: klogd [NUM]\.[NUM]\.[NUM], ---------- state change ----------
 green [LOGDATE] kernel: kmod: failed to exec [PATH] -s -k scsi_hostadapter, errno = [NUM]
 green [LOGDATE] kernel: less uses obsolete [PATH] interface
 green [LOGDATE] kernel: Limiting direct PCI/PCI transfers\.
@@ -526,7 +527,7 @@ green [LOGDATE] kernel: selinux_register_security:  Registering secondary module
 green [LOGDATE] kernel: SELinux:  Unregistering netfilter hooks
 green [LOGDATE] kernel: sending pkt_too_big \(len[PID] pmtu[PID]\) to self
 green [LOGDATE] kernel: Serial driver version
-green [LOGDATE] kernel: Serial: [NUM]/[NUM] driver \$Revision: 1.4 $ [NUM] ports, IRQ sharing enabled
+green [LOGDATE] kernel: Serial: [NUM]/[NUM] driver \$Revision: 1.5 $ [NUM] ports, IRQ sharing enabled
 green [LOGDATE] kernel:   Serial sub-system self-test: passed\.
 green [LOGDATE] kernel: serio: .* port at [HEX],[HEX] irq [NUM]
 green [LOGDATE] kernel: Setting [NUM] in the phys_id_present_map

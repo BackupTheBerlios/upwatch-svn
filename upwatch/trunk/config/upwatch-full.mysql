@@ -44,6 +44,7 @@ CREATE TABLE pr_hist (
   contact int unsigned NOT NULL default '1',  -- user field: pointer to contact database
   class smallint unsigned NOT NULL default '1',
   probe int unsigned NOT NULL default '1',
+  pgroup int unsigned NOT NULL default '1',     -- group id
   stattime int unsigned NOT NULL default '0',
   prv_color smallint unsigned NOT NULL default '200',
   color smallint unsigned NOT NULL default '200',

@@ -5,7 +5,6 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-
 #include <signal.h>
 #include <string.h>
 #include <malloc.h>
@@ -242,6 +241,7 @@ void *handle_connections(void *arg)
 extern int forever;
   st_netfd_t srv_nfd, cli_nfd;
   struct sockaddr_in from;
+  struct hostent *host;
   int fromlen = sizeof(from);
 
   srv_nfd = *(st_netfd_t *) arg;
@@ -254,7 +254,8 @@ extern int forever;
       continue;
     }
     remote = strdup(inet_ntoa(from.sin_addr));
-    LOG(LOG_INFO, "%s: new connection", remote);
+    host = gethostbyaddr((char*)&from.sin_addr.s_addr, sizeof(from.sin_addr.s_addr), AF_INET);
+    LOG(LOG_INFO, "%s: new connection from %s", remote, host? host->h_name: remote);
     handle_session(cli_nfd, remote);
     free(remote);
     st_netfd_close(cli_nfd);

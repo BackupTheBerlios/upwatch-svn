@@ -32,6 +32,7 @@ struct probe_result {
   char hide[4]; \
   guint contact; \
   guint probeid; \
+  guint pgroup; \
   guint color; \
   guint newest; \
   char email[65]; \

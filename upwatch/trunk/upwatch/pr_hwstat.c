@@ -112,12 +112,11 @@ void *hwstat_get_def(trx *t, int create)
     def->stamp = time(NULL);
     strcpy(def->hide, "no");
     def->server = res->server;
-    
 
     result = my_query(t->probe->db, 0,
                       "select id, contact, hide, email, delay, "
                       "       temp1_yellow, temp1_red, temp2_yellow, temp2_red, "
-                      "       temp3_yellow, temp3_red, rot1_red, rot2_red, rot3_red "
+                      "       temp3_yellow, temp3_red, rot1_red, rot2_red, rot3_red, pgroup "
                       "from   pr_%s_def "
                       "where  server = '%u'", res->name, res->server);
     if (!result) return(NULL);
@@ -142,7 +141,7 @@ void *hwstat_get_def(trx *t, int create)
       result = my_query(t->probe->db, 0,
                         "select id, contact, hide, email, delay, "
                         "       temp1_yellow, temp1_red, temp2_yellow, temp2_red, "
-                        "       temp3_yellow, temp3_red, rot1_red, rot2_red, rot3_red "
+                        "       temp3_yellow, temp3_red, rot1_red, rot2_red, rot3_red, pgroup "
                         "from   pr_%s_def "
                         "where  server = '%u'", res->name, res->server);
       if (!result) return(NULL);
@@ -168,6 +167,7 @@ void *hwstat_get_def(trx *t, int create)
     if (row[11]) def->rot1_red = atoi(row[11]);
     if (row[12]) def->rot2_red = atoi(row[12]);
     if (row[13]) def->rot3_red = atoi(row[13]);
+    if (row[14]) def->pgroup = atoi(row[14]);
 
     mysql_free_result(result);
 

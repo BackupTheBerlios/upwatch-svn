@@ -47,6 +47,7 @@ void *bb_get_def(trx *t, int create)
   def = g_malloc0(t->probe->def_size);
   def->stamp    = time(NULL);
   def->server   = res->server;
+  def->pgroup   = 1;
   strcpy(def->hide, "no");
 
   if (res->color == STAT_PURPLE && res->probeid) {

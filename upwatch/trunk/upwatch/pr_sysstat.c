@@ -118,7 +118,7 @@ void *sysstat_get_def(trx *t, int create)
     def->server = res->server;
     
     result = my_query(t->probe->db, 0,
-                      "select id, yellow, red, contact, hide, email, delay "
+                      "select id, yellow, red, contact, hide, email, delay, pgroup "
                       "from   pr_%s_def "
                       "where  server = '%u'", res->name, res->server);
     if (!result) return(NULL);
@@ -142,7 +142,7 @@ void *sysstat_get_def(trx *t, int create)
                          res->name, def->probeid, mysql_error(t->probe->db));
       }
       result = my_query(t->probe->db, 0,
-                        "select id, yellow, red, contact, hide, email, delay "
+                        "select id, yellow, red, contact, hide, email, delay, pgroup "
                         "from   pr_%s_def "
                         "where  server = '%u'", res->name, res->server);
       if (!result) return(NULL);
@@ -161,6 +161,7 @@ void *sysstat_get_def(trx *t, int create)
     strcpy(def->hide, row[4] ? row[4] : "no");
     strcpy(def->email, row[5] ? row[5] : "");
     if (row[6]) def->delay = atoi(row[6]);
+    if (row[7]) def->pgroup = atoi(row[7]);
 
     mysql_free_result(result);
 
