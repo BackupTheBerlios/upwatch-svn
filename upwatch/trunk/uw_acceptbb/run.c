@@ -87,7 +87,7 @@ int run(void)
   /* Create the main loop */
   main_loop = g_main_loop_new(NULL, FALSE);
 
-  g_timeout_add(5000, writexmlfile, NULL);
+  g_timeout_add(60000, writexmlfile, NULL);
 
   /* Create the interface */
   addr = gnet_inetaddr_new_any ();
@@ -126,8 +126,8 @@ static void ob_server_func (GServer* server, GServerStatus status, struct _GConn
           LOG(LOG_DEBUG, "New connection from %s", gnet_inetaddr_get_canonical_name(conn->inetaddr));
         }
         conn->func = ob_client_func;
-        conn->user_data = NULL;
-        gnet_conn_readany(conn, g_malloc(1024), 1000, 30000);
+        conn->user_data = g_malloc(16384);
+        gnet_conn_readany(conn, conn->user_data, 16384, 30000);
         break;
       }
 
@@ -152,7 +152,10 @@ void runbb(char *req);
   while (i > 0 && isspace(buffer[i])) {
     buffer[i--] = 0;
   }
-  for(;i; i--) {
+  if (i > 1024) {
+    strcpy(&buffer[990], "\n\n... DATA TRUNCATED ...\n\n");
+  }
+  for(;i>=0; i--) {
     if (buffer[i] < 0 || buffer[i] == '\r') {
       buffer[i] = ' ';
     }
@@ -164,40 +167,50 @@ void runbb(char *req);
         if (buffer) {
           if (debug > 2) LOG(LOG_NOTICE, "GNET_CONN_STATUS_READ: %s", buffer);
           runbb(buffer);
-          g_free(buffer);
 	}
 	break;
       }
 
     case GNET_CONN_STATUS_WRITE:
       {
-        if (buffer) LOG(LOG_NOTICE, "GNET_CONN_STATUS_WRITE: %s", buffer);
-        g_free (buffer);
+        if (buffer) {
+          LOG(LOG_NOTICE, "GNET_CONN_STATUS_WRITE: %s", buffer);
+        }
         if (debug > 1) {
           LOG(LOG_DEBUG, "%s closed connection", gnet_inetaddr_get_canonical_name(conn->inetaddr));
         }
+        g_free (user_data);
         gnet_conn_delete (conn, TRUE);
         break;
       }
 
     case GNET_CONN_STATUS_CLOSE:
       {
-        if (buffer) LOG(LOG_NOTICE, "GNET_CONN_STATUS_CLOSE: %s", buffer);
+        if (buffer) {
+          LOG(LOG_NOTICE, "GNET_CONN_STATUS_CLOSE: %s", buffer);
+        }
         //LOG(LOG_DEBUG, "%s unexpected close", gnet_inetaddr_get_canonical_name(conn->inetaddr));
+        g_free (user_data);
         gnet_conn_delete (conn, TRUE);
         break;
       }
     case GNET_CONN_STATUS_TIMEOUT:
       {
-        if (buffer) LOG(LOG_NOTICE, "GNET_CONN_STATUS_TIMEOUT: %s", buffer);
+        if (buffer) {
+          LOG(LOG_NOTICE, "GNET_CONN_STATUS_TIMEOUT: %s", buffer);
+        }
         LOG(LOG_DEBUG, "%s timeout", gnet_inetaddr_get_canonical_name(conn->inetaddr));
+        g_free (user_data);
         gnet_conn_delete (conn, TRUE);
         break;
       }
     case GNET_CONN_STATUS_ERROR:
       {
-        if (buffer) LOG(LOG_NOTICE, "GNET_CONN_STATUS_ERROR: %s", buffer);
+        if (buffer) {
+          LOG(LOG_NOTICE, "GNET_CONN_STATUS_ERROR: %s", buffer);
+        }
         LOG(LOG_DEBUG, "%s error", gnet_inetaddr_get_canonical_name(conn->inetaddr));
+        g_free (user_data);
         gnet_conn_delete (conn, TRUE);
         break;
       }
@@ -298,11 +311,11 @@ void runbb(char *cmd)
     }
     message = strptime(message+4, "%Y", &probedate); // lose the timezone info - it's unusable
 
-    fprintf(stderr, message);
+    //fprintf(stderr, message);
     add_to_xml_document(hostname, probename, color, &probedate, message);
-    LOG(LOG_WARNING, "host: %s, probe: %s, color: %s, msg: %s, date: %s", 
+    if (debug > 1) LOG(LOG_WARNING, "host: %s, probe: %s, color: %s, msg: %s, date: %s", 
 		    hostname, probename, color, message, asctime(&probedate));
   } else {
-    LOG(LOG_WARNING, "unknown message: %s", cmd);
+    if (debug > 1) LOG(LOG_WARNING, "unknown message: %s", cmd);
   }
 }
