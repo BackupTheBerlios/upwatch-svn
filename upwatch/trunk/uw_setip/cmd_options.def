@@ -15,7 +15,7 @@ detail        =
 These are send by clients with variable IP addresses.';
 
 // this section is for the generated specfile 
-spec-requires = "mysql glib2";
+spec-requires = "/usr/bin/mysql glib2";
 spec-files = "%attr(0770,root,upwatch) /usr/sbin/uw_setip";
 
 // describe commandline flags

@@ -15,7 +15,7 @@ sends http GET requests to each host. This happens in parallel,
 so uw_httpget can process thousands of hosts in a very short period.';
 
 // this section is for the generated specfile
-spec-requires = "mysql glib2";
+spec-requires = "/usr/bin/mysql glib2";
 spec-files = "%attr(0770,root,upwatch) /usr/sbin/uw_httpget";
 
 // describe commandline flags

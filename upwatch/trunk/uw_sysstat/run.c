@@ -161,7 +161,7 @@ extern int forever;
   for (i=0; i < OPT_VALUE_INTERVAL; i++) { // wait some minutes
     sleep(1);
     if (!forever)  {
-      return(NULL);
+      return(0);
     }
   }
 

@@ -14,7 +14,7 @@ detail        =
 Big Brother package (www.bb4.com)';
 
 // this section is for the generated specfile 
-spec-requires = "mysql glib2";
+spec-requires = "/usr/bin/mysql glib2";
 spec-files = "%attr(0770,root,upwatch) /usr/sbin/uw_acceptbb";
 
 // describe commandline flags

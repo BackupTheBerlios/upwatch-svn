@@ -13,7 +13,7 @@ detail        =
 'uw_process reads probe resultfiles, and stores them in the database';
 
 // this section is for the generated specfile
-spec-requires = "mysql glib2";
+spec-requires = "/usr/bin/mysql glib2";
 spec-install  = "mkdir -p $RPM_BUILD_ROOT/var/spool/upwatch/uw_process/tmp";
 spec-install  = "mkdir -p $RPM_BUILD_ROOT/var/spool/upwatch/uw_process/new";
 spec-files    = "%attr(0770,root,upwatch) %dir /var/spool/upwatch/uw_process/new";

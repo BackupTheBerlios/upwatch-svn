@@ -16,7 +16,7 @@ Using a POP3-like protocol it asks for a username and password
 and copies incoming files to a queue';
 
 // this section is for the generated specfile 
-spec-requires = "mysql glib2";
+spec-requires = "/usr/bin/mysql glib2";
 spec-files = "%attr(0770,root,upwatch) /usr/sbin/uw_accept";
 
 // describe commandline flags

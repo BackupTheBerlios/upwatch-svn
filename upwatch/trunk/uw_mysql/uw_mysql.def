@@ -15,7 +15,7 @@ performs queries on each host. This happens in parallel,
 so uw_mysql can process thousands of hosts in a very short period.';
 
 // this section is for the generated specfile
-spec-requires = "mysql glib2";
+spec-requires = "/usr/bin/mysql glib2";
 spec-files = "%attr(0770,root,upwatch) /usr/sbin/uw_mysql";
 
 // describe commandline flags
