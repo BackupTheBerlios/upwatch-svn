@@ -1,11 +1,12 @@
 --
--- Table structure for table 'pr_template_def'
+-- Table structure for table 'pr_httpget_def'
 --
 
-CREATE TABLE pr_template_def (
+CREATE TABLE pr_httpget_def (
   id int(8) NOT NULL auto_increment,
   server int(8) NOT NULL default '0',
   address varchar(80) NOT NULL default '',
+  uri varchar(255) NOT NULL default '',
   freq int(4) NOT NULL default '1',
   count int(2) unsigned NOT NULL default '5',
   yellowmiss int(2) unsigned NOT NULL default '1',
@@ -19,10 +20,10 @@ CREATE TABLE pr_template_def (
 ) TYPE=MyISAM;
 
 --
--- Table structure for table 'pr_template_hist'
+-- Table structure for table 'pr_httpget_hist'
 --
 
-CREATE TABLE pr_template_hist (
+CREATE TABLE pr_httpget_hist (
   id int(10) unsigned NOT NULL auto_increment,
   probe int(10) unsigned NOT NULL default '0',
   stattime int(10) unsigned NOT NULL default '0',
@@ -35,18 +36,19 @@ CREATE TABLE pr_template_hist (
 ) TYPE=MyISAM;
 
 --
--- Table structure for table 'pr_template_raw'
+-- Table structure for table 'pr_httpget_raw'
 --
 
-CREATE TABLE pr_template_raw (
+CREATE TABLE pr_httpget_raw (
   id int(10) unsigned NOT NULL auto_increment,
   probe int(10) unsigned NOT NULL default '0',
   hist int(10) unsigned NOT NULL default '0',
   stattime int(10) unsigned NOT NULL default '0',
   color smallint(5) unsigned NOT NULL default '0',
-  value float NOT NULL default '0',
-  lowest float NOT NULL default '0',
-  highest float NOT NULL default '0',
+  namelookup float NOT NULL default '0',
+  connect float NOT NULL default '0',
+  pretransfer float NOT NULL default '0',
+  total float NOT NULL default '0',
   PRIMARY KEY  (id),
   UNIQUE KEY probtime (probe,stattime),
   KEY probe (probe),
@@ -55,41 +57,20 @@ CREATE TABLE pr_template_raw (
 ) TYPE=MyISAM;
 
 --
--- Table structure for table 'pr_template_day'
+-- Table structure for table 'pr_httpget_day'
 --
 
-CREATE TABLE pr_template_day (
+CREATE TABLE pr_httpget_day (
   id int(10) unsigned NOT NULL auto_increment,
   probe int(10) unsigned NOT NULL default '0',
   hist int(10) unsigned NOT NULL default '0',
   slot int(4) NOT NULL default '0',
   stattime int(10) unsigned NOT NULL default '0',
   color smallint(5) unsigned NOT NULL default '0',
-  value float NOT NULL default '0',
-  lowest float NOT NULL default '0',
-  highest float NOT NULL default '0',
-  PRIMARY KEY  (id),
-  UNIQUE KEY probtime (probe,stattime),
-  KEY probe (probe),
-  KEY hist (hist),
-  KEY slot (slot),
-  KEY stattime (stattime)
-) TYPE=MyISAM;
-
---
--- Table structure for table 'pr_template_week'
---
-
-CREATE TABLE pr_template_week (
-  id int(10) unsigned NOT NULL auto_increment,
-  probe int(10) unsigned NOT NULL default '0',
-  hist int(10) unsigned NOT NULL default '0',
-  slot int(4) NOT NULL default '0',
-  stattime int(10) unsigned NOT NULL default '0',
-  color smallint(5) unsigned NOT NULL default '0',
-  value float NOT NULL default '0',
-  lowest float NOT NULL default '0',
-  highest float NOT NULL default '0',
+  namelookup float NOT NULL default '0',
+  connect float NOT NULL default '0',
+  pretransfer float NOT NULL default '0',
+  total float NOT NULL default '0',
   PRIMARY KEY  (id),
   UNIQUE KEY probtime (probe,stattime),
   KEY probe (probe),
@@ -99,19 +80,20 @@ CREATE TABLE pr_template_week (
 ) TYPE=MyISAM;
 
 --
--- Table structure for table 'pr_template_month'
+-- Table structure for table 'pr_httpget_week'
 --
 
-CREATE TABLE pr_template_month (
+CREATE TABLE pr_httpget_week (
   id int(10) unsigned NOT NULL auto_increment,
   probe int(10) unsigned NOT NULL default '0',
   hist int(10) unsigned NOT NULL default '0',
   slot int(4) NOT NULL default '0',
   stattime int(10) unsigned NOT NULL default '0',
   color smallint(5) unsigned NOT NULL default '0',
-  value float NOT NULL default '0',
-  lowest float NOT NULL default '0',
-  highest float NOT NULL default '0',
+  namelookup float NOT NULL default '0',
+  connect float NOT NULL default '0',
+  pretransfer float NOT NULL default '0',
+  total float NOT NULL default '0',
   PRIMARY KEY  (id),
   UNIQUE KEY probtime (probe,stattime),
   KEY probe (probe),
@@ -121,19 +103,20 @@ CREATE TABLE pr_template_month (
 ) TYPE=MyISAM;
 
 --
--- Table structure for table 'pr_template_year'
+-- Table structure for table 'pr_httpget_month'
 --
 
-CREATE TABLE pr_template_year (
+CREATE TABLE pr_httpget_month (
   id int(10) unsigned NOT NULL auto_increment,
   probe int(10) unsigned NOT NULL default '0',
   hist int(10) unsigned NOT NULL default '0',
   slot int(4) NOT NULL default '0',
   stattime int(10) unsigned NOT NULL default '0',
   color smallint(5) unsigned NOT NULL default '0',
-  value float NOT NULL default '0',
-  lowest float NOT NULL default '0',
-  highest float NOT NULL default '0',
+  namelookup float NOT NULL default '0',
+  connect float NOT NULL default '0',
+  pretransfer float NOT NULL default '0',
+  total float NOT NULL default '0',
   PRIMARY KEY  (id),
   UNIQUE KEY probtime (probe,stattime),
   KEY probe (probe),
@@ -143,19 +126,43 @@ CREATE TABLE pr_template_year (
 ) TYPE=MyISAM;
 
 --
--- Table structure for table 'pr_template_5year'
+-- Table structure for table 'pr_httpget_year'
 --
 
-CREATE TABLE pr_template_5year (
+CREATE TABLE pr_httpget_year (
   id int(10) unsigned NOT NULL auto_increment,
   probe int(10) unsigned NOT NULL default '0',
   hist int(10) unsigned NOT NULL default '0',
   slot int(4) NOT NULL default '0',
   stattime int(10) unsigned NOT NULL default '0',
   color smallint(5) unsigned NOT NULL default '0',
-  value float NOT NULL default '0',
-  lowest float NOT NULL default '0',
-  highest float NOT NULL default '0',
+  namelookup float NOT NULL default '0',
+  connect float NOT NULL default '0',
+  pretransfer float NOT NULL default '0',
+  total float NOT NULL default '0',
+  PRIMARY KEY  (id),
+  UNIQUE KEY probtime (probe,stattime),
+  KEY probe (probe),
+  KEY hist (hist),
+  KEY slot (slot),
+  KEY stattime (stattime)
+) TYPE=MyISAM;
+
+--
+-- Table structure for table 'pr_httpget_5year'
+--
+
+CREATE TABLE pr_httpget_5year (
+  id int(10) unsigned NOT NULL auto_increment,
+  probe int(10) unsigned NOT NULL default '0',
+  hist int(10) unsigned NOT NULL default '0',
+  slot int(4) NOT NULL default '0',
+  stattime int(10) unsigned NOT NULL default '0',
+  color smallint(5) unsigned NOT NULL default '0',
+  namelookup float NOT NULL default '0',
+  connect float NOT NULL default '0',
+  pretransfer float NOT NULL default '0',
+  total float NOT NULL default '0',
   PRIMARY KEY  (id),
   UNIQUE KEY probtime (probe,stattime),
   KEY probe (probe),

@@ -9,9 +9,10 @@
 struct hostinfo {
   int                   id;             /* server probe id */
   char                  *name;          /* server name */
-  struct sockaddr_in    saddr;          /* internet address */
-  int                   yellowtime;     /* if lower then this value: green */
-  int                   redtime;        /* if higher then this value: red */
+  char                  *host;          /* Host header name */
+  char                  *uri;           /* URI */
+  double                yellowtime;     /* if lower then this value: green */
+  double                redtime;        /* if higher then this value: red */
   int                   ret;            /* return value */
   double                total_time;     /* total retrieval time (sec) */
   double                namelookup_time;/* time in sec for DNS lookup  */
@@ -49,11 +50,11 @@ int run(void)
     MYSQL_ROW row;
 
     char *qry = // no real http probes yet
-      "SELECT server.id, name, ipaddress.ip "
-      "FROM   server, ipaddress "
-      "WHERE  ipaddress.id = server.ipaddress and "
-      "       server.status = 'enabled' "
-      "ORDER  BY name";
+      "SELECT pr_httpget_def.id, server.name, pr_httpget_def.address, " 
+      "       pr_httpget_def.uri, " 
+      "       pr_httpget_def.yellowtime,  pr_httpget_def.redtime "
+      "FROM   pr_httpget_def, server "
+      "WHERE  pr_httpget_def.server = server.id ";
 
     if (mysql_query(mysql, qry)) {
       LOG(LOG_ERR, "%s: %s", qry, mysql_error(mysql));
@@ -65,24 +66,14 @@ int run(void)
     if (result) {
       struct hostinfo **newh = calloc(mysql_num_rows(result)+1, sizeof(struct hostinfo));
       while ((row = mysql_fetch_row(result))) {
-        u_int ip;
-        struct in_addr *ipa = (struct in_addr *)&ip;
-        time_t now = time(NULL);
-        int probeid = atol(row[0]);
-        char *name = row[1];
-        char *ipaddress = row[2];
-
-        if ((ip = inet_addr(ipaddress)) == -1) {
-          LOG(LOG_NOTICE, "illegal ip address for %s: %s", name, ipaddress);
-          continue;
-        }
-
         //if (!strstr(name, "amstel02.netland.nl")) continue;
         newh[id] = calloc(1, sizeof(struct hostinfo));
-        newh[id]->id = probeid;
-        newh[id]->name = strdup(name);
-        newh[id]->saddr.sin_family = AF_INET;
-        newh[id]->saddr.sin_addr = *ipa;;
+        newh[id]->id = atol(row[0]);
+        newh[id]->name = strdup(row[1]);
+        newh[id]->host = strdup(row[2]);
+        newh[id]->uri = strdup(row[3]);
+        newh[id]->yellowtime  = atof(row[4]);
+        newh[id]->redtime = atof(row[5]);
         id++;
       }
       mysql_free_result(result);
@@ -93,6 +84,8 @@ int run(void)
         for (id=0; hosts[id]; id++) {
           printf("%s\n", hosts[id]->name);
           free(hosts[id]->name);
+          free(hosts[id]->host);
+          free(hosts[id]->uri);
           free(hosts[id]);
         }
         free(hosts);
@@ -123,7 +116,7 @@ int run(void)
   /*
    * output format:
    *  <method><lines><probeid><password><date><expires><ipaddress><color>
-   *  <minpingtime><avgpingtime><maxpingtime><hostname>
+   *  <namelookup><connect><firstbyte><total><hostname>
    * <result line 1>
    * <result line 2>
    * <result line 3>
@@ -151,7 +144,7 @@ int run(void)
       }
       if (!spool_printf(spool, "%s %d %d %s %s %d %d %s %d %.3f %.3f %.3f %.3f %s%s\n", 
           "httpget", lines,  hosts[id]->id, OPT_ARG(UWUSER), OPT_ARG(UWPASSWD), (int) now,
-          ((int)now)+(2*60), inet_ntoa(hosts[id]->saddr.sin_addr), color, 
+          ((int)now)+(2*60), "0.0.0.0", color, 
           hosts[id]->namelookup_time, hosts[id]->connect_time, 
           hosts[id]->pretransfer_time, hosts[id]->total_time,
           hosts[id]->name, buffer)) {
@@ -199,7 +192,7 @@ void probe(gpointer data, gpointer user_data)
   CURL *curl;
   char buffer[BUFSIZ];
 
-  sprintf(buffer, "http://%s/", host->name);
+  sprintf(buffer, "http://%s%s", host->host, host->uri);
   curl = curl_easy_init();
 
   curl_easy_setopt(curl, CURLOPT_FILE, host);

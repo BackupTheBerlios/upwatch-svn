@@ -43,9 +43,9 @@
        <sect2 id="write_the_code">
           <title>Write the code</title>
           <para> Create a new directory named <filename>uw_cputemp</filename>, copy all files in
-             <filename>uw_template</filename> to it. Look into
-             those files, do a search and replace all occurrences of <varname>uw_template</varname> with
-             <varname>uw_cputemp</varname>. Go one
+             <filename>templates/probe</filename> to it. Look into
+             those files, do a search and replace all occurrences of <varname>template</varname> with
+             <varname>cputemp</varname>. Go one
              directory up, edit <filename>configure.in</filename>. Add a line <filename>uw_cputemp/Makefile</filename>
               to the  <varname>AC_CONFIG_FILES</varname> section. Add <varname>uw_cputemp</varname> to the
              <varname>PROGNAMES</varname> variable in <filename>Makefile.am</filename>. Run:
@@ -54,6 +54,7 @@
                 $ ./autogen.sh
                 $ ./configure
                 $ cd uw_cputemp
+                $ make clean
                 $ make
           </literallayout>
           <para> No errors should show up.
