@@ -22,6 +22,7 @@ void free_probe(void *probe)
   if (r->dbname) g_free(r->dbname);
   if (r->dbuser) g_free(r->dbuser);
   if (r->dbpasswd) g_free(r->dbpasswd);
+  if (r->query) g_free(r->query);
   g_free(r);
 }
 
@@ -50,7 +51,8 @@ int init(void)
 }
 
 void refresh_database(void);
-int run_actual_probes(void);
+void run_actual_probes(void);
+void write_results(void);
 
 int run(void)
 {
@@ -64,10 +66,14 @@ int run(void)
     refresh_database();
   }
 
-  if (debug > 0) LOG(LOG_DEBUG, "running probes");
+  if (debug > 0) LOG(LOG_DEBUG, "running %d probes", g_hash_table_size(cache));
   uw_setproctitle("running %d probes", g_hash_table_size(cache));
   run_actual_probes(); /* this runs the actual probes */
-  if (debug > 0) LOG(LOG_DEBUG, "done running probes");
+
+  if (debug > 0) LOG(LOG_DEBUG, "writing results");
+  uw_setproctitle("writing results");
+  write_results();
+
   return(g_hash_table_size(cache));
 }
 
@@ -130,22 +136,23 @@ void refresh_database(void)
   mysql_free_result(result);
   if (mysql_errno(mysql)) {
     g_hash_table_foreach(cache, reset_seen, NULL);
-    return;
+  } else {
+    g_hash_table_foreach_remove(cache, return_seen, NULL);
   }
-  g_hash_table_foreach_remove(cache, return_seen, NULL);
 }
 
+void probe(gpointer data, gpointer user_data);
 void add_probe(gpointer key, gpointer value, gpointer user_data)
 {
   GThreadPool *gtpool = (GThreadPool *) user_data;
 
   g_thread_pool_push(gtpool, value, NULL);
+//probe(value, user_data);
 }
 
-void probe(gpointer data, gpointer user_data);
-int run_actual_probes(void)
+void run_actual_probes(void)
 {
-  GThreadPool *gtpool;
+  GThreadPool *gtpool = NULL;
 
   gtpool = g_thread_pool_new(probe, NULL, 10, TRUE, NULL);
 
@@ -153,40 +160,83 @@ int run_actual_probes(void)
     //printf("%s\n", gerror->message);
     //LOG(LOG_ERR, gerror->message);
     fprintf(stderr, "could not create threadpool\n");
-    return(0);
+    return;
   }
+
   g_hash_table_foreach(cache, add_probe, gtpool);
   g_thread_pool_free (gtpool, FALSE, TRUE);
-  return(0);
+}
+
+void write_probe(gpointer key, gpointer value, gpointer user_data)
+{
+  xmlDocPtr doc = (xmlDocPtr) user_data;
+  struct probedef *probe = (struct probedef *)value;
+
+  xmlNodePtr subtree, mysql;
+  int color;
+  char info[1024];
+  char buffer[1024];
+  time_t now = time(NULL);
+
+  info[0] = 0;
+  if (probe->msg) {
+    color = STAT_RED;
+  } else {
+    if (probe->total < probe->yellow) {
+      color = STAT_GREEN;
+    } else if (probe->total > probe->red) {
+      color = STAT_RED;
+    } else {
+      color = STAT_YELLOW;
+    }
+  }
+
+  mysql = xmlNewChild(xmlDocGetRootElement(doc), NULL, "mysql", NULL);
+  sprintf(buffer, "%d", probe->id);           xmlSetProp(mysql, "id", buffer);
+  sprintf(buffer, "%d", (int) now);           xmlSetProp(mysql, "date", buffer);
+  sprintf(buffer, "%d", ((int)now)+(2*60));   xmlSetProp(mysql, "expires", buffer);
+  sprintf(buffer, "%d", color);               subtree = xmlNewChild(mysql, NULL, "color", buffer);
+  sprintf(buffer, "%f", probe->connect);      subtree = xmlNewChild(mysql, NULL, "connect", buffer);
+  sprintf(buffer, "%f", probe->total);        subtree = xmlNewChild(mysql, NULL, "total", buffer);
+  if (probe->msg) {
+    subtree = xmlNewTextChild(mysql, NULL, "info", probe->msg);
+    free(probe->msg);
+    probe->msg = NULL;
+  }
+}
+
+void write_results(void)
+{
+  xmlDocPtr doc = UpwatchXmlDoc("result");
+  g_hash_table_foreach(cache, write_probe, doc);
+  spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc, NULL);
+  xmlFreeDoc(doc);
 }
 
 void probe(gpointer data, gpointer user_data) 
 { 
   char *dbhost, *dbuser, *dbpasswd, *dbname;
   struct probedef *probe = (struct probedef *)data;
+  MYSQL *mysql = mysql_init(NULL);
   MYSQL_RES *result;
   struct timeval start, now;
-
-  if ((mysql = (MYSQL *)malloc(sizeof(MYSQL))) == NULL) {
-    LOG(LOG_ERR, "malloc: %m");
-    return;
-  }
 
   dbhost = probe->ipaddress;
   dbname = probe->dbname;
   dbuser = probe->dbuser;
   dbpasswd = probe->dbpasswd;
 
-  mysql_init(mysql);
-  mysql_options(mysql,MYSQL_OPT_COMPRESS,0);
+  mysql_options(mysql, MYSQL_OPT_COMPRESS, 0);
   gettimeofday(&start, NULL);
   if (!mysql_real_connect(mysql, dbhost, dbuser, dbpasswd, dbname, 0, NULL, 0)) {
     probe->msg = strdup(mysql_error(mysql));
     return;
   }
   gettimeofday(&now, NULL);
-  probe->connect = (float) timeval_diff(&now, &start);
+  probe->connect = ((float) timeval_diff(&now, &start)) * 0.000001;
   if (mysql_query(mysql, probe->query)) {
+    gettimeofday(&now, NULL);
+    probe->total = ((float) timeval_diff(&now, &start)) * 0.000001;
     probe->msg = strdup(mysql_error(mysql));
     return;
   }
@@ -200,6 +250,6 @@ void probe(gpointer data, gpointer user_data)
   mysql_free_result(result);
   mysql_close(mysql);
   gettimeofday(&now, NULL);
-  probe->total = (float) timeval_diff(&now, &start);
+  probe->total = ((float) timeval_diff(&now, &start)) * 0.000001;
   return;
 }

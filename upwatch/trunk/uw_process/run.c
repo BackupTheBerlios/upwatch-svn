@@ -445,7 +445,8 @@ static void insert_pr_status(int class, struct probe_def *def, struct probe_resu
                     class, def->probeid, res->stattime, res->expires, def->color, res->server, 
                     escmsg, def->yellow, def->red);
   mysql_free_result(result);
-  if (mysql_affected_rows(mysql) == 0) { // nothing was actually inserted, it was probably already there
+  if (mysql_affected_rows(mysql) == 0 || (mysql_errno(mysql) == ER_DUP_ENTRY)) { 
+    // nothing was actually inserted, it was probably already there
     LOG(LOG_NOTICE, "insert_pr_status failed, updating current record (class=%u, probe=%u)", class, def->probeid);
     result = my_query("update pr_status "
                       "set    stattime = '%u', expires = '%u', color = '%d', "

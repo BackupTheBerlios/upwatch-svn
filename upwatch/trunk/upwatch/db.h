@@ -1,4 +1,5 @@
 #include <mysql.h>
+#include <mysqld_error.h>
 
 extern MYSQL *mysql;
 int open_database(void);

@@ -20,7 +20,7 @@ static void wait_to_start(void);
 
 int debug;
 int startsec;
-int forever=1;
+int forever=30;
 static int runcounter;
 char *progname;
 
@@ -215,7 +215,7 @@ static void wait_to_start(void)
 {
   int now = cur_second();
   
-  if (debug > 2) { 
+  if (debug > 3) { 
     sleep_seconds = 3;
     fprintf(stderr, "waiting %d seconds..\n", sleep_seconds);
   } else {

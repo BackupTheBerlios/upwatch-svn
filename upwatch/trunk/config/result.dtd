@@ -1,6 +1,6 @@
 <!ELEMENT result	((ping|httpget|iptraf|sysstat|bb_disk|bb_bgp|bb_conn|bb_cpu|bb_dhcp|bb_dns|
                           bb_ftp|bb_http|bb_hylafax|bb_ismtp|bb_msgs|bb_mysql|bb_pop3|
-                          bb_procs|bb_radius|bb_smtp|bb_squid|bb_svcs)*)>
+                          bb_procs|bb_radius|bb_smtp|bb_squid|bb_svcs|mysql)*)>
 <!ATTLIST result	fromhost #REQUIRED> 
 
 <!ELEMENT host		(hostname,ipaddress?)>
@@ -63,6 +63,14 @@
 <!ELEMENT sysstat	(loadavg,user,system,nice,idle,swapin,swapout,
 			blockin,blockout,swapped,free,buffered,cached,used,systemp)>
 <!ATTLIST sysstat	server NMTOKEN #REQUIRED 
+			date NMTOKEN #REQUIRED 
+			expires NMTOKEN #REQUIRED
+			notify NMTOKEN "1" >
+
+<!ELEMENT mysql		(host,color,connect,total,info?)>
+<!ATTLIST mysql		id NMTOKEN #REQUIRED 
+			investigate NMTOKEN #FIXED "tcptraceroute"
+			port NMTOKEN "80"
 			date NMTOKEN #REQUIRED 
 			expires NMTOKEN #REQUIRED
 			notify NMTOKEN "1" >
