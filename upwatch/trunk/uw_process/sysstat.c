@@ -148,7 +148,7 @@ static void *get_def(module *probe, void *probe_res)
     if (row[0]) def->probeid  = atoi(row[0]);
     if (row[1]) def->yellow   = atoi(row[1]);
     if (row[2]) def->red      = atoi(row[2]);
-    if (row[3]) def->server   = atoi(row[3]);
+    if (row[3]) def->contact  = atoi(row[3]);
     strcpy(def->hide, row[4] ? row[4] : "no");
     mysql_free_result(result);
 

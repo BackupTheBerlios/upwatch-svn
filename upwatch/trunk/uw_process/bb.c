@@ -41,7 +41,7 @@ static int fix_result(module *probe, void *probe_res)
 {
   struct bb_result *res = (struct bb_result *)probe_res;
 
-  if (debug) LOG(LOG_DEBUG, "%s: %s %d stattime %u expires %u", 
+  if (debug > 1) LOG(LOG_DEBUG, "%s: %s %d stattime %u expires %u", 
                  res->name, res->hostname, res->color, res->stattime, res->expires);
   return 1; // ok
 }
@@ -77,6 +77,7 @@ static void *get_def(module *probe, void *probe_res)
 
   def = g_malloc0(sizeof(struct probe_result));
   def->stamp    = time(NULL);
+  def->server   = res->server;
   strcpy(def->hide, "no");
 
   // first find the definition based on the serverid
@@ -87,44 +88,48 @@ static void *get_def(module *probe, void *probe_res)
     g_free(def);
     return(NULL);
   }
-  row = mysql_fetch_row(result);
-  if (row && row[0]) {
-    // definition found, get the pr_status
-    res->probeid = atoi(row[0]);
-    def->contact = atoi(row[1]);
-    strcpy(def->hide, row[2] ? row[2] : "no");
-    mysql_free_result(result);
-    result = my_query(probe->db, 0,
-                      "select color "
-                      "from   pr_status "
-                      "where  class = '%u' and probe = '%u'", probe->class, res->probeid);
-    if (result) {
-      row = mysql_fetch_row(result);
-      if (row) {
-        if (row[0]) def->color  = atoi(row[0]);
-      } else {
-        LOG(LOG_NOTICE, "pr_status record for %s id %u (server %s) not found", 
-                         res->name, res->probeid, res->hostname);
-      }
-      mysql_free_result(result);
-    } else {
-      // bad error on the select query
-      def->color  = res->color;
-    }
-  } else {
-    // no def record found? Create one. pr_status will be done later.
+  if (mysql_num_rows(result) == 0) { // DEF RECORD NOT FOUND
     mysql_free_result(result);
     result = my_query(probe->db, 0,
                       "insert into pr_%s_def set server = '%u', " 
                       "       description = '%s', bbname = '%s'", 
                        res->name, res->server, res->hostname, res->bbname);
     mysql_free_result(result);
-    res->probeid = mysql_insert_id(probe->db);
-    LOG(LOG_NOTICE, "pr_bb_def %s created for %s, id = %u", res->bbname, res->hostname, res->probeid);
+    def->probeid = mysql_insert_id(probe->db);
+    LOG(LOG_NOTICE, "pr_bb_def %s created for %s, id = %u", res->bbname, res->hostname, def->probeid);
+    result = my_query(probe->db, 0,
+                    "select id, contact, hide from pr_bb_def "
+                    "where  bbname = '%s' and server = '%u'", res->bbname, res->server);
+    if (!result) return(NULL);
   }
-  def->probeid = res->probeid;
-  def->server = res->server;
-  def->newest = res->stattime;
+  row = mysql_fetch_row(result);
+  if (!row || !row[0]) {
+    LOG(LOG_NOTICE, "no pr_%s_def found for server %u - skipped", res->name, res->server);
+    mysql_free_result(result);
+    return(NULL);
+  }
+
+  // definition found, get the pr_status
+  if (row[0])  def->probeid = atoi(row[0]);
+  if (row[1])  def->contact = atoi(row[1]);
+  strcpy(def->hide, row[2] ? row[2] : "no");
+  mysql_free_result(result);
+
+  result = my_query(probe->db, 0,
+                    "select color "
+                    "from   pr_status "
+                    "where  class = '%u' and probe = '%u'", probe->class, def->probeid);
+  if (result) {
+    row = mysql_fetch_row(result);
+    if (row) {
+      if (row[0]) def->color  = atoi(row[0]);
+    } else {
+      LOG(LOG_NOTICE, "pr_status record for %s id %u (server %s) not found", 
+                       res->name, def->probeid, res->hostname);
+    }
+    mysql_free_result(result);
+  }
+  if (!def->color) def->color = res->color;
 
   return(def);
 }

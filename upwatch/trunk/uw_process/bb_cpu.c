@@ -50,9 +50,11 @@ static int fix_result(module *probe, void *probe_res)
       }
     }
   }
-  if (debug) LOG(LOG_DEBUG, "%s: %s %d stattime:%u expires:%u loadavg:%.2f user:%u idle:%u used:%u free:%u",
-                 res->name, res->hostname, res->color, res->stattime, res->expires,
-                 res->loadavg, res->user, res->idle, res->used, res->free);
+  if (debug > 1) {
+    LOG(LOG_DEBUG, "%s: %s %d stattime:%u expires:%u loadavg:%.2f user:%u idle:%u used:%u free:%u",
+                   res->name, res->hostname, res->color, res->stattime, res->expires,
+                   res->loadavg, res->user, res->idle, res->used, res->free);
+  }
   return 1;
 }
 
@@ -97,6 +99,7 @@ static void *get_def(module *probe, void *probe_res)
   if (def == NULL) {
     def = g_malloc0(sizeof(struct probe_result));
     def->stamp    = time(NULL);
+    def->server   = res->server;
     strcpy(def->hide, "no");
 
     // first find the definition based on the serverid
@@ -114,40 +117,39 @@ static void *get_def(module *probe, void *probe_res)
                         "insert into pr_%s_def set server = '%u', description = '%s'", 
                          res->name, res->server, res->hostname);
       mysql_free_result(result);
-      res->probeid = mysql_insert_id(probe->db);
-      LOG(LOG_NOTICE, "pr_%s_def created for %s, id = %u", res->name, res->hostname, res->probeid);
+      def->probeid = mysql_insert_id(probe->db);
+      LOG(LOG_NOTICE, "pr_%s_def created for %s, id = %u", res->name, res->hostname, def->probeid);
       result = my_query(probe->db, 0, "select id, yellow, red, contact, hide "
                                       "from pr_%s_def where id = '%u'", 
-                        res->name, res->probeid);
+                        res->name, def->probeid);
     }
     row = mysql_fetch_row(result);
-    if (row && row[0]) {
-      // definition found, get the pr_status
-      res->probeid = atoi(row[0]);
-      def->yellow = atof(row[1]);
-      def->red = atof(row[2]);
-      def->contact = atof(row[3]);
-      strcpy(def->hide, row[4] ? row[4] : "no");
+    if (!row || !row[0]) {
+      LOG(LOG_NOTICE, "no pr_%s_def found for server %u - skipped", res->name, res->server);
       mysql_free_result(result);
-      result = my_query(probe->db, 0, 
-                        "select color "
-                        "from   pr_status "
-                        "where  class = '%u' and probe = '%u'", probe->class, res->probeid);
-      if (result) {
-        row = mysql_fetch_row(result);
-        if (row) {
-          if (row[0]) def->color  = atoi(row[0]);
-        } else {
-          LOG(LOG_NOTICE, "pr_status record for %s id %u not found", res->name, res->probeid);
-        }
-        mysql_free_result(result);
+      g_free(def);
+      return(NULL);
+    } 
+    if (row[0]) def->probeid = atoi(row[0]);
+    if (row[1]) def->yellow = atof(row[1]);
+    if (row[2]) def->red = atof(row[2]);
+    if (row[3]) def->contact = atof(row[3]);
+    strcpy(def->hide, row[4] ? row[4] : "no");
+    mysql_free_result(result);
+    result = my_query(probe->db, 0, 
+                      "select color "
+                      "from   pr_status "
+                      "where  class = '%u' and probe = '%u'", probe->class, def->probeid);
+    if (result) {
+      row = mysql_fetch_row(result);
+      if (row) {
+        if (row[0]) def->color  = atoi(row[0]);
       } else {
-        // bad error on the select query
-        def->color  = res->color;
+        LOG(LOG_NOTICE, "pr_status record for %s id %u not found", res->name, def->probeid);
       }
+      mysql_free_result(result);
     }
-    def->probeid = res->probeid;
-    def->server = res->server;
+    if (!def->color) def->color = res->color;
 
     result = my_query(probe->db, 0, 
                       "select stattime from pr_%s_raw use index(probstat) "
@@ -172,7 +174,7 @@ static gint store_raw_result(struct _module *probe, void *probe_def, void *probe
 {
   MYSQL_RES *result;
   struct bb_cpu_result *res = (struct bb_cpu_result *)probe_res;
-  struct bb_cpu_result *def = (struct bb_cpu_result *)probe_def;
+  struct probe_def *def = (struct probe_def *)probe_def;
   char *escmsg;
 
   *seen_before = FALSE;
@@ -209,8 +211,8 @@ static void summarize(module *probe, void *probe_def, void *probe_res, char *fro
   struct probe_def *def = (struct probe_def *)probe_def;
   float avg_yellow, avg_red;
   gfloat avg_loadavg;
-  guint avg_user, avg_system, avg_idle, avg_swapin, avg_swapout, avg_blockin;
-  guint avg_blockout, avg_swapped, avg_free, avg_buffered, avg_cached, avg_used;
+  guint avg_user, avg_system, avg_idle;
+  guint avg_swapped, avg_free, avg_buffered, avg_cached, avg_used;
   guint stattime;
   guint max_color;
 
@@ -218,7 +220,6 @@ static void summarize(module *probe, void *probe_def, void *probe_res, char *fro
 
   result = my_query(probe->db, 0,
                     "select avg(loadavg), avg(user), avg(system), avg(idle), "
-                    "       avg(swapin), avg(swapout), avg(blockin), avg(blockout), "
                     "       avg(swapped), avg(free), avg(buffered), avg(cached), "
                     "       avg(used), max(color), avg(yellow), avg(red) " 
                     "from   pr_bb_cpu_%s use index(probstat) "
@@ -248,18 +249,14 @@ static void summarize(module *probe, void *probe_def, void *probe_res, char *fro
   avg_user    = atoi(row[1]);
   avg_system  = atoi(row[2]);
   avg_idle    = atoi(row[3]);
-  avg_swapin  = atoi(row[4]);
-  avg_swapout = atoi(row[5]);
-  avg_blockin = atoi(row[6]);
-  avg_blockout= atoi(row[7]);
-  avg_swapped = atoi(row[8]);
-  avg_free    = atoi(row[9]);
-  avg_buffered= atoi(row[10]);
-  avg_cached  = atoi(row[11]);
-  avg_used    = atoi(row[12]);
-  max_color   = atoi(row[13]);
-  avg_yellow  = atof(row[14]);
-  avg_red     = atof(row[15]);
+  avg_swapped = atoi(row[4]);
+  avg_free    = atoi(row[5]);
+  avg_buffered= atoi(row[6]);
+  avg_cached  = atoi(row[7]);
+  avg_used    = atoi(row[8]);
+  max_color   = atoi(row[9]);
+  avg_yellow  = atof(row[10]);
+  avg_red     = atof(row[11]);
   mysql_free_result(result);
 
   if (resummarize) {
@@ -272,13 +269,11 @@ static void summarize(module *probe, void *probe_def, void *probe_res, char *fro
   result = my_query(probe->db, 0,
                     "insert into pr_bb_cpu_%s " 
                     "set    loadavg = '%f', user = '%u', system = '%u', idle = '%u', "
-                    "       swapin = '%u', swapout = '%u', blockin = '%u', blockout = '%u', "
                     "       swapped = '%u', free = '%u', buffered = '%u', cached = '%u', "
                     "       used = '%u', probe = %d, color = '%u', stattime = %d, "
                     "       yellow = '%f', red = '%f', slot = '%u'",
                     into, 
                     avg_loadavg, avg_user, avg_system, avg_idle, 
-                    avg_swapin, avg_swapout, avg_blockin, avg_blockout, 
                     avg_swapped, avg_free, avg_buffered, avg_cached, 
                     avg_used, def->probeid, max_color, stattime,
                     avg_yellow, avg_red, slot);

@@ -334,7 +334,7 @@ static void insert_pr_status(module *probe, struct probe_def *def, struct probe_
   result = my_query(probe->db, 0,
                     "insert into pr_status "
                     "set    class =  '%u', probe = '%u', stattime = '%u', expires = '%u', "
-                    "       color = '%u', server = '%u', message = '%s', yellow = '%f', red = '%f'"
+                    "       color = '%u', server = '%u', message = '%s', yellow = '%f', red = '%f', "
                     "       contact = '%u', hide = '%s'",
                     probe->class, def->probeid, res->stattime, res->expires, def->color, def->server, 
                     escmsg, def->yellow, def->red, def->contact, def->hide);

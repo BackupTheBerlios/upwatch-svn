@@ -78,6 +78,21 @@ CREATE TABLE pr_status (
 INSERT INTO pr_status set id = '1', message = 'do NOT delete!';
 
 --
+-- Table structure for table 'rack'
+--
+  
+CREATE TABLE rack (
+  id int unsigned NOT NULL auto_increment,
+  contact int NOT NULL default 1,
+  name varchar(128) NOT NULL default '',
+  comment text NOT NULL,
+  color smallint unsigned NOT NULL default '0',
+  PRIMARY KEY  (id) 
+) TYPE=MyISAM;
+
+INSERT INTO rack set id = '1', name = 'empty', comment = 'do NOT delete!';
+
+--
 -- Table structure for table 'server'
 --
 
