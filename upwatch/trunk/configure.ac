@@ -261,7 +261,7 @@ AC_ARG_WITH(mysql-libs,
 )
 AC_SUBST(MYSQL_LIB_PREFIX)
 
-for libpath in /usr/lib/mysql $MYSQL_LIB_PREFIX /usr/local/lib/mysql /usr/lib /cygdrive/c/mysql/lib/opt
+for libpath in /usr/lib/mysql $MYSQL_LIB_PREFIX /usr/local/lib/mysql /usr/lib /cygdrive/c/mysql/lib/opt /usr/pkg/lib/mysql
 do
   for file in $libpath/libmysqlclient.so* $libpath/mysqlclient.lib
   do
@@ -281,7 +281,7 @@ AC_ARG_WITH(mysql-include,
 )
 AC_SUBST(MYSQL_INC_PREFIX)
 
-for incpath in /usr/include/mysql $MYSQL_LIB_PREFIX /usr/local/include/mysql /cygdrive/c/mysql/include
+for incpath in /usr/include/mysql $MYSQL_LIB_PREFIX /usr/local/include/mysql /cygdrive/c/mysql/include /usr/pkg/include/mysql
 do
   if test -f $incpath/mysql.h
   then
