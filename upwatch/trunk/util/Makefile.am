@@ -14,6 +14,10 @@ if FREEBSD
 FREEBSDLIBS = -lkvm -ldevstat
 endif
 
+if NETBSD
+NETLIBS = -lkvm -ldevstat
+endif
+
 if SOLARIS
 SOLARISLIBS = -lkstat -ldevinfo -lsocket -lnsl
 endif

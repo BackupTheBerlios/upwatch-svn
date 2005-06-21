@@ -10,6 +10,10 @@ if FREEBSD
 FREEBSDLIBS = -lkvm -ldevstat
 endif
 
+if NETBSD
+NETLIBS = -lkvm -ldevstat
+endif
+
 if XMBMON
 XMBMON_LIB = ../xmbmon203/xmbmon.a
 XMBMON_CFLAGS = -DUSE_XMBMON -I../xmbmon203

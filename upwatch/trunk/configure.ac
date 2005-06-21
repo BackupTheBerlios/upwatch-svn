@@ -74,6 +74,23 @@ case $host in
     CFLAGS="${CFLAGS} -I/usr/local/include"
     LDFLAGS="-L/usr/local/lib"
     ;;
+  *-*-netbsd*) 
+    netbsd=true
+    if test "$bindir" = '${exec_prefix}/bin' ; 		then bindir='/usr/bin' ; fi
+    if test "$sbindir" = '${exec_prefix}/sbin' ; 	then sbindir='/usr/sbin' ; fi
+    if test "$libexecdir" = '${exec_prefix}/libexec';	then libexecdir='/usr/libexec' ; fi
+    if test "$datadir" = '${prefix}/share' ;		then datadir='/usr/local/share' ; fi
+    if test "$sysconfdir" = '${prefix}/etc' ;		then sysconfdir='/etc' ; fi
+    if test "$sharedstatedir" = '${prefix}/com' ;	then sharedstatedir='/usr/local/com' ; fi
+    if test "$localstatedir" = '${prefix}/var' ; 	then localstatedir='/var' ; fi
+    if test "$libdir" = '${exec_prefix}/lib' ; 		then libdir='/usr/lib' ; fi
+    if test "$includedir" = '${prefix}/include' ; 	then includedir='/usr/include' ; fi
+    if test "$oldincludedir" = '/usr/include' ; 	then oldincludedir='/usr/include' ; fi
+    if test "$infodir" = '${prefix}/info' ; 		then infodir='/usr/share/info' ; fi
+    if test "$mandir" = '${prefix}/man' ;		then mandir='/usr/share/man' ; fi
+    CFLAGS="${CFLAGS} -I/usr/local/include -I/usr/pkg/include"
+    LDFLAGS="-L/usr/local/lib -L/usr/pkg/lib"
+    ;;
   *-*-solaris*)
     solaris=true
     if test "$bindir" = '${exec_prefix}/bin' ; 		then bindir='/usr/bin' ; fi
@@ -112,6 +129,7 @@ esac
 
 AM_CONDITIONAL(LINUX, test x$linux = xtrue)
 AM_CONDITIONAL(FREEBSD, test x$freebsd = xtrue)
+AM_CONDITIONAL(NETBSD, test x$netbsd = xtrue)
 AM_CONDITIONAL(SOLARIS, test x$solaris = xtrue)
 AM_CONDITIONAL(CYGWIN, test x$cygwin = xtrue)
 
@@ -227,6 +245,10 @@ fi
 if test -f /usr/local/lib64/libopts.a
 then
   LIBOPTS=/usr/local/lib64/libopts.a
+fi
+if test -f /usr/pkg/lib/libopts.a
+then
+  LIBOPTS=/usr/pkg/lib/libopts.a
 fi
 AC_SUBST(LIBOPTS)
 

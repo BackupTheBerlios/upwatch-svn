@@ -6,6 +6,9 @@ endif
 if FREEBSD
 MYCFLAGS = -DFREEBSD
 endif
+if NETBSD
+MYCFLAGS = -DNETBSD
+endif
 if SOLARIS
 MYCFLAGS = -DSOLARIS
 endif
