@@ -25,7 +25,7 @@ probe.h: ../uw_acceptbb/probe.res_h  ../uw_acceptbb/probe.res_h ../uw_httpget/pr
  ../uw_sysstat/probe.res_h ../uw_smtp/probe.res_h ../uw_tcpconnect/probe.res_h ../uw_mysqlstats/probe.res_h
 
 %/probe.res_h:
-	( cd $(@:%/probe.res_h=%) ; make probe.res_h )
+	( cd $(@:%/probe.res_h=%) ; $(MAKE) probe.res_h )
 endif
 
 libupwatch_a_SOURCES = $(sources)
