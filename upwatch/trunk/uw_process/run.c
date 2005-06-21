@@ -3,6 +3,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
+#include <sys/signal.h>
 #include <unistd.h>
 #include "uw_process_glob.h"
 
