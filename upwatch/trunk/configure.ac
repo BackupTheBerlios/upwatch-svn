@@ -270,6 +270,27 @@ then
 fi
 AC_SUBST(LIBOPTS)
 
+# path to autoopts includes
+AC_ARG_WITH(autoopts-include,
+    [  --with-autoopts-include=<path>        prefix of autoopts headers. Default /usr/include/],
+    [LIBOPTS_INC_PREFIX=$with_autoopts_include],
+    [LIBOPTS_INC_PREFIX=/usr/include/]
+)
+AC_SUBST(LIBOPTS_INC_PREFIX)
+
+for incpath in /usr/include/ $LIBOPTS_LIB_PREFIX /usr/local/include/ /cygdrive/c/include /usr/pkg/include/
+do
+  if test -f $incpath/options.h
+  then
+    LIBOPTS_CFLAGS="-I${incpath}"
+  fi
+  if test -f $incpath/autoopts/options.h
+  then
+    LIBOPTS_CFLAGS="-I${incpath}/autoopts"
+  fi
+done
+
+AC_SUBST(LIBOPTS_CFLAGS)
 ################## MYSQL
 # path to libmysqlclient stuff:.
 AC_ARG_WITH(mysql-libs,

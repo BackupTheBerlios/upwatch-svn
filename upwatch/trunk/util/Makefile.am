@@ -46,7 +46,7 @@ include $(top_srcdir)/Makefile.am.common
 
 uwq_SOURCES = uwq.c uwq_options.h uwq_options.c uwq_options.def 
 uwq_LDADD = $(LIBOPTS) @LIBGLIB2_LIBS@
-uwq_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@
+uwq_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ @LIBOPTS_CFLAGS@
 BUILT_SOURCES += uwq_options.h uwq.1
 EXTRA_DIST += uwq_options.def
 CLEAN_FILES = uwq_options.h uwq_options.c
@@ -72,7 +72,7 @@ ctime.1: ctime_options.def $(top_srcdir)/common/man1.tpl
 	autogen -b ctime $(AGDEFINES) $(GENINCL) -T $(MAN1TPL) ctime_options.def
 
 slot_SOURCES = slot.c slot_options.c slot_options.h slot_options.def
-slot_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@
+slot_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ @LIBOPTS_CFLAGS@
 slot_LDADD = $(LIBOPTS) $(LIBUPWATCH) 
 BUILT_SOURCES += slot_options.h
 EXTRA_DIST += slot_options.def
@@ -86,7 +86,7 @@ slot.1: slot_options.def $(top_srcdir)/common/man1.tpl
 	autogen -b slot $(AGDEFINES) $(GENINCL) -T $(MAN1TPL) slot_options.def
 
 chklog_SOURCES = chklog.c chklog_options.c chklog_options.h chklog_options.def
-chklog_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ @LIBPCRE_CFLAGS@
+chklog_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ @LIBPCRE_CFLAGS@ @LIBOPTS_CFLAGS@
 chklog_LDADD = @LIBGLIB2_LIBS@ @LIBPCRE_LIBS@ $(LIBOPTS) $(LIBUPWATCH) 
 BUILT_SOURCES += chklog_options.h
 EXTRA_DIST += chklog_options.def

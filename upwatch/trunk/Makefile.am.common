@@ -32,11 +32,11 @@ AGDEFINES = -Dconfdir=$(confdir) -Dsysconfdir=$(sysconfdir) -Dsbindir=$(sbindir)
 
 %_main.o: $(top_srcdir)/common/main.c $(@:%_main.o=%.def) $(CMDDEF)
 	$(COMPILE) -include $(@:%_main.o=%.h) -o $@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ \
-		@MYSQL_CFLAGS@ $(AM_CFLAGS) -c $(top_srcdir)/common/main.c
+		@MYSQL_CFLAGS@ @LIBOPTS_CFLAGS@ $(AM_CFLAGS) -c $(top_srcdir)/common/main.c
 
 %_db.o: $(top_srcdir)/common/db.c $(@:%_db.o=%.def) $(CMDDEF)
 	$(COMPILE) -include $(@:%_db.o=%.h) -o $@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ \
-		@MYSQL_CFLAGS@ $(AM_CFLAGS) -c $(top_srcdir)/common/db.c
+		@MYSQL_CFLAGS@ @LIBOPTS_CFLAGS@ $(AM_CFLAGS) -c $(top_srcdir)/common/db.c
 
 %.c %.h: %.def
 	autogen -b $(<:%.def=%) $(AGDEFINES) $(GENINCL) $<
