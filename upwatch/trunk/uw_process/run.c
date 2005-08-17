@@ -673,7 +673,7 @@ int run(void)
   if (debug > 3) { LOG(LOG_DEBUG, "run()"); }
 
   if (HAVE_OPT(SUMMARIZE)) {
-static int resummarize(void);
+    int resummarize(void);
     return(resummarize()); // --summarize
   }
 
@@ -690,7 +690,7 @@ static int resummarize(void);
   return(count);
 }
 
-static int resummarize(void)
+int resummarize(void)
 {
   gint idx, found;
   trx t;
