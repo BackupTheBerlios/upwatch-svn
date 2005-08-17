@@ -12,6 +12,10 @@
 #include <db.h>
 #endif
 
+#ifndef ETIME
+#define ETIME ETIMEDOUT                         /* For OpenBSD and possibly more platforms */
+#endif
+
 #ifdef USE_ST
 #include <st.h>
 #define sleep st_sleep
