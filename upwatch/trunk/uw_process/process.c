@@ -478,6 +478,9 @@ int process(trx *t)
   if (t->seen_before) {
     goto finish;
   }
+  
+  // Extra debugging, be sure what colors are processed here
+  if ( debug > 3 ) fprintf(stderr, "PREVIOUS COLOR %d - NEW COLOR %d\n", prv->color, t->res->color);
 
   // IF COLOR DIFFERS FROM PRECEDING RAW RECORD
   if (t->res->color != prv->color) {
