@@ -134,7 +134,7 @@
         </para>
         <literallayout>
            $ mysql -u root --PASSWORD=PASSWORD mysql
-           mysql> GRANT SELECT ON upwatch.% TO probe@'192.168.1.23' IDENTIFIED BY 'PASSWD'
+           mysql> GRANT SELECT ON upwatch.* TO probe@'192.168.1.23' IDENTIFIED BY 'PASSWD'
         </literallayout>
         <para>Do this for every host that runs probes.</para>
         <para>Next user is for the background processing (user upwatch) and the php access (user uwww):</para>
