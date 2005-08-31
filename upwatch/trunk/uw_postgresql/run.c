@@ -110,7 +110,7 @@ void refresh_database(MYSQL *mysql)
                 "       pr_postgresql_def.yellow,  pr_postgresql_def.red "
                 "FROM   pr_postgresql_def, pr_realm "
                 "WHERE  pr_postgresql_def.id > 1 and pr_postgresql_def.disable <> 'yes'"
-                "       and pr_postgresql_def.pgroup = '%d'",
+                "       and pr_postgresql_def.pgroup = '%d' and pr_realm.id = pr_postgresql_def.domid",
                 (unsigned)OPT_VALUE_GROUPID);
 
   result = my_query(mysql, 1, qry);
