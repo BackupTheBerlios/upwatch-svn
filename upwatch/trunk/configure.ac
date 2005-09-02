@@ -591,6 +591,10 @@ then
 	then
 		LIBPQ_CFLAGS=-I/usr/include/postgresql
 	fi
+	if test -f /usr/local/include/postgresql/libpq-fe.h
+	then
+		LIBPQ_CFLAGS=-I/usr/local/include/postgresql
+	fi
 fi
 AM_CONDITIONAL(HAVE_LIBPQ, test $HAVE_LIBPQ -eq 1)
 AC_SUBST(LIBPQ_LIBS)
