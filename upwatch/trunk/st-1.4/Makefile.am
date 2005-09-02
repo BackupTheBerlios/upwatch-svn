@@ -9,6 +9,9 @@ endif
 if NETBSD
 MYCFLAGS = -DNETBSD
 endif
+if OPENBSD
+MYCFLAGS = -DOPENBSD
+endif
 if SOLARIS
 MYCFLAGS = -DSOLARIS
 endif
