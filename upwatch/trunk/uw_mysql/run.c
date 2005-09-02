@@ -248,14 +248,15 @@ void probe(gpointer data, gpointer user_data)
   MYSQL *mysql = mysql_init(NULL);
   MYSQL_RES *result;
   struct timeval start, now;
+  unsigned int option;
 
   dbhost = probe->ipaddress;
   dbname = probe->dbname;
   dbuser = probe->dbuser;
   dbpasswd = probe->dbpasswd;
 
-  /* mysql_options(mysql, MYSQL_OPT_COMPRESS, 0); */
-  /* mysql_options(mysql, MYSQL_OPT_CONNECT_TIMEOUT, 50); */
+  option = 0 ; mysql_options(mysql, MYSQL_OPT_COMPRESS, &option);
+  option = 50; mysql_options(mysql, MYSQL_OPT_CONNECT_TIMEOUT, &option);
   gettimeofday(&start, NULL);
   if (!mysql_real_connect(mysql, dbhost, dbuser, dbpasswd, dbname, 0, NULL, 0)) {
     probe->msg = strdup(mysql_error(mysql));
