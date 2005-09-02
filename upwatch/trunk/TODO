@@ -3,7 +3,12 @@
 - uw_snmp, snmp trap catcher
 - uw_ftp/uw_https etc
 - uw_diskfree
-- opensource it
+- opensource it (done?)
+- some classes/libs to make integration in a current website easy (perl/php etc)
+- example frontend that uses those classes
+- fix uw_dns
+- make uw_accept email in other languages than dutch (should be configured in the database, each contact has his own language) (gettext?)
+- more ways for uw_process to notify contacts ( jabber? )
 
 Adapt specfile for multiple distributions. This may be useful:
 
