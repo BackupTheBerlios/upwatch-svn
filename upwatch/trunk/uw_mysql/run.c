@@ -1,4 +1,5 @@
 #include "config.h"
+#include <db.h>
 #include <generic.h>
 #include <sys/time.h>
 
