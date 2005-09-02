@@ -1,15 +1,16 @@
-This is version 0.3 of UpWatch, a device monitoring and statistics
+This is version 0.98 of UpWatch, a device monitoring and statistics
 framework. UpWatch boasts extendability, extreme speed and scalability,
 useful statistics and graphs, and a web interface.
 
 Currently it uses PHP, MySQL, and the daemons are written in C.
  
-CVS =================================================================
+SVN =================================================================
 
-If you have CVS access, issue the following commands:
+If you have SVN access, issue the following commands:
 
-cvs checkout upwatch
-./autogen.sh
+svn checkout svn://svn.berlios.de/upwatch/upwatch/trunk upwatch
+cd upwatch
+cfg/bootstrap
 ./configure
 make
 
