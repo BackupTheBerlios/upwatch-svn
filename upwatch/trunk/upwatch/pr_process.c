@@ -20,7 +20,7 @@
 //*******************************************************************
 // For probes that use no cache: disable this field
 //******************************************************************* 
-int init_no_cache(module *probe)
+void init_no_cache(module *probe)
 {
   probe->needs_cache = 0;
 }

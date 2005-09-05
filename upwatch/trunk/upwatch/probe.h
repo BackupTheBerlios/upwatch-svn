@@ -60,7 +60,7 @@ typedef struct transaction {
   int (*process)(struct transaction *t);
 } trx;
 
-int init_no_cache(module *probe);
+void init_no_cache(module *probe);
 
 #define STANDARD_MODULE_STUFF(a) PROBE_##a, #a, NULL, 1, NULL, \
   NULL, sizeof(struct a##_result), sizeof(struct a##_def), 0, 0, 0, 0, 0
