@@ -111,7 +111,7 @@ void refresh_database(MYSQL *mysql)
                 "       pr_tcpconnect_def.yellow,  pr_tcpconnect_def.red "
                 "FROM   pr_tcpconnect_def, pr_realm "
                 "WHERE  pr_tcpconnect_def.id > 1 and pr_tcpconnect_def.disable <> 'yes'"
-                "       and pr_tcpconnect_def.pgroup = '%d' and pr_realm.id = pr_tcpconnect_def.domid",
+		"       and pr_tcpconnect_def.pgroup = '%d' and pr_realm.id = pr_tcpconnect_def.domid",	
                 (unsigned)OPT_VALUE_GROUPID);
 
   result = my_query(mysql, 1, qry);
@@ -127,6 +127,7 @@ void refresh_database(MYSQL *mysql)
     probe = g_hash_table_lookup(cache, &id);
     if (!probe) {
       probe = g_malloc0(sizeof(struct probedef));
+      probe->id = id;
       if (atoi(row[1]) > 1) {
         probe->probeid = atoi(row[2]);
         probe->realm = strdup(row[3]);
