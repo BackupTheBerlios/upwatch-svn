@@ -191,25 +191,25 @@ static int do_notification(trx *t)
     body_probe_def[0] = 0;
   }
   if (t->res->message) {
-    sprintf(msg, "\nDe volgende melding werd hierbij gegeven:\n%s\n", t->res->message);
+    sprintf(msg, "\nFollowing response has been received:\n%s\n", t->res->message);
   } else {
     msg[0] = 0;
   }
-  sprintf(body, "Geachte klant,\n\n"
-                "zojuist, om %s"
-                "is de status van de probe %s\n"
-                "op server %s\n"
-                "overgegaan van %s in %s\n"
+  sprintf(body, "Dear customer,\n\n"
+                "Moments ago, at %s"
+                "the status of probe %s\n"
+                "at server %s\n"
+                "has changed from %s to %s\n"
                 "%s:\n%s\n"
                 "%s"
                 "\n"
-                "vriendelijke groet\n"
+                "regards,\n"
                 "%s\n", 
                    ctime((time_t *)&t->res->stattime), 
                    t->probe->module_name,
                    servername, 
                    color2string(t->res->prevhistcolor), color2string(t->res->color),
-                   body_probe_def[0] ? "\nGegevens van deze probe" : "", body_probe_def,
+                   body_probe_def[0] ? "\nProbe details" : "", body_probe_def,
                    msg,
                    OPT_ARG(FROM_NAME)
   );
