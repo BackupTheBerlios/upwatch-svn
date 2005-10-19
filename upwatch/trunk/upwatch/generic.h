@@ -8,6 +8,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <glib.h>
+#include <netdb.h>
 #if defined(ENABLE_SERVER) || defined(ENABLE_MONITORS)
 #include <db.h>
 #endif
@@ -98,11 +99,17 @@ char *color2string(int color);
 
 // not exactly the right place for these defines but i'm lazy
 #define ST_INITIATE(a) \
+  struct hostent *h; \
   memset(&rmt, 0, sizeof(struct sockaddr_in)); \
   rmt.sin_family = AF_INET; \
   rmt.sin_port = htons((uint16_t)a); \
+  /* try to resolve, one shot attempt ! */ \
+  h = gethostbyname (probe->ipaddress); \
+  rmt.sin_addr.s_addr = *(in_addr_t *) (h->h_addr_list[0]); \
+  if (rmt.sin_addr.s_addr == INADDR_NONE) /* Nothing valid is returned, so assume a ipaddress was given */ { \
   rmt.sin_addr.s_addr = inet_addr(probe->ipaddress); \
-  if (rmt.sin_addr.s_addr == INADDR_NONE) { \
+  } \
+  if (rmt.sin_addr.s_addr == INADDR_NONE) /* still no valid ip */{ \
     char buf[50]; \
 \
     sprintf(buf, "Illegal IP address '%s'", probe->ipaddress); \
