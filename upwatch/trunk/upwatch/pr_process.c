@@ -35,7 +35,7 @@ int set_result_value(trx *t, char *name, char *value)
   int found = FALSE;
 
   for (cur = cur->xmlChildrenNode; cur != NULL; cur = cur->next) {
-    if ((!xmlStrcmp(cur->name, (const xmlChar *) name)) && (cur->ns == t->ns)) {
+    if ((!xmlStrcmp(cur->name, (const xmlChar *) name)) && (xmlNsEqual(cur->ns, t->ns))) {
       xmlNodeSetContent(cur, value);
       found = TRUE;
       break;
@@ -92,11 +92,11 @@ int extract_info_from_xml(trx *t)
     char *p;
 
     if (xmlIsBlankNode(t->cur)) continue;
-    if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "color")) && (t->cur->ns == t->ns)) {
+    if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "color")) && (xmlNsEqual(t->cur->ns, t->ns))) {
       res->color = xmlNodeListGetInt(t->doc, t->cur->xmlChildrenNode, 1);
       continue;
     }
-    if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "info")) && (t->cur->ns == t->ns)) {
+    if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "info")) && (xmlNsEqual(t->cur->ns, t->ns))) {
       p = xmlNodeListGetString(t->doc, t->cur->xmlChildrenNode, 1);
       if (p) { 
         res->message = strdup(p); 
@@ -104,11 +104,11 @@ int extract_info_from_xml(trx *t)
       }
       continue;
     }
-    if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "prevcolor")) && (t->cur->ns == t->ns)) {
+    if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "prevcolor")) && (xmlNsEqual(t->cur->ns, t->ns))) {
       res->prevcolor = xmlNodeListGetInt(t->doc, t->cur->xmlChildrenNode, 1);
       continue;
     }
-    if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "host")) && (t->cur->ns == t->ns)) {
+    if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "host")) && (xmlNsEqual(t->cur->ns, t->ns))) {
       p = xmlNodeListGetString(t->doc, t->cur->xmlChildrenNode, 1);
       if (p) { 
         res->hostname = strdup(p); 
@@ -116,12 +116,12 @@ int extract_info_from_xml(trx *t)
       }
       continue;
     }
-    if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "host")) && (t->cur->ns == t->ns)) {
+    if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "host")) && (xmlNsEqual(t->cur->ns, t->ns))) {
       xmlNodePtr hname;
 
       for (hname = t->cur->xmlChildrenNode; hname != NULL; hname = hname->next) {
         if (xmlIsBlankNode(hname)) continue;
-        if ((!xmlStrcmp(hname->name, (const xmlChar *) "hostname")) && (hname->ns == t->ns)) {
+        if ((!xmlStrcmp(hname->name, (const xmlChar *) "hostname")) && (xmlNsEqual(hname->ns, t->ns))) {
           p = xmlNodeListGetString(t->doc, hname->xmlChildrenNode, 1);
           if (p) {
             res->hostname = strdup(p);
@@ -129,7 +129,7 @@ int extract_info_from_xml(trx *t)
           }
           continue;
         }
-        if ((!xmlStrcmp(hname->name, (const xmlChar *) "ipaddress")) && (hname->ns == t->ns)) {
+        if ((!xmlStrcmp(hname->name, (const xmlChar *) "ipaddress")) && (xmlNsEqual(hname->ns, t->ns))) {
           p = xmlNodeListGetString(t->doc, hname->xmlChildrenNode, 1);
           if (p) {
             res->ipaddress = strdup(p);
@@ -456,8 +456,9 @@ int handle_result_file(gpointer data, gpointer user_data)
       } else if (strcmp(t->cur->name, modules[i]->module_name)) {
         continue;
       } 
+      xmlReconciliateNs(t->doc, t->cur);
 
-      if (t->cur->ns != t->ns) {
+      if (!xmlNsEqual(t->cur->ns, t->ns)) {
         LOG(LOG_WARNING, "%s: namespace %s != %s", t->cur->name, t->cur->ns, t->ns);
         //continue;
       }

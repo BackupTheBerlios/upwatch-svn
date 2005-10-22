@@ -36,19 +36,19 @@ void iptraf_get_from_xml(trx *t)
 {
   struct iptraf_result *res = (struct iptraf_result *)t->res;
 
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "incoming")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "incoming")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->incoming = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "in")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "in")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->incoming = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "outgoing")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "outgoing")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->outgoing = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "out")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "out")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->outgoing = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }

@@ -17,19 +17,19 @@ void ping_get_from_xml(trx *t)
 {
   struct ping_result *res = (struct ping_result *)t->res;
 
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "lowest")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "lowest")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->lowest = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "average")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "average")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->average = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "value")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "value")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->average = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "highest")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "highest")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->highest = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }

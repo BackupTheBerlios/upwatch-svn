@@ -17,59 +17,59 @@ void sysstat_get_from_xml(trx *t)
 {
   struct sysstat_result *res = (struct sysstat_result *)t->res;
 
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "loadavg")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "loadavg")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->loadavg = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "user")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "user")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->user = xmlNodeListGetInt(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "system")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "system")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->system = xmlNodeListGetInt(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "idle")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "idle")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->idle = xmlNodeListGetInt(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "swapin")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "swapin")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->swapin = xmlNodeListGetInt(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "swapout")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "swapout")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->swapout = xmlNodeListGetInt(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "blockin")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "blockin")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->blockin = xmlNodeListGetInt(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "blockout")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "blockout")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->blockout = xmlNodeListGetInt(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "swapped")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "swapped")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->swapped = xmlNodeListGetInt(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "free")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "free")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->free = xmlNodeListGetInt(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "buffered")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "buffered")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->buffered = xmlNodeListGetInt(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "cached")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "cached")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->cached = xmlNodeListGetInt(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "used")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "used")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->used = xmlNodeListGetInt(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "systemp")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "systemp")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->systemp = xmlNodeListGetInt(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }

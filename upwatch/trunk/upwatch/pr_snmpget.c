@@ -17,7 +17,7 @@ void snmpget_get_from_xml(trx *t)
 {
   struct snmpget_result *res = (struct snmpget_result *)t->res;
 
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "value")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "value")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->value = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }

@@ -132,3 +132,16 @@ gfloat xmlGetPropFloat(xmlNodePtr node, const xmlChar *name)
   return(ret);
 }
 
+int xmlNsEqual(xmlNs *ns1, xmlNs *ns2) {
+  if (ns1 == NULL && ns2 == NULL) return 1;
+  if (ns1 == NULL || ns2 == NULL) return 0;
+
+  if (ns1->type != XML_NAMESPACE_DECL || ns2->type != XML_NAMESPACE_DECL) {
+    return 0;
+  }
+
+  if (ns1->href == NULL || ns2->href == NULL) {
+    return 0;
+  }  
+  return xmlStrcmp(ns1->href, ns2->href) ? 0 : 1;
+}

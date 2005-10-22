@@ -11,3 +11,5 @@ xmlDocPtr UpwatchXmlDoc(const char *root, char *fromhost);
 
 void UpwatchXmlGenericErrorFunc(void *ctx, const char *fmt, ...);
 
+int xmlNsEqual(xmlNs *ns1, xmlNs *ns2);
+

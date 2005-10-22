@@ -17,19 +17,19 @@ void httpget_get_from_xml(trx *t)
 {
   struct httpget_result *res = (struct httpget_result *)t->res;
 
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "lookup")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "lookup")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->lookup = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "connect")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "connect")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->connect = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "pretransfer")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "pretransfer")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->pretransfer = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "total")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "total")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->total = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }

@@ -17,55 +17,55 @@ void hwstat_get_from_xml(trx *t)
 {
   struct hwstat_result *res = (struct hwstat_result *)t->res;
 
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "temp1")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "temp1")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->temp1 = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "temp2")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "temp2")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->temp2 = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "temp3")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "temp3")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->temp3 = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "rot1")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "rot1")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->rot1 = xmlNodeListGetInt(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "rot2")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "rot2")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->rot2 = xmlNodeListGetInt(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "rot3")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "rot3")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->rot3 = xmlNodeListGetInt(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "vc0")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "vc0")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->vc0 = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "vc1")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "vc1")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->vc1 = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "v33")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "v33")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->v33 = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "v50p")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "v50p")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->v50p = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "v12p")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "v12p")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->v12p = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "v12n")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "v12n")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->v12n = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "v50n")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "v50n")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->v50n = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }

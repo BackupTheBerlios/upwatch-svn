@@ -17,19 +17,19 @@ void mysqlstats_get_from_xml(trx *t)
 {
   struct mysqlstats_result *res = (struct mysqlstats_result *)t->res;
 
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "selectq")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "selectq")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->selectq = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "insertq")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "insertq")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->insertq = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "updateq")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "updateq")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->updateq = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
-  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "deleteq")) && (t->cur->ns == t->ns)) {
+  if ((!xmlStrcmp(t->cur->name, (const xmlChar *) "deleteq")) && (xmlNsEqual(t->cur->ns, t->ns))) {
     res->deleteq = xmlNodeListGetFloat(t->doc, t->cur->xmlChildrenNode, 1);
     return;
   }
