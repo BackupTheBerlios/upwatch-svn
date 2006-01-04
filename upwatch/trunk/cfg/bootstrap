@@ -1,4 +1,16 @@
 #! /bin/sh
+
+# test if libtoolize is called glibtoolize (MacOSX)
+BOGUS=`glibtoolize -n 2>/dev/null`
+TEST=$?
+if [ x$TEST == "x0" ]
+then
+	LIBTOOLIZE=glibtoolize
+else
+	# assume it is just installed
+	LIBTOOLIZE=libtoolize
+fi
+
 set -x
 
 # libstatgrab
@@ -9,7 +21,7 @@ cd libstatgrab
 #  patch -p1 < libstatgrab-openbsd.patch
   aclocal
   autoheader
-  libtoolize
+  $LIBTOOLIZE
   autoconf
   automake --gnu --add-missing
 #fi
@@ -17,7 +29,7 @@ cd ..
 
 aclocal \
 && autoheader \
-&& libtoolize \
+&& $LIBTOOLIZE \
 && autoconf \
 && automake --gnu --add-missing 
 
