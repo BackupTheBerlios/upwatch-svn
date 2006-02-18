@@ -44,6 +44,7 @@ static gint sysstat_store_raw_result(trx *t)
   if (mysql_errno(t->probe->db) == ER_DUP_ENTRY) {
     t->seen_before = TRUE;
   } else if (mysql_errno(t->probe->db)) {
+    LOG(LOG_WARNING, "%s:[%u] %s", "insert into pr_sysstat_raw", mysql_errno(t->probe->db), mysql_error(t->probe->db));
     return 0; // other failure
   }
   return 1; // success

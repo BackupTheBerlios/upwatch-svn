@@ -52,7 +52,7 @@ static gint iptraf_store_raw_result(trx *t)
   if (res->color > def->slotday_max_color) {
     def->slotday_max_color = res->color;
   }
-  sprintf(buf, "(DEFAULT, '%u', '%f', '%f', '0', '%u', '%u', '%f', '%f', '')",
+  sprintf(buf, "(DEFAULT, '%u', '%f', '%f', '%u', '%u', '%f', '%f', '')",
                def->probeid, def->yellow, def->red, res->stattime, res->color,
                res->incoming, res->outgoing);
 
