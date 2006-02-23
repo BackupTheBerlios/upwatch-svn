@@ -10,6 +10,8 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 #include <dirent.h>
 #include <ctype.h>
 #include <fcntl.h>
@@ -303,6 +305,8 @@ int init(void)
   every = EVERY_SECOND;
   xmlSetGenericErrorFunc(NULL, UpwatchXmlGenericErrorFunc);
   sleep(2); // ensure we wait until the next minute
+
+  setpriority(PRIO_PROCESS, 0, 5); // we are not very important - be nice to other processes
   return 1;
 }
 
