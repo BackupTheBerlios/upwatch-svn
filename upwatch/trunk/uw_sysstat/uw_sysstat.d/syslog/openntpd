@@ -5,4 +5,6 @@ green [LOGDATE] ntpd[PID]: peer [IPADDR] now valid
 green [LOGDATE] services[NUM] ntpd[PID]: listening on [IPADDR]
 green [LOGDATE] services[NUM] ntpd[PID]: ntp engine ready
 green [LOGDATE] services[NUM] ntpd[PID]: peer [IPADDR] now valid
-
+green [LOGDATE] ntpd[PID]: adjusting local clock by
+green [LOGDATE] ntpd[PID]: Terminating
+red [LOGDATE] ntpd[PID]: adjtime failed: Invalid argument
