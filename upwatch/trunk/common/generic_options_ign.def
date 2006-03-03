@@ -1,0 +1,32 @@
+flag = {
+    name      = syslog;
+    value     = s;
+    arg_type  = bool;
+    descrip   = "ignored";
+};
+
+flag = {
+    name      = stderr;
+    settable;
+    value     = e;
+    arg_type  = bool;
+    descrip   = "ignored";
+};
+
+flag = {
+    name      = debug;
+    value     = d;
+    arg_type  = number;
+    arg-default = 0;
+    arg-range = '0->9';
+    descrip   = "ignored";
+};
+
+flag = {
+    name      = logfile;
+    value     = l;
+    arg_type  = string;
+    arg-default = "/var/log/upwatch/upwatch.log";
+    descrip   = "ignored";
+};
+

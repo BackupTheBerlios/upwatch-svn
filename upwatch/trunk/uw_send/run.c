@@ -11,14 +11,29 @@
 #ifdef USE_ST
 #include <st.h>
 #else
+void sigalarm_handler (int signum)
+{
+  LOG(LOG_NOTICE, "SIGALRM received", signum);
+}
+
 int st_read(int fd, void *buf, size_t size, int timeout)
 {
-  return(read(fd, buf, size));
+  int ret;
+
+  alarm(timeout/1000000L);
+  ret = read(fd, buf, size);
+  alarm(0);
+  return ret;
 }
 
 int st_write(int fd, void *buf, size_t size, int timeout)
 {
-  return(write(fd, buf, size));
+  int ret;
+
+  alarm(timeout/1000000L);
+  ret = write(fd, buf, size);
+  alarm(0);
+  return ret;
 }
 #define st_netfd_fileno 
 #define st_netfd_t int
@@ -62,10 +77,19 @@ void queue_free(void *val)
 
 int init(void)
 {
+
   int ct = 0;
   char **input;
   char **host, **port, **user, **pwd, **thr;
   int i = 0;
+#ifndef USE_ST
+  struct sigaction new_action;
+
+  new_action.sa_handler = sigalarm_handler;
+  sigemptyset (&new_action.sa_mask);
+  new_action.sa_flags = 0;
+  sigaction (SIGALRM, &new_action, NULL);
+#endif
 
   hash = g_hash_table_new_full(g_str_hash, g_str_equal, g_free, queue_free);
 

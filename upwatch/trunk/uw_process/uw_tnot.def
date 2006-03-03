@@ -244,7 +244,7 @@ flag = {
 then start the debugger and run the program with `-d3 --slave q_iptraf`';
 };
 
+#include license_gpl.def
 #include dbase_options.def
 #include generic_options.def
-#include license_gpl.def
 

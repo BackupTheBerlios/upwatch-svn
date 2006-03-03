@@ -1,21 +1,3 @@
-export        = "#include <config.h>";
-export        = "#include <limits.h>";
-export        = "#include <stdio.h>";
-export        = "#include <stdlib.h>";
-
-explain;
-long-opts;
-
-copyright = {
-  date = "2002";
-  author=  "Ron Arts";
-  owner = "Upwatch BV";
-  eaddr = "info@upwatch.com";
-  type = "NOTE";
-  text = 
-'Redistribution Prohibited. Violation will be prosecuted to the maximum extent possible by applicable law.';
-};
-
 flag = {
     name      = verbose;
     value     = v;

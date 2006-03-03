@@ -134,4 +134,5 @@ from or to the specified network. Note only CIDR format is supported
 (192.168.170.0/24)";
 };
 
+#include license_gpl.def
 #include generic_options.def

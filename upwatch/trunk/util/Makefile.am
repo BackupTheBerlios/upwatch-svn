@@ -59,6 +59,7 @@ uwq.1: uwq_options.def $(top_srcdir)/common/man1.tpl
 	autogen -b uwq $(AGDEFINES) $(GENINCL) -T $(MAN1TPL) uwq_options.def
 
 ctime_SOURCES = ctime.c ctime_options.c ctime_options.h ctime_options.def 
+ctime_CFLAGS = @LIBOPTS_CFLAGS@
 ctime_LDADD = $(LIBOPTS) 
 BUILT_SOURCES += ctime_options.h ctime.1
 EXTRA_DIST += ctime_options.def

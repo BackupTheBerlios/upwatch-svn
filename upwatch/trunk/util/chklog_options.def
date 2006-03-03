@@ -58,4 +58,7 @@ flag = {
 in /etc/upwatch.d/logwatch.d";
 };
 
+#include license_gpl.def
 #include minimal_options.def
+#include dbase_options_ignored.def
+

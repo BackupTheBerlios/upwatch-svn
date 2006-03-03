@@ -10,5 +10,6 @@ since 1 jan 1970, and it prints out the time';
 argument      = "[string]";
 
 #include minimal_options.def
+#include dbase_options_ignored.def
 #include license_gpl.def
 

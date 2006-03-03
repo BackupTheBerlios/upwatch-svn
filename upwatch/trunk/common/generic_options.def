@@ -1,12 +1,3 @@
-export        = "#include <config.h>";
-export        = "#include <limits.h>";
-export        = "#include <stdio.h>";
-export        = "#include <stdlib.h>";
-
-explain;
-long-opts;
-gnu-usage;
-
 flag = {
     name      = syslog;
     value     = s;

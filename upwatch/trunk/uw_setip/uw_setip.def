@@ -61,5 +61,6 @@ flag = {
 filled with ip address, nat-router address and customer number, in that order.';
 };
 
+#include license_gpl.def
 #include dbase_options.def
-#include ../common/generic_options.def
+#include generic_options.def

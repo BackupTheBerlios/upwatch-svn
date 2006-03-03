@@ -160,7 +160,6 @@ flag = {
 };
 
 flag = {
-    must-set; 
     name      = ipaddress;
     arg_type  = string;   /* option argument indication  */
     arg_default = "127.0.0.1";
@@ -239,6 +238,7 @@ Mainly used in dialup situations.';
 };
 
 
-#include generic_options.def
 #include license_gpl.def
+#include generic_options.def
+#include dbase_options_ign.def
 

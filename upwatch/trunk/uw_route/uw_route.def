@@ -98,7 +98,7 @@ flag = {
 you want to put iptraf probes into the uw_iptraf queue, use `route iptraf uw_iptraf`';
 };
 
+#include license_gpl.def
 #include dbase_options.def
 #include generic_options.def
-#include license_gpl.def
 

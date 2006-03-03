@@ -75,6 +75,6 @@ spooldirectories. This parameter denotes the basedirectory.
 For some more info about maildir see http://www.qmail.org/man/man5/maildir.html.';
 };
 
-#include ../common/generic_options.def
 #include license_gpl.def
+#include generic_options.def
 

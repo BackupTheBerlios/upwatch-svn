@@ -85,6 +85,7 @@ EXTRA_DIST = Makefile.am.common Makefile.am.libs Makefile.am.path VERSION RELEAS
   ${SERVER_DIST} \
   install-sh config.sub mkinstalldirs depcomp cfg/cvs2cl.pl
 
+
 upwatch.spec: force upwatch-spec.def upwatch-spec.tpl common/spec.tpl \
   uw_*/*.spec-files uw_*/*.spec-requires  uw_*/*.spec-buildrequires
 	autogen -b upwatch -Dconfargs="$(CONFARGS)" upwatch-spec.def
@@ -104,6 +105,10 @@ force:
 #       rm -f force
 ChangeLog:
 	svn log > ChangeLog
+
+RELEASE: force
+	svnversion . > RELEASE
+	rm -f force
 
 CLEANFILES = upwatch.mysql upwatch.spec upwatch-*.tar.gz
 
@@ -126,7 +131,7 @@ install-data-local:
 	  mkdir -p ${DESTDIR}/var/run/upwatch ;\
 	fi
 
-rpm: all dist upwatch.spec 
+rpm: all dist upwatch.spec RELEASE
 	SED=sed $(RPMBUILD) -ta upwatch-${VERSION}.tar.gz
 
 dist-hook:

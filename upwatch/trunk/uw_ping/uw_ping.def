@@ -121,7 +121,7 @@ flag = {
     descrip   = "UpWatch password";
 };
 
+#include license_gpl.def
 #include dbase_options.def
 #include generic_options.def
-#include license_gpl.def
 

@@ -1,3 +1,12 @@
+export        = "#include <config.h>";
+export        = "#include <limits.h>";
+export        = "#include <stdio.h>";
+export        = "#include <stdlib.h>";
+
+explain;
+long-opts;
+gnu-usage;
+
 copyright = {
   date = "2002";
   author=  "Ron Arts";

@@ -278,7 +278,7 @@ AC_ARG_WITH(autoopts-include,
 )
 AC_SUBST(LIBOPTS_INC_PREFIX)
 
-for incpath in /usr/include/ $LIBOPTS_LIB_PREFIX /usr/local/include/ /cygdrive/c/include /usr/pkg/include/
+for incpath in /usr/include $LIBOPTS_LIB_PREFIX /usr/local/include /cygdrive/c/include /usr/pkg/include
 do
   if test -f $incpath/options.h
   then
@@ -399,7 +399,7 @@ then
   LIBPCRE_CFLAGS="`pcre-config --cflags`"
   LIBPCRE_LIBS="`pcre-config --libs-posix`"
 fi
-if test -z "$LIBPCRE_CFLAGS"
+if test -z "$LIBPCRE_LIBS"
 then
   HAVE_LIBPCRE="0"
 else
@@ -558,11 +558,13 @@ AC_CHECK_LIB([readline], [readline], [HAVE_LIBREADLINE=1], [HAVE_LIBREADLINE=0],
 if test $HAVE_LIBREADLINE -eq 1
 then
 	LIBREADLINE_LIBS=-lreadline
+        AC_DEFINE(HAVE_LIBREADLINE,1,[Do we have the readline library])
 else 
 	AC_CHECK_LIB([readline], [readline], [HAVE_LIBREADLINE=1], [HAVE_LIBREADLINE=0], -lcurses)
 	if test $HAVE_LIBREADLINE -eq 1
 	then
 		LIBREADLINE_LIBS=-lreadline
+                AC_DEFINE(HAVE_LIBREADLINE,1,[Do we have the readline library])
 	fi
 fi
 AM_CONDITIONAL(HAVE_LIBREADLINE, test $HAVE_LIBREADLINE -eq 1)
