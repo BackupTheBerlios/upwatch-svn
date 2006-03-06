@@ -5,4 +5,5 @@ green [LOGDATE] sendmail[PID]: restarting on signal /usr/sbin/sendmail
 green [LOGDATE] sendmail[PID]: STARTTLS=.*, relay=.*, version=.*, verify=.*, cipher=.*, bits=.*
 green [LOGDATE] sendmail[PID]: [MSGID]: forward .*: Group writable directory
 green [LOGDATE] sendmail[PID]: gethostbyaddr\([IPADDR]\) failed: 
-
+green [LOGDATE] sendmail[PID]: accepting connections again for daemon MTA
+red [LOGDATE] sendmail[PID]: rejecting connections on daemon MTA: load average: [NUM]
