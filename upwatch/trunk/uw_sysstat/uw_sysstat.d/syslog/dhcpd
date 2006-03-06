@@ -3,3 +3,5 @@ green [LOGDATE] dhcpd: DHCP(ACK|DISCOVER|INFORM|OFFER|RELEASE|REQUEST) (on|of|fo
 green [LOGDATE] dhcpd: DHCPDISCOVER from [MACADDR]
 green [LOGDATE] dhcpd: Wrote [NUM] leases to leases file\.
 green [LOGDATE] dhcpd: No hostname for [IPADDR]
+green [LOGDATE] dhcpd: ip length [NUM] disagrees with bytes received [NUM].
+green [LOGDATE] dhcpd: accepting packet with data after udp payload.

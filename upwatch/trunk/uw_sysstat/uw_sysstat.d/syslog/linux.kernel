@@ -1,0 +1,674 @@
+green [LOGDATE] 3w-xxxx[PID]: INFORMATION:
+green [LOGDATE] kernel: 8139too Fast Ethernet driver [NUM]\.[NUM]\.[NUM]
+green [LOGDATE] kernel: ac[NUM]_codec: AC[NUM] Audio codec, vendor id[NUM]: [NUM], id[NUM]: [NUM] \(Unknown\)
+green [LOGDATE] kernel: ACPI: BOOT
+green [LOGDATE] kernel: ACPI: DSDT
+green [LOGDATE] kernel: ACPI: FADT
+green [LOGDATE] kernel: ACPI: Interpreter enabled
+green [LOGDATE] kernel: ACPI: IRQ[NUM] SCI: Edge set to Level Trigger
+green [LOGDATE] kernel: ACPI: MADT
+green [LOGDATE] kernel: ACPI: PCI Interrupt Link \[LNK[A-Z]\] enabled at IRQ [NUM]
+green [LOGDATE] kernel: ACPI: PCI Interrupt Link \[LNK[A-Z]\] \(IRQs
+green [LOGDATE] kernel: ACPI: PCI Root Bridge \[PCI[HEX]\] \([HEX]:[HEX]\)
+green [LOGDATE] kernel: ACPI: PM-Timer IO Port: [HEX]
+green [LOGDATE] kernel: ACPI: Power Button
+green [LOGDATE] kernel: ACPI: Processor \[CPU[NUM]\] \(supports C[NUM]\)
+green [LOGDATE] kernel: ACPI: RSDP
+green [LOGDATE] kernel: ACPI: RSDT
+green [LOGDATE] kernel: ACPI: Searched entire block, no RSDP was found
+green [LOGDATE] kernel: ACPI: Subsystem revision [NUM]
+green [LOGDATE] kernel: ACPI: \(supports S[NUM] S[NUM] S[NUM] S[NUM] S[NUM]\)
+green [LOGDATE] kernel: ACPI table found: (APIC|BOOT|FACP|RSDT|SPCR) v[NUM]
+green [LOGDATE] kernel: ACPI: Using PIC for interrupt routing
+green [LOGDATE] kernel: Activating ISA DMA hang workarounds\.
+green [LOGDATE] kernel: adb: finished probe task\.\.\.
+green [LOGDATE] kernel: ADB keyboard at [NUM], handler [NUM]
+green [LOGDATE] kernel: ADB mouse at [NUM], handler set to [NUM]
+green [LOGDATE] kernel: Adaptec I2O RAID controller [NUM] irq=[NUM]
+green [LOGDATE] kernel: Adding [NUM]k swap on [PATH]  Priority:[NUM] extents:[NUM]
+green [LOGDATE] kernel: Adding Swap: [NUM]k swap-space \(priority -[NUM]\)
+green [LOGDATE] kernel: AE-Init snapper mixer
+green [LOGDATE] kernel: agpgart: AGP aperture is [NUM]M @ [HEX]
+green [LOGDATE] kernel: agpgart: Detected
+green [LOGDATE] kernel: agpgart: Maximum main memory to use for agp memory: [NUM]M
+green [LOGDATE] kernel: AGP special page: [HEX]
+green [LOGDATE] kernel: allocated [NUM] pages and [NUM] bhs reserved for the highmem bounces
+green [LOGDATE] kernel: All processors have done init_idle
+green [LOGDATE] kernel: Alpha port and SMP sponsored by [HOSTNAME], alpha port by [HOSTNAME] and [HOSTNAME]\.
+green [LOGDATE] kernel: An unexpected IO-APIC was found\. If this kernel release is less than
+green [LOGDATE] kernel: apm: BIOS not found
+green [LOGDATE] kernel: apm: BIOS version
+green [LOGDATE] kernel: apm: disabled - APM is not SMP safe
+green [LOGDATE] kernel: apm_emu: APM Emulation [NUM]\.[NUM] initialized\.
+green [LOGDATE] kernel: apm: overridden by ACPI
+green [LOGDATE] kernel: Appletalk [NUM]\.[NUM] for Linux NET[NUM]\.[NUM] 
+green [LOGDATE] kernel: ATAPI device hd[a-z]:
+green [LOGDATE] kernel: Attached scsi .* at scsi[NUM], channel [NUM], id [NUM], lun [NUM]
+green [LOGDATE] kernel: Audio jack unplugged, enabling speakers\.
+green [LOGDATE] kernel: audit: initializing netlink socket \(disabled\)
+green [LOGDATE] kernel: audit\([NUM]\.[NUM]:[NUM]\): initialized
+green [LOGDATE] kernel: autodetecting RAID arrays
+green [LOGDATE] kernel: autorun \.\.\.
+green [LOGDATE] kernel: \.\.\. autorun DONE\.
+green [LOGDATE] kernel: Based upon Swansea University Computer Society NET[NUM]\.[NUM]
+green [LOGDATE] kernel:  BIOS-e[NUM]: [HEX] - [HEX] \(.*\)
+green [LOGDATE] kernel: BIOS-provided physical RAM map:
+green [LOGDATE] kernel: blk: queue [HEX], I/O limit [NUM]Mb \(mask [HEX]\)
+green [LOGDATE] kernel: block: [NUM] slots per queue, batch=[NUM]
+green [LOGDATE] kernel:   Board assembly [HEX]-[NUM], Physical connectors present: RJ[NUM]
+green [LOGDATE] kernel: Booting processor [NUM]/[NUM] eip [NUM]
+green [LOGDATE] kernel: Buffer[- ]cache hash table entries: [NUM]
+green [LOGDATE] kernel: Built [NUM] zonelists
+green [LOGDATE] kernel: Bus scan for [NUM] returning with max=[NUM]
+green [LOGDATE] kernel: calibrating APIC timer \.\.\.
+green [LOGDATE] kernel: Calibrating delay loop.*BogoMIPS
+green [LOGDATE] kernel: Capability LSM initialized
+green [LOGDATE] kernel: cat uses obsolete [PATH] interface
+green [LOGDATE] kernel: cdrom: open failed
+green [LOGDATE] kernel: change_[USER]: old [USER] has d_count=[NUM]
+green [LOGDATE] kernel: \.\.\.changing IO-APIC physical APIC ID to [NUM] \.\.\. ok\.
+green [LOGDATE] kernel: Checking for popad bug\.\.\. OK\.
+green [LOGDATE] kernel: Checking 'hlt' instruction\.\.\.
+green [LOGDATE] kernel: checking if image is initramfs\.\.\.it isn't \(no cpio magic\); looks like an initrd
+green [LOGDATE] kernel: Checking if this processor honours the WP bit even in supervisor mode\.\.\. Ok\.
+green [LOGDATE] kernel: Checking [NUM]/[NUM] coupling\.\.\. Ok, fpu using exception [NUM] error reporting\. 
+green [LOGDATE] kernel: Checking ReiserFS transaction log \(device [NUM]:[NUM]\) \.\.\.
+green [LOGDATE] kernel: checking TSC synchronization across CPUs: passed\.
+green [LOGDATE] kernel: .*: chipset revision [NUM]
+green [LOGDATE] kernel: CLK_PIN_CNTL on wakeup was: [NUM]
+green [LOGDATE] kernel: Code: [HEX] [HEX] [HEX] [HEX] [HEX]
+green [LOGDATE] kernel: Console: colour dummy device [NUM]x[NUM]
+green [LOGDATE] kernel: Console: colour VGA\+ [HEX][NUM]
+green [LOGDATE] kernel: Console: [NUM] point font, [NUM] scans 
+green [LOGDATE] kernel: Console: switching to colour frame buffer device [NUM]x[NUM]
+green [LOGDATE] kernel:     Controller on PCI bus [NUM] function [NUM] 
+green [LOGDATE] kernel: Copyright.* 
+green [LOGDATE] kernel: Core driver edition [NUM]\.[NUM] : PowerMac Built-in Sound driver edition [NUM]\.[NUM]
+green [LOGDATE] kernel: CPU: .* cache: 
+green [LOGDATE] kernel: \.\.\.\.\. CPU clock speed is [NUM]\.[NUM] MHz\.
+green [LOGDATE] kernel: CPU\d*: .* stepping [HEX]
+green [LOGDATE] kernel: CPU HID[NUM] : [NUM]
+green [LOGDATE] kernel: CPU:    [NUM]
+green [LOGDATE] kernel: cpu: [NUM], clocks: [NUM], slice: [NUM]
+green [LOGDATE] kernel: CPU: Physical Processor ID: [NUM]
+green [LOGDATE] kernel: CPU#[NUM]: Intel P[NUM]/Xeon Extended MCE MSRs \([NUM]\) available
+green [LOGDATE] kernel: CPU [NUM] irqstacks, hard=[NUM] soft=[NUM]
+green [LOGDATE] kernel: CPU [NUM] \([NUM]\) enabledProcessor
+green [LOGDATE] kernel: \s*cpu cycle saver enabled
+green [LOGDATE] kernel: CPU[NUM]<T[NUM]:[NUM],T[NUM]:[NUM],D:[NUM],S:[NUM],C:[NUM]>
+green [LOGDATE] kernel: CPU serial number disabled\.
+green [LOGDATE] kernel: CPU: Trace cache: [NUM]K uops, L[NUM] D cache: [NUM]K
+green [LOGDATE] kernel: cpu_sibling_map[PID] = [NUM]
+green [LOGDATE] kernel: CSLIP: code copyright [NUM] Regents of the University of California
+green [LOGDATE] kernel: Dentry cache hash table entries: [NUM] \(order: [NUM], [NUM] bytes\)
+green [LOGDATE] kernel: Dentry hash table entries: [NUM] \(order [NUM], [NUM]k\)
+green [LOGDATE] kernel: Detected ADB keyboard
+green [LOGDATE] kernel: Detected .* processor
+green [LOGDATE] kernel: Detected PS/[NUM] Mouse Port\.
+green [LOGDATE] kernel: Detected scsi .* at scsi[NUM], channel [NUM], id [NUM], lun [NUM]
+green [LOGDATE] kernel: Detecting Adaptec I2O RAID controllers
+green [LOGDATE] kernel: device eth[NUM](\.[NUM])* (entered|left) promiscuous mode
+green [LOGDATE] kernel: device-mapper: [NUM]\.[NUM]\.[NUM]-ioctl \([NUM][NUM][NUM]\) initialised: [EMAIL]
+green [LOGDATE] kernel: dev_mc_discard: multicast leakage! dmi_users=[NUM]
+green [LOGDATE] kernel: Disabled Privacy Extensions on device
+green [LOGDATE] kernel:   DMA zone: [NUM] pages, LIFO batch:[NUM]
+green [LOGDATE] kernel: DMI [NUM]\.[NUM] present
+green [LOGDATE] kernel: \.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\. done\.
+green [LOGDATE] kernel: Dquot-cache hash table entries: [NUM] \(order [NUM], [NUM] bytes\)
+green [LOGDATE] kernel: dpti: If you have a lot of devices this could take a few minutes\.
+green [LOGDATE] kernel: dpti[NUM]: Reading the hardware resource table\.
+green [LOGDATE] kernel: drivers[PATH]: v[NUM]\.[NUM]:USB HID core driver
+green [LOGDATE] kernel: eepro100\.c: \$Revision:
+green [LOGDATE] kernel: eepro100\.c:v[NUM]\.[NUM]j-t [NUM][PATH] Donald Becker http:/[PATH]
+green [LOGDATE] kernel: ehci_hcd [HEX]:[HEX]:[HEX]\.[HEX]:
+green [LOGDATE] kernel: Elsa: IPAC version [NUM]
+green [LOGDATE] kernel: Elsa: Microlink PCI defined at [HEX][NUM]/[HEX][NUM] IRQ [NUM]
+green [LOGDATE] kernel: Elsa PCI: IRQ [NUM] count [NUM]
+green [LOGDATE] kernel: Elsa: QS [NUM] PCI defined at [HEX][NUM]/[HEX][NUM] IRQ [NUM]
+green [LOGDATE] kernel: enabled ExtINT on CPU#[NUM]
+green [LOGDATE] kernel: Enabling APIC mode: Flat\.\^IUsing [NUM] I/O APICs
+green [LOGDATE] kernel: Enabling fast FPU save and restore\.\.\. done\.
+green [LOGDATE] kernel: ENABLING IO-APIC IRQs
+green [LOGDATE] kernel: Enabling SiS [NUM]x SMBus\.
+green [LOGDATE] kernel: Enabling the CPU's according to the ACPI table
+green [LOGDATE] kernel: Enabling unmasked SIMD FPU exception support\.\.\. done\.
+green [LOGDATE] kernel: e[NUM]: eth[NUM]: Intel\(R\) PRO/[NUM] Network Connection
+green [LOGDATE] kernel: e[NUM]: eth[NUM] NIC Link is Up [NUM] Mbps Full duplex
+green [LOGDATE] kernel: eth[NUM]: MII #[HEX] registers are: [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX]\. 
+green [LOGDATE] kernel: eth[NUM]: Airport entering sleep mode
+green [LOGDATE] kernel: eth[NUM]: Airport waking up
+green [LOGDATE] kernel: eth[NUM]: .* at [HEX], IRQ [NUM], [MACADDR]
+green [LOGDATE] kernel: eth[NUM](\.[NUM])*: dev_set_promiscuity\(master, [NUM]\)
+green [LOGDATE] kernel: eth[NUM]: Found BCM[NUM] PHY
+green [LOGDATE] kernel: eth[NUM]: .* [MACADDR], I/O at [HEX][HEX], IRQ [NUM]
+green [LOGDATE] kernel: eth[NUM]: .* [MACADDR], IRQ [NUM]
+green [LOGDATE] kernel: eth[NUM]: Intel\(R\) PRO/[NUM] Network Connection
+green [LOGDATE] kernel: eth[NUM]: Media Link On [NUM]mbps full-duplex 
+green [LOGDATE] kernel: eth[NUM]: Promiscuous mode enabled
+green [LOGDATE] kernel: eth[NUM]: Realtek RTL[NUM] PHY transceiver found at address [NUM]\.
+green [LOGDATE] kernel: eth[NUM]: resuming
+green [LOGDATE] kernel: eth[NUM]: Setting (full|half)-duplex based on MII #[NUM] link partner ability of [HEX]
+green [LOGDATE] kernel: eth[NUM]: Setting\s.*(full|half)-duplex based on auto-negotiated partner ability [HEX]
+green [LOGDATE] kernel: eth[NUM]: SiS [NUM] PCI Fast Ethernet at [NUM], IRQ [NUM], [MACADDR]\.
+green [LOGDATE] kernel: eth[NUM]: [SMONTH] GEM \(PCI\) [NUM][PATH] Ethernet [MACADDR] 
+green [LOGDATE] kernel: eth[NUM]: suspending, WakeOnLan disabled
+green [LOGDATE] kernel: eth[NUM]:  Tx descriptor [NUM] is [HEX] 
+green [LOGDATE] kernel: eth[NUM]: Tx queue start entry [NUM]  dirty entry [NUM]\. 
+green [LOGDATE] kernel: eth[NUM]: Using transceiver found at address [NUM] as default
+green [LOGDATE] kernel: EXT[NUM]-fs: hda[NUM]: [NUM] orphan inodes deleted
+green [LOGDATE] kernel: EXT[NUM]-fs: hda[NUM]: orphan cleanup on readonly fs
+green [LOGDATE] kernel: EXT[NUM]-fs: ide[NUM]\([NUM],[NUM]\): orphan cleanup on readonly fs
+green [LOGDATE] kernel: EXT[NUM]-fs: (ide|scsi)[NUM]\([NUM],[NUM]\): [NUM] orphan inodes? deleted
+green [LOGDATE] kernel: EXT[NUM]-fs: INFO: recovery required on readonly filesystem\.
+green [LOGDATE] kernel: EXT[NUM]-fs: mounted filesystem with ordered data mode\.
+green [LOGDATE] kernel: EXT[NUM] FS on hda[NUM], internal journal
+green [LOGDATE] kernel: EXT[NUM] FS .* on (sd|ide).*, internal journal
+green [LOGDATE] kernel: EXT[NUM]-fs: recovery complete\.
+green [LOGDATE] kernel: EXT[NUM]-fs: sd\([NUM],[NUM]\): [NUM] orphan inodes deleted
+green [LOGDATE] kernel: EXT[NUM]-fs: sd\([NUM],[NUM]\): orphan cleanup on readonly fs
+green [LOGDATE] kernel: EXT[NUM]-fs warning: checktime reached, running e[NUM]fsck is recommended
+green [LOGDATE] kernel: EXT[NUM]-fs: write access will be enabled during recovery\.
+green [LOGDATE] kernel: Failure registering capabilities with the kernel
+green [LOGDATE] kernel: FDC [NUM] is a
+green [LOGDATE] kernel: Fixup res [NUM] \([NUM]\) of dev [NUM]:[NUM]\.[NUM]: [NUM] -> [NUM]
+green [LOGDATE] kernel: Fixups for bus [NUM]
+green [LOGDATE] kernel: Floppy drive\(s\): fd[NUM] is [NUM]\.[NUM]M
+green [LOGDATE] kernel: floppy[NUM]: Unable to grab IRQ[NUM] for the floppy driver
+green [LOGDATE] kernel: floppy[NUM]: no floppy controllers found
+green [LOGDATE] kernel: Found and enabled local APIC!
+green [LOGDATE] kernel: Found a Pangea mac-io controller, rev: [NUM], mapped at [HEX]
+green [LOGDATE] kernel: Found [HEX]:[HEX] \[[HEX]/[HEX]\] [HEX] [HEX]
+green [LOGDATE] kernel: Found KeyWest i2c on ".*", [NUM] channel, stepping: [NUM] bits
+green [LOGDATE] kernel: found SMP MP-table at [HEX]
+green [LOGDATE] kernel: Found Uninorth memory controller & host bridge, revision: [NUM]
+green [LOGDATE] kernel: Found UniNorth PCI host bridge at [NUM]xf[NUM]\. Firmware bus number: [NUM]->[NUM]
+green [LOGDATE] kernel: Freeing initrd memory: [NUM]k freed
+green [LOGDATE] kernel: Freeing unused kernel memory: [NUM]k freed
+green [LOGDATE] kernel: Freeing unused kernel memory: [NUM]k init [NUM]k chrp [NUM]k prep
+green [LOGDATE] kernel: GDT CTR[NUM]: Configuring GDT-PCI HA at [NUM]/[NUM] IRQ [NUM]
+green [LOGDATE] kernel: GDT: Found [NUM] PCI Storage RAID Controllers
+green [LOGDATE] kernel: GDT: Storage RAID Controller Driver\. Version: [NUM]\.[NUM] 
+green [LOGDATE] kernel:   General self-test: passed\.
+green [LOGDATE] kernel: GMT Delta read from XPRAM: [NUM] minutes, DST: (off|on)
+green [LOGDATE] kernel: hda: max request size: [NUM]KiB
+green [LOGDATE] kernel: hd[a-z]: .*, ATA DISK drive
+green [LOGDATE] kernel: hd[a-z]: .*ATAPI
+green [LOGDATE] kernel: hd[a-z]: attached ide-(disk|cdrom) driver\.
+green [LOGDATE] kernel: hd[a-z]: channel busy
+green [LOGDATE] kernel: hd[a-z]: C[PATH]=[NUM][PATH] from BIOS ignored
+green [LOGDATE] kernel: hd[a-z]: DMA disabled
+green [LOGDATE] kernel: hd[a-z]: Enabling MultiWord DMA [NUM]
+green [LOGDATE] kernel: hd[a-z]: Enabling Ultra DMA [NUM]
+green [LOGDATE] kernel: hd[a-z]: FUJITSU MHM[NUM]AT, ATA DISK drive
+green [LOGDATE] kernel: hd[a-z]: host protected area => [NUM]
+green [LOGDATE] kernel: hd[a-z]: .*, [NUM]MB w/[NUM]kB Cache, CHS=[NUM][PATH]
+green [LOGDATE] kernel: hd[a-z]: [NUM] sectors \([NUM] MB\) w/[NUM]KiB Cache, CHS=[NUM][PATH], UDMA\([NUM]\)
+green [LOGDATE] kernel:  hd[a-z]: \[PTBL\] \[[NUM][PATH]\] hd[a-z][NUM]
+green [LOGDATE] kernel:  hd[a-z]:((\shd[a-z]\d|<|>))*
+green [LOGDATE] kernel: [HEX]$
+green [LOGDATE] kernel:        [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] 
+green [LOGDATE] kernel:   "[HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] "
+green [LOGDATE] kernel: HFC-PCI: No PCI card found
+green [LOGDATE] kernel: hid-core\.c: USB HID support drivers
+green [LOGDATE] kernel: hid-core\.c: v[NUM]\.[NUM]\.[NUM] Andreas Gal, Vojtech Pavlik <[EMAIL]>
+green [LOGDATE] kernel:   HighMem zone: [NUM] pages, LIFO batch:[NUM]
+green [LOGDATE] kernel: HiSax: Approval
+green [LOGDATE] kernel: HiSax: Approved
+green [LOGDATE] kernel: HiSax: Card .* not installed !
+green [LOGDATE] kernel: HiSax: Card [NUM] Protocol EDSS[NUM] Id=line[NUM] \([NUM]\)
+green [LOGDATE] kernel: HiSax: .* driver Rev\.
+green [LOGDATE] kernel: HiSax: DSS[NUM] Rev
+green [LOGDATE] kernel: HiSax: EU \(D[NUM]J\) CETECOM ICT Services GmbH
+green [LOGDATE] kernel: HiSax: German D[NUM]J CETECOM ICT Services GmbH
+green [LOGDATE] kernel: HiSax: LinkLayer Revision
+green [LOGDATE] kernel: HiSax: Linux Driver for passive ISDN cards
+green [LOGDATE] kernel: HiSax: MAX_WAITING_CALLS added
+green [LOGDATE] kernel: HiSax module removed
+green [LOGDATE] kernel: HiSax: Note! module load syntax has changed\.
+green [LOGDATE] kernel: HiSax: [NUM] channels added
+green [LOGDATE] kernel: HiSax: .* Revision
+green [LOGDATE] kernel: HiSax: SI=[NUM], AI=[NUM] 
+green [LOGDATE] kernel: HiSax: unauthorized source code changes
+green [LOGDATE] kernel: HiSax: using protocol EURO
+green [LOGDATE] kernel: HiSax: Version 
+green [LOGDATE] kernel: HiSax: Warning - no protocol specified
+green [LOGDATE] kernel: hm, page [HEX] reserved twice\.
+green [LOGDATE] kernel: hose pci, pci_mem_offset: [NUM], start[NUM]: [HEX]
+green [LOGDATE] kernel: \.\.\.\.\. host bus clock speed is [NUM]\.[NUM] MHz\.
+green [LOGDATE] kernel: HSM sponsored by [HOSTNAME]
+green [LOGDATE] kernel:   http:/[PATH]
+green [LOGDATE] kernel: hub\.c: new USB device [NUM]:[NUM]\.[NUM]-[NUM], assigned address [NUM]
+green [LOGDATE] kernel: hub\.c: [NUM] ports detected
+green [LOGDATE] kernel: hub\.c: USB hub found
+green [LOGDATE] kernel: hub [NUM][NUM]:[NUM]\.[NUM]: [NUM] ports detected
+green [LOGDATE] kernel: hub [NUM][NUM]:[NUM]\.[NUM]: over-current change on port [NUM]
+green [LOGDATE] kernel: hub [NUM][NUM]:[NUM]\.[NUM]: USB hub found
+green [LOGDATE] kernel: i2c-core\.o: adapter .* [NUM] registered as adapter [NUM]\.
+green [LOGDATE] kernel: i2c-core\.o: client \[.*\] registered to adapter
+green [LOGDATE] kernel: i2c-core\.o: driver TAS[NUM] driver V [NUM]\.[NUM] registered\.
+green [LOGDATE] kernel: i2c-core\.o: i2c core module
+green [LOGDATE] kernel: IA[NUM] Microcode Update Driver: v[NUM]\.[NUM] <[EMAIL]>
+green [LOGDATE] kernel: IBM machine detected\. Enabling interrupts during APM calls\.
+green [LOGDATE] kernel: ICALLslv: ippp[NUM] 
+green [LOGDATE] kernel: ICH\d*: chipset revision [NUM]
+green [LOGDATE] kernel: ICH\d*: IDE controller at PCI slot [NUM]:[NUM]f\.[NUM]
+green [LOGDATE] kernel: ICH\d*: not [NUM]%% native mode: will probe irqs later
+green [LOGDATE] kernel: ide: Assuming [NUM]MHz system bus speed for PIO modes; override with idebus=xx
+green [LOGDATE] kernel: .*: IDE controller at PCI slot [HEX]:[HEX]\.[HEX]
+green [LOGDATE] kernel: .*: IDE controller at PCI slot [NUM]:[NUM]\.[NUM]
+green [LOGDATE] kernel: .*: IDE controller on PCI bus [NUM] dev [HEX]
+green [LOGDATE] kernel: .*: IDE controller on PCI bus [NUM] dev [NUM]
+green [LOGDATE] kernel: ide-floppy driver [HOSTNAME]wide
+green [LOGDATE] kernel: ide: Intel [NUM] \(single FIFO\) DMA Bus Mastering IDE  
+green [LOGDATE] kernel: ide[NUM] at [HEX]-[HEX],[HEX] on irq [NUM]
+green [LOGDATE] kernel:     ide[NUM]: BM-DMA at
+green [LOGDATE] kernel: ide[NUM]: Found Apple KeyLargo ATA[NUM] controller, bus ID [NUM]
+green [LOGDATE] kernel: ide[NUM]: ports already in use, skipping probe
+green [LOGDATE] kernel: ide_setup: hd[a-z]=ide-scsi
+green [LOGDATE] kernel: ide: timings == [NUM] 
+green [LOGDATE] kernel: idx=[NUM] drv=[NUM] ch=[NUM] 
+green [LOGDATE] kernel: Initializing CPU#[NUM]
+green [LOGDATE] kernel: Initializing Cryptographic API
+green [LOGDATE] kernel: Initializing IPsec netlink socket
+green [LOGDATE] kernel: Initializing RT netlink socket
+green [LOGDATE] kernel: Initializing USB Mass Storage driver\.\.\.
+green [LOGDATE] kernel: Inode cache hash table entries: [NUM] \(order: [NUM], [NUM] bytes\)
+green [LOGDATE] kernel: Inode-cache hash table entries: [NUM] \(order: [NUM], [NUM] bytes\)
+green [LOGDATE] kernel: input: AT Translated Set [NUM] keyboard on isa[NUM]/serio[NUM]
+green [LOGDATE] kernel: input[NUM]: ADB HID on ID [HEX]:[HEX]\.[HEX]
+green [LOGDATE] kernel: input[NUM]: Macintosh mouse button emulation
+green [LOGDATE] kernel: inserting floppy driver for
+green [LOGDATE] kernel: Inspecting [PATH]
+green [LOGDATE] kernel: Installing knfsd \(copyright \(C\) [NUM] [EMAIL]\)\.
+green [LOGDATE] kernel: INT_SRC_OVR \(bus[PID] irq\[[NUM]\] global_irq\[[NUM]\] polarity\[[NUM]\] trigger\[[NUM]\]\)
+green [LOGDATE] kernel: Intel machine check architecture supported\.
+green [LOGDATE] kernel: Intel machine check reporting enabled on CPU#[NUM]\.
+green [LOGDATE] kernel: Intel MultiProcessor Specification v[NUM]\.[NUM]
+green [LOGDATE] kernel: Intel [NUM] \+ AC[NUM] Audio, version [NUM]\.[NUM], [NUM]:[NUM]:[NUM] Mar [NUM] [NUM]
+green [LOGDATE] kernel: Intel Pentium with F[NUM] [NUM]F bug - workaround enabled\.
+green [LOGDATE] kernel: Intel\(R\) PRO/[NUM] Network Driver - version.*
+green [LOGDATE] kernel:   Internal registers self-test: passed\.
+green [LOGDATE] kernel: i[NUM]_audio: Found [NUM] audio device\(s\)\.
+green [LOGDATE] kernel: i[NUM]: Intel ICH [NUM]AA found at IO [HEX][NUM] and [HEX][NUM], IRQ [NUM]
+green [LOGDATE] kernel:   Invalid field in command packet -- \(asc=[NUM], ascq=[NUM]\)
+green [LOGDATE] kernel: IOAPIC \(id\[[NUM]\] address\[[HEX]\] global_irq_base\[[NUM]\]\)
+green [LOGDATE] kernel: I/O APIC #[NUM] Version [NUM] at [HEX]\.
+green [LOGDATE] kernel:   io_base_virt: [HEX], io_base_phys: [HEX], isa_mem_base: [HEX]
+green [LOGDATE] kernel:  I/O error: dev [NUM]:[NUM], sector [NUM]
+green [LOGDATE] kernel: [IPADDR] sent an invalid ICMP error to a broadcast\.
+green [LOGDATE] kernel: ip_conntrack \([NUM] buckets, [NUM] max\)
+green [LOGDATE] kernel: ip_conntrack: max number of expected connections.*reusing
+green [LOGDATE] kernel: ip_conntrack version [NUM]\.[NUM] \([NUM] buckets, [NUM] max\) - [NUM] bytes per conntrack
+green [LOGDATE] kernel: IP fw-(in|fwd|out) deny
+green [LOGDATE] kernel: ippp_ccp: allocated reset data structure [HEX]
+green [LOGDATE] kernel: ippp_ccp: freeing reset data structure [HEX]
+green [LOGDATE] kernel: ippp[NUM]: all channels busy - requeuing!
+green [LOGDATE] kernel: ippp[NUM]: call from [NUM] -> [NUM] accepted 
+green [LOGDATE] kernel: ippp[NUM]: call from [NUM] -> [NUM], start callback 
+green [LOGDATE] kernel: ippp[NUM]: Chargesum is [NUM]
+green [LOGDATE] kernel: ippp[NUM]: dialing [NUM] [NUM]\.\.\.
+green [LOGDATE] kernel: ippp[NUM]: HL driver queue full
+green [LOGDATE] kernel: ippp[NUM]: [NUM] bogocps 
+green [LOGDATE] kernel: ippp[NUM]: remote abort \([NUM]\) 
+green [LOGDATE] kernel: ippp[NUM]: remote hangup
+green [LOGDATE] kernel: ippp, open, slot: [NUM], minor: [NUM], state: [NUM]
+green [LOGDATE] kernel: IP Protocols:
+green [LOGDATE] kernel: IP: routing cache hash table of [NUM] buckets, [NUM]Kbytes
+green [LOGDATE] kernel: IPSEC EVENT: KLIPS device ipsec[NUM] shut down\.
+green [LOGDATE] kernel: ip_tables: \(C\) [NUM]-[NUM] Netfilter core team
+green [LOGDATE] kernel: iptables: [WORD] IN=
+green [LOGDATE] kernel: IPv[NUM] over IPv[NUM] tunneling driver
+green [LOGDATE] kernel: IPVS: Connection hash table configured \(size=[NUM], memory=[NUM]Kbytes\)
+green [LOGDATE] kernel: IPX Portions Copyright \(c\) [NUM]
+green [LOGDATE] kernel: isapnp: No Plug & Play device found
+green [LOGDATE] kernel: isapnp: Scanning for PnP cards\.\.\.
+green [LOGDATE] kernel: isdn: Global Mode running 
+green [LOGDATE] kernel: isdn: line[NUM],ch[NUM] cause: [HEX]
+green [LOGDATE] kernel: isdn_net: call from [NUM] -> [NUM] [NUM] ignored 
+green [LOGDATE] kernel: isdn_net: call from [NUM],[NUM],[NUM] -> [NUM] 
+green [LOGDATE] kernel: isdn_net: chargetime of ippp[NUM] now [NUM] 
+green [LOGDATE] kernel: isdn_net: Incoming call without OAD, assuming '[NUM]' 
+green [LOGDATE] kernel: isdn_net: ippp[NUM] connected
+green [LOGDATE] kernel: isdn_net: local hangup ippp[NUM]
+green [LOGDATE] kernel: isdn_net: Service-Indicator not [NUM], ignored 
+green [LOGDATE] kernel: isdn: Rejecting Call 
+green [LOGDATE] kernel: ISDN subsystem Rev: .* loaded
+green [LOGDATE] kernel: ISDN-subsystem unloaded
+green [LOGDATE] kernel: isdn_tty: call from [NUM] -> [NUM] ignored
+green [LOGDATE] kernel: isdn_tty: Incoming call without OAD, assuming '[NUM]'
+green [LOGDATE] kernel: isdn_tx_timeout dev ippp[NUM] dialstate [NUM]
+green [LOGDATE] kernel: isdn: Verbose-Level is [NUM] 
+green [LOGDATE] kernel: Journalled Block Device driver loaded
+green [LOGDATE] kernel: Kernel command line:
+green [LOGDATE] kernel: Kernel log daemon terminating\.
+green [LOGDATE] kernel: Kernel logging \(proc\) stopped\.
+green [LOGDATE] kernel: klips_error:ipsec_tunnel_start_xmit: ip_send\(\) failed, err=[NUM]
+green [LOGDATE] kernel: klips_info:cleanup_module: ipsec module unloaded\.
+green [LOGDATE] kernel: klips_info:ipsec_alg_init: calling ipsec_alg_static_init\(\)
+green [LOGDATE] kernel: klips_info:ipsec_alg_init: KLIPS alg v=[NUM]\.[NUM]\.[NUM]-[NUM] \(EALG_MAX=[NUM], AALG_MAX=[NUM]\)
+green [LOGDATE] kernel: klips_info:ipsec_init: KLIPS startup, FreeS/WAN IPSec version: 
+green [LOGDATE] kernel: klips_info:pfkey_cleanup: shutting down PF_KEY domain sockets\.
+green [LOGDATE] kernel: klogd [NUM]\.[NUM]\.[NUM], ---------- state change ----------
+green [LOGDATE] kernel: kmod: failed to exec [PATH] -s -k scsi_hostadapter, errno = [NUM]
+green [LOGDATE] kernel: less uses obsolete [PATH] interface
+green [LOGDATE] kernel: LAPIC \(acpi_id\[[NUM]\] id\[[NUM]\] enabled[PID]\)
+green [LOGDATE] kernel: LAPIC_NMI \(acpi_id\[[NUM]\] polarity\[[NUM]\] trigger\[[NUM]\] lint\[[NUM]\]\)
+green [LOGDATE] kernel: Limiting direct PCI/PCI transfers\.
+green [LOGDATE] kernel: Linux agpgart interface v[NUM]\.[NUM] \(c\) Dave Jones
+green [LOGDATE] kernel: Linux agpgart interface v[NUM]\.[NUM] \(c\) Jeff Hartmann
+green [LOGDATE] kernel: Linux IP multicast router [NUM]\.[NUM] plus PIM-SM
+green [LOGDATE] kernel: Linux NET[NUM]\.[NUM] for Linux [NUM]\.[NUM]
+green [LOGDATE] kernel: Linux Plug and Play Support v[NUM]\.[NUM] \(c\) Adam Belay
+green [LOGDATE] kernel: Linux Tulip driver version
+green [LOGDATE] kernel: Linux version
+green [LOGDATE] kernel: Loaded [NUM] symbols from
+green [LOGDATE] kernel: Loading Adaptec I2O RAID: Version 
+green [LOGDATE] kernel: Local APIC address [HEX]
+green [LOGDATE] kernel: Local APIC disabled by BIOS -- reenabling\.
+green [LOGDATE] kernel: loop: loaded \(max [NUM] devices\)
+green [LOGDATE] kernel: Macintosh non-volatile memory driver v[NUM]\.[NUM]
+green [LOGDATE] kernel: Mapped at [HEX]
+green [LOGDATE] kernel: mapped [NUM]G/[NUM]G trampoline to ffff[NUM]\.
+green [LOGDATE] kernel: masked ExtINT on CPU#[NUM]
+green [LOGDATE] kernel: master=ippp[NUM] 
+green [LOGDATE] kernel: master (on|off)line 
+green [LOGDATE] kernel: md: Autodetecting RAID arrays\.
+green [LOGDATE] kernel: md: autorun \.\.\.
+green [LOGDATE] kernel: md: \.\.\. autorun DONE\.
+green [LOGDATE] kernel: md\.c: sizeof\(mdp_super_t\) = [NUM]
+green [LOGDATE] kernel: md driver
+green [LOGDATE] kernel: md: md driver
+green [LOGDATE] kernel: Memory BAT mapping: BAT[NUM]=[NUM]Mb, BAT[NUM]=[NUM]Mb, residual: [NUM]Mb
+green [LOGDATE] kernel: Memory: [NUM]k available \([NUM]k kernel code, [NUM]k data, [NUM]k init, [NUM]k highmem\)
+green [LOGDATE] kernel: Memory: [NUM]k/[NUM]k available
+green [LOGDATE] kernel: Memory: sized by int[NUM] [HEX]h 
+green [LOGDATE] kernel: mesh: configured for synchronous [NUM] MB/s
+green [LOGDATE] kernel: mice: PS/[NUM] mouse device common for all mice
+green [LOGDATE] kernel: microcode: No suitable data for cpu [NUM]
+green [LOGDATE] kernel: Microstar [NUM] with broken BIOS detected\. Refusing to enable the local APIC\.
+green [LOGDATE] kernel: mlpf: [NUM] 
+green [LOGDATE] kernel: Mount[- ]cache hash table entries: [NUM] \(order: [NUM], [NUM] bytes\)
+green [LOGDATE] kernel: mtrr: detected mtrr type:
+green [LOGDATE] kernel: mtrr: probably your BIOS does not setup all CPUs
+green [LOGDATE] kernel: mtrr: v[NUM]\.[HEX] \([NUM]\) Richard Gooch \([EMAIL]\)
+green [LOGDATE] kernel: mtrr: v[NUM]\.[NUM] \([NUM]\)
+green [LOGDATE] kernel: mtrr: your CPUs had inconsistent variable MTRR settings
+green [LOGDATE] kernel: .*: neither IDE port enabled \(BIOS\)
+green [LOGDATE] kernel: ne2k-pci\.c:v[NUM]\.[NUM] [NUM][PATH] D\. Becker/P\. Gortmaker
+green [LOGDATE] kernel: NETDEV WATCHDOG: (eth|ippp)[NUM]: transmit timed out
+green [LOGDATE] kernel: NET[NUM]: AppleTalk
+green [LOGDATE] kernel: NET[NUM]: Frame Diverter
+green [LOGDATE] kernel: NET[NUM]: Linux IPX
+green [LOGDATE] kernel: NET[NUM]: Linux TCP/IP
+green [LOGDATE] kernel: NET[NUM]: Unix domain sockets
+green [LOGDATE] kernel: NET: Registered protocol family [NUM]
+green [LOGDATE] kernel: nfsd: last server has exited
+green [LOGDATE] kernel: nfs: server [IPADDR] OK
+green [LOGDATE] kernel: nfsd: unexporting all filesystems
+green [LOGDATE] kernel:   Normal zone: [NUM] pages, LIFO batch:[NUM]
+green [LOGDATE] kernel: .*: not [NUM]%* native mode: will probe irqs later
+green [LOGDATE] kernel: .*: not [NUM]%% native mode: will probe irqs later
+green [LOGDATE] kernel: [NUM]MB (HIGH|LOW)MEM available\.
+green [LOGDATE] kernel: [NUM] -> [NUM]
+green [LOGDATE] kernel: [NUM]:[NUM]: rw=[NUM], want=[NUM], limit=[NUM]
+green [LOGDATE] kernel: [NUM] CPUs total
+green [LOGDATE] kernel:    [NUM]regs .* MB/sec
+green [LOGDATE] kernel: OEM ID: OEM[NUM] Product ID: PROD[NUM] APIC at: [HEX]
+green [LOGDATE] kernel: OEM ID:   Product ID: .* at: [HEX]
+green [LOGDATE] kernel: ohci_hcd [NUM]:[NUM]:[NUM]\.[NUM]: irq [NUM], pci mem [NUM]
+green [LOGDATE] kernel: ohci_hcd [NUM]:[NUM]:[NUM]\.[NUM]: irq [NUM], pci mem [NUM]a[NUM]
+green [LOGDATE] kernel: ohci_hcd [NUM]:[NUM]:[NUM]\.[NUM]: new USB bus registered, assigned bus number [NUM]
+green [LOGDATE] kernel: ohci_hcd [NUM]:[NUM]:[NUM]\.[NUM]: OHCI Host Controller
+green [LOGDATE] kernel: ohci[NUM]_[NUM]: OHCI[NUM] [NUM]\.[NUM] \(PCI\): IRQ=[PID]
+green [LOGDATE] kernel: ohci[NUM]_[NUM]: Unexpected PCI resource length of [NUM]!
+green [LOGDATE] kernel: ohci[NUM]: \$Rev: [NUM] \$ Ben Collins <[EMAIL]>
+green [LOGDATE] kernel: On node [NUM] totalpages: [NUM]
+green [LOGDATE] kernel: OPEN: [IPADDR] -> [IPADDR]
+green [LOGDATE] kernel: OpenPIC timer frequency is [NUM]\.[NUM] MHz
+green [LOGDATE] kernel: OpenPIC Version [NUM]\.[NUM] \([NUM] CPUs and [NUM] IRQ sources\) at [HEX]
+green [LOGDATE] kernel: Packet log: (input|output) DENY (eth|ippp)[NUM] PROTO=[NUM]
+green [LOGDATE] kernel: Page[- ]cache hash table entries: [NUM]
+green [LOGDATE] kernel: parport[NUM]: irq [NUM] detected
+green [LOGDATE] kernel: parport[NUM]: PC-style at [NUM]
+green [LOGDATE] kernel: parport_pc: Via [NUM]A parallel port
+green [LOGDATE] kernel: Partition check:
+green [LOGDATE] kernel: PCI->APIC IRQ transform: \(B[NUM],I[NUM],P[NUM]\) -> [NUM]
+green [LOGDATE] kernel: PCI: Assigned IRQ [NUM] for device [NUM]:[NUM]\.[NUM]
+green [LOGDATE] kernel: pcibios_init : BIOS[NUM] Service Directory
+green [LOGDATE] kernel: pcibios_init : PCI BIOS revision [NUM]\.[NUM] entry at [HEX][NUM] 
+green [LOGDATE] kernel: PCI: cache line size of [NUM] is not supported by device [NUM]:[NUM]:[NUM]\.[NUM]
+green [LOGDATE] kernel: PCI: Discovered primary peer bus [NUM] \[IRQ\]
+green [LOGDATE] kernel: PCI: Enabling bus mastering for device [NUM]:[NUM]\.[NUM]
+green [LOGDATE] kernel: PCI: Enabling device [HEX]:[HEX]\.[HEX] \([HEX] -> [HEX]\)
+green [LOGDATE] kernel: PCI: Enabling Via external APIC routing
+green [LOGDATE] kernel: PCI: Found IRQ [NUM] for device [HEX]:[HEX]\.[HEX]
+green [LOGDATE] kernel: PCI:[HEX]:[HEX]\.[HEX]: Resource [HEX]: [HEX]-[HEX] \(f=[HEX]\), vd: [HEX], dev: [HEX]
+green [LOGDATE] kernel: pci_hotplug: PCI Hot Plug PCI Core version: [NUM]\.[NUM]
+green [LOGDATE] kernel: PCI_IDE: not [NUM]% native mode: will probe irqs later
+green [LOGDATE] kernel: PCI_IDE: unknown IDE controller on PCI bus [NUM] device f[NUM], VID=[NUM], DID=[NUM]
+green [LOGDATE] kernel: PCI: if you experience problems, try using option 'pci=noacpi' or even 'acpi=off'
+green [LOGDATE] kernel: PCI: Ignoring BAR[NUM]-[NUM] of IDE controller [NUM]:[NUM]f\.[NUM]
+green [LOGDATE] kernel: PCI: Increasing latency timer of device [NUM]:fd to [NUM]
+green [LOGDATE] kernel: PCI: [NUM]:[NUM]\.[NUM] PCI cache line size corrected to [NUM]\.
+green [LOGDATE] kernel: PCI: [NUM]:[NUM]\.[NUM] PCI cache line size set incorrectly \([NUM] bytes\) by BIOS/FW\.
+green [LOGDATE] kernel: PCI->OF bus map:
+green [LOGDATE] kernel: PCI: PCI BIOS revision [NUM]\.[NUM] entry at [HEX]
+green [LOGDATE] kernel: PCI: Probing PCI hardware
+green [LOGDATE] kernel: PCI: Setting latency timer of device [NUM]:[HEX]\.[NUM] to [NUM]
+green [LOGDATE] kernel: PCI: Sharing IRQ [NUM] with [NUM]:[HEX]\.[NUM]
+green [LOGDATE] kernel: PCI: Using ACPI for IRQ routing
+green [LOGDATE] kernel: PCI: Using configuration type [NUM]
+green [LOGDATE] kernel: PCI: Using IRQ router [WORD] \[[NUM]/[NUM]\] at [NUM]:[HEX]\.[NUM]
+green [LOGDATE] kernel: PCI: Via IRQ fixup for [NUM]:[NUM]\.[NUM], from [NUM] to [NUM]
+green [LOGDATE] kernel: \*pde = [NUM]
+green [LOGDATE] kernel: per-CPU timeslice cutoff: [NUM]\.[NUM] usecs\.
+green [LOGDATE] kernel: PID hash table entries: [NUM] \(order [NUM]: [NUM] bytes\)
+green [LOGDATE] kernel:    p[I\d]*_mmx .* MB/sec
+green [LOGDATE] kernel: PMU driver [NUM] initialized for Core[NUM], firmware: [HEX]
+green [LOGDATE] kernel: POSIX conformance testing by UNIFIX
+green [LOGDATE] kernel: possible SYN flooding on port [NUM]\. Sending cookies\.
+green [LOGDATE] kernel: PowerMac motherboard: iBook [NUM] rev\. [NUM]
+green [LOGDATE] kernel: PowerMac Snapper  DMA sound driver rev [NUM] installed
+green [LOGDATE] kernel: PowerMac using OpenPIC irq controller
+green [LOGDATE] kernel: PowerMac Z[NUM] serial driver version [NUM]\.[NUM]
+green [LOGDATE] kernel: PPP BSD Compression module registered
+green [LOGDATE] kernel: PPP Deflate Compression module registered
+green [LOGDATE] kernel: PPP line discipline registered\.
+green [LOGDATE] kernel: PPP: ppp line discipline successfully unregistered
+green [LOGDATE] kernel: PPP: version [NUM]\.[NUM]\.[NUM] \(demand dialling\)
+green [LOGDATE] kernel:   Primary interface chip i[NUM] PHY #[NUM]\.
+green [LOGDATE] kernel: Primary Sponsor [HOSTNAME]
+green [LOGDATE] kernel:  printing eip:
+green [LOGDATE] kernel: Probing IDE interface ide[NUM]\.\.\.
+green [LOGDATE] kernel: Probing PCI hardware\. 
+green [LOGDATE] kernel: Processor NAP mode on idle enabled\.
+green [LOGDATE] kernel: Processor #[NUM] Pentium\(tm\) Pro APIC version [NUM]
+green [LOGDATE] kernel: Processors: [NUM]
+green [LOGDATE] kernel: Process [WORD] \(pid: [NUM], stackpage=c[HEX]\)
+green [LOGDATE] kernel: PS/[NUM] auxiliary pointing device detected -- driver installed\. 
+green [LOGDATE] kernel: pty: [NUM] Unix[NUM] ptys configured
+green [LOGDATE] kernel: radeonfb: ATI Radeon M[NUM] LW DDR SGRAM [NUM] MB
+green [LOGDATE] kernel: radeonfb: CRT port no monitor connected
+green [LOGDATE] kernel: radeonfb: detected DFP panel size from EDID: [NUM]x[NUM]
+green [LOGDATE] kernel: radeonfb: DVI port LCD monitor connected
+green [LOGDATE] kernel: radeonfb: Power Management enabled for Mobility chipsets
+green [LOGDATE] kernel: radeonfb: ref_clk=[NUM], ref_div=[NUM], xclk=[NUM] from OF
+green [LOGDATE] kernel: raid[NUM]: measuring checksumming speed
+green [LOGDATE] kernel: raid[NUM]: MMX detected, trying high-speed MMX checksum routines
+green [LOGDATE] kernel: Raid Tuning sponsored by [HOSTNAME]
+green [LOGDATE] kernel: RAMDISK: Compressed image found at block [NUM]
+green [LOGDATE] kernel: Ramdisk driver initialized : [NUM] ramdisks of [NUM]K size 
+green [LOGDATE] kernel: RAM disk driver initialized:  [NUM] RAM disks of [NUM]K size
+green [LOGDATE] kernel: RAMDISK driver initialized: [NUM] RAM disks of [NUM]K size [NUM] blocksize
+green [LOGDATE] kernel: Real Time Clock Driver v[HEX]\.[HEX]
+green [LOGDATE] kernel:   Receiver lock-up bug exists -- enabling work-around\.
+green [LOGDATE] kernel:   Receiver lock-up workaround activated\.
+green [LOGDATE] kernel: Registered "ati" backlight controller, level: [NUM]/[NUM]
+green [LOGDATE] kernel: registered device ppp[NUM]
+green [LOGDATE] kernel: Registered tone zone [NUM]
+green [LOGDATE] kernel: reiserfs: checking transaction log \(device [NUM]:[NUM]\) \.\.\.
+green [LOGDATE] kernel: reiserfs: using [NUM]\.[NUM]\.x disk format
+green [LOGDATE] kernel: ReiserFS version [NUM]\.[NUM]\.[NUM]
+green [LOGDATE] kernel:   \(reserved error code\) -- \(asc=[NUM]a, ascq=[NUM]\)
+green [LOGDATE] kernel:   ROM checksum self-test: passed \([HEX]\)\.
+green [LOGDATE] kernel: RSD PTR  v[NUM] \[PTLTD \]
+green [LOGDATE] kernel: rtl[NUM]\.c:v[NUM]\.[NUM] [NUM][PATH] Donald Becker http:/[PATH] 
+green [LOGDATE] kernel:\s*$
+green [LOGDATE] kernel:\s*<Adaptec.*adapter> 
+green [LOGDATE] kernel: \s*aic[NUM].* Channel [A-D], SCSI Id=[NUM], [NUM]/[NUM] SCBs
+green [LOGDATE] kernel: \s*BAR[NUM] [HEX] - size= [NUM]
+green [LOGDATE] kernel: \s*Hardware receive checksums enabled
+green [LOGDATE] kernel: Scanning bus [NUM]
+green [LOGDATE] kernel: scsi : detected [NUM] SCSI disk total\. 
+green [LOGDATE] kernel: scsi : detected total\.
+green [LOGDATE] kernel: SCSI device sd[a-z]: hdwr sector= [NUM] bytes\. Sectors= [NUM] \[[NUM] MB\] \[[NUM]\.[NUM] GB\]
+green [LOGDATE] kernel: SCSI device sd[a-z]: [NUM] [NUM]-byte hdwr sectors \([NUM] MB\)
+green [LOGDATE] kernel: scsi[NUM] : Adaptec AHA[HEX][PATH] \(EISA[PATH] SCSI\) [NUM]\.[NUM]\.[NUM]/[NUM]\.[NUM]\.[NUM]
+green [LOGDATE] kernel: \(scsi[NUM]\) <Adaptec AHA-[NUM]A Ultra SCSI host adapter> found at PCI [NUM]/[NUM] 
+green [LOGDATE] kernel: \(scsi[NUM]\) <Adaptec AHA-[NUM]X SCSI host adapter> found at PCI [NUM][PATH]
+green [LOGDATE] kernel: scsi[NUM] : Adaptec AIC[NUM]XXX EISA[PATH] SCSI HBA DRIVER, Rev [NUM]\.[NUM]\.[NUM]
+green [LOGDATE] kernel: \(scsi[NUM]:A:[NUM]:[NUM]\): Locking max tag count at [NUM]
+green [LOGDATE] kernel: \(scsi[NUM]:A:[NUM]\): [NUM]\.[NUM]MB/s transfers
+green [LOGDATE] kernel: scsi[NUM]:A:[NUM]:[NUM]: Tagged Queuing enabled\.  Depth [NUM]
+green [LOGDATE] kernel: \(scsi[NUM]\) Cables present \(Int-[NUM] YES, Ext-[NUM] NO\) 
+green [LOGDATE] kernel: \(scsi[NUM]\) Downloading sequencer code\.\.\. [NUM] instructions downloaded
+green [LOGDATE] kernel: \(scsi[NUM]\) during machine bootup\. 
+green [LOGDATE] kernel: scsi[NUM] : GDT[NUM]RP
+green [LOGDATE] kernel: scsi[NUM] : GDT[NUM]RS
+green [LOGDATE] kernel: scsi[NUM] : Vendor: Adaptec  Model: [NUM]S            FW:[NUM]E
+green [LOGDATE] kernel: scsi : [NUM] hosts?\.
+green [LOGDATE] kernel: \(scsi[NUM]\) If not, then please properly set the device termination 
+green [LOGDATE] kernel: \(scsi[NUM]\) in the Adaptec SCSI BIOS by hitting CTRL-A when prompted 
+green [LOGDATE] kernel: \(scsi[NUM]\) Narrow Channel, SCSI ID=[NUM], [NUM]/[NUM] SCBs
+green [LOGDATE] kernel: scsi[NUM]:[NUM]:[NUM]:[NUM]: Command found on device queue
+green [LOGDATE] kernel: scsi[NUM]:[NUM]:[NUM]:[NUM]: Command not found
+green [LOGDATE] kernel: \(scsi[NUM]:[NUM]:[NUM]:[NUM]\) Synchronous at [NUM]\.[NUM] Mbyte/sec, offset [NUM]\.
+green [LOGDATE] kernel: \(scsi[NUM]\) Please verify driver detected settings are correct\. 
+green [LOGDATE] kernel: scsi[NUM] : SCSI emulation for USB Mass Storage devices
+green [LOGDATE] kernel: scsi[NUM] : SCSI host adapter emulation for IDE ATAPI devices
+green [LOGDATE] kernel: \(scsi[NUM]\) Warning - detected auto-termination 
+green [LOGDATE] kernel: SCSI subsystem driver Revision: [NUM]\.[NUM]
+green [LOGDATE] kernel: SCSI subsystem initialized
+green [LOGDATE] kernel: sda: assuming drive cache: write through
+green [LOGDATE] kernel: sda: assuming Write Enabled
+green [LOGDATE] kernel:  sd[a-z]:((\ssd[a-z]\d|<|>))*
+green [LOGDATE] kernel:     Secondary interface chip i[NUM]\.
+green [LOGDATE] kernel: Security Scaffold v[NUM]\.[NUM]\.[NUM] initialized
+green [LOGDATE] kernel: SELinux:  Disabled at runtime
+green [LOGDATE] kernel: SELinux:  Initializing\.
+green [LOGDATE] kernel: SELinux:  Registering netfilter hooks
+green [LOGDATE] kernel: selinux_register_security:  Registering secondary module capability
+green [LOGDATE] kernel: SELinux:  Unregistering netfilter hooks
+green [LOGDATE] kernel: sending pkt_too_big \(len[PID] pmtu[PID]\) to self
+green [LOGDATE] kernel: Serial driver version
+green [LOGDATE] kernel: Serial: [NUM]/[NUM] driver \$Revision: 1.5 $ [NUM] ports, IRQ sharing enabled
+green [LOGDATE] kernel:   Serial sub-system self-test: passed\.
+green [LOGDATE] kernel: serio: .* port at [HEX],[HEX] irq [NUM]
+green [LOGDATE] kernel: Setting [NUM] in the phys_id_present_map
+green [LOGDATE] kernel: Simple Boot Flag at [HEX] set to [NUM]
+green [LOGDATE] kernel: sis[NUM]\.c: v[NUM]\.[NUM]\.[NUM] [NUM][PATH]
+green [LOGDATE] kernel: SIS[NUM]: IDE controller at PCI slot [NUM]:[NUM]:[NUM]\.[NUM]
+green [LOGDATE] kernel: SIS[NUM]: SiS [NUM]/[NUM] MuTIOL IDE UDMA[NUM] controller
+green [LOGDATE] kernel: SMBFS: need mount version [NUM]
+green [LOGDATE] kernel: smb_open: temp/don't let [HOSTNAME]m open failed, result=-[NUM]
+green [LOGDATE] kernel: smb_open: \.Trash-marc/\.[HOSTNAME]p open failed, result=-[NUM]
+green [LOGDATE] kernel: smb_readpage_sync: temp/don't let [HOSTNAME]m open failed, error=-[NUM]
+green [LOGDATE] kernel: smb_request: result -[NUM], setting invalid
+green [LOGDATE] kernel: smb_retry: successful, new pid=[NUM], generation=[NUM]
+green [LOGDATE] kernel: smp_num_cpus: [NUM]\.
+green [LOGDATE] kernel: SMP motherboard not detected\.
+green [LOGDATE] kernel: spurious [NUM]A interrupt: IRQ[NUM]\.
+green [LOGDATE] kernel: sr[NUM]: scsi-[NUM] drive
+green [LOGDATE] kernel: sr[NUM]: scsi[NUM]-mmc drive: [NUM]x/[NUM]x writer cd/rw xa/form[NUM] cdda tray
+green [LOGDATE] kernel: st: Version [NUM], bufsize [NUM], max init\. bufs [NUM], s/g segs [NUM]
+green [LOGDATE] kernel: sungem\.c:v[NUM]\.[NUM] [NUM][PATH] David S\. Miller \([EMAIL]\)
+green [LOGDATE] kernel: Swansea University Computer Society
+green [LOGDATE] kernel: Symbols match kernel version [NUM]\.[NUM]\.[NUM]\.
+green [LOGDATE] kernel: sysctl: ip forwarding enabled 
+green [LOGDATE] kernel: sysctl: ip forwarding off 
+green [LOGDATE] kernel: tas driver \[TAS[NUM] driver V [NUM]\.[NUM]\]\)
+green [LOGDATE] kernel: task migration cache decay timeout: [NUM] msecs\.
+green [LOGDATE] kernel: tcpdump uses obsolete \(PF_INET,SOCK_P[TCPFLAG]ET\)
+green [LOGDATE] kernel: TCP: Hash tables configured
+green [LOGDATE] kernel: TCP: Treason uncloaked! Peer [IPADDR]:[NUM]/[NUM] shrinks window [NUM]:[NUM]\. Repaired\.
+green [LOGDATE] kernel: Teles[NUM]: membase configured DOSish, assuming [HEX][NUM]
+green [LOGDATE] kernel: Teles: [NUM]\.[NUM] Byte at d[NUM] is ff
+green [LOGDATE] kernel: Teles[NUM]: [NUM]\.[NUM] Byte at d[NUM] is ff
+green [LOGDATE] kernel: testing the IO APIC\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.\.
+green [LOGDATE] kernel: There is already a security framework initialized, register_security failed\.
+green [LOGDATE] kernel: Thermal assist unit using timers, shrink_timer: [NUM] jiffies
+green [LOGDATE] kernel: three months old please report this to [EMAIL]
+green [LOGDATE] kernel: TID [NUM]  Vendor:
+green [LOGDATE] kernel: time_init: decrementer frequency = [NUM]\.[NUM] MHz
+green [LOGDATE] kernel: \.\.TIMER: vector=[NUM] pin[NUM]=[NUM] pin[NUM]=[NUM]
+green [LOGDATE] kernel: Toshiba System Managment Mode driver v[NUM]\.[NUM] [NUM][PATH]
+green [LOGDATE] kernel: Total HugeTLB memory allocated, [NUM]
+green [LOGDATE] kernel: Total memory = [NUM]MB; using [NUM]kB for hash table \(at [HEX]\)
+green [LOGDATE] kernel: Total of [NUM] processors activated \([NUM]\.[NUM] BogoMIPS\)\.
+green [LOGDATE] kernel: Transparent bridge - Intel Corp\. .* PCI Bridge
+green [LOGDATE] kernel: Trying to unmount old [USER] \.\.\. okay
+green [LOGDATE] kernel: tty[NUM] at [HEX] \(irq = [NUM]\) is a 
+green [LOGDATE] kernel: ttyS[NUM] at [HEX] \(irq = [NUM]\) is a
+green [LOGDATE] kernel: ttyS[NUM] at I/O [HEX] \(irq = [NUM]\) is a 
+green [LOGDATE] kernel: ttyS: [NUM] input overrun\(s\)
+green [LOGDATE] kernel: ttyS[NUM]: LSR safety check engaged!
+green [LOGDATE] kernel: tulip[NUM]:  EEPROM default media type Autosense\.
+green [LOGDATE] kernel: tulip[NUM]:  Index #[NUM] - Media MII \(#[NUM]\) described by a [NUM] MII PHY \([NUM]\) block\.
+green [LOGDATE] kernel: tulip[NUM]:  MII transceiver #[NUM] config [NUM] status [NUM]d advertising [HEX]\.
+green [LOGDATE] kernel: tulip[NUM]:  [NUM] media #[NUM], [NUM]baseT\.
+green [LOGDATE] kernel: tulip[NUM]:  [NUM] media #[NUM], [NUM]baseT-FDX\.
+green [LOGDATE] kernel: tulip[NUM]: [NUM] Media table, default media [NUM] \(Autosense\)\.
+green [LOGDATE] kernel:   Type: .* ANSI SCSI revision: [NUM]
+green [LOGDATE] kernel: udf: registering filesystem
+green [LOGDATE] kernel: .*: \(U\)DMA Burst Bit ENABLED Primary MASTER Mode Secondary MASTER Mode\.
+green [LOGDATE] kernel: Uniform .* driver Revision:
+green [LOGDATE] kernel: Unknown bridge resource [NUM]: assuming transparent
+green [LOGDATE] kernel: usb\.c: new USB bus registered, assigned bus number [NUM]
+green [LOGDATE] kernel: usbcore: registered new driver 
+green [LOGDATE] kernel: usb\.c: registered new driver
+green [LOGDATE] kernel: usb\.c: USB device [NUM] \(vend/prod [HEX]/[NUM]\) is not claimed by any active driver\.
+green [LOGDATE] kernel: usb\.c: USB new device connect, assigned device number [NUM]
+green [LOGDATE] kernel: USB Mass Storage support registered\.
+green [LOGDATE] kernel: usb [NUM][NUM]: new full speed USB device using address [NUM]
+green [LOGDATE] kernel: usb-ohci\.c: USB continue: usb[NUM]:[NUM]\.[NUM] from host wakeup
+green [LOGDATE] kernel: usb-ohci\.c: usb[NUM]:[NUM]\.[NUM], Apple Computer Inc\. KeyLargo/Pangea USB
+green [LOGDATE] kernel: usb-ohci\.c: USB OHCI at membase [HEX], IRQ [NUM]
+green [LOGDATE] kernel: usb-ohci\.c: USB suspend: usb[NUM]:[NUM]\.[NUM]
+green [LOGDATE] kernel: usb-uhci\.c: Detected [NUM] ports
+green [LOGDATE] kernel: usb-uhci\.c: High bandwidth mode enabled
+green [LOGDATE] kernel: usb-uhci\.c: Intel USB controller: setting latency timer to [NUM]
+green [LOGDATE] kernel: usb-uhci\.c: \$Revision:
+green [LOGDATE] kernel: usb-uhci\.c: USB UHCI at I/O [HEX][NUM], IRQ [NUM]
+green [LOGDATE] kernel: usb-uhci\.c: v[NUM]\.[NUM]:USB Universal Host Controller Interface driver
+green [LOGDATE] kernel: Using cfq io scheduler
+green [LOGDATE] kernel: using fastest function: p[I\d]*_mmx \([NUM]\.[NUM] MB/sec\)
+green [LOGDATE] kernel: using i2c address: [NUM] from device-tree
+green [LOGDATE] kernel: Using local APIC timer interrupts\.
+green [LOGDATE] kernel: Using pmtmr for high-res timesource
+green [LOGDATE] kernel: Using r[NUM] hash to sort names
+green [LOGDATE] kernel: __va_range\([HEX], [HEX]\): idx=[NUM] mapped at [HEX]
+green [LOGDATE] kernel:   Vendor: .* Model: .* Rev: .*
+green [LOGDATE] kernel: VFS: Disk quotas
+green [LOGDATE] kernel: VFS: Diskquotas version .* initialized
+green [LOGDATE] kernel: VFS: Mounted
+green [LOGDATE] kernel: .*: VIA vt[HEX]a \(rev [NUM]\) IDE UDMA[NUM] controller on pci[NUM]:[NUM]\.[NUM]
+green [LOGDATE] kernel: .*: VIA vt[HEX]b \(rev [NUM]\) IDE UDMA[NUM] controller on pci[NUM]:[NUM]\.[NUM]
+green [LOGDATE] kernel:     Virtual Wire compatibility mode\.
+green [LOGDATE] kernel: Waiting on wait_init_idle \(map = [HEX]\)
+green [LOGDATE] kernel: Warning: possible [TCPFLAG] flood from [IPADDR] on [IPADDR]:[NUM]\.  Sending cookies\. 
+green [LOGDATE] kernel: W[NUM]: No PCI card found
+green [LOGDATE] kernel: [WORD]: IN=
+green [LOGDATE] kernel: Working around Cyrix MediaGX virtual DMA bugs\.
+green [LOGDATE] kernel: Write will use    [NUM] fragments of   [NUM] bytes as default
+green [LOGDATE] kernel: Zapata Telephony Interface Registered on major [NUM]
+green [LOGDATE] kernel: Zapata Telephony Interface Unloaded
+green [LOGDATE] kernel: zapping low mappings\.
+green [LOGDATE] kernel: zone\([NUM]\): [NUM] pages\.
+
+red [LOGDATE] kernel: end_request: I/O error, dev [NUM]:[NUM] \(hd[a-z]\), sector [NUM]
+red [LOGDATE] kernel:   Error: Illegal request -- \(Sense key=[NUM]\)
+red [LOGDATE] kernel: hd[a-z]: dma_intr: error=[NUM]
+red [LOGDATE] kernel: hd[a-z]: dma_intr: status=[NUM] \{ DriveReady SeekComplete Error \}
+red [LOGDATE] kernel: hd[a-z]: packet command error:
+red [LOGDATE] kernel: SCSI disk error : host [NUM] channel [NUM] id [NUM] lun [NUM] return code = [NUM]
+red [LOGDATE] kernel: scsi[HEX]:[HEX]:[HEX]:[HEX]: Attempting to abort cmd

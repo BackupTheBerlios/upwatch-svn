@@ -41,6 +41,9 @@ green [LOGDATE] postfix/smtp[PID]: connect to [HOSTNAME]\[[IPADDR]\]:
 green [LOGDATE] postfix/smtp[PID]: [MSGID]: enabling PIX <CRLF>\.<CRLF> workaround for [HOSTNAME]\[[IPADDR]\]
 green [LOGDATE] postfix/smtp[PID]: warning: host [HOSTNAME]\[[IPADDR]\] greeted me with my own hostname [HOSTNAME]
 green [LOGDATE] postfix/smtp[PID]: warning: host [HOSTNAME]\[[IPADDR]\] replied to HELO/EHLO with my own hostname [HOSTNAME]
+green [LOGDATE] postfix/anvil[PID]: statistics: max connection rate [NUM]/[NUM]s for (smtp:[IPADDR]) at [WORD] [NUM] [NUM]:[NUM]:[NUM]
+green [LOGDATE] postfix/anvil[PID]: statistics: max connection count [NUM] for (smtp:[IPADDR]) at [WORD] [NUM] [NUM]:[NUM]:[NUM]
+green [LOGDATE] postfix/anvil[PID]: statistics: max cache size [NUM] at [WORD] [NUM] [NUM]:[NUM]:[NUM]
 red [LOGDATE] postfix/local[PID]: table has changed -- exiting
 red [LOGDATE] postfix/postfix-script: fatal: the Postfix mail system is already running
 red [LOGDATE] postfix/postfix-script: fatal: the Postfix mail system is not running
