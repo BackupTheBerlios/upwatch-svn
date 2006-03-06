@@ -3,3 +3,4 @@ green [LOGDATE] ZEBRA: Terminating on signal
 green [LOGDATE] ZEBRA: Zebra [NUM]\.[NUM]\.[NUM] starting: vty@[NUM]
 green [LOGDATE] ZEBRA: Terminating on signal
 green [LOGDATE] ZEBRA: Zebra [NUM]\.[NUM]\.[NUM] starting: vty@[NUM]
+green [LOGDATE] ZEBRA: SMUX_CLOSE with reason: [NUM]
