@@ -10,4 +10,5 @@ green [LOGDATE] ntpd[PID]: Terminating
 green [LOGDATE] ntpd[PID]: ntp engine exiting
 green [LOGDATE] ntpd[PID]: dispatch_imsg in main: pipe closed
 green [LOGDATE] ntpd[PID]: Lost child: child exited
+green [LOGDATE] ntpd[PID]: recvfrom [IPADDR]: Connection refused
 red [LOGDATE] ntpd[PID]: adjtime failed: Invalid argument
