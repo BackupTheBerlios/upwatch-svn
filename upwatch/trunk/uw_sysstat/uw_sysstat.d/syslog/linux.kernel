@@ -664,6 +664,8 @@ green [LOGDATE] kernel: Zapata Telephony Interface Registered on major [NUM]
 green [LOGDATE] kernel: Zapata Telephony Interface Unloaded
 green [LOGDATE] kernel: zapping low mappings\.
 green [LOGDATE] kernel: zone\([NUM]\): [NUM] pages\.
+ignore [LOGDATE] kernel: MD5 Hash NOT expected but found ([IPADDR], [NUM])->([IPADDR], [NUM])
+ignore [LOGDATE] kernel: printk: [NUM] messages suppressed.
 
 red [LOGDATE] kernel: end_request: I/O error, dev [NUM]:[NUM] \(hd[a-z]\), sector [NUM]
 red [LOGDATE] kernel:   Error: Illegal request -- \(Sense key=[NUM]\)
