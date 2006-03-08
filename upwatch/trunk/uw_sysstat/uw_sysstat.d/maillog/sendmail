@@ -6,4 +6,5 @@ green [LOGDATE] sendmail[PID]: STARTTLS=.*, relay=.*, version=.*, verify=.*, cip
 green [LOGDATE] sendmail[PID]: [MSGID]: forward .*: Group writable directory
 green [LOGDATE] sendmail[PID]: gethostbyaddr\([IPADDR]\) failed: 
 green [LOGDATE] sendmail[PID]: accepting connections again for daemon MTA
+yellow [LOGDATE] sendmail[PID]: alias database [PATH] out of date
 red [LOGDATE] sendmail[PID]: rejecting connections on daemon MTA: load average: [NUM]
