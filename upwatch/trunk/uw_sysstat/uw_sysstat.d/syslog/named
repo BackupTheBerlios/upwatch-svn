@@ -3,8 +3,8 @@ green [LOGDATE] named[PID]: bad referral \([HOSTNAME] !< [HOSTNAME]\)
 green [LOGDATE] named[PID]: check_hints: A records for J\.ROOT-SERVERS\.NET class [NUM] do not match hint records
 green [LOGDATE] named[PID]: Cleaned cache of [NUM] RRset
 green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: bad zone transfer request: '[HOSTNAME]/IN': non-authoritative zone \(NOTAUTH\)
-green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: error sending response: host unreachable
-green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: error sending response: invalid file
+ignore [LOGDATE] named[PID]: client [IPADDR]#[NUM]: error sending response: host unreachable
+ignore [LOGDATE] named[PID]: client [IPADDR]#[NUM]: error sending response: invalid file
 green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: no more recursive clients: quota reached
 green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: update forwarding denied
 green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: update '[HOSTNAME]/IN' denied
@@ -55,7 +55,7 @@ green [LOGDATE] named[PID]: reloading nameserver
 green [LOGDATE] named[PID]: Response from unexpected source \(\[[IPADDR]\]\.[NUM]\)
 green [LOGDATE] named[PID]: running
 green [LOGDATE] named[PID]: shutting down
-green [LOGDATE] named[PID]: socket\.c:[NUM]: unexpected error:
+ignore [LOGDATE] named[PID]: socket\.c:[NUM]: unexpected error:
 green [LOGDATE] named[PID]: stopping command channel on [IPADDR]#[NUM]
 green [LOGDATE] named[PID]: suppressing duplicate notify \("[HOSTNAME]" IN SOA\)
 green [LOGDATE] named[PID]: sysquery: no addrs found for [USER] NS \(\)

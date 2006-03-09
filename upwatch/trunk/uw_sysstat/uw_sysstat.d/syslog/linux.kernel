@@ -133,7 +133,8 @@ green [LOGDATE] kernel: Enabling SiS [NUM]x SMBus\.
 green [LOGDATE] kernel: Enabling the CPU's according to the ACPI table
 green [LOGDATE] kernel: Enabling unmasked SIMD FPU exception support\.\.\. done\.
 green [LOGDATE] kernel: e[NUM]: eth[NUM]: Intel\(R\) PRO/[NUM] Network Connection
-green [LOGDATE] kernel: e[NUM]: eth[NUM] NIC Link is Up [NUM] Mbps Full duplex
+green [LOGDATE] kernel: e[NUM]: eth[NUM] NIC Link is Up [NUM] Mbps [WORD] duplex
+green [LOGDATE] kernel: e[NUM]: eth[NUM]: e[NUM]_watchdog_task: NIC Link is Up [NUM] Mbps [WORD] Duplex
 green [LOGDATE] kernel: eth[NUM]: MII #[HEX] registers are: [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX]\. 
 green [LOGDATE] kernel: eth[NUM]: Airport entering sleep mode
 green [LOGDATE] kernel: eth[NUM]: Airport waking up
@@ -143,7 +144,7 @@ green [LOGDATE] kernel: eth[NUM]: Found BCM[NUM] PHY
 green [LOGDATE] kernel: eth[NUM]: .* [MACADDR], I/O at [HEX][HEX], IRQ [NUM]
 green [LOGDATE] kernel: eth[NUM]: .* [MACADDR], IRQ [NUM]
 green [LOGDATE] kernel: eth[NUM]: Intel\(R\) PRO/[NUM] Network Connection
-green [LOGDATE] kernel: eth[NUM]: Media Link On [NUM]mbps full-duplex 
+green [LOGDATE] kernel: eth[NUM]: Media Link On [NUM]mbps [WORD]-duplex 
 green [LOGDATE] kernel: eth[NUM]: Promiscuous mode enabled
 green [LOGDATE] kernel: eth[NUM]: Realtek RTL[NUM] PHY transceiver found at address [NUM]\.
 green [LOGDATE] kernel: eth[NUM]: resuming
@@ -667,6 +668,8 @@ green [LOGDATE] kernel: zone\([NUM]\): [NUM] pages\.
 green [LOGDATE] kernel: MD5 Hash NOT expected but found \([IPADDR], [NUM]\)->\([IPADDR], [NUM]\)
 green [LOGDATE] kernel: printk: [NUM] messages suppressed.
 
+yellow [LOGDATE]  kernel: eth[NUM]: [NUM] transmit timed out, status .*, resetting...
+
 red [LOGDATE] kernel: end_request: I/O error, dev [NUM]:[NUM] \(hd[a-z]\), sector [NUM]
 red [LOGDATE] kernel:   Error: Illegal request -- \(Sense key=[NUM]\)
 red [LOGDATE] kernel: hd[a-z]: dma_intr: error=[NUM]
@@ -674,3 +677,4 @@ red [LOGDATE] kernel: hd[a-z]: dma_intr: status=[NUM] \{ DriveReady SeekComplete
 red [LOGDATE] kernel: hd[a-z]: packet command error:
 red [LOGDATE] kernel: SCSI disk error : host [NUM] channel [NUM] id [NUM] lun [NUM] return code = [NUM]
 red [LOGDATE] kernel: scsi[HEX]:[HEX]:[HEX]:[HEX]: Attempting to abort cmd
+red [LOGDATE] kernel: eth[NUM]: transmit timed out, switching to .* media

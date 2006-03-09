@@ -36,14 +36,11 @@ green [LOGDATE] postfix/smtpd[PID]: warning: [HOSTNAME]\[[IPADDR]\] sent
 green [LOGDATE] postfix/smtpd[PID]: warning: Illegal address syntax from [HOSTNAME]\[[IPADDR]\] in
 green [LOGDATE] postfix/smtpd[PID]: [MSGID]: discard: [WORD] from [HOSTNAME]\[[IPADDR]\]: <.*>:
 green [LOGDATE] postfix/smtpd[PID]: NOQUEUE: reject: [WORD] from [HOSTNAME]\[[IPADDR]\]
-green [LOGDATE] postfix/smtp[PID]: connect to .* \[[IPADDR]\]: read timeout \(port [NUM]\)
 ignore [LOGDATE] postfix/smtpd[PID]: too many errors after [WORD] from [HOSTNAME]
 green [LOGDATE] postfix/smtp[PID]: connect to [HOSTNAME]\[[IPADDR]\]: 
 green [LOGDATE] postfix/smtp[PID]: [MSGID]: enabling PIX <CRLF>\.<CRLF> workaround for [HOSTNAME]\[[IPADDR]\]
 green [LOGDATE] postfix/smtp[PID]: warning: host [HOSTNAME]\[[IPADDR]\] greeted me with my own hostname [HOSTNAME]
 green [LOGDATE] postfix/smtp[PID]: warning: host [HOSTNAME]\[[IPADDR]\] replied to HELO/EHLO with my own hostname [HOSTNAME]
-green [LOGDATE] postfix/anvil[PID]: statistics: 
-green [LOGDATE] postfix/scache[PID]: statistics: 
 red [LOGDATE] postfix/local[PID]: table has changed -- exiting
 red [LOGDATE] postfix/postfix-script: fatal: the Postfix mail system is already running
 red [LOGDATE] postfix/postfix-script: fatal: the Postfix mail system is not running

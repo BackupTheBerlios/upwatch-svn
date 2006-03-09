@@ -28,8 +28,6 @@ green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): [IPADDR]: timeout reading DATA 
 green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): [IPADDR]: timeout reading fileblock
 green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): [IPADDR]: timeout reading PASS response
 green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): [IPADDR]: timeout reading USER string
-green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): timeout reading login request string
-green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): timeout reading OK enter password
 green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): [PATH]: empty file
 green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): reading info from database
 green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): running [NUM] probes
