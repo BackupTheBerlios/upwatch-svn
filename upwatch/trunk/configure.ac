@@ -542,7 +542,7 @@ AC_SUBST(LIBSNMP_LIBS)
 if test "$enable_server" = "yes"
 then
 	# libesmtp
-	AC_CHECK_LIB([esmtp], [smtp_create_session], [HAVE_LIBESMTP=1], [HAVE_LIBESMTP=0])
+	AC_CHECK_LIB([esmtp], [smtp_create_session], [HAVE_LIBESMTP=1], [HAVE_LIBESMTP=0], $LIBPTHREAD_LIBS)
 	if test $HAVE_LIBESMTP -eq 1
 	then
 	        LIBESMTP_LIBS=-lesmtp
