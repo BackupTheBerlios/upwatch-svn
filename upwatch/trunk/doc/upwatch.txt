@@ -178,7 +178,7 @@ Chapter 2. Installation
                  $ ./configure
                  $ make
 		 $ groupadd upwatch
-		 $ sudo useradd -d /etc/upwatch.d -s /sbin/nologin -g upwatch upwatch 
+		 $ useradd -d /etc/upwatch.d -s /sbin/nologin -g upwatch upwatch 
                  $ make install
 
    Nothing  to  it...  In  case of problems, you're probably missing some
