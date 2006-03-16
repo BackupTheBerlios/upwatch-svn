@@ -120,9 +120,13 @@ sg_fs_stats *sg_get_fs_stats(int *entries){
 	struct mntent *mp;
 	struct statfs fs;
 #endif
-#ifdef ALLBSD
+#if defined(ALLBSD) && !defined(OPENBSD)
 	int nummnt;
 	struct statvfs *mp;
+#endif
+#ifdef OPENBSD
+	int nummnt;
+	struct statfs *mp;
 #endif
 
 #ifdef ALLBSD
