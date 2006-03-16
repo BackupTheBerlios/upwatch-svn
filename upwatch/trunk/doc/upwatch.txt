@@ -159,6 +159,8 @@ Chapter 2. Installation
    above  mentioned packages, you'll need the following on your system to
    build upwatch:
      * lynx
+     * autoconf 2.59
+     * automake 1.9
      * autogen 5.3.6 (autogen.sourceforge.net)
      * autogen needs libguile and umb-scheme
      * RPM tools, if you want to build RPM's
@@ -175,6 +177,8 @@ Chapter 2. Installation
                  $ cd upwatch-x.x
                  $ ./configure
                  $ make
+		 $ groupadd upwatch
+		 $ sudo useradd -d /etc/upwatch.d -s /sbin/nologin -g upwatch upwatch 
                  $ make install
 
    Nothing  to  it...  In  case of problems, you're probably missing some
