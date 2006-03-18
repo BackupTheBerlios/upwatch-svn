@@ -49,9 +49,9 @@ endif
 if ENABLE_IPTRAF
 ENABLE_IPTRAF = --enable-iptraf
 IPTRAFPROG = ${IPTRAFLIST}
-EXTRAPROG = ${IPTRAFPROG}
 endif
 
+EXTRAPROG = ${IPTRAFPROG}
 
 if XMBMON
 XMBMON = xmbmon203
@@ -60,13 +60,7 @@ endif
 CONFARGS = --enable-client $(ENABLE_SERVER) $(ENABLE_MONITOR) $(ENABLE_IPTRAF)
 
 # order is important: SERVERPROG should be last
-PROGNAMES = ${CLIENTPROG}
-if ENABLE_MONITORS
-PROGNAMES .= ${MONITORPROG}
-endif
-if ENABLE_SERVER
-PROGNAMES .= ${SERVERPROG}
-endif
+PROGNAMES = ${CLIENTPROG} ${MONITORPROG} ${EXTRAPROG} ${SERVERPROG}
 
 export PROGNAMES MONITORPROG CLIENTPROG SERVERPROG EXTRAPROG
 export TOP_SRCDIR = $(top_srcdir)
@@ -161,3 +155,4 @@ endif
 
 #	rm -f $(distdir)/doc/program-guide.*
 #	rm -f $(distdir)/doc/admin-guide.*
+
