@@ -1,2 +1,3 @@
 green [LOGDATE] gdm-binary[PID]: Couldn't authenticate user
+green [LOGDATE] gdm[PID]: gdm_slave_xioerror_handler: Fatal X error - Restarting [HOSTNAME]:[NUM]
 

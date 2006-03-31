@@ -66,3 +66,4 @@ green [LOGDATE] sshd[PID]: subsystem request for sftp
 ignore [LOGDATE] sshd[PID]: syslogin_perform_logout: logout\(\) returned an error
 green [LOGDATE] sshd[PID]: WARNING: [PATH] does not exist, using old modulus
 green [LOGDATE] sshd[PID]: WARNING: [PATH] does not exist, using old prime
+green [LOGDATE] sshd[PID]: Read error from remote host [IPADDR]: No route to host

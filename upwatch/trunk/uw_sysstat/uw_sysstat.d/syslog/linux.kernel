@@ -321,6 +321,7 @@ green [LOGDATE] kernel: IP: routing cache hash table of [NUM] buckets, [NUM]Kbyt
 green [LOGDATE] kernel: IPSEC EVENT: KLIPS device ipsec[NUM] shut down\.
 green [LOGDATE] kernel: ip_tables: \(C\) [NUM]-[NUM] Netfilter core team
 green [LOGDATE] kernel: iptables: [WORD] IN=
+green [LOGDATE] kernel: ipta[NUM] 
 green [LOGDATE] kernel: IPv[NUM] over IPv[NUM] tunneling driver
 green [LOGDATE] kernel: IPVS: Connection hash table configured \(size=[NUM], memory=[NUM]Kbytes\)
 green [LOGDATE] kernel: IPX Portions Copyright \(c\) [NUM]
@@ -406,6 +407,7 @@ green [LOGDATE] kernel: NET[NUM]: Linux IPX
 green [LOGDATE] kernel: NET[NUM]: Linux TCP/IP
 green [LOGDATE] kernel: NET[NUM]: Unix domain sockets
 green [LOGDATE] kernel: NET: Registered protocol family [NUM]
+green [LOGDATE] kernel: NET: [NUM] messages suppressed.
 green [LOGDATE] kernel: nfsd: last server has exited
 green [LOGDATE] kernel: nfs: server [IPADDR] OK
 green [LOGDATE] kernel: nfsd: unexporting all filesystems
@@ -704,3 +706,4 @@ red [LOGDATE] kernel: scsi[HEX]:[HEX]:[HEX]:[HEX]: Attempting to abort cmd
 red [LOGDATE] kernel: eth[NUM]: transmit timed out, switching to .* media
 red [LOGDATE] kernel: attempt to access beyond end of device
 red [LOGDATE] kernel: __alloc_pages: 0-order allocation failed 
+red [LOGDATE] kernel: VM: killing process
