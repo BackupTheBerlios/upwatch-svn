@@ -5,7 +5,7 @@ LOGDATE [A-Za-z]* [0-9 ][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9] [-\.\/0-9A-Za-z]+
 SMONTH  (Mon|Tue|Wed|Thu|Fri|Sat|Sun)
 EMAIL   [-\.\$_0-9a-z]+@([a-z0-9][-a-z0-9]*)(\.[a-z0-9][-a-z0-9]*)*(\.(arpa|com|edu|biz|org|gov|int|info|mil|net|name|museum|coop|aero|[a-z][a-z]))?
 HOSTNAME ([a-z0-9][-a-z0-9]*)(\.[a-z0-9][-a-z0-9]*)*(\.(arpa|com|edu|biz|org|gov|int|info|mil|net|name|museum|coop|aero|[a-z][a-z]))
-IPADDR	(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9]?[0-9])){3}
+IPADDR ((([0-9a-fA-F]+:){7}[0-9a-fA-F]+)|(([0-9a-fA-F]+:)*[0-9a-fA-F]+)?::(([0-9a-fA-F]+:)*[0-9a-fA-F]+)?)|((25[0-5]|2[0-4][\d]|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3})
 PATH	(/[-\._[:alnum:]]+){2,}([/]?)
 MACADDR ([a-f0-9][a-f0-9])(:[a-f0-9][a-f0-9]){5,}
 TCPFLAG (SYN|ACK|PSH|FIN|RST)(\ (SYN|ACK|PSH|FIN|RST))*
