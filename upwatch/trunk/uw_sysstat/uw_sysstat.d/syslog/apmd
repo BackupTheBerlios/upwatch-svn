@@ -1,3 +1,4 @@
 green [LOGDATE] apmd[PID]: Charge: \* \* \* \(-[NUM]% unknown\)
 green [LOGDATE] apmd[PID]: Exiting
 green [LOGDATE] apmd[PID]: Version [NUM]\.[NUM]final \(APM BIOS [NUM]\.[NUM], Linux driver [NUM]\.[NUM]\)
+green [LOGDATE] apmd[PID]: apmd .* interfacing with apm driver .* and APM BIOS 

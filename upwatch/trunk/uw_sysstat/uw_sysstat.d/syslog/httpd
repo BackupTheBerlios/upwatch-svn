@@ -7,3 +7,4 @@ green [LOGDATE] httpd: \[[SMONTH] [LOGDATE]\] \[warn\] module mod_status\.c is a
 green [LOGDATE] httpd: \[[SMONTH] [LOGDATE]\] \[warn\] module status_module is already loaded, skipping
 green [LOGDATE] httpd: \[[SMONTH] [LOGDATE]\] \[warn\] NameVirtualHost [IPADDR]:[NUM] has no VirtualHosts
 green [LOGDATE] httpd: [USER]
+green [LOGDATE] logger: HTTP down: return value was 0

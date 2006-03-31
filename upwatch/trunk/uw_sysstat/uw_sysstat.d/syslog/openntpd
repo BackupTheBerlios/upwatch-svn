@@ -12,4 +12,5 @@ green [LOGDATE] ntpd[PID]: dispatch_imsg in main: pipe closed
 green [LOGDATE] ntpd[PID]: Lost child: child exited
 green [LOGDATE] ntpd[PID]: recvfrom [IPADDR]: Connection refused
 green [LOGDATE] ntpd[PID]: reply from [IPADDR]: not synced, next query [NUM]s
+green [LOGDATE] ntpd[PID]: sendto: Operation not permitted
 red [LOGDATE] ntpd[PID]: adjtime failed: Invalid argument

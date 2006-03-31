@@ -4,7 +4,8 @@ green [LOGDATE] kernel: ac[NUM]_codec: AC[NUM] Audio codec, vendor id[NUM]: [NUM
 green [LOGDATE] kernel: ACPI: BOOT
 green [LOGDATE] kernel: ACPI: DSDT
 green [LOGDATE] kernel: ACPI: FADT
-green [LOGDATE] kernel: ACPI: Interpreter enabled
+green [LOGDATE] kernel: ACPI: Interpreter (enabled|disabled)
+green [LOGDATE] kernel: pnp: PnP ACPI: (disabled|enabled)
 green [LOGDATE] kernel: ACPI: IRQ[NUM] SCI: Edge set to Level Trigger
 green [LOGDATE] kernel: ACPI: MADT
 green [LOGDATE] kernel: ACPI: PCI Interrupt Link \[LNK[A-Z]\] enabled at IRQ [NUM]
@@ -20,6 +21,8 @@ green [LOGDATE] kernel: ACPI: Subsystem revision [NUM]
 green [LOGDATE] kernel: ACPI: \(supports S[NUM] S[NUM] S[NUM] S[NUM] S[NUM]\)
 green [LOGDATE] kernel: ACPI table found: (APIC|BOOT|FACP|RSDT|SPCR) v[NUM]
 green [LOGDATE] kernel: ACPI: Using PIC for interrupt routing
+green [LOGDATE] kernel: ACPI: BIOS age \([NUM]\) fails cutoff \([NUM]\), acpi=force is required to enable ACPI
+green [LOGDATE] kernel: ACPI: Disabling ACPI support
 green [LOGDATE] kernel: Activating ISA DMA hang workarounds\.
 green [LOGDATE] kernel: adb: finished probe task\.\.\.
 green [LOGDATE] kernel: ADB keyboard at [NUM], handler [NUM]
@@ -69,7 +72,7 @@ green [LOGDATE] kernel: change_[USER]: old [USER] has d_count=[NUM]
 green [LOGDATE] kernel: \.\.\.changing IO-APIC physical APIC ID to [NUM] \.\.\. ok\.
 green [LOGDATE] kernel: Checking for popad bug\.\.\. OK\.
 green [LOGDATE] kernel: Checking 'hlt' instruction\.\.\.
-green [LOGDATE] kernel: checking if image is initramfs\.\.\.it isn't \(no cpio magic\); looks like an initrd
+green [LOGDATE] kernel: checking if image is initramfs
 green [LOGDATE] kernel: Checking if this processor honours the WP bit even in supervisor mode\.\.\. Ok\.
 green [LOGDATE] kernel: Checking [NUM]/[NUM] coupling\.\.\. Ok, fpu using exception [NUM] error reporting\. 
 green [LOGDATE] kernel: Checking ReiserFS transaction log \(device [NUM]:[NUM]\) \.\.\.
@@ -459,7 +462,7 @@ green [LOGDATE] kernel: PCI: Setting latency timer of device [NUM]:[HEX]\.[NUM] 
 green [LOGDATE] kernel: PCI: Sharing IRQ [NUM] with [NUM]:[HEX]\.[NUM]
 green [LOGDATE] kernel: PCI: Using ACPI for IRQ routing
 green [LOGDATE] kernel: PCI: Using configuration type [NUM]
-green [LOGDATE] kernel: PCI: Using IRQ router [WORD] \[[NUM]/[NUM]\] at [NUM]:[HEX]\.[NUM]
+green [LOGDATE] kernel: PCI: Using IRQ router [WORD]
 green [LOGDATE] kernel: PCI: Via IRQ fixup for [NUM]:[NUM]\.[NUM], from [NUM] to [NUM]
 green [LOGDATE] kernel: \*pde = [NUM]
 green [LOGDATE] kernel: per-CPU timeslice cutoff: [NUM]\.[NUM] usecs\.
@@ -562,7 +565,7 @@ green [LOGDATE] kernel: selinux_register_security:  Registering secondary module
 green [LOGDATE] kernel: SELinux:  Unregistering netfilter hooks
 green [LOGDATE] kernel: sending pkt_too_big \(len[PID] pmtu[PID]\) to self
 green [LOGDATE] kernel: Serial driver version
-green [LOGDATE] kernel: Serial: [NUM]/[NUM] driver \$Revision: 1.5 $ [NUM] ports, IRQ sharing enabled
+green [LOGDATE] kernel: Serial: [NUM]/[NUM] driver \$Revision: [NUM]\.[NUM] $ [NUM] ports, IRQ sharing enabled
 green [LOGDATE] kernel:   Serial sub-system self-test: passed\.
 green [LOGDATE] kernel: serio: .* port at [HEX],[HEX] irq [NUM]
 green [LOGDATE] kernel: Setting [NUM] in the phys_id_present_map
@@ -645,7 +648,7 @@ green [LOGDATE] kernel: Using cfq io scheduler
 green [LOGDATE] kernel: using fastest function: p[I\d]*_mmx \([NUM]\.[NUM] MB/sec\)
 green [LOGDATE] kernel: using i2c address: [NUM] from device-tree
 green [LOGDATE] kernel: Using local APIC timer interrupts\.
-green [LOGDATE] kernel: Using pmtmr for high-res timesource
+green [LOGDATE] kernel: Using [WORD] for high-res timesource
 green [LOGDATE] kernel: Using r[NUM] hash to sort names
 green [LOGDATE] kernel: __va_range\([HEX], [HEX]\): idx=[NUM] mapped at [HEX]
 green [LOGDATE] kernel:   Vendor: .* Model: .* Rev: .*
@@ -667,6 +670,27 @@ green [LOGDATE] kernel: zapping low mappings\.
 green [LOGDATE] kernel: zone\([NUM]\): [NUM] pages\.
 green [LOGDATE] kernel: MD5 Hash NOT expected but found \([IPADDR], [NUM]\)->\([IPADDR], [NUM]\)
 green [LOGDATE] kernel: printk: [NUM] messages suppressed.
+green [LOGDATE] kernel: Using x86 segment limits to approximate NX protection
+green [LOGDATE] kernel: Security Framework v.* initialized
+green [LOGDATE] kernel: Mount-cache hash table entries: [NUM]
+green [LOGDATE] kernel: PCI quirk: region .* claimed by
+green [LOGDATE] kernel: PCI: Bridge: 
+green [LOGDATE] kernel: IO window:
+green [LOGDATE] kernel: MEM window:
+green [LOGDATE] kernel: PREFETCH window: 
+green [LOGDATE] kernel: ksign: Installing public key data
+green [LOGDATE] kernel: Loading keyring
+green [LOGDATE] kernel: - Added public key
+green [LOGDATE] kernel: - User ID: .* (Kernel Module GPG key)
+green [LOGDATE] kernel: io scheduler [WORD] registered
+green [LOGDATE] kernel: PNP: No PS/2 controller found. Probing ports directly
+green [LOGDATE] kernel: md: bitmap version [NUM]\.[NUM]
+green [LOGDATE] kernel: IP route cache hash table entries: [NUM]
+green [LOGDATE] kernel: TCP established hash table entries: [NUM]
+green [LOGDATE] kernel: TCP bind hash table entries: [NUM]
+green [LOGDATE] kernel: TCP [WORD] registered
+green [LOGDATE] kernel: Using IPI Shortcut mode
+green [LOGDATE] kernel: Write protecting the kernel read-only data: [NUM]k
 
 yellow [LOGDATE]  kernel: eth[NUM]: [NUM] transmit timed out, status .*, resetting...
 
@@ -678,3 +702,5 @@ red [LOGDATE] kernel: hd[a-z]: packet command error:
 red [LOGDATE] kernel: SCSI disk error : host [NUM] channel [NUM] id [NUM] lun [NUM] return code = [NUM]
 red [LOGDATE] kernel: scsi[HEX]:[HEX]:[HEX]:[HEX]: Attempting to abort cmd
 red [LOGDATE] kernel: eth[NUM]: transmit timed out, switching to .* media
+red [LOGDATE] kernel: attempt to access beyond end of device
+red [LOGDATE] kernel: __alloc_pages: 0-order allocation failed 

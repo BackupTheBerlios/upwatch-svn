@@ -1,3 +1,5 @@
 green [LOGDATE] snmpd: snmpd shutdown failed
 green [LOGDATE] snmpd[PID]: Received SNMP packet\(s\) from UDP: \[[IPADDR]\]:[NUM]
 green [LOGDATE] snmpd[PID]: Connection from UDP: \[[IPADDR]\]:[NUM]
+green [LOGDATE] snmpd[PID]: [smux_accept] accepted fd [NUM] from  \[[IPADDR]\]:[NUM]
+green [LOGDATE] snmpd[20178]: accepted smux peer: oid SNMPv2-SMI::enterprises\.[NUM]\.[NUM]\.[NUM]\.[NUM], descr 

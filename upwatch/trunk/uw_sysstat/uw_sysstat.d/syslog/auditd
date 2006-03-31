@@ -1,1 +1,2 @@
 green [LOGDATE] auditd[PID]: Audit daemon rotating log files
+green [LOGDATE] auditd[PID]: Init complete, auditd .* listening for events
