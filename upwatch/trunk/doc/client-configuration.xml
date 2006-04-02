@@ -214,10 +214,13 @@ andy
        <filename>/etc/upwatch.d/uw_sysstat.d/errlog</filename> (except <filename>rmacros.txt</filename>
        and <filename>macros.txt</filename>). 
        These files should contain regular expressions prefixed by one of the keywords 
-       <command>green</command>, <command>yellow</command>, or <command>red</command>. Next 
+       <command>green</command>, <command>yellow</command>, <command>red</command> or <command>ignore</command>. Next 
        uw_sysstat starts scanning <filename>/var/log/messages</filename>. It reads a line
        from the logfile and the following happens:</para>
        <itemizedlist>
+       <listitem><para>Check against the ignore list. If a match is found, flag green
+       condition, and continue with the next line. This is mostly used to skip lines that
+       would otherwise be flagged as red, for example because they contain the word ERROR.</para></listitem>
        <listitem><para>Check against the red list. If match found, flag red
        condition, and send the offending line to the upwatch server</para></listitem>
        <listitem><para>Check line against the yellow list. If matches, flag yellow
