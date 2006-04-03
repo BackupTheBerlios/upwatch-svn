@@ -3,7 +3,7 @@
 # match a macroname!!
 # entries are matched in the order specified
 WLOGDATE (Mon|Tue|Wed|Thu|Fri|Sat|Sun) [-A-Za-z]* [\d ]\d \d\d:\d\d:\d\d [-\.\/\dA-Za-z]+
-LOGDATE [A-Za-z]{3} [\d]{1,2} \d\d:\d\d:\d\d [-\.\/\dA-Za-z]+
+LOGDATE [A-Za-z]{3}\s{1,2}[\d]{1,2} \d\d:\d\d:\d\d [-\.\/\dA-Za-z]+
 EMAIL   [-\.\$\w]+@[a-z\d][-a-z\d]*(\.[a-z\d][-a-z\d]+)*\.(arpa|com|edu|biz|org|gov|int|info|mil|net|name|museum|coop|aero|[a-z][a-z])
 HOSTNAME ([a-z\d][-a-z\d]*)(\.[a-z\d][-a-z\d]*)*(\.(arpa|com|edu|biz|org|gov|int|info|mil|net|name|museum|coop|aero|[a-z][a-z]))?
 IPADDR ((([0-9a-fA-F]+:){7}[0-9a-fA-F]+)|(([0-9a-fA-F]+:)*[0-9a-fA-F]+)?::(([0-9a-fA-F]+:)*[0-9a-fA-F]+)?)|((25[0-5]|2[0-4][\d]|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3})

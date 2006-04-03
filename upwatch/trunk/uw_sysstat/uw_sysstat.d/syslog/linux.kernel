@@ -671,6 +671,7 @@ green [LOGDATE] kernel: Zapata Telephony Interface Unloaded
 green [LOGDATE] kernel: zapping low mappings\.
 green [LOGDATE] kernel: zone\([NUM]\): [NUM] pages\.
 green [LOGDATE] kernel: MD5 Hash NOT expected but found \([IPADDR], [NUM]\)->\([IPADDR], [NUM]\)
+green [LOGDATE] kernel: MD5 Hash failed for \([IPADDR], [NUM]\)->\([IPADDR], [NUM]\)
 green [LOGDATE] kernel: printk: [NUM] messages suppressed.
 green [LOGDATE] kernel: Using x86 segment limits to approximate NX protection
 green [LOGDATE] kernel: Security Framework v.* initialized

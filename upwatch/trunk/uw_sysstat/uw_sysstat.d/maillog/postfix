@@ -43,6 +43,9 @@ green [LOGDATE] postfix/smtp[PID]: warning: host [HOSTNAME]\[[IPADDR]\] greeted 
 green [LOGDATE] postfix/smtp[PID]: warning: host [HOSTNAME]\[[IPADDR]\] replied to HELO/EHLO with my own hostname [HOSTNAME]
 green [LOGDATE] postfix/smtp[PID]: connect to [HOSTNAME]\[[IPADDR]\]: Network is unreachable \(port [NUM]\)
 green [LOGDATE] postfix/smtp[PID]: connect to [HOSTNAME] \[[IPADDR]\]: read timeout \(port [NUM]\)
+green [LOGDATE] postfix/anvil[PID]: statistics: 
+green [LOGDATE] postfix/scache[PID]: statistics: 
+green [LOGDATE] postfix/smtp[PID]: connect to [HOSTNAME]\[[IPADDR]\]: Connection refused \(port [NUM]\) 
 red [LOGDATE] postfix/local[PID]: table has changed -- exiting
 red [LOGDATE] postfix/postfix-script: fatal: the Postfix mail system is already running
 red [LOGDATE] postfix/postfix-script: fatal: the Postfix mail system is not running
