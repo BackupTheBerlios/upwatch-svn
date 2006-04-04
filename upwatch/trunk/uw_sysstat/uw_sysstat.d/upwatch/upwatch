@@ -41,5 +41,9 @@ green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): [WORD]: purpled [WORD] [NUM]
 green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): writing results
 green [LOGDATE] uw_[WORD][PID]: spool\.c\([NUM]\): spooled to [PATH]
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [HOSTNAME]:[NUM]: Timer expired
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): timeout reading [WORD] response
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): timeout reading [WORD] command
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): timeout reading login request string
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): st_read: Connection reset by peer
 red [LOGDATE] uw_[WORD][PID]: db\.c\([NUM]\): Too many connections
-red [LOGDATE] uw_[WORD][PID]: notify\.c\([NUM]\): UPWATCH: probe mysqlstats is lagging in processing
+red [LOGDATE] uw_[WORD][PID]: notify\.c\([NUM]\): UPWATCH: probe [WORD] is lagging in processing
