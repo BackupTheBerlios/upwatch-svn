@@ -1,4 +1,10 @@
 green [LOGDATE] BGP: %NOTIFICATION: received from neighbor [IPADDR] [NUM]/[NUM] \(Cease\) [NUM] bytes
 green [LOGDATE] BGP: %MAXPFX: No. of prefix received from [IPADDR] \(afi [NUM]\) reaches [NUM], max [NUM]
 green [LOGDATE] BGP: SMUX_CLOSE with reason: [NUM]
+green [LOGDATE] BGP: %NOTIFICATION: sent to neighbor [IPADDR] [NUM]/[NUM] \(Cease/Administratively Reset\) [NUM] bytes
+green [LOGDATE] BGP: %ADJCHANGE: neighbor [IPADDR] Down User reset
+green [LOGDATE] BGP: %ADJCHANGE: neighbor [IPADDR] Up
+green [LOGDATE] BGP: %NOTIFICATION: received from neighbor [IPADDR] [NUM]/[NUM] \(Hold Timer Expired\) [NUM] bytes
+green [LOGDATE] BGP: %NOTIFICATION: sent to neighbor [IPADDR] [NUM]/[NUM] \(Hold Timer Expired\) [NUM] bytes
+green [LOGDATE] BGP: %ADJCHANGE: neighbor [IPADDR] Down BGP Notification received
 yellow [LOGDATE] BGP: %NOTIFICATION: received from neighbor [IPADDR] [NUM]/[NUM] \(OPEN Message Error/Authentication Failure\) [NUM] bytes

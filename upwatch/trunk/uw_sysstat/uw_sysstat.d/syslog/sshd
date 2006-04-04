@@ -32,6 +32,7 @@ green [LOGDATE] sshd[PID]: fatal: Connection closed by remote host\.
 green [LOGDATE] sshd[PID]: fatal: Did not receive ident string\.
 ignore [LOGDATE] sshd[PID]: fatal: Read error from remote host: Connection reset by peer
 green [LOGDATE] sshd[PID]: fatal: Read from socket failed: Connection reset by peer
+green [LOGDATE] sshd[PID]: Read error from remote host [IPADDR]: Connection reset by peer
 green [LOGDATE] sshd[PID]: fatal: Timeout before authentication for [IPADDR]
 green [LOGDATE] sshd[PID]: Found matching DSA key: [MACADDR]
 green [LOGDATE] sshd[PID]: Generating new [NUM] bit RSA key\.

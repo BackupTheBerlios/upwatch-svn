@@ -1,3 +1,4 @@
 green [LOGDATE] smb: nmbd shutdown failed
 green [LOGDATE] smb: smbd shutdown failed
 green [LOGDATE] mount.smbfs[PID]: \[[NUM]/[NUM]/[NUM] [NUM]:[NUM]:[NUM], [NUM]\] client/smbmount.c:send_fs_socket\([NUM]\)
+green [LOGDATE] smbd[PID]: \[[NUM]/[NUM]/[NUM] [NUM]:[NUM]:[NUM], [NUM]\] lib/access.c:check_access\([NUM]\)

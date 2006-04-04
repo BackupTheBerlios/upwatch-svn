@@ -40,6 +40,6 @@ green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): user [WORD], pwd [WORD] not fou
 green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): [WORD]: purpled [WORD] [NUM]
 green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): writing results
 green [LOGDATE] uw_[WORD][PID]: spool\.c\([NUM]\): spooled to [PATH]
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [HOSTNAME]:[NUM]: Timer expired
 red [LOGDATE] uw_[WORD][PID]: db\.c\([NUM]\): Too many connections
 red [LOGDATE] uw_[WORD][PID]: notify\.c\([NUM]\): UPWATCH: probe mysqlstats is lagging in processing
-

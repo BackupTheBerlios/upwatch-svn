@@ -1,1 +1,2 @@
-green [LOGDATE] postgres[PID]: [1-1] LOG: recycled transaction log file
+green [LOGDATE] postgres[PID]: \[[NUM]-[NUM]\] LOG: recycled transaction log file
+green [LOGDATE] postgres[PID]: \[[NUM]-[NUM]\] FATAL: no pg_hba.conf entry for host "\[[HOSTNAME]\]", user "[WORD]", database "[WORD]", SSL (on|off)

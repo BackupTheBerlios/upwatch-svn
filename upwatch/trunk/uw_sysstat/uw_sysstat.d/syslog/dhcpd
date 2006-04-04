@@ -11,4 +11,7 @@ green [LOGDATE] dhcpd: Copyright [NUM]-[NUM] Internet Software Consortium.
 green [LOGDATE] dhcpd: All rights reserved.
 green [LOGDATE] dhcpd: For info, please visit http://www.isc.org/products/DHCP
 green [LOGDATE] dhcpd: (Listening|Sending) on LPF/.*?/.*?/[IPADDR]/[NUM]
-green [LOGDATE] dhcpd: Sending on Socket/fallback/fallback-net
+green [LOGDATE] dhcpd: Sending on\s+Socket/fallback/fallback-net
+green [LOGDATE] dhcpd: Wrote [NUM] deleted host decls to leases file.
+green [LOGDATE] dhcpd: Wrote [NUM] new dynamic host decls to leases file.
+green [LOGDATE] dhcpd:\s*$
