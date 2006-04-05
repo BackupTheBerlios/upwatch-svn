@@ -4,5 +4,5 @@ green [LOGDATE] mount.smbfs[PID]: \[[NUM]/[NUM]/[NUM] [NUM]:[NUM]:[NUM], [NUM]\]
 green [LOGDATE] smbd[PID]: \[[NUM]/[NUM]/[NUM] [NUM]:[NUM]:[NUM], [NUM]\] lib/access.c:check_access\([NUM]\)
 green [LOGDATE] smbd[PID]: \[[NUM]/[NUM]/[NUM] [NUM]:[NUM]:[NUM], [NUM]\] lib/util_sock.c:get_peer_addr\([NUM]\)
 green [LOGDATE] smbd[PID]: read_socket_data: recv failure for [NUM]. Error = Connection reset by peer
-Apr 5 01:55:48 ts2 smbd[30801]: getpeername failed. Error was Transport endpoint is not connected
-Apr 5 01:55:49 ts2 smbd[30801]: [2006/04/05 01:55:49, 0] lib/util_sock.c:read_socket_data(384
+green [LOGDATE] smbd[PID]: getpeername failed. Error was Transport endpoint is not connected
+green [LOGDATE] smbd[PID]: \[[NUM]/[NUM]/[NUM] [NUM]:[NUM]:[NUM], [NUM]\] lib/util_sock.c:read_socket_data\([NUM]\)
