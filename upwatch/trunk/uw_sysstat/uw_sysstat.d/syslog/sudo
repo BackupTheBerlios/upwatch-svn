@@ -1,1 +1,1 @@
-green [LOGDATE] sudo:\s* [USER] : TTY=[WORD][NUM]* ; PWD=[PATH] ; USER=[USER] ; COMMAND=[PATH] 
+green [LOGDATE] sudo:\s+[USER] : TTY=[WORD][NUM] ; PWD=[PATH] ; USER=[USER] ; COMMAND=[PATH]
