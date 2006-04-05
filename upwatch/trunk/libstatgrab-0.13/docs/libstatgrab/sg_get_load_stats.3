@@ -1,0 +1,42 @@
+.TH sg_get_load_stats 3 $Date:\ 2005/04/25\ 11:25:45\ $ i\-scream 
+.SH NAME
+sg_get_load_stats \- get system load
+.SH SYNOPSIS
+.nf
+#include <statgrab.h>
+.fi
+.sp 1
+.PP
+sg_load_stats *\fIsg_get_load_stats\fR(void);
+.SH DESCRIPTION
+This call returns a pointer to a static buffer of
+sg_load_stats.
+.PP
+On most systems this function is just a wrapper to the
+getloadavg system call.
+.SH RETURN\ VALUES
+The structure returned is of type
+sg_load_stats.
+.PP
+.nf
+
+typedef struct{
+        double min1;
+        double min5;
+        double min15;
+}sg_load_stats;
+    
+.fi
+.TP 
+min1
+The load average over 1 minute.
+.TP 
+min5
+The load average over 5 minutes.
+.TP 
+min15
+The load average over 15 minutes.
+.SH SEE\ ALSO
+\fBstatgrab\fR(3)
+.SH WEBSITE
+http://www.i\-scream.org/libstatgrab/

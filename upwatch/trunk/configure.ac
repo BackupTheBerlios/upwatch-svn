@@ -726,7 +726,7 @@ then
 AC_CONFIG_FILES([uw_iptraf/Makefile])
 fi
 
-( cd libstatgrab ; ./configure --disable-manpages --disable-examples \
+( cd libstatgrab-0.13 ; ./configure --disable-manpages --disable-examples \
   --disable-statgrab --disable-saidar --disable-shared ; cd .. )
 
 if test "$enable_xmbmon" = "yes"

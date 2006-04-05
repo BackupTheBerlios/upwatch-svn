@@ -66,9 +66,9 @@ export PROGNAMES MONITORPROG CLIENTPROG SERVERPROG EXTRAPROG
 export TOP_SRCDIR = $(top_srcdir)
 
 if ENABLE_SERVER
-SUBDIRS = upwatch st-1.6 ${XMBMON} libstatgrab ${PROGNAMES} compat util scripts config common
+SUBDIRS = upwatch st-1.6 ${XMBMON} libstatgrab-0.13 ${PROGNAMES} compat util scripts config common
 else
-SUBDIRS = upwatch ${XMBMON} libstatgrab ${PROGNAMES} util scripts config common 
+SUBDIRS = upwatch ${XMBMON} libstatgrab-0.13 ${PROGNAMES} util scripts config common 
 endif
 
 DIST_SUBDIRS = ${SUBDIRS} doc

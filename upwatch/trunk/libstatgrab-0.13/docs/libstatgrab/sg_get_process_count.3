@@ -1,0 +1,191 @@
+.TH sg_get_process_stats 3 $Date:\ 2005/04/25\ 11:25:45\ $ i\-scream 
+.SH NAME
+sg_get_process_stats, sg_get_process_count, sg_process_compare_name, sg_process_compare_pid, sg_process_compare_uid, sg_process_compare_gid, sg_process_compare_size, sg_process_compare_res, sg_process_compare_cpu, sg_process_compare_time \- get process statistics
+.SH SYNOPSIS
+.nf
+#include <statgrab.h>
+.fi
+.sp 1
+.PP
+sg_process_stats *\fIsg_get_process_stats\fR(int *\fIentries\fR);
+.PP
+sg_process_count *\fIsg_get_process_count\fR(void);
+.PP
+int \fIsg_process_compare_name\fR(const void *\fIva\fR, const void *\fIvb\fR);
+.PP
+int \fIsg_process_compare_pid\fR(const void *\fIva\fR, const void *\fIvb\fR);
+.PP
+int \fIsg_process_compare_uid\fR(const void *\fIva\fR, const void *\fIvb\fR);
+.PP
+int \fIsg_process_compare_gid\fR(const void *\fIva\fR, const void *\fIvb\fR);
+.PP
+int \fIsg_process_compare_size\fR(const void *\fIva\fR, const void *\fIvb\fR);
+.PP
+int \fIsg_process_compare_res\fR(const void *\fIva\fR, const void *\fIvb\fR);
+.PP
+int \fIsg_process_compare_cpu\fR(const void *\fIva\fR, const void *\fIvb\fR);
+.PP
+int \fIsg_process_compare_time\fR(const void *\fIva\fR, const void *\fIvb\fR);
+.SH DESCRIPTION
+The sg_get_process_stats takes a pointer to
+an int, entries, which is filled with the
+number of processes the snapshot contains. The return value is a
+pointer to the first member of an array of
+sg_process_stats structures; the number
+of entries in the array is returned in
+entries.
+.PP
+sg_get_process_count returns a pointer to a
+static buffer of type sg_process_count.
+.PP
+These two functions provide information on the process running
+on the system. In the first case lots of detail is provided, and
+in the second case a summary of the states of the current processes.
+.PP
+
+sg_process_compare_name
+.PP
+sg_process_compare_pid
+.PP
+sg_process_compare_uid
+.PP
+sg_process_compare_gid
+.PP
+sg_process_compare_size
+.PP
+sg_process_compare_res
+.PP
+sg_process_compare_cpu
+.PP
+sg_process_compare_time
+
+.PP
+These functions compare two sg_process_stats entries, and return an 
+int to represent which one is greater. The main use of these functions
+is to be passed to qsort to sort the sg_process_stats by the given type.
+.PP
+For example: 
+.PP
+qsort(sg_process_stats ps, int ps_size, sizeof *ps, sg_process_compare_pid);
+.SH RETURN\ VALUES
+The structure returned by sg_get_process_stats is of type
+sg_process_stats.
+.PP
+.nf
+
+typedef struct {
+        char *process_name;
+        char *proctitle;
+
+        pid_t pid;
+        pid_t parent; /* Parent pid */
+        pid_t pgid;   /* process id of process group leader */
+
+        uid_t uid;
+        uid_t euid;
+        gid_t gid;
+        gid_t egid;
+
+        unsigned long long proc_size; /* in bytes */
+        unsigned long long proc_resident; /* in bytes */
+        time_t time_spent; /* time running in seconds */
+        double cpu_percent;
+        int nice;
+        sg_process_state state;
+} sg_process_stats;
+    
+.fi
+.PP
+.nf
+
+typedef enum {
+        SG_PROCESS_STATE_RUNNING,
+        SG_PROCESS_STATE_SLEEPING,
+        SG_PROCESS_STATE_STOPPED,
+        SG_PROCESS_STATE_ZOMBIE,
+        SG_PROCESS_STATE_UNKNOWN
+} sg_process_state;
+    
+.fi
+.TP 
+process_name
+The name of the command that was run.
+.TP 
+proctitle
+The command line (the "title") of the process. Take
+note \- this can be modified by the process, so isn't
+guaranteed to be the original command line.
+.TP 
+pid
+The process ID.
+.TP 
+parent
+The parent process ID.
+.TP 
+pgid
+The process ID of the process group leader.
+.TP 
+uid
+The UID the process is running as.
+.TP 
+euid
+The effective UID the process is running as.
+.TP 
+gid
+The GID the process is running as.
+.TP 
+egid
+The effective GID the process is running as.
+.TP 
+proc_size
+The size of the process in bytes.
+.TP 
+proc_resident
+The size of the process that's resident in memory.
+.TP 
+time_spent
+The number of seconds the process has been running.
+.TP 
+cpu_percent
+The current percentage of CPU the process is using.
+.TP 
+nice
+The nice value of the process.
+.TP 
+state
+The current state of the process. See sg_process_state
+for permitted values.
+.PP
+The structure returned by sg_get_process_count is of type
+sg_process_count.
+.PP
+.nf
+
+typedef struct{
+        int total;
+        int running;
+        int sleeping;
+        int stopped;
+        int zombie;
+}sg_process_count;
+    
+.fi
+.TP 
+total
+The total number of processes.
+.TP 
+running
+The number of running processes.
+.TP 
+sleeping
+The number of sleeping processes.
+.TP 
+stopped
+The number of stopped processes.
+.TP 
+zombie
+The number of zombie processes.
+.SH SEE\ ALSO
+\fBstatgrab\fR(3)
+.SH WEBSITE
+http://www.i\-scream.org/libstatgrab/

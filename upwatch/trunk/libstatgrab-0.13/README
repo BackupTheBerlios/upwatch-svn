@@ -1,0 +1,53 @@
+libstatgrab README
+http://www.i-scream.org/libstatgrab/
+
+$Id: README,v 1.9 2004/03/09 12:24:40 tdb Exp $
+
+Description
+-----------
+
+libstatgrab is a library for accessing information from the system
+for statistical purposes. It could be used for software that monitors
+the system for alerting or graphing purposes.
+
+License
+-------
+
+The library part of libstatgrab is licensed under the GNU LGPL, but
+the tools and examples are licensed under the GNU GPL.
+
+Building and Installation
+-------------------------
+
+After downloading and extracting libstatgrab, configure and build as
+follows;
+
+./configure
+make
+
+Then install as root;
+
+make install
+
+There are, of course, the usual GNU-style configure options;
+
+  --prefix=PREFIX
+
+For more documentation on the installation process, please read the
+INSTALL document.
+
+Platform Specific Notes
+-----------------------
+
+Please see the PLATFORMS file for supported platforms and specific
+notes on using libstatgrab on those platforms.
+
+Problems?
+---------
+
+Please let us know if you have any problems - support@i-scream.org.
+
+If you find a bug, help us to fix it by sending details to
+bugs@i-scream.org. If you have a patch, please send it too.
+
+Thank-you for using i-scream software.

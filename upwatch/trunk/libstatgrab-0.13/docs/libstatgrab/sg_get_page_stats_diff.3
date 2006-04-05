@@ -1,0 +1,51 @@
+.TH sg_get_page_stats 3 $Date:\ 2005/04/25\ 11:25:45\ $ i\-scream 
+.SH NAME
+sg_get_page_stats, sg_get_page_stats_diff \- get paging statistics
+.SH SYNOPSIS
+.nf
+#include <statgrab.h>
+.fi
+.sp 1
+.PP
+sg_page_stats *\fIsg_get_page_stats\fR(void);
+.PP
+sg_page_stats *\fIsg_get_page_stats_diff\fR(void);
+.SH DESCRIPTION
+sg_get_page_stats and
+sg_get_page_stats_diff both return a pointer to
+a static buffer of type sg_page_stats.
+.PP
+sg_get_page_stats will return the number of
+pages the system has paged in and out since bootup.
+sg_get_page_stats_diff will return the
+difference since last time it was called. If it has not been
+called before, it will return
+sg_get_page_stats.
+.SH RETURN\ VALUES
+.nf
+
+typedef struct{
+        long long pages_pagein;
+        long long pages_pageout;
+        time_t systime;
+}sg_page_stats;
+    
+.fi
+.TP 
+pages_pagein  
+The number of pages swapped into memory.
+.TP 
+pages_pageout  
+The number of pages swapped out of memory (to swap).
+.TP 
+systime  
+The time period over which pages_pagein
+and pages_pageout were transferred.
+.SH BUGS
+Solaris doesn't seem to report accurately. It reports the number
+of pages swapped into memory, not necessarily from swap. This
+feature isn't deemed entirely reliable.
+.SH SEE\ ALSO
+\fBstatgrab\fR(3)
+.SH WEBSITE
+http://www.i\-scream.org/libstatgrab/

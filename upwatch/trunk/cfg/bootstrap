@@ -14,17 +14,12 @@ fi
 set -x
 
 # libstatgrab
-cd libstatgrab
-#if [ ! -f libstatgrab-openbsd.patch ]
-#then
-#  cp ../patches/libstatgrab-openbsd.patch .
-#  patch -p1 < libstatgrab-openbsd.patch
+cd libstatgrab-0.13
   aclocal
   autoheader
   $LIBTOOLIZE
   autoconf
   automake --gnu --add-missing
-#fi
 cd ..
 
 aclocal \
