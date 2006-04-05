@@ -44,6 +44,9 @@
 #include <time.h>
 #include <errno.h>
 
+/* Undefine this to remove the context switch callback feature. */
+#define ST_SWITCH_CB
+
 #if defined(__MACH__) && defined(__APPLE__)
 struct pollfd
 {
@@ -85,9 +88,16 @@ typedef struct _st_thread * st_thread_t;
 typedef struct _st_cond *   st_cond_t;
 typedef struct _st_mutex *  st_mutex_t;
 typedef struct _st_netfd *  st_netfd_t;
+#ifdef ST_SWITCH_CB
+typedef void (*st_switch_cb_t)(void);
+#endif
 
 extern int st_init(void);
 extern int st_getfdlimit(void);
+#ifdef ST_SWITCH_CB
+extern st_switch_cb_t st_set_switch_in_cb(st_switch_cb_t cb);
+extern st_switch_cb_t st_set_switch_out_cb(st_switch_cb_t cb);
+#endif
 
 extern st_thread_t st_thread_self(void);
 extern void st_thread_exit(void *retval);
@@ -96,6 +106,7 @@ extern void st_thread_interrupt(st_thread_t thread);
 extern st_thread_t st_thread_create(void *(*start)(void *arg), void *arg,
 				    int joinable, int stack_size);
 extern int st_randomize_stacks(int on);
+extern int st_set_utime_function(st_utime_t (*func)(void));
 
 extern st_utime_t st_utime(void);
 extern st_utime_t st_utime_last_clock(void);
@@ -153,6 +164,10 @@ extern int st_recvfrom(st_netfd_t fd, void *buf, int len,
 		       st_utime_t timeout);
 extern int st_sendto(st_netfd_t fd, const void *msg, int len,
 		     const struct sockaddr *to, int tolen, st_utime_t timeout);
+extern int st_recvmsg(st_netfd_t fd, struct msghdr *msg, int flags,
+		      st_utime_t timeout);
+extern int st_sendmsg(st_netfd_t fd, const struct msghdr *msg, int flags,
+		      st_utime_t timeout);
 extern st_netfd_t st_open(const char *path, int oflags, mode_t mode);
 
 #ifdef DEBUG

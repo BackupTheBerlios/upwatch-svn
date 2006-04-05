@@ -183,7 +183,6 @@ int st_init(void)
 
   ST_INIT_CLIST(&_ST_RUNQ);
   ST_INIT_CLIST(&_ST_IOQ);
-  ST_INIT_CLIST(&_ST_SLEEPQ);
   ST_INIT_CLIST(&_ST_ZOMBIEQ);
 #ifdef DEBUG
   ST_INIT_CLIST(&_ST_THREADQ);
@@ -192,7 +191,6 @@ int st_init(void)
 #ifndef USE_POLL
   _st_this_vp.maxfd = -1;
 #else
-  _st_this_vp.fdcnt = 0;
   _ST_POLLFDS = (struct pollfd *) malloc(ST_MIN_POLLFDS_SIZE *
 					 sizeof(struct pollfd));
   if (!_ST_POLLFDS)
@@ -232,6 +230,21 @@ int st_init(void)
   return 0;
 }
 
+#ifdef ST_SWITCH_CB
+st_switch_cb_t st_set_switch_in_cb(st_switch_cb_t cb)
+{
+  st_switch_cb_t ocb = _st_this_vp.switch_in_cb;
+  _st_this_vp.switch_in_cb = cb;
+  return ocb;
+}
+
+st_switch_cb_t st_set_switch_out_cb(st_switch_cb_t cb)
+{
+  st_switch_cb_t ocb = _st_this_vp.switch_out_cb;
+  _st_this_vp.switch_out_cb = cb;
+  return ocb;
+}
+#endif
 
 /*
  * Start function for the idle thread
@@ -286,10 +299,11 @@ void _st_vp_idle(void)
   wp = &w;
   ep = &e;
 
-  if (ST_CLIST_IS_EMPTY(&_ST_SLEEPQ)) {
+  if (_ST_SLEEPQ == NULL) {
     tvp = NULL;
   } else {
-    min_timeout = (_ST_THREAD_PTR(_ST_SLEEPQ.next))->sleep;
+    min_timeout = (_ST_SLEEPQ->due <= _ST_LAST_CLOCK) ? 0 :
+      (_ST_SLEEPQ->due - _ST_LAST_CLOCK);
     timeout.tv_sec  = (int) (min_timeout / 1000000);
     timeout.tv_usec = (int) (min_timeout % 1000000);
     tvp = &timeout;
@@ -357,7 +371,7 @@ void _st_vp_idle(void)
 	}
 
 	if (pq->thread->flags & _ST_FL_ON_SLEEPQ)
-	  _ST_DEL_SLEEPQ(pq->thread, 0);
+	  _ST_DEL_SLEEPQ(pq->thread);
 	pq->thread->state = _ST_ST_RUNNABLE;
 	_ST_ADD_RUNQ(pq->thread);
       } else {
@@ -436,7 +450,7 @@ void _st_find_bad_fd(void)
       }
 
       if (pq->thread->flags & _ST_FL_ON_SLEEPQ)
-	_ST_DEL_SLEEPQ(pq->thread, 0);
+	_ST_DEL_SLEEPQ(pq->thread);
       pq->thread->state = _ST_ST_RUNNABLE;
       _ST_ADD_RUNQ(pq->thread);
     } else {
@@ -478,10 +492,13 @@ void _st_vp_idle(void)
   }
   ST_ASSERT(pollfds <= _ST_POLLFDS + _ST_POLLFDS_SIZE);
 
-  if (ST_CLIST_IS_EMPTY(&_ST_SLEEPQ)) {
+  if (_ST_SLEEPQ == NULL) {
     timeout = -1;
   } else {
-    min_timeout = (_ST_THREAD_PTR(_ST_SLEEPQ.next))->sleep;
+    if (_ST_SLEEPQ->due <= _st_this_vp.last_clock)
+      min_timeout = 0;
+    else
+      min_timeout = _ST_SLEEPQ->due - _st_this_vp.last_clock;
     timeout = (int) (min_timeout / 1000);
   }
 
@@ -503,7 +520,7 @@ void _st_vp_idle(void)
         pq->on_ioq = 0;
 
         if (pq->thread->flags & _ST_FL_ON_SLEEPQ)
-          _ST_DEL_SLEEPQ(pq->thread, 0);
+          _ST_DEL_SLEEPQ(pq->thread);
         pq->thread->state = _ST_ST_RUNNABLE;
         _ST_ADD_RUNQ(pq->thread);
 
@@ -613,76 +630,135 @@ void _st_thread_main(void)
 }
 
 
-void _st_add_sleep_q(_st_thread_t *thread, st_utime_t timeout)
-{
-  st_utime_t sleep;
-  _st_clist_t *q;
-  _st_thread_t *t;
+/*
+ * Insert "thread" into the timeout heap, in the position
+ * specified by thread->heap_index.  See docs/timeout_heap.txt
+ * for details about the timeout heap.
+ */
+static _st_thread_t **heap_insert(_st_thread_t *thread) {
+  int target = thread->heap_index;
+  int s = target;
+  _st_thread_t **p = &_ST_SLEEPQ;
+  int bits = 0;
+  int bit;
+  int index = 1;
 
-  /* Check if we are longest timeout */
-  if (timeout >= _ST_SLEEPQMAX) {
-    ST_APPEND_LINK(&thread->links, &_ST_SLEEPQ);
-    thread->sleep = timeout - _ST_SLEEPQMAX;
-    _ST_SLEEPQMAX = timeout;
-  } else {
-    /* Sort thread into global sleep queue at appropriate point */
-    sleep = _ST_SLEEPQMAX;
-    q = _ST_SLEEPQ.prev;
+  while (s) {
+    s >>= 1;
+    bits++;
+  }
+  for (bit = bits - 2; bit >= 0; bit--) {
+    if (thread->due < (*p)->due) {
+      _st_thread_t *t = *p;
+      thread->left = t->left;
+      thread->right = t->right;
+      *p = thread;
+      thread->heap_index = index;
+      thread = t;
+    }
+    index <<= 1;
+    if (target & (1 << bit)) {
+      p = &((*p)->right);
+      index |= 1;
+    } else {
+      p = &((*p)->left);
+    }
+  }
+  thread->heap_index = index;
+  *p = thread;
+  thread->left = thread->right = NULL;
+  return p;
+}
 
-    /* Now scan the list backward for where to insert this entry */
-    while (q != &_ST_SLEEPQ) {
-      t = _ST_THREAD_PTR(q);
-      sleep -= t->sleep;
-      if (timeout >= sleep) {
-	/* Found sleeper to insert in front of */
+/*
+ * Delete "thread" from the timeout heap.
+ */
+static void heap_delete(_st_thread_t *thread) {
+  _st_thread_t *t, **p;
+  int bits = 0;
+  int s, bit;
+
+  /* First find and unlink the last heap element */
+  p = &_ST_SLEEPQ;
+  s = _ST_SLEEPQ_SIZE;
+  while (s) {
+    s >>= 1;
+    bits++;
+  }
+  for (bit = bits - 2; bit >= 0; bit--) {
+    if (_ST_SLEEPQ_SIZE & (1 << bit)) {
+      p = &((*p)->right);
+    } else {
+      p = &((*p)->left);
+    }
+  }
+  t = *p;
+  *p = NULL;
+  --_ST_SLEEPQ_SIZE;
+  if (t != thread) {
+    /*
+     * Insert the unlinked last element in place of the element we are deleting
+     */
+    t->heap_index = thread->heap_index;
+    p = heap_insert(t);
+    t = *p;
+    t->left = thread->left;
+    t->right = thread->right;
+
+    /*
+     * Reestablish the heap invariant.
+     */
+    for (;;) {
+      _st_thread_t *y; /* The younger child */
+      int index_tmp;
+      if (t->left == NULL)
+	break;
+      else if (t->right == NULL)
+	y = t->left;
+      else if (t->left->due < t->right->due)
+	y = t->left;
+      else
+	y = t->right;
+      if (t->due > y->due) {
+	_st_thread_t *tl = y->left;
+	_st_thread_t *tr = y->right;
+	*p = y;
+	if (y == t->left) {
+	  y->left = t;
+	  y->right = t->right;
+	  p = &y->left;
+	} else {
+	  y->left = t->left;
+	  y->right = t;
+	  p = &y->right;
+	}
+	t->left = tl;
+	t->right = tr;
+	index_tmp = t->heap_index;
+	t->heap_index = y->heap_index;
+	y->heap_index = index_tmp;
+      } else {
 	break;
       }
-      q = q->prev;
     }
-    thread->sleep = timeout - sleep;
-    ST_INSERT_BEFORE(&thread->links, q);
-
-    /* Subtract our sleep time from the sleeper that follows us */
-    ST_ASSERT(thread->links.next != &_ST_SLEEPQ);
-    t = _ST_THREAD_PTR(thread->links.next);
-    ST_ASSERT(_ST_THREAD_PTR(t->links.prev) == thread);
-    t->sleep -= thread->sleep;
   }
-
-  thread->flags |= _ST_FL_ON_SLEEPQ;
+  thread->left = thread->right = NULL;
 }
 
 
-/*
- * If "expired" is true, a sleeper has timed out
- */
-void _st_del_sleep_q(_st_thread_t *thread, int expired)
+void _st_add_sleep_q(_st_thread_t *thread, st_utime_t timeout)
 {
-  _st_clist_t *q;
-  _st_thread_t *t;
+  thread->due = _ST_LAST_CLOCK + timeout;
+  thread->flags |= _ST_FL_ON_SLEEPQ;
+  thread->heap_index = ++_ST_SLEEPQ_SIZE;
+  heap_insert(thread);
+}
 
-  /* Remove from sleep queue */
-  ST_ASSERT(thread->flags & _ST_FL_ON_SLEEPQ);
-  q = thread->links.next;
-  if (q != &_ST_SLEEPQ) {
-    if (expired) {
-      _ST_SLEEPQMAX -= thread->sleep;
-    } else {
-      t = _ST_THREAD_PTR(q);
-      t->sleep += thread->sleep;
-    }
-  } else {
-    /*
-     * Check if prev is the beginning of the list; if so,
-     * we are the only element on the list.  
-     */
-    if (thread->links.prev != &_ST_SLEEPQ)
-      _ST_SLEEPQMAX -= thread->sleep;
-    else
-      _ST_SLEEPQMAX = 0;
-  }
+
+void _st_del_sleep_q(_st_thread_t *thread)
+{
+  heap_delete(thread);
   thread->flags &= ~_ST_FL_ON_SLEEPQ;
-  ST_REMOVE_LINK(&thread->links);
 }
 
 
@@ -692,26 +768,20 @@ void _st_vp_check_clock(void)
   st_utime_t elapsed, now;
  
   now = st_utime();
-  elapsed = now - _st_this_vp.last_clock;
-  _st_this_vp.last_clock = now;
+  elapsed = now - _ST_LAST_CLOCK;
+  _ST_LAST_CLOCK = now;
 
   if (_st_curr_time && now - _st_last_tset > 999000) {
     _st_curr_time = time(NULL);
     _st_last_tset = now;
   }
 
-  while (_ST_SLEEPQ.next != &_ST_SLEEPQ) {
-    thread = _ST_THREAD_PTR(_ST_SLEEPQ.next);
+  while (_ST_SLEEPQ != NULL) {
+    thread = _ST_SLEEPQ;
     ST_ASSERT(thread->flags & _ST_FL_ON_SLEEPQ);
-
-    if (elapsed < thread->sleep) {
-      thread->sleep -= elapsed;
-      _ST_SLEEPQMAX -= elapsed;
+    if (thread->due > now)
       break;
-    }
-
-    _ST_DEL_SLEEPQ(thread, 1);
-    elapsed -= thread->sleep;
+    _ST_DEL_SLEEPQ(thread);
 
     /* If thread is waiting on condition variable, set the time out flag */
     if (thread->state == _ST_ST_COND_WAIT)
@@ -737,7 +807,7 @@ void st_thread_interrupt(_st_thread_t *thread)
     return;
 
   if (thread->flags & _ST_FL_ON_SLEEPQ)
-    _ST_DEL_SLEEPQ(thread, 0);
+    _ST_DEL_SLEEPQ(thread);
 
   /* Make thread runnable */
   thread->state = _ST_ST_RUNNABLE;

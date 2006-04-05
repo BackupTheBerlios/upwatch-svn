@@ -683,7 +683,7 @@ AC_CONFIG_FILES([scripts/Makefile])
 
 if test "$enable_server" = "yes" -o "$enable_monitors" = "yes"
 then
-AC_CONFIG_FILES([st-1.4/Makefile])
+AC_CONFIG_FILES([st-1.6/Makefile])
 fi
 
 # server 

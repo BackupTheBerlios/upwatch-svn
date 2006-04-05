@@ -151,7 +151,9 @@ typedef struct _st_cond {
 } _st_cond_t;
 
 
-typedef struct _st_thread {
+typedef struct _st_thread _st_thread_t;
+
+struct _st_thread {
   int state;                  /* Thread's state */
   int flags;                  /* Thread's flags */
 
@@ -166,14 +168,18 @@ typedef struct _st_thread {
 #ifdef DEBUG
   _st_clist_t tlink;          /* For putting on thread queue */
 #endif
-  st_utime_t sleep;           /* Sleep time when thread is sleeping */
+
+  st_utime_t due;             /* Wakeup time when thread is sleeping */
+  _st_thread_t *left;         /* For putting in timeout heap */
+  _st_thread_t *right;	      /* -- see docs/timeout_heap.txt for details */
+  int heap_index;
 
   void **private_data;        /* Per thread private data */
 
   _st_cond_t *term;           /* Termination condition variable for join */
 
   jmp_buf context;            /* Thread's context */
-} _st_thread_t;
+};
 
 
 typedef struct _st_mutex {
@@ -197,13 +203,19 @@ typedef struct _st_vp {
 
   _st_clist_t run_q;          /* run queue for this vp */
   _st_clist_t io_q;           /* io queue for this vp */
-  _st_clist_t sleep_q;        /* sleep queue for this vp */
   _st_clist_t zombie_q;       /* zombie queue for this vp */
 #ifdef DEBUG
   _st_clist_t thread_q;       /* all threads of this vp */
 #endif
-  st_utime_t sleep_max;
   int pagesize;
+
+  _st_thread_t *sleep_q;      /* sleep queue for this vp */
+  int sleepq_size;	      /* number of threads on sleep queue */
+
+#ifdef ST_SWITCH_CB
+  st_switch_cb_t switch_out_cb;	/* called when a thread is switched out */
+  st_switch_cb_t switch_in_cb;	/* called when a thread is switched in */
+#endif
 
 #ifndef USE_POLL
   int maxfd;
@@ -237,31 +249,32 @@ extern _st_thread_t *_st_this_thread;
 #define _ST_CURRENT_THREAD()            (_st_this_thread)
 #define _ST_SET_CURRENT_THREAD(_thread) (_st_this_thread = (_thread))
 
-#define _ST_SLEEPQMAX                   (_st_this_vp.sleep_max)
+#define _ST_LAST_CLOCK                  (_st_this_vp.last_clock)
+
+#define _ST_RUNQ                        (_st_this_vp.run_q)
+#define _ST_IOQ                         (_st_this_vp.io_q)
+#define _ST_ZOMBIEQ                     (_st_this_vp.zombie_q)
+#ifdef DEBUG
+#define _ST_THREADQ                     (_st_this_vp.thread_q)
+#endif
+
 #define _ST_PAGE_SIZE                   (_st_this_vp.pagesize)
 
+#define _ST_SLEEPQ                      (_st_this_vp.sleep_q)
+#define _ST_SLEEPQ_SIZE                 (_st_this_vp.sleepq_size)
+
+#ifndef USE_POLL
+#define _ST_MAX_OSFD                    (_st_this_vp.maxfd)
 #define _ST_FD_READ_SET                 (_st_this_vp.fd_read_set)
 #define _ST_FD_WRITE_SET                (_st_this_vp.fd_write_set)
 #define _ST_FD_EXCEPTION_SET            (_st_this_vp.fd_exception_set)
-
 #define _ST_FD_READ_CNT(fd)             (_st_this_vp.fd_ref_cnts[fd][0])
 #define _ST_FD_WRITE_CNT(fd)            (_st_this_vp.fd_ref_cnts[fd][1])
 #define _ST_FD_EXCEPTION_CNT(fd)        (_st_this_vp.fd_ref_cnts[fd][2])
-
-#define _ST_MAX_OSFD                    (_st_this_vp.maxfd)
-
+#else
+#define _ST_OSFD_CNT                    (_st_this_vp.fdcnt)
 #define _ST_POLLFDS                     (_st_this_vp.ioq_pollfds)
 #define _ST_POLLFDS_SIZE                (_st_this_vp.ioq_pollfds_size)
-
-#define _ST_OSFD_CNT                    (_st_this_vp.fdcnt)
-
-#define _ST_IOQ                         (_st_this_vp.io_q)
-#define _ST_RUNQ                        (_st_this_vp.run_q)
-#define _ST_SLEEPQ                      (_st_this_vp.sleep_q)
-#define _ST_ZOMBIEQ                     (_st_this_vp.zombie_q)
-
-#ifdef DEBUG
-#define _ST_THREADQ                     (_st_this_vp.thread_q)
 #endif
 
 
@@ -276,7 +289,7 @@ extern _st_thread_t *_st_this_thread;
 #define _ST_DEL_RUNQ(_thr)  ST_REMOVE_LINK(&(_thr)->links)
 
 #define _ST_ADD_SLEEPQ(_thr, _timeout)  _st_add_sleep_q(_thr, _timeout)
-#define _ST_DEL_SLEEPQ(_thr, _expired)  _st_del_sleep_q(_thr, _expired)
+#define _ST_DEL_SLEEPQ(_thr)		_st_del_sleep_q(_thr)
 
 #define _ST_ADD_ZOMBIEQ(_thr)  ST_APPEND_LINK(&(_thr)->links, &_ST_ZOMBIEQ)
 #define _ST_DEL_ZOMBIEQ(_thr)  ST_REMOVE_LINK(&(_thr)->links)
@@ -343,8 +356,14 @@ extern _st_thread_t *_st_this_thread;
 #else
 #define ST_DEFAULT_STACK_SIZE (128*1024)  /* Includes register stack size */
 #endif
+
+#ifndef ST_KEYS_MAX
 #define ST_KEYS_MAX 16
+#endif
+
+#ifndef ST_MIN_POLLFDS_SIZE
 #define ST_MIN_POLLFDS_SIZE 64
+#endif
 
 
 /*****************************************
@@ -358,16 +377,36 @@ void _st_iterate_threads(void);
 #define ST_DEBUG_ITERATE_THREADS()
 #endif
 
+#ifdef ST_SWITCH_CB
+#define ST_SWITCH_OUT_CB(_thread)		\
+    if (_st_this_vp.switch_out_cb != NULL &&	\
+        _thread != _st_this_vp.idle_thread &&	\
+        _thread->state != _ST_ST_ZOMBIE) {	\
+      _st_this_vp.switch_out_cb();		\
+    }
+#define ST_SWITCH_IN_CB(_thread)		\
+    if (_st_this_vp.switch_in_cb != NULL &&	\
+	_thread != _st_this_vp.idle_thread &&	\
+	_thread->state != _ST_ST_ZOMBIE) {	\
+      _st_this_vp.switch_in_cb();		\
+    }
+#else
+#define ST_SWITCH_OUT_CB(_thread)
+#define ST_SWITCH_IN_CB(_thread)
+#endif
+
 /*
  * Switch away from the current thread context by saving its state and
  * calling the thread scheduler
  */
 #define _ST_SWITCH_CONTEXT(_thread)       \
     ST_BEGIN_MACRO                        \
+    ST_SWITCH_OUT_CB(_thread);            \
     if (!MD_SETJMP((_thread)->context)) { \
       _st_vp_schedule();                  \
     }                                     \
     ST_DEBUG_ITERATE_THREADS();           \
+    ST_SWITCH_IN_CB(_thread);             \
     ST_END_MACRO
 
 /*
@@ -407,7 +446,7 @@ void *_st_idle_thread_start(void *arg);
 void _st_thread_main(void);
 void _st_thread_cleanup(_st_thread_t *thread);
 void _st_add_sleep_q(_st_thread_t *thread, st_utime_t timeout);
-void _st_del_sleep_q(_st_thread_t *thread, int expired);
+void _st_del_sleep_q(_st_thread_t *thread);
 _st_stack_t *_st_stack_new(int stack_size);
 void _st_stack_free(_st_stack_t *ts);
 int _st_io_init(void);

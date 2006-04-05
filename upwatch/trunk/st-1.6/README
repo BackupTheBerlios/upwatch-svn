@@ -198,6 +198,55 @@ Make selected stack frame return now? (y or n) y
 
 CHANGE LOG
 
+Changes from 1.5.2 to 1.6.
+--------------------------
+none
+
+
+Changes from 1.5.1 to 1.5.2.
+----------------------------
+o  Alfred Perlstein's context switch callback feature.
+
+o  Claus Assmann's st_recvmsg/st_sendmsg wrappers.
+
+o  Extra stack padding for platforms that need it.
+
+o  Ron Arts's timeout clarifications in the reference manual.
+
+o  Raymond Bero and Anton Berezin's AMD64 FreeBSD port.
+
+o  Claus Assmann's AMD64 SunOS 5.10 port.
+
+o  Claus Assmann's AMD64 OpenBSD port.
+
+o  Michael Abd-El-Malek's Mac OS X port.
+
+o  Michael Abd-El-Malek's stack printing patch.
+
+
+Changes from 1.5.0 to 1.5.1.
+----------------------------
+o  Andreas Gustafsson's USE_POLL fix.
+
+o  Gene's st_set_utime_function() enhancement.
+
+
+Changes from 1.4 to 1.5.0.
+--------------------------
+o  Andreas Gustafsson's performance patch.
+
+o  New extensions:  Improved DNS resolver, generic LRU cache, in-process
+   DNS cache, and a program to test the resolver and cache.
+
+o  Support for AMD Opteron 64-bit CPUs under Linux.
+
+o  Support for SPARC-64 under Solaris.
+
+o  Andreas Gustafsson's support for VAX under NetBSD.
+
+o  Changed unportable #warning directives in md.h to #error.
+
+
 Changes from 1.3 to 1.4.
 ------------------------
 o  Andreas Gustafsson's NetBSD port.

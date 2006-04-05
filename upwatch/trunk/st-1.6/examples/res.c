@@ -59,6 +59,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#if defined (DARWIN)
+#define BIND_8_COMPAT
+#endif
+
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>

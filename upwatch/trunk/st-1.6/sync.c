@@ -47,6 +47,9 @@
 
 extern time_t _st_curr_time;
 extern st_utime_t _st_last_tset;
+extern int _st_active_count;
+
+static st_utime_t (*_st_utime)(void) = NULL;
 
 
 /*****************************************
@@ -55,17 +58,34 @@ extern st_utime_t _st_last_tset;
 
 st_utime_t st_utime(void)
 {
+  if (_st_utime == NULL) {
 #ifdef MD_GET_UTIME
-  MD_GET_UTIME();
+    MD_GET_UTIME();
 #else
 #error Unknown OS
 #endif
+  }
+
+  return (*_st_utime)();
+}
+
+
+int st_set_utime_function(st_utime_t (*func)(void))
+{
+  if (_st_active_count) {
+    errno = EINVAL;
+    return -1;
+  }
+
+  _st_utime = func;
+
+  return 0;
 }
 
 
 st_utime_t st_utime_last_clock(void)
 {
-  return (_st_this_vp.last_clock);
+  return _ST_LAST_CLOCK;
 }
 
 
@@ -209,7 +229,7 @@ static int _st_cond_signal(_st_cond_t *cvar, int broadcast)
     thread = _ST_THREAD_WAITQ_PTR(q);
     if (thread->state == _ST_ST_COND_WAIT) {
       if (thread->flags & _ST_FL_ON_SLEEPQ)
-	_ST_DEL_SLEEPQ(thread, 0);
+	_ST_DEL_SLEEPQ(thread);
 
       /* Make thread runnable */
       thread->state = _ST_ST_RUNNABLE;

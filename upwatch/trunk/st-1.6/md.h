@@ -154,6 +154,8 @@
 #define MD_JB_SP   2
 #elif defined(__alpha__)
 #define MD_JB_SP  34
+#elif defined(__amd64__)
+#define MD_JB_SP   2
 #else
 #error Unknown CPU architecture
 #endif
@@ -341,7 +343,8 @@ extern void _ia64_cxt_restore(jmp_buf env, int val);
 #if (__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 1)
 #define MD_GET_SP(_t) (_t)->context[0].__jmpbuf[JB_GPR1]   
 #else
-#warning "Untested use of old glibc on powerpc"
+/* not an error but certainly cause for caution */
+#error "Untested use of old glibc on powerpc"
 #define MD_GET_SP(_t) (_t)->context[0].__jmpbuf[0].__misc[0]
 #endif /* glibc 2.1 or later */
 
@@ -351,7 +354,8 @@ extern void _ia64_cxt_restore(jmp_buf env, int val);
 #if defined(__GLIBC__) && __GLIBC__ >= 2
 #define MD_GET_SP(_t) (_t)->context[0].__jmpbuf[JB_SP]
 #else
-#warning "Untested use of old glibc on alpha"
+/* not an error but certainly cause for caution */
+#error "Untested use of old glibc on alpha"
 #define MD_GET_SP(_t) (_t)->context[0].__jmpbuf[0].__sp
 #endif
 
@@ -367,7 +371,8 @@ extern void _ia64_cxt_restore(jmp_buf env, int val);
 #if defined(__GLIBC__) && __GLIBC__ >= 2
 #define MD_GET_SP(_t) (_t)->context[0].__jmpbuf[JB_SP]
 #else
-#warning "Untested use of old glic on sparc -- also using odd mozilla derived __fp"
+/* not an error but certainly cause for caution */
+#error "Untested use of old glic on sparc -- also using odd mozilla derived __fp"
 #define MD_GET_SP(_t) (_t)->context[0].__jmpbuf[0].__fp
 #endif
 
@@ -377,9 +382,14 @@ extern void _ia64_cxt_restore(jmp_buf env, int val);
 #if defined(__GLIBC__) && __GLIBC__ >= 2
 #define MD_GET_SP(_t) (_t)->context[0].__jmpbuf[JB_SP]
 #else
-#warning "Untested use of old glibc on i386"
+/* not an error but certainly cause for caution */
+#error "Untested use of old glibc on i386"
 #define MD_GET_SP(_t) (_t)->context[0].__jmpbuf[0].__sp
 #endif
+
+#elif defined(__amd64__)
+#define MD_STACK_GROWS_DOWN
+#define MD_GET_SP(_t) (_t)->context[0].__jmpbuf[JB_RSP]
 
 #elif defined(__arm__)
 #define MD_STACK_GROWS_DOWN
@@ -436,6 +446,8 @@ extern void _ia64_cxt_restore(jmp_buf env, int val);
 #define MD_JB_SP  34
 #elif defined(__sparc__)
 #define MD_JB_SP   0
+#elif defined(__vax__)
+#define MD_JB_SP   2
 #else
 #error Unknown CPU architecture
 #endif
@@ -468,6 +480,8 @@ extern void _ia64_cxt_restore(jmp_buf env, int val);
 #define MD_JB_SP  34
 #elif defined(__sparc__)
 #define MD_JB_SP   0
+#elif defined(__amd64__)
+#define MD_JB_SP   6
 #else
 #error Unknown CPU architecture
 #endif
@@ -521,6 +535,9 @@ extern int getpagesize(void);
 #define MD_LONGJMP(env, val) longjmp(env, val)
 
 #if defined(sparc) || defined(__sparc)
+#ifdef _LP64
+#define MD_STACK_PAD_SIZE 4095
+#endif
 #define MD_INIT_CONTEXT(_thread, _sp, _main) \
   ST_BEGIN_MACRO                             \
   (void) MD_SETJMP((_thread)->context);      \
@@ -533,6 +550,13 @@ extern int getpagesize(void);
   (void) MD_SETJMP((_thread)->context);      \
   (_thread)->context[4] = (long) (_sp);      \
   (_thread)->context[5] = (long) _main;      \
+  ST_END_MACRO
+#elif defined(__amd64__)
+#define MD_INIT_CONTEXT(_thread, _sp, _main)   \
+  ST_BEGIN_MACRO                               \
+  if (MD_SETJMP((_thread)->context))           \
+    _main();                                   \
+  (_thread)->context[6] = (long) (_sp); \
   ST_END_MACRO
 #else
 #error Unknown CPU architecture

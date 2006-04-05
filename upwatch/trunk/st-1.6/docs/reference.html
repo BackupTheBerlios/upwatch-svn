@@ -13,6 +13,7 @@
 <DL><DD><A HREF=#mutex_t>st_mutex_t</A></DD></DL>
 <DL><DD><A HREF=#utime_t>st_utime_t</A></DD></DL>
 <DL><DD><A HREF=#netfd_t>st_netfd_t</A></DD></DL>
+<DL><DD><A HREF=#switch_cb_t>st_switch_cb_t</A></DD></DL>
 <P>
 <DD><A HREF=#errors><B>Error Handling</B></A></DD>
 <P>
@@ -20,6 +21,10 @@
 <P>
 <DL><DD><A HREF=#st_init>st_init()</A></DD></DL>
 <DL><DD><A HREF=#st_getfdlimit>st_getfdlimit()</A></DD></DL>
+<P>
+<DL><DD><A HREF=#switch_cb_t><B>st_switch_cb_t</B> type</A></DD></DL>
+<DL><DD><A HREF=#st_set_switch_in_cb>st_set_switch_in_cb()</A></DD></DL>
+<DL><DD><A HREF=#st_set_switch_out_cb>st_set_switch_out_cb()</A></DD></DL>
 <P>
 <DD><A HREF=#threads><B>Thread Control and Identification</B></A></DD>
 <P>
@@ -61,6 +66,7 @@
 <P>
 <DL><DD><A HREF=#utime_t><B>st_utime_t</B> type</A></DD></DL>
 <DL><DD><A HREF=#utime>st_utime()</A></DD></DL>
+<DL><DD><A HREF=#utime_func>st_set_utime_function()</A></DD></DL>
 <DL><DD><A HREF=#timecache_set>st_timecache_set()</A></DD></DL>
 <DL><DD><A HREF=#time>st_time()</A></DD></DL>
 <P>
@@ -88,6 +94,8 @@
 <DL><DD><A HREF=#writev>st_writev()</A></DD></DL>
 <DL><DD><A HREF=#recvfrom>st_recvfrom()</A></DD></DL>
 <DL><DD><A HREF=#sendto>st_sendto()</A></DD></DL>
+<DL><DD><A HREF=#recvmsg>st_recvmsg()</A></DD></DL>
+<DL><DD><A HREF=#sendmsg>st_sendmsg()</A></DD></DL>
 <P>
 <DL><DD><A HREF=#open>st_open()</A></DD></DL>
 <DL><DD><A HREF=#poll>st_poll()</A></DD></DL>
@@ -244,6 +252,31 @@ identified by a pointer to an opaque data structure.
 <HR>
 <P>
 
+<A NAME="switch_cb_t">
+<H4>st_switch_cb_t</H4>
+</A>
+Context switch callback function type.
+<P>
+<H5>Syntax</H5>
+
+<PRE>
+#include &lt;st.h&gt;
+
+typedef void (*st_switch_cb_t)(void);
+</PRE>
+<P>
+<H5>Description</H5>
+
+This datatype is a convenience type for describing a pointer
+to a function that will be called when a thread is set to stop
+or set to run.
+This feature is available only when <TT>ST_SWITCH_CB</TT> is defined
+in <TT>&lt;st.h&gt;</TT>.
+
+<P>
+<HR>
+<P>
+
 <A NAME="errors">
 <H2>Error Handling</H2>
 </A>
@@ -267,6 +300,11 @@ standard error output.
 <DL>
 <DD><A HREF=#st_init>st_init()</A></DD>
 <DD><A HREF=#st_getfdlimit>st_getfdlimit()</A></DD>
+<P>
+These functions operate on a callback function of type
+<A HREF=#switch_cb_t><B>st_switch_cb_t</B></A>:
+<DD><A HREF=#st_set_switch_in_cb>st_set_switch_in_cb()</A></DD>
+<DD><A HREF=#st_set_switch_out_cb>st_set_switch_out_cb()</A></DD>
 </DL>
 <P>
 <HR>
@@ -343,6 +381,44 @@ If this function is called before the library is successfully initialized by
 <H5>Description</H5>
 This function returns the limit on the number of open file descriptors which
 is set by the <A HREF=#st_init>st_init()</A> function.
+<P>
+<HR>
+<P>
+
+<A NAME="st_set_switch_in_cb">
+<H4>st_set_switch_in_cb()</H4>
+</A>
+<A NAME="st_set_switch_out_cb">
+<H4>st_set_switch_out_cb()</H4>
+</A>
+Set the optional callback function for thread switches.
+<P>
+<H5>Syntax</H5>
+
+<PRE>
+#include &lt;st.h&gt;
+
+st_switch_cb_t st_set_switch_in_cb(st_switch_cb_t cb);
+st_switch_cb_t st_set_switch_out_cb(st_switch_cb_t cb);
+</PRE>
+<P>
+<H5>Parameters</H5>
+<TT>st_set_switch_in_cb()</TT> and <TT>st_set_switch_out_cb()</TT> have the
+following parameter:<P>
+<TT>cb</TT><P>
+A function to be called when a thread is resumed and stopped respectively.<P>
+<H5>Returns</H5>
+The previous callback function pointer.
+<P>
+<H5>Description</H5>
+These functions set the callback for when a thread is resumed and stopped
+respectively.  After being called any thread switch will call the callback.
+Use a <TT>NULL</TT> pointer to disable the callback (this is the default).
+Use <A HREF=#thread_self>st_thread_self()</A> or <A HREF=#priv>thread
+specific data</A> to differentiate between threads.<P>
+These functions can be called at any time.<P>
+This feature is available only when <TT>ST_SWITCH_CB</TT> is defined
+in <TT>&lt;st.h&gt;</TT>.
 <P>
 <HR>
 <P>
@@ -967,6 +1043,8 @@ If the number of microseconds specified by this parameter passes before the
 waiting thread is signalled, an error is returned. This parameter is a
 variable of type <A HREF=#utime_t><B>st_utime_t</B></A>. Note that this
 time value is a <I>time delta</I>; it is not an <I>absolute time</I>.
+Also note that timeouts are measured <A HREF="notes.html#timeouts">since
+the last context switch</A>.
 <P>
 <H5>Returns</H5>
 Upon successful completion, a value of <TT>0</TT> is returned.
@@ -1217,6 +1295,7 @@ a mutex should unlock it.
 <P>
 <DL>
 <DD><A HREF=#utime>st_utime()</A></DD>
+<DD><A HREF=#utime_func>st_set_utime_function()</A></DD>
 <DD><A HREF=#timecache_set>st_timecache_set()</A></DD>
 <DD><A HREF=#time>st_time()</A></DD>
 </DL>
@@ -1247,6 +1326,42 @@ Current high-resolution time value of type
 This function returns the current high-resolution time. Time is expressed as
 microseconds since some arbitrary time in the past. It is not correlated in
 any way to the time of day (see <A HREF=#utime_t><B>st_utime_t</B></A>).
+<P>
+<HR>
+<P>
+<A NAME="utime_func">
+<H4>st_set_utime_function()</H4>
+</A>
+Set high-resolution time function.
+<P>
+<H5>Syntax</H5>
+
+<PRE>
+#include &lt;st.h&gt;
+
+int st_set_utime_function(st_utime_t (*func)(void));
+</PRE>
+<P>
+<H5>Parameters</H5>
+<TT>st_set_utime_function()</TT> has the following parameters:<P>
+<TT>func</TT><P>
+This function will be called to get high-resolution time instead of the
+default <A HREF=#utime>st_utime()</A> function. It must return
+number of microseconds since some arbitrary time in the past.
+<P>
+<H5>Returns</H5>
+Upon successful completion, a value of <TT>0</TT> is returned.
+Otherwise, a value of <TT>-1</TT> is returned and <TT>errno</TT> is set
+to <TT>EINVAL</TT> to indicate the error.
+<P>
+<H5>Description</H5>
+This function may be called to replace the default implementation of the
+<A HREF=#utime>st_utime()</A> function.  It must be called before the ST
+library has been initialized (see <A HREF=#st_init>st_init()</A>).
+The user-provided function <TT>func</TT> will be invoked whenever
+<A HREF=#utime>st_utime()</A> is called to obtain current high-resolution time.
+Replacing default implementation may be useful, for example, for taking
+advantage of high performance CPU cycle counters.
 <P>
 <HR>
 <P>
@@ -1330,6 +1445,8 @@ return an error code and set <TT>errno</TT> to <TT>ETIME</TT>.
 The boundary values <TT>0</TT> and <TT>-1</TT> for this argument indicate
 that the thread should wait no time (function returns immediately) or wait
 forever (never time out), respectively.
+Note that timeouts are measured <A HREF="notes.html#timeouts">since the
+last context switch</A>.
 </LI>
 </UL>
 <P>
@@ -1354,6 +1471,8 @@ forever (never time out), respectively.
 <DD><A HREF=#writev>st_writev()</A></DD>
 <DD><A HREF=#recvfrom>st_recvfrom()</A></DD>
 <DD><A HREF=#sendto>st_sendto()</A></DD>
+<DD><A HREF=#recvmsg>st_recvmsg()</A></DD>
+<DD><A HREF=#sendmsg>st_sendmsg()</A></DD>
 <DD><A HREF=#open>st_open()</A></DD>
 <DD><A HREF=#poll>st_poll()</A></DD>
 </DL>
@@ -1714,6 +1833,8 @@ to become ready. This parameter is a variable of type
 <A HREF=#utime_t><B>st_utime_t</B></A>. If this time expires without any
 I/O becoming ready, <TT>st_netfd_poll()</TT> returns an error and sets
 <TT>errno</TT> to <TT>ETIME</TT>.
+Note that timeouts are measured <A HREF="notes.html#timeouts">since the
+last context switch</A>.
 <P>
 <H5>Returns</H5>
 If the named file descriptor object is ready for I/O within the specified
@@ -1774,6 +1895,8 @@ address returned (see <TT>accept(3)</TT>).<P>
 <TT>timeout</TT><P>
 A value of type <A HREF=#utime_t><B>st_utime_t</B></A> specifying the time
 limit in microseconds for completion of the accept operation.
+Note that timeouts are measured <A HREF="notes.html#timeouts">since the
+last context switch</A>.
 <P>
 <H5>Returns</H5>
 Upon successful completion, a new file descriptor object identifier
@@ -1828,6 +1951,8 @@ This parameter specifies the amount of space pointed to by <TT>addr</TT>.
 <TT>timeout</TT><P>
 A value of type <A HREF=#utime_t><B>st_utime_t</B></A> specifying the time
 limit in microseconds for completion of the connect operation.
+Note that timeouts are measured <A HREF="notes.html#timeouts">since the
+last context switch</A>.
 <P>
 <H5>Returns</H5>
 Upon successful completion, a value of <TT>0</TT> is returned.
@@ -1879,6 +2004,8 @@ The size of <TT>buf</TT> in bytes.<P>
 <TT>timeout</TT><P>
 A value of type <A HREF=#utime_t><B>st_utime_t</B></A> specifying the time
 limit in microseconds for completion of the read operation.
+Note that timeouts are measured <A HREF="notes.html#timeouts">since the
+last context switch</A>.
 <P>
 <H5>Returns</H5>
 On success a non-negative integer indicating the number of bytes actually
@@ -1929,6 +2056,8 @@ size of <TT>buf</TT>.<P>
 <TT>timeout</TT><P>
 A value of type <A HREF=#utime_t><B>st_utime_t</B></A> specifying the
 inactivity timeout (in microseconds).
+Note that timeouts are measured <A HREF="notes.html#timeouts">since the
+last context switch</A>.
 <P>
 <H5>Returns</H5>
 On success a non-negative integer indicating the number of bytes actually
@@ -1982,6 +2111,8 @@ On return, the amount of data remaining to be read.
 <TT>timeout</TT><P>
 A value of type <A HREF=#utime_t><B>st_utime_t</B></A> specifying the
 inactivity timeout (in microseconds).
+Note that timeouts are measured <A HREF="notes.html#timeouts">since the
+last context switch</A>.
 <P>
 <H5>Returns</H5>
 On success, zero is returned.  <TT>*resid</TT> may be zero, indicating
@@ -2034,6 +2165,8 @@ The amount of data in bytes to be written from the buffer.<P>
 <TT>timeout</TT><P>
 A value of type <A HREF=#utime_t><B>st_utime_t</B></A> specifying the
 inactivity timeout (in microseconds).
+Note that timeouts are measured <A HREF="notes.html#timeouts">since the
+last context switch</A>.
 <P>
 <H5>Returns</H5>
 On success a non-negative integer equal to <TT>nbyte</TT> is returned.
@@ -2085,6 +2218,8 @@ On return, the amount of data remaining to be written.
 <TT>timeout</TT><P>
 A value of type <A HREF=#utime_t><B>st_utime_t</B></A> specifying the
 inactivity timeout (in microseconds).
+Note that timeouts are measured <A HREF="notes.html#timeouts">since the
+last context switch</A>.
 <P>
 <H5>Returns</H5>
 On success, zero is returned and <TT>*resid</TT> is zero.
@@ -2134,6 +2269,8 @@ Number of <TT>iovec</TT> structures in the <TT>iov</TT> array.<P>
 <TT>timeout</TT><P>
 A value of type <A HREF=#utime_t><B>st_utime_t</B></A> specifying the
 inactivity timeout (in microseconds).
+Note that timeouts are measured <A HREF="notes.html#timeouts">since the
+last context switch</A>.
 <P>
 <H5>Returns</H5>
 On success a non-negative integer equal to the sum of all the buffer lengths
@@ -2190,6 +2327,8 @@ size of the address stored there.<P>
 <TT>timeout</TT><P>
 A value of type <A HREF=#utime_t><B>st_utime_t</B></A> specifying the time
 limit in microseconds for completion of the receive operation.
+Note that timeouts are measured <A HREF="notes.html#timeouts">since the
+last context switch</A>.
 <P>
 <H5>Returns</H5>
 On success a non-negative integer indicating the length of the received
@@ -2243,6 +2382,8 @@ This parameter specifies the size of the destination address.<P>
 <TT>timeout</TT><P>
 A value of type <A HREF=#utime_t><B>st_utime_t</B></A> specifying the time
 limit in microseconds for completion of the send operation.
+Note that timeouts are measured <A HREF="notes.html#timeouts">since the
+last context switch</A>.
 <P>
 <H5>Returns</H5>
 On success a non-negative integer indicating the number of bytes sent is
@@ -2261,6 +2402,108 @@ This function sends a specified number of bytes from a file descriptor
 object representing a UDP socket to the specified destination address.
 If no buffer space is available at the underlying OS socket to hold the
 message to be transmitted, then <TT>st_sendto()</TT> blocks the calling
+thread until the space becomes available, a timeout occurs, or an error
+occurs.
+<P>
+<HR>
+<P>
+<A NAME="recvmsg">
+<H4>st_recvmsg()</H4>
+</A>
+Receives a message from a file descriptor object.
+<P>
+<H5>Syntax</H5>
+
+<PRE>
+#include &lt;st.h&gt;
+
+int st_recvmsg(st_netfd_t fd, struct msghdr *msg, int flags,
+               st_utime_t timeout);
+</PRE>
+<P>
+<H5>Parameters</H5>
+<TT>st_recvmsg()</TT> has the following parameters:<P>
+<TT>fd</TT><P>
+A file descriptor object identifier (see
+<A HREF=#netfd_t><B>st_netfd_t</B></A>) representing a UDP socket.<P>
+<TT>msg</TT><P>
+A pointer to a <TT>msghdr</TT> structure to describe the data received.<P>
+<TT>flags</TT><P>
+Control flags for <TT>recvmsg(3)</TT>.<P>
+<TT>timeout</TT><P>
+A value of type <A HREF=#utime_t><B>st_utime_t</B></A> specifying the time
+limit in microseconds for completion of the receive operation.
+Note that timeouts are measured <A HREF="notes.html#timeouts">since the
+last context switch</A>.
+<P>
+<H5>Returns</H5>
+On success a non-negative integer indicating the number of bytes received
+is returned. Otherwise, a value of <TT>-1</TT> is returned
+and <TT>errno</TT> is set to indicate the error. Possible <TT>errno</TT>
+values are the same as set by the <TT>recvmsg(3)</TT> call with two
+exceptions:<P>
+<TABLE BORDER=0>
+<TR><TD><TT>EINTR </TT></TD><TD>The current thread was interrupted by
+<A HREF=#thread_interrupt>st_thread_interrupt()</A>.</TD></TR>
+<TR><TD><TT>ETIME </TT></TD><TD>The timeout occurred and no data was received.
+</TD></TR>
+</TABLE>
+<P>
+<H5>Description</H5>
+This function receives bytes from the specified file descriptor object
+representing a UDP socket.  The operation is controlled by the in/out
+<TT>msg</TT> parameter.<P>
+<TT>st_recvmsg()</TT> blocks the calling thread until one or more bytes are
+transferred, a timeout has occurred, or there is an error.
+<P>
+<HR>
+<P>
+<A NAME="sendmsg">
+<H4>st_sendmsg()</H4>
+</A>
+Sends a message to a file descriptor object.
+<P>
+<H5>Syntax</H5>
+
+<PRE>
+#include &lt;st.h&gt;
+
+int st_sendmsg(st_netfd_t fd, const struct msghdr *msg, int flags,
+               st_utime_t timeout);
+</PRE>
+<P>
+<H5>Parameters</H5>
+<TT>st_sendmsg()</TT> has the following parameters:<P>
+<TT>fd</TT><P>
+A file descriptor object identifier (see
+<A HREF=#netfd_t><B>st_netfd_t</B></A>) representing a UDP socket.<P>
+<TT>msg</TT><P>
+A pointer to a <TT>msghdr</TT> structure describing the message to be sent.<P>
+<TT>flags</TT><P>
+Control flags for <TT>sendmsg(3)</TT>.<P>
+<TT>timeout</TT><P>
+A value of type <A HREF=#utime_t><B>st_utime_t</B></A> specifying the time
+limit in microseconds for completion of the send operation.
+Note that timeouts are measured <A HREF="notes.html#timeouts">since the
+last context switch</A>.
+<P>
+<H5>Returns</H5>
+On success a non-negative integer indicating the number of bytes sent is
+returned. Otherwise, a value of <TT>-1</TT> is returned and <TT>errno</TT> is
+set to indicate the error. Possible <TT>errno</TT> values are the same as
+set by the <TT>sendmsg(3)</TT> call with two exceptions:<P>
+<TABLE BORDER=0>
+<TR><TD><TT>EINTR </TT></TD><TD>The current thread was interrupted by
+<A HREF=#thread_interrupt>st_thread_interrupt()</A>.</TD></TR>
+<TR><TD><TT>ETIME </TT></TD><TD>The timeout occurred and no data was sent.
+</TD></TR>
+</TABLE>
+<P>
+<H5>Description</H5>
+This function sends bytes to a file descriptor object representing a UDP
+socket.  The operation is controlled by the <TT>msg</TT> parameter.
+If no buffer space is available at the underlying OS socket to hold the
+message to be transmitted, then <TT>st_sendmsg()</TT> blocks the calling
 thread until the space becomes available, a timeout occurs, or an error
 occurs.
 <P>
@@ -2335,6 +2578,8 @@ A value of type <A HREF=#utime_t><B>st_utime_t</B></A> specifying the
 amount of time in <I>microseconds</I> the call will block waiting for I/O
 to become ready. If this time expires without any I/O becoming ready,
 <TT>st_poll()</TT> returns zero.
+Note that timeouts are measured <A HREF="notes.html#timeouts">since the
+last context switch</A>.
 <P>
 <H5>Returns</H5>
 Upon successful completion, a non-negative value is returned. A positive
@@ -2422,6 +2667,11 @@ indefinitely. For example, standard I/O functions (<TT>fgets(3)</TT>,
 <TT>read(2)</TT> and <TT>write(2)</TT> directly and therefore should not be
 used on sockets or pipes.
 <P>
+Also note that for short <A
+HREF="notes.html#timeouts">timeouts</A> to work the program
+should do context switches (for example by calling
+<TT>st_usleep()</TT>) on a regular basis.
+<P>
 <HR>
 <P>
 
@@ -2451,6 +2701,8 @@ Only the following functions can block the calling thread:
 <DD><A HREF=#writev>st_writev()</A></DD>
 <DD><A HREF=#recvfrom>st_recvfrom()</A></DD>
 <DD><A HREF=#sendto>st_sendto()</A></DD>
+<DD><A HREF=#recvmsg>st_recvmsg()</A></DD>
+<DD><A HREF=#sendmsg>st_sendmsg()</A></DD>
 <DD><A HREF=#poll>st_poll()</A></DD>
 </DL>
 <P>

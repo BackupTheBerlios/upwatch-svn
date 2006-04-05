@@ -635,6 +635,45 @@ int st_sendto(_st_netfd_t *fd, const void *msg, int len,
 }
 
 
+int st_recvmsg(_st_netfd_t *fd, struct msghdr *msg, int flags,
+	       st_utime_t timeout)
+{
+  int n;
+
+  while ((n = recvmsg(fd->osfd, msg, flags)) < 0) {
+    if (errno == EINTR)
+      continue;
+    if (!_IO_NOT_READY_ERROR)
+      return -1;
+    /* Wait until the socket becomes readable */
+    if (st_netfd_poll(fd, POLLIN, timeout) < 0)
+      return -1;
+  }
+
+  return n;
+}
+
+
+int st_sendmsg(_st_netfd_t *fd, const struct msghdr *msg, int flags,
+	       st_utime_t timeout)
+{
+  int n;
+
+  while ((n = sendmsg(fd->osfd, msg, flags)) < 0) {
+    if (errno == EINTR)
+      continue;
+    if (!_IO_NOT_READY_ERROR)
+      return -1;
+    /* Wait until the socket becomes writable */
+    if (st_netfd_poll(fd, POLLOUT, timeout) < 0)
+      return -1;
+  }
+
+  return n;
+}
+
+
+
 /*
  * To open FIFOs or other special files.
  */

@@ -42,6 +42,7 @@
 # OPENBSD
 # OSF1
 # SOLARIS
+# SOLARIS_64
 
 ##########################
 
@@ -81,7 +82,7 @@ ifeq (LINUX, $(findstring LINUX, $(OS)))
 LIBRESOLV   = -lresolv
 endif
 
-ifeq ($(OS), SOLARIS)
+ifeq (SOLARIS, $(findstring SOLARIS, $(OS)))
 LIBRESOLV   = -lresolv
 EXTRALIBS   = -lsocket -lnsl
 endif
