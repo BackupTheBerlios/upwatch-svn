@@ -1,0 +1,1 @@
+green [LOGDATE] useradd[PID]: new user added: name=[USER], uid=[NUM], gid=[NUM], home=[PATH], shell=[PATH]

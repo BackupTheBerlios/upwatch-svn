@@ -694,6 +694,7 @@ green [LOGDATE] kernel: TCP bind hash table entries: [NUM]
 green [LOGDATE] kernel: TCP [WORD] registered
 green [LOGDATE] kernel: Using IPI Shortcut mode
 green [LOGDATE] kernel: Write protecting the kernel read-only data: [NUM]k
+green [LOGDATE] kernel: {IPADDR] sent an invalid ICMP type [NUM], code [NUM] error to a broadcast: [IPADDR] on [WORD][NUM]
 
 yellow [LOGDATE]  kernel: eth[NUM]: [NUM] transmit timed out, status .*, resetting...
 

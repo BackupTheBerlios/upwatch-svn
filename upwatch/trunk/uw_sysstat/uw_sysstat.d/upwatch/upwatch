@@ -45,5 +45,6 @@ green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): timeout reading [WORD] response
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): timeout reading [WORD] command
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): timeout reading login request string
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): st_read: Connection reset by peer
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): timeout reading OK enter password
 red [LOGDATE] uw_[WORD][PID]: db\.c\([NUM]\): Too many connections
 red [LOGDATE] uw_[WORD][PID]: notify\.c\([NUM]\): UPWATCH: probe [WORD] is lagging in processing
