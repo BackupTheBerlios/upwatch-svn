@@ -34,6 +34,7 @@ green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): running [NUM] probes
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): signal [NUM] received - finishing up
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): started [PID]: on [PATH]
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): st_read: Connection reset by peer
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): read: Connection reset by peer
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): unknown message:
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): uploaded [PATH]
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): user [WORD], pwd [WORD] not found

@@ -1,1 +1,2 @@
 green [LOGDATE] identd[PID]: request_thread: read\([NUM], \.\.\., [NUM]\) failed: Connection reset by peer
+green [LOGDATE] identd[PID]: Connection from [HOSTNAME]
