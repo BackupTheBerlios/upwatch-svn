@@ -380,6 +380,10 @@ extern void _ia64_cxt_restore(jmp_buf env, int val);
 #define MD_STACK_GROWS_DOWN
 
 #if defined(__GLIBC__) && __GLIBC__ >= 2
+#ifndef JB_SP
+/* From sysdeps/i386/jmpbuf-offsets.h in glibc 2.4 */
+#define JB_SP 4
+#endif
 #define MD_GET_SP(_t) (_t)->context[0].__jmpbuf[JB_SP]
 #else
 /* not an error but certainly cause for caution */
