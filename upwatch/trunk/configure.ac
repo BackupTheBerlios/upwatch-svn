@@ -217,7 +217,11 @@ if test x$enable_all = xyes
 then
   enable_server=yes
   enable_monitors=yes
-  enable_iptraf=yes
+  case $host in
+    i?86-*-linux*)
+    enable_iptraf=yes
+    ;;
+  esac
 fi
 
 AM_CONDITIONAL(ENABLE_SERVER, test x$enable_all = xyes)
@@ -684,6 +688,23 @@ AC_CONFIG_FILES([scripts/Makefile])
 if test "$enable_server" = "yes" -o "$enable_monitors" = "yes"
 then
 AC_CONFIG_FILES([st-1.6/Makefile])
+AC_CONFIG_FILES([uw_httpget/Makefile])
+AC_CONFIG_FILES([uw_dns/Makefile])
+AC_CONFIG_FILES([uw_ping/Makefile])
+AC_CONFIG_FILES([uw_mysql/Makefile])
+AC_CONFIG_FILES([uw_mysqlstats/Makefile])
+AC_CONFIG_FILES([uw_pop3/Makefile])
+AC_CONFIG_FILES([uw_smtp/Makefile])
+AC_CONFIG_FILES([uw_tcpconnect/Makefile])
+AC_CONFIG_FILES([uw_imap/Makefile])
+AC_CONFIG_FILES([uw_snmpget/Makefile])
+AC_CONFIG_FILES([uw_mssql/Makefile])
+AC_CONFIG_FILES([uw_postgresql/Makefile])
+fi
+
+if test "$enable_server" = "yes" -o "$enable_iptraf" = "yes"
+then
+AC_CONFIG_FILES([uw_iptraf/Makefile])
 fi
 
 # server 
@@ -701,29 +722,6 @@ AC_CONFIG_FILES([compat/sometests/Makefile])
 AC_CONFIG_FILES([compat/sometests/setproctitle/Makefile])
 AC_CONFIG_FILES([compat/bb/Makefile])
 AC_CONFIG_FILES([compat/bb/bbhimport/Makefile])
-fi
-
-# monitors
-if test "$enable_monitors" = "yes"
-then
-AC_CONFIG_FILES([uw_httpget/Makefile])
-AC_CONFIG_FILES([uw_dns/Makefile])
-AC_CONFIG_FILES([uw_ping/Makefile])
-AC_CONFIG_FILES([uw_mysql/Makefile])
-AC_CONFIG_FILES([uw_mysqlstats/Makefile])
-AC_CONFIG_FILES([uw_pop3/Makefile])
-AC_CONFIG_FILES([uw_smtp/Makefile])
-AC_CONFIG_FILES([uw_tcpconnect/Makefile])
-AC_CONFIG_FILES([uw_imap/Makefile])
-AC_CONFIG_FILES([uw_snmpget/Makefile])
-AC_CONFIG_FILES([uw_mssql/Makefile])
-AC_CONFIG_FILES([uw_postgresql/Makefile])
-fi
-
-# extra
-if test "$enable_iptraf" = "yes"
-then
-AC_CONFIG_FILES([uw_iptraf/Makefile])
 fi
 
 ( cd libstatgrab-0.13 ; ./configure --disable-manpages --disable-examples \
