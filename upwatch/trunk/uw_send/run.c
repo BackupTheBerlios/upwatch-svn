@@ -1,5 +1,6 @@
 #include "config.h"
 #include <sys/types.h>
+#include <sys/signal.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
