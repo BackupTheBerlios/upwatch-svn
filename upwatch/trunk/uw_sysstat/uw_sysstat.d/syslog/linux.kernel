@@ -137,6 +137,7 @@ green [LOGDATE] kernel: Enabling the CPU's according to the ACPI table
 green [LOGDATE] kernel: Enabling unmasked SIMD FPU exception support\.\.\. done\.
 green [LOGDATE] kernel: e[NUM]: eth[NUM]: Intel\(R\) PRO/[NUM] Network Connection
 green [LOGDATE] kernel: e[NUM]: eth[NUM] NIC Link is Up [NUM] Mbps [WORD] duplex
+green [LOGDATE] kernel: e[NUM]: eth[NUM]: e[NUM]_watchdog: NIC Link is Up [NUM] Mbps [WORD] Duplex
 green [LOGDATE] kernel: e[NUM]: eth[NUM]: e[NUM]_watchdog_task: NIC Link is Up [NUM] Mbps [WORD] Duplex
 green [LOGDATE] kernel: eth[NUM]: MII #[HEX] registers are: [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX] [HEX]\. 
 green [LOGDATE] kernel: eth[NUM]: Airport entering sleep mode

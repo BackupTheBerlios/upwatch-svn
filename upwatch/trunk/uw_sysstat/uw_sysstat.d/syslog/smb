@@ -6,3 +6,4 @@ green [LOGDATE] smbd[PID]: \[[NUM]/[NUM]/[NUM] [NUM]:[NUM]:[NUM], [NUM]\] lib/ut
 green [LOGDATE] smbd[PID]: read_socket_data: recv failure for [NUM]. Error = Connection reset by peer
 green [LOGDATE] smbd[PID]: getpeername failed. Error was Transport endpoint is not connected
 green [LOGDATE] smbd[PID]: \[[NUM]/[NUM]/[NUM] [NUM]:[NUM]:[NUM], [NUM]\] lib/util_sock.c:read_socket_data\([NUM]\)
+green [LOGDATE] smb_lookup: find .* failed, error=-512
