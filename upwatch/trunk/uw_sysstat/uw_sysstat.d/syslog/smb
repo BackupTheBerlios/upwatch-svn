@@ -7,3 +7,7 @@ green [LOGDATE] smbd[PID]: read_socket_data: recv failure for [NUM]. Error = Con
 green [LOGDATE] smbd[PID]: getpeername failed. Error was Transport endpoint is not connected
 green [LOGDATE] smbd[PID]: \[[NUM]/[NUM]/[NUM] [NUM]:[NUM]:[NUM], [NUM]\] lib/util_sock.c:read_socket_data\([NUM]\)
 green [LOGDATE] smb_lookup: find .* failed, error=-512
+green [LOGDATE] smb_add_request: request \[.*, .*\] timed out!
+green [LOGDATE] mount.smbfs[PID]: tdb\([PATH]\): tdb_lock failed on list [NUM] ltype=[NUM] \(Bad file descriptor\)
+green [LOGDATE] mount.smbfs[PID]: \[[NUM]/[NUM]/[NUM] [NUM]:[NUM]:[NUM], [NUM]\] tdb/tdbutil.c:tdb_log\([NUM]\) 
+green [LOGDATE] kernel: smb_proc_readX_data:

@@ -46,6 +46,7 @@ green [LOGDATE] postfix/smtp[PID]: connect to [HOSTNAME] \[[IPADDR]\]: read time
 green [LOGDATE] postfix/anvil[PID]: statistics: 
 green [LOGDATE] postfix/scache[PID]: statistics: 
 green [LOGDATE] postfix/smtp[PID]: connect to [HOSTNAME]\[[IPADDR]\]: Connection refused \(port [NUM]\) 
+green [LOGDATE] postfix/sendmail[PID]: fatal: No recipient addresses found in message header
 red [LOGDATE] postfix/local[PID]: table has changed -- exiting
 red [LOGDATE] postfix/postfix-script: fatal: the Postfix mail system is already running
 red [LOGDATE] postfix/postfix-script: fatal: the Postfix mail system is not running

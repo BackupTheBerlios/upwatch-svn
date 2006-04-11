@@ -5,3 +5,5 @@ green [LOGDATE] Keepalived_vrrp: VRRP_Instance(VI_eth[NUM]) Entering BACKUP STAT
 green [LOGDATE] Keepalived_vrrp: VRRP_Instance(VI_eth[NUM]) Received higher prio advert
 green [LOGDATE] Keepalived_vrrp: VRRP_Instance(VI_eth[NUM]) removing protocol Virtual Routes
 green [LOGDATE] Keepalived_vrrp: VRRP_Instance(VI_eth[NUM]) Transition to MASTER STATE
+red [LOGDATE] Keepalived_healthcheckers: Error connecting server \[[IPADDR]:[NUM]\]\.
+red [LOGDATE] Keepalived_healthcheckers: Cannot send get request to \[[IPADDR]:[NUM]\]\.
