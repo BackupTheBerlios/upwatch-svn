@@ -51,6 +51,9 @@ green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): SIGALRM received
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): read: Interrupted system call
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\):\s*$ 
 green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): Processing [PATH]
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): processing ..
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): sleeping
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): syncing..
 red [LOGDATE] uw_[WORD][PID] db\.c\([NUM]\): Too many connections
 red [LOGDATE] uw_[WORD][PID] notify\.c\([NUM]\): UPWATCH: probe [WORD] is lagging in processing
-red [LOGDATE] uw_[WORD][PID] db\.c\([NUM]\): Can't connect to MySQL server on '[HOSTNAME]' \(NUM\) dbhost=[HOSTNAME],dbport=[NUM],dbname=[USER],dbuser=[USER],dbpasswd=
+red [LOGDATE] uw_[WORD][PID] db\.c\([NUM]\): Can't connect to MySQL server on '[HOSTNAME]' \([NUM]\) dbhost=[HOSTNAME],dbport=[NUM],dbname=[WORD],db
