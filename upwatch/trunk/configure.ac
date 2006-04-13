@@ -9,6 +9,7 @@ AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
 AC_DEFINE_UNQUOTED([RELEASE], ["${RELEASE}"], [Package release string])
+AC_DEFINE_UNQUOTED( SYSCONFDIR, ["$sysconfdir"], [System configuration directory] )
 
 ifdef([AC_REVISION],AC_REVISION($Revision: 1.76 $),)dnl
 
@@ -304,7 +305,7 @@ AC_ARG_WITH(mysql-libs,
 )
 AC_SUBST(MYSQL_LIB_PREFIX)
 
-for libpath in /usr/lib/mysql $MYSQL_LIB_PREFIX /usr/local/lib/mysql /usr/lib /cygdrive/c/mysql/lib/opt /usr/pkg/lib/mysql
+for libpath in /usr/lib/mysql $MYSQL_LIB_PREFIX /usr/local/lib/mysql /usr/lib /cygdrive/c/mysql/lib/opt /usr/pkg/lib/mysql /usr/lib64/mysql
 do
   for file in $libpath/libmysqlclient.so* $libpath/mysqlclient.lib
   do
