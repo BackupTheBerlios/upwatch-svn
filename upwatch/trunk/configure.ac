@@ -9,7 +9,6 @@ AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
 
 AC_DEFINE_UNQUOTED([RELEASE], ["${RELEASE}"], [Package release string])
-AC_DEFINE_UNQUOTED( SYSCONFDIR, ["$sysconfdir"], [System configuration directory] )
 
 ifdef([AC_REVISION],AC_REVISION($Revision: 1.76 $),)dnl
 
