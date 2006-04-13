@@ -10,7 +10,7 @@
 
 #include <signal.h>
 #include <string.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <ctype.h>
 
 #include <st.h>
@@ -183,7 +183,7 @@ extern int forever;
     LOG(LOG_DEBUG, "timeout function");
     if (doc) {
       int ct  = STACKCT_OPT(OUTPUT);
-      char **output = STACKLST_OPT(OUTPUT);
+      char **output = (char **) &STACKLST_OPT(OUTPUT);
 
       xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
       for (i=0; i < ct; i++) {
