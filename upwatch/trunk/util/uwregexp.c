@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
       break;
     }
 
-    logregex_refresh_type("/etc/upwatch.d/uw_sysstat.d", style);
+    logregex_refresh_type("/etc/upwatch.d/uw_sysstat.d", (char *) &style);
     logregex_expand_macros(style, regexp, buf);
 
     printf("Resulting regex: %s\n", buf);
@@ -58,5 +58,6 @@ int main(int argc, char *argv[])
     free(regexp);
   }
   printf("\n");
+  exit(0);
 }
 

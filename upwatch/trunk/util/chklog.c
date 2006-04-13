@@ -33,7 +33,7 @@ int main (int argc, char *argv[])
 
   setvbuf(stdout, (char *)NULL, _IOLBF, 0); // make stdout linebuffered
 
-  logregex_refresh_type("/etc/upwatch.d/uw_sysstat.d", OPT_ARG(TYPE));
+  logregex_refresh_type("/etc/upwatch.d/uw_sysstat.d", (char *) &OPT_ARG(TYPE));
 
   if (strcmp(*argv, "-") == 0) {
     in = stdin;
@@ -57,7 +57,7 @@ int main (int argc, char *argv[])
     }
     buffer[strlen(buffer)-1] = 0;
     if (HAVE_OPT(MATCH)) {
-      if (logregex_matchline(OPT_ARG(TYPE), buffer, &color)) {
+      if (logregex_matchline((char *) &OPT_ARG(TYPE), buffer, &color)) {
         if (HAVE_OPT(LINE_INFO)) {
           printf("line %u: %d: ", line, color);
         }
@@ -65,13 +65,13 @@ int main (int argc, char *argv[])
       }
     }
     if (HAVE_OPT(REVERSE)) {
-      logregex_rmatchline(OPT_ARG(TYPE), buffer);
+      logregex_rmatchline((char *) &OPT_ARG(TYPE), buffer);
       printf("green %s\n", buffer);
     }
   }
   fclose(in);
   if (HAVE_OPT(STATS)) {
-    logregex_print_stats(OPT_ARG(TYPE));
+    logregex_print_stats((char *) &OPT_ARG(TYPE));
   }
   return 0;
 }
