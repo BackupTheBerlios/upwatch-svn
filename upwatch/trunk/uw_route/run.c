@@ -36,7 +36,7 @@ int init(void)
   if (HAVE_OPT(ROUTE)) {
     int i=0;
     int     ct  = STACKCT_OPT( ROUTE );
-    char**  pn = STACKLST_OPT( ROUTE );
+    char**  pn = (char **) &STACKLST_OPT( ROUTE );
 
     while (ct--) {
       char probe[256], queue[256];
@@ -183,7 +183,7 @@ static int handle_file(gpointer data, gpointer user_data)
   xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
   if (HAVE_OPT(COPY) && strcmp(OPT_ARG(COPY), "none")) {
     char *name = filebase;
-    if (spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(COPY), doc, &name)) {
+    if (spool_result((char *) &OPT_ARG(SPOOLDIR), (char *) &OPT_ARG(COPY), doc, &name)) {
       free(name);
     }
   }
@@ -289,7 +289,7 @@ static int handle_file(gpointer data, gpointer user_data)
       // ensure they have unique filenames, or clashes are inevitable
       // in a queue further on in the process.
       sprintf(buffer, "%s-%u", filebase, i);
-      if (spool_result(OPT_ARG(SPOOLDIR), route[i].queue, route[i].doc, &name)) {
+      if (spool_result((char *) &OPT_ARG(SPOOLDIR), route[i].queue, route[i].doc, &name)) {
         free(name); // the returned name
       }
       xmlFreeDoc(route[i].doc);
