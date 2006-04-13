@@ -393,6 +393,10 @@ extern void _ia64_cxt_restore(jmp_buf env, int val);
 
 #elif defined(__amd64__)
 #define MD_STACK_GROWS_DOWN
+#ifndef JB_RSP
+/* From sysdeps/x86_64/jmpbuf-offsets.h in glibc 2.4 */
+#define JB_RSP  6
+#endif
 #define MD_GET_SP(_t) (_t)->context[0].__jmpbuf[JB_RSP]
 
 #elif defined(__arm__)
