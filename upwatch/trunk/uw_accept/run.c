@@ -7,7 +7,7 @@
 #include <netdb.h>
 #include <signal.h>
 #include <string.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <ctype.h>
 
 #include <generic.h>
@@ -40,8 +40,8 @@ void init_dblist(void)
 {
   MYSQL *db;
 
-  db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
-                     OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
+  db = open_database((char *) &OPT_ARG(DBHOST), OPT_VALUE_DBPORT, (char *) &OPT_ARG(DBNAME),
+                     (char *) &OPT_ARG(DBUSER), (char *) &OPT_ARG(DBPASSWD));
   if (db) {
     MYSQL_RES *result;
 
@@ -409,7 +409,7 @@ logged_in:
       if (s) filename = ++s;
     }
   }
-  sp_info = spool_open(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), filename);
+  sp_info = spool_open((char *) &OPT_ARG(SPOOLDIR), (char *) &OPT_ARG(OUTPUT), filename);
   if (sp_info == NULL) {
     sprintf(buffer, "-ERR Sorry, error spooling file - enter command\n");
     if (++errors < 4) goto logged_in;
