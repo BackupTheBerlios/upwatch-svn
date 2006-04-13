@@ -56,8 +56,8 @@ case $host in
     if ! test "$oldincludedir" = '/usr/include' ; 	then oldincludedir='/usr/include' ; fi
     if ! test "$infodir" = '${prefix}/info' ; 		then infodir='/usr/share/info' ; fi
     if ! test "$mandir" = '${prefix}/man' ;		then mandir='/usr/share/man' ; fi
-    ;;
     LDFLAGS="${LDFLAGS} -L/usr/lib64"
+    ;;
   *-*-freebsd*) 
     freebsd=true
     if ! test "$bindir" = '${exec_prefix}/bin' ; 		then bindir='/usr//local/bin' ; fi
