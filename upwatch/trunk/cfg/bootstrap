@@ -31,4 +31,4 @@ aclocal \
 cd xmbmon203
 autoconf
 cd ..
-
+svnversion . > RELEASE
