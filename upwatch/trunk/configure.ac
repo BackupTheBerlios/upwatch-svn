@@ -44,18 +44,18 @@ AC_CANONICAL_BUILD
 case $host in
   *-*-linux*) 
     linux=true
-    if ! test "$bindir" = '${exec_prefix}/bin' ; 		then bindir='/usr/bin' ; fi
-    if ! test "$sbindir" = '${exec_prefix}/sbin' ; 	then sbindir='/usr/sbin' ; fi
-    if ! test "$libexecdir" = '${exec_prefix}/libexec';	then libexecdir='/usr/libexec' ; fi
-    if ! test "$datadir" = '${prefix}/share' ;		then datadir='/usr/local/share' ; fi
-    if ! test "$sysconfdir" = '${prefix}/etc' ;		then sysconfdir='/etc' ; fi
-    if ! test "$sharedstatedir" = '${prefix}/com' ;	then sharedstatedir='/usr/local/com' ; fi
-    if ! test "$localstatedir" = '${prefix}/var' ; 	then localstatedir='/var' ; fi
-    if ! test "$libdir" = '${exec_prefix}/lib' ; 		then libdir='/usr/lib' ; fi
-    if ! test "$includedir" = '${prefix}/include' ; 	then includedir='/usr/include' ; fi
-    if ! test "$oldincludedir" = '/usr/include' ; 	then oldincludedir='/usr/include' ; fi
-    if ! test "$infodir" = '${prefix}/info' ; 		then infodir='/usr/share/info' ; fi
-    if ! test "$mandir" = '${prefix}/man' ;		then mandir='/usr/share/man' ; fi
+    if test "$bindir" = '${exec_prefix}/bin' ; 		then bindir='/usr/bin' ; fi
+    if test "$sbindir" = '${exec_prefix}/sbin' ; 	then sbindir='/usr/sbin' ; fi
+    if test "$libexecdir" = '${exec_prefix}/libexec';	then libexecdir='/usr/libexec' ; fi
+    if test "$datadir" = '${prefix}/share' ;		then datadir='/usr/local/share' ; fi
+    if test "$sysconfdir" = '${prefix}/etc' ;		then sysconfdir='/etc' ; fi
+    if test "$sharedstatedir" = '${prefix}/com' ;	then sharedstatedir='/usr/local/com' ; fi
+    if test "$localstatedir" = '${prefix}/var' ; 	then localstatedir='/var' ; fi
+    if test "$libdir" = '${exec_prefix}/lib' ; 		then libdir='/usr/lib' ; fi
+    if test "$includedir" = '${prefix}/include' ; 	then includedir='/usr/include' ; fi
+    if test "$oldincludedir" = '/usr/include' ; 	then oldincludedir='/usr/include' ; fi
+    if test "$infodir" = '${prefix}/info' ; 		then infodir='/usr/share/info' ; fi
+    if test "$mandir" = '${prefix}/man' ;		then mandir='/usr/share/man' ; fi
     LDFLAGS="${LDFLAGS} -L/usr/lib64"
     ;;
   *-*-freebsd*) 
