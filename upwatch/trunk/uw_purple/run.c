@@ -74,7 +74,7 @@ int find_expired_probes(struct dbspec *dbspec)
   }
   if (count) {
     xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
-    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(OUTPUT), doc, NULL);
+    spool_result((char *) &OPT_ARG(SPOOLDIR), (char *) &OPT_ARG(OUTPUT), doc, NULL);
     LOG(LOG_INFO, "%s: purpled %u probes", dbspec->realm, count);
   }
 
@@ -96,8 +96,8 @@ int run(void)
   MYSQL *upwatch;
   int count = 0;
 
-  upwatch = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
-                        OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
+  upwatch = open_database((char *) &OPT_ARG(DBHOST), OPT_VALUE_DBPORT, (char *) &OPT_ARG(DBNAME),
+                        (char *) &OPT_ARG(DBUSER), (char *) &OPT_ARG(DBPASSWD));
   if (!upwatch) return 0;
 
   LOG(LOG_INFO, "processing ..");
