@@ -1,9 +1,5 @@
 include $(top_srcdir)/Makefile.am.path
 
-#if HAVE_LIBNET
-#USE_LIBNET = uw_investigate
-#endif
-
 if HAVE_LIBPCAP
 UW_IPTRAF = uw_iptraf
 endif
@@ -83,7 +79,7 @@ EXTRA_DIST = Makefile.am.common Makefile.am.libs Makefile.am.path VERSION RELEAS
   upwatch-spec.def upwatch-spec.tpl upwatch.spec templates \
   patches/libpcap-linux-timeout.patch mswindows \
   ${SERVER_DIST} \
-  install-sh config.sub mkinstalldirs depcomp cfg/cvs2cl.pl
+  install-sh config.sub mkinstalldirs depcomp
 
 
 upwatch.spec: force upwatch-spec.def upwatch-spec.tpl common/spec.tpl \

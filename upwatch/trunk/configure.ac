@@ -719,8 +719,6 @@ AC_CONFIG_FILES([uw_route/Makefile])
 AC_CONFIG_FILES([uw_process/Makefile])
 AC_CONFIG_FILES([uw_syncprobes/Makefile])
 AC_CONFIG_FILES([compat/Makefile])
-AC_CONFIG_FILES([compat/sometests/Makefile])
-AC_CONFIG_FILES([compat/sometests/setproctitle/Makefile])
 AC_CONFIG_FILES([compat/bb/Makefile])
 AC_CONFIG_FILES([compat/bb/bbhimport/Makefile])
 fi
