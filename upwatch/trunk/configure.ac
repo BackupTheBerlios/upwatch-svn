@@ -219,7 +219,7 @@ then
   enable_server=yes
   enable_monitors=yes
   case $host in
-    i?86-*-linux*)
+    *-*-linux*)
     enable_iptraf=yes
     ;;
   esac
