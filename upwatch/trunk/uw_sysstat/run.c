@@ -225,7 +225,7 @@ int init(void)
 
   if (HAVE_OPT(ERRLOG)) {
     int ct  = STACKCT_OPT(ERRLOG);
-    char **errlog = STACKLST_OPT(ERRLOG);
+    char **errlog = (char **) &STACKLST_OPT(ERRLOG);
     for (idx=0, i=0; i < ct && idx < 255; i++) {
       char *start, *end;
   
@@ -567,7 +567,7 @@ int run(void)
   xmlDocPtr doc;
   xmlNodePtr node;
   int ct  = STACKCT_OPT(OUTPUT);
-  char **output = STACKLST_OPT(OUTPUT);
+  char **output = (char **) &STACKLST_OPT(OUTPUT);
   GString *log;
   int i;
   int color;
@@ -637,10 +637,10 @@ extern int forever;
     // if status changed, it needs to be sent immediately. So drop into
     // the high priority queue. Else just drop in the normal queue where
     // uw_send in batched mode will pick it up later
-    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(HPQUEUE), doc, NULL);
+    spool_result((char *) &OPT_ARG(SPOOLDIR), (char *) &OPT_ARG(HPQUEUE), doc, NULL);
   } else {
     for (i=0; i < ct; i++) {
-      spool_result(OPT_ARG(SPOOLDIR), output[i], doc, NULL);
+      spool_result((char *) &OPT_ARG(SPOOLDIR), output[i], doc, NULL);
     }
   }
   prv_highest_color = highest_color; // remember for next time
