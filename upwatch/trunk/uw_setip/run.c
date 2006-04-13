@@ -7,7 +7,7 @@
 #include <netdb.h>
 #include <signal.h>
 #include <string.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <ctype.h>
 
 #include <generic.h>
@@ -39,8 +39,8 @@ void init_dblist(void)
 {
   MYSQL *db;
 
-  db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
-                     OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
+  db = open_database((char *) &OPT_ARG(DBHOST), OPT_VALUE_DBPORT, (char *) &OPT_ARG(DBNAME),
+                     (char *) &OPT_ARG(DBUSER), (char *) &OPT_ARG(DBPASSWD));
   if (db) {
     MYSQL_RES *result;
 
@@ -151,8 +151,8 @@ static int uw_set_ip(char *user, char *ip, char *remotehost)
 {
   MYSQL *mysql;
 
-  mysql = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
-			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
+  mysql = open_database((char *) &OPT_ARG(DBHOST), OPT_VALUE_DBPORT, (char *) &OPT_ARG(DBNAME), 
+			(char *) &OPT_ARG(DBUSER), (char *) &OPT_ARG(DBPASSWD));
   if (mysql) {
     gchar buffer[256];
 

@@ -30,8 +30,8 @@ int run(void)
     return 0;
   }
 
-  mysql = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
-			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
+  mysql = open_database((char *) &OPT_ARG(DBHOST), OPT_VALUE_DBPORT, (char *) &OPT_ARG(DBNAME), 
+			(char *) &OPT_ARG(DBUSER), (char *) &OPT_ARG(DBPASSWD));
   if (!mysql) {
     printf("Can't open database\n");
     return 0;
