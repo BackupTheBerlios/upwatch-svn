@@ -82,8 +82,8 @@ int run(void)
   
   LOG(LOG_INFO, "reading info from database");
   uw_setproctitle("reading info from database");
-  mysql = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
-			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
+  mysql = open_database((char *) &OPT_ARG(DBHOST), OPT_VALUE_DBPORT, (char *) &OPT_ARG(DBNAME), 
+			(char *) &OPT_ARG(DBUSER), (char *) &OPT_ARG(DBPASSWD));
   if (mysql) {
     refresh_database(mysql);
     close_database(mysql);
@@ -226,7 +226,7 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
 void write_results(void)
 {
   int ct  = STACKCT_OPT(OUTPUT);
-  char **output = STACKLST_OPT(OUTPUT);
+  char **output = (char **) &STACKLST_OPT(OUTPUT);
   int i;
   xmlDocPtr doc;
 
@@ -235,7 +235,7 @@ void write_results(void)
   g_hash_table_foreach(cache, write_probe, doc);
   xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
   for (i=0; i < ct; i++) {
-    spool_result(OPT_ARG(SPOOLDIR), output[i], doc, NULL);
+    spool_result((char *) &OPT_ARG(SPOOLDIR), output[i], doc, NULL);
   }
   xmlFreeDoc(doc);
 }
