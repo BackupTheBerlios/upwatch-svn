@@ -82,7 +82,7 @@ void writeXMLresult(struct ipnetw *ipnets, int count_ipnets)
   free(ipnets);
   xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
   for (i=0; i < ct; i++) {
-    spool_result((char *) &OPT_ARG(SPOOLDIR), output[i], doc, NULL);
+    spool_result(OPT_ARG(SPOOLDIR), output[i], doc, NULL);
   }
   xmlFreeDoc(doc);
 }
