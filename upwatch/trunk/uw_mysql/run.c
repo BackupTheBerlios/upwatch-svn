@@ -256,7 +256,6 @@ void probe(gpointer data, gpointer user_data)
   dbuser = probe->dbuser;
   dbpasswd = probe->dbpasswd;
 
-  option = 0 ; mysql_options(mysql, MYSQL_OPT_COMPRESS, &option);
   option = 50; mysql_options(mysql, MYSQL_OPT_CONNECT_TIMEOUT, &option);
   gettimeofday(&start, NULL);
   if (!mysql_real_connect(mysql, dbhost, dbuser, dbpasswd, dbname, 0, NULL, 0)) {
