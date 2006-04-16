@@ -123,7 +123,7 @@ int spool_result(const char *basedir, const char *target, xmlDocPtr doc, char **
   return 1;
 }
 
-void *spool_open(char *basedir, char *target, char *basename)
+void *spool_open(const char *basedir, const char *target, char *basename)
 {
   struct stat filestat;
   int count;
