@@ -517,7 +517,7 @@ extern int forever;
     g_ptr_array_free(arr, TRUE);
     return 0;
   }
-  g_ptr_array_sort(arr, mystrcmp);
+  g_ptr_array_sort(arr, (GCompareFunc) mystrcmp);
   if (debug > 3) { fprintf(stderr, "%u files in directory\n", files); sleep(3); }
 
   // now we have a sorted list of files 
