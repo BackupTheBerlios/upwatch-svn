@@ -228,7 +228,7 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
 void write_results(void)
 {
   int ct  = STACKCT_OPT(OUTPUT);
-  char **output = STACKLST_OPT(OUTPUT);
+  char **output = (char **) &STACKLST_OPT(OUTPUT);
   int i;
   xmlDocPtr doc;
 
@@ -256,7 +256,7 @@ void probe(gpointer data, gpointer user_data)
   dbuser = probe->dbuser;
   dbpasswd = probe->dbpasswd;
 
-  option = 50; mysql_options(mysql, MYSQL_OPT_CONNECT_TIMEOUT, &option);
+  option = 50; mysql_options(mysql, MYSQL_OPT_CONNECT_TIMEOUT, (const char *) &option);
   gettimeofday(&start, NULL);
   if (!mysql_real_connect(mysql, dbhost, dbuser, dbpasswd, dbname, 0, NULL, 0)) {
     probe->msg = strdup(mysql_error(mysql));
