@@ -637,10 +637,10 @@ extern int forever;
     // if status changed, it needs to be sent immediately. So drop into
     // the high priority queue. Else just drop in the normal queue where
     // uw_send in batched mode will pick it up later
-    spool_result((char *) &OPT_ARG(SPOOLDIR), (char *) &OPT_ARG(HPQUEUE), doc, NULL);
+    spool_result(OPT_ARG(SPOOLDIR), OPT_ARG(HPQUEUE), doc, NULL);
   } else {
     for (i=0; i < ct; i++) {
-      spool_result((char *) &OPT_ARG(SPOOLDIR), output[i], doc, NULL);
+      spool_result(OPT_ARG(SPOOLDIR), output[i], doc, NULL);
     }
   }
   prv_highest_color = highest_color; // remember for next time

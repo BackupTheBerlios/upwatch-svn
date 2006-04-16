@@ -235,7 +235,7 @@ void write_results(void)
   g_hash_table_foreach(cache, write_probe, doc);
   xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
   for (i=0; i < ct; i++) {
-    spool_result((char *) &OPT_ARG(SPOOLDIR), output[i], doc, NULL);
+    spool_result(OPT_ARG(SPOOLDIR), output[i], doc, NULL);
   }
   xmlFreeDoc(doc);
 }

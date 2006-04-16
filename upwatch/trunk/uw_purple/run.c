@@ -74,7 +74,7 @@ int find_expired_probes(struct dbspec *dbspec)
   }
   if (count) {
     xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
-    spool_result((char *) &OPT_ARG(SPOOLDIR), (char *) &OPT_ARG(OUTPUT), doc, NULL);
+    spool_result(OPT_ARG(SPOOLDIR), (char *) &OPT_ARG(OUTPUT), doc, NULL);
     LOG(LOG_INFO, "%s: purpled %u probes", dbspec->realm, count);
   }
 
