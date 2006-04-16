@@ -28,7 +28,7 @@ void close_database(MYSQL *mysql)
   }
 }
 
-MYSQL *open_database(char *dbhost, int dbport, char *dbname, char *dbuser, char *dbpasswd)
+MYSQL *open_database(const char *dbhost, int dbport, const char *dbname, const char *dbuser, const char *dbpasswd)
 {
   MYSQL *mysql;
 

@@ -32,8 +32,8 @@ int run(void)
   MYSQL_ROW row;
   MYSQL *upwatch;
 
-  upwatch = open_database((char *) &OPT_ARG(DBHOST), OPT_VALUE_DBPORT, (char *) &OPT_ARG(DBNAME),
-                        (char *) &OPT_ARG(DBUSER), (char *) &OPT_ARG(DBPASSWD));
+  upwatch = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
+                        OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
   if (!upwatch) return 0;
 
   LOG(LOG_INFO, "syncing..");
