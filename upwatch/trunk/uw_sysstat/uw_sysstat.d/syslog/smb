@@ -13,4 +13,4 @@ green [LOGDATE] kernel: smb_proc_readX_data:
 ignore [LOGDATE] smbd[PID]: Error writing [NUM] bytes to client. [NUM]. \(Connection reset by peer\)
 green [LOGDATE] smbd[PID]: \[[NUM]/[NUM]/[NUM] [NUM]:[NUM]:[NUM], [NUM]\] lib/util_sock.c:send_smb\([NUM]\)
 ignore [LOGDATE] smbd[PID]: write_socket_data: write failure. Error = Connection reset by peer
-green [LOGDATE] smbd[PID]: [[NUM]/[NUM]/[NUM] [NUM]:[NUM]:[NUM], [NUM]\] lib/util_sock.c:write_socket_data\([NUM]\) 
+green [LOGDATE] smbd[PID]: \[[NUM]/[NUM]/[NUM] [NUM]:[NUM]:[NUM], [NUM]\] lib/util_sock.c:write_socket_data\([NUM]\) 
