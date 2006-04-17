@@ -395,7 +395,7 @@ int init(void)
   if (HAVE_OPT(TRUST)) {
     int i, found=0;
     int     ct  = STACKCT_OPT( TRUST );
-    char**  pn = (char **) STACKLST_OPT( TRUST );
+    char**  pn = (char **) &STACKLST_OPT( TRUST );
 
     while (ct--) {
       for (i=0; modules[i]; i++) {
