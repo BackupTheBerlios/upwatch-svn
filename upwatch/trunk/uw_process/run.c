@@ -526,7 +526,7 @@ extern int forever;
     trx t;
     int j;
     int output_ct = STACKCT_OPT(OUTPUT);
-    char **output_pn = STACKLST_OPT(OUTPUT);
+    char **output_pn = (char **) &STACKLST_OPT(OUTPUT);
     char *filebase;
 
     filebase = strrchr((char *)g_ptr_array_index(arr,i), '/');
