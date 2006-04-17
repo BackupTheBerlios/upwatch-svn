@@ -395,7 +395,7 @@ int init(void)
   if (HAVE_OPT(TRUST)) {
     int i, found=0;
     int     ct  = STACKCT_OPT( TRUST );
-    char**  pn = STACKLST_OPT( TRUST );
+    char**  pn = (char **) STACKLST_OPT( TRUST );
 
     while (ct--) {
       for (i=0; modules[i]; i++) {
@@ -458,7 +458,7 @@ int trust(char *name)
 {
   int trust;
   int     ct  = STACKCT_OPT( TRUST );
-  char**  pn = STACKLST_OPT( TRUST );
+  char**  pn = (char **) &STACKLST_OPT( TRUST );
 
   for (trust=0; trust < ct; trust++) {
     if (strcmp(pn[trust], "all") == 0) {
@@ -589,7 +589,7 @@ int master_checks(void)
 {
   int i;
   int     ct  = STACKCT_OPT( INPUT );
-  char**  pn = STACKLST_OPT( INPUT );
+  char**  pn = (char **) &STACKLST_OPT( INPUT );
 
   childpidcnt = ct;
   if (debug > 2) fprintf(stderr, "pondering..\n");
@@ -640,7 +640,7 @@ int master_checks(void)
               char subject[256];
 
               sprintf(subject, "UPWATCH: probe %s is lagging in processing", modules[i]->module_name);
-              mail(OPT_ARG(NOC_MAIL), subject, subject, (time_t)NULL);
+              mail((char *) &OPT_ARG(NOC_MAIL), subject, subject, (time_t)NULL);
               my_query(modules[i]->db, 0, "update probe set lagwarn = 'yes' where id = '%u'",
                                            modules[i]->class);
             }
@@ -649,7 +649,7 @@ int master_checks(void)
               char subject[256];
 
               sprintf(subject, "UPWATCH: probe %s is up-to-date again", modules[i]->module_name);
-              mail(OPT_ARG(NOC_MAIL), subject, subject, (time_t)NULL);
+              mail((char *) &OPT_ARG(NOC_MAIL), subject, subject, (time_t)NULL);
               my_query(modules[i]->db, 0, "update probe set lagwarn = 'no' where id = '%u'",
                                            modules[i]->class);
             }
@@ -703,7 +703,7 @@ extern int forever;
   guint lowtime, hightime; 
   char *p;
 
-  res.name = strtok(OPT_ARG(SUMMARIZE), ",");
+  res.name = strtok((char *) &OPT_ARG(SUMMARIZE), ",");
   lowtime = 0;
   hightime = time(NULL);
   p = strtok(NULL, ",");
