@@ -490,6 +490,7 @@ green [LOGDATE] kernel: Probing IDE interface ide[NUM]\.\.\.
 green [LOGDATE] kernel: Probing PCI hardware\. 
 green [LOGDATE] kernel: Processor NAP mode on idle enabled\.
 green [LOGDATE] kernel: Processor #[NUM] Pentium\(tm\) Pro APIC version [NUM]
+green [LOGDATE] kernel: Processor #[NUM] Pentium [NUM](tm) XEON(tm) APIC version [NUM]
 green [LOGDATE] kernel: Processors: [NUM]
 green [LOGDATE] kernel: Process [WORD] \(pid: [NUM], stackpage=c[HEX]\)
 green [LOGDATE] kernel: PS/[NUM] auxiliary pointing device detected -- driver installed\. 
@@ -542,7 +543,8 @@ green [LOGDATE] kernel: \(scsi[NUM]\) Downloading sequencer code\.\.\. [NUM] ins
 green [LOGDATE] kernel: \(scsi[NUM]\) during machine bootup\. 
 green [LOGDATE] kernel: scsi[NUM] : GDT[NUM]RP
 green [LOGDATE] kernel: scsi[NUM] : GDT[NUM]RS
-green [LOGDATE] kernel: scsi[NUM] : Vendor: Adaptec  Model: [NUM]S            FW:[NUM]E
+green [LOGDATE] kernel: scsi[NUM] : Vendor: Adaptec\s+Model: [NUM]S            FW:[NUM]E
+green [LOGDATE] kernel: scsi[NUM] : Vendor: Adaptec Model: [NUM]S\s+FW:
 green [LOGDATE] kernel: scsi : [NUM] hosts?\.
 green [LOGDATE] kernel: \(scsi[NUM]\) If not, then please properly set the device termination 
 green [LOGDATE] kernel: \(scsi[NUM]\) in the Adaptec SCSI BIOS by hitting CTRL-A when prompted 
@@ -696,6 +698,9 @@ green [LOGDATE] kernel: TCP [WORD] registered
 green [LOGDATE] kernel: Using IPI Shortcut mode
 green [LOGDATE] kernel: Write protecting the kernel read-only data: [NUM]k
 green [LOGDATE] kernel: {IPADDR] sent an invalid ICMP type [NUM], code [NUM] error to a broadcast: [IPADDR] on [WORD][NUM]
+green [LOGDATE] kernel: ACPI: System description tables not found
+green [LOGDATE] kernel: ESR value before enabling vector: [NUM]
+green [LOGDATE] kernel: \.\.TIMER: 
 
 yellow [LOGDATE]  kernel: eth[NUM]: [NUM] transmit timed out, status .*, resetting...
 

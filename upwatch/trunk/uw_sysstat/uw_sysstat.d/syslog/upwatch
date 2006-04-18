@@ -1,2 +1,4 @@
 green [LOGDATE] uw_[WORD]: uw_[WORD] shutdown failed
 green [LOGDATE] uw_maint.pl[PID]: [NUM] finished
+green [LOGDATE] upwatch:\s*$
+green [LOGDATE] upwatch: \^\[\[[NUM]

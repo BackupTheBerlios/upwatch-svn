@@ -5,5 +5,13 @@ green [LOGDATE] Keepalived_vrrp: VRRP_Instance(VI_eth[NUM]) Entering BACKUP STAT
 green [LOGDATE] Keepalived_vrrp: VRRP_Instance(VI_eth[NUM]) Received higher prio advert
 green [LOGDATE] Keepalived_vrrp: VRRP_Instance(VI_eth[NUM]) removing protocol Virtual Routes
 green [LOGDATE] Keepalived_vrrp: VRRP_Instance(VI_eth[NUM]) Transition to MASTER STATE
+green [LOGDATE] Keepalived: Terminating on signal
+green [LOGDATE] Keepalived_vrrp: Terminating VRRP child process on signal
+green [LOGDATE] Keepalived_vrrp: VRRP_Instance\([WORD]\) removing protocol VIPs.
+green [LOGDATE] kernel: IPVS: stopping sync thread [NUM] ..
+green [LOGDATE] Keepalived: Stopping Keepalived 
+green [LOGDATE] kernel: IPVS: sync thread stopped!
+green [LOGDATE] Keepalived_healthcheckers: Terminating Healthchecker child process on signal
+green [LOGDATE] Keepalived_healthcheckers: IPVS: No such destination
 red [LOGDATE] Keepalived_healthcheckers: Error connecting server \[[IPADDR]:[NUM]\]\.
 red [LOGDATE] Keepalived_healthcheckers: Cannot send get request to \[[IPADDR]:[NUM]\]\.

@@ -1,4 +1,5 @@
 green [LOGDATE] xfs: ignoring font path element [PATH] \(unreadable\) 
+green [LOGDATE] xfs: ignoring font path element [PATH]:[WORD] \(unreachable\)
 green [LOGDATE] xfs[PID]: attempting clone\.\.\. 
 green [LOGDATE] xfs[PID]: clone: child becoming drone 
 green [LOGDATE] xfs[PID]: clone: parent revitalizing as xfs 
