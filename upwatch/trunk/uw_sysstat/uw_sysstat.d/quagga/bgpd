@@ -7,4 +7,8 @@ green [LOGDATE] BGP: %ADJCHANGE: neighbor [IPADDR] Up
 green [LOGDATE] BGP: %NOTIFICATION: received from neighbor [IPADDR] [NUM]/[NUM] \(Hold Timer Expired\) [NUM] bytes
 green [LOGDATE] BGP: %NOTIFICATION: sent to neighbor [IPADDR] [NUM]/[NUM] \(Hold Timer Expired\) [NUM] bytes
 green [LOGDATE] BGP: %ADJCHANGE: neighbor [IPADDR] Down BGP Notification received
+green [LOGDATE] BGP: %ADJCHANGE: neighbor [IPADDR] Down BGP Notification send
+green [LOGDATE] BGP: %MAXPFXEXCEED: No. of prefix received from [IPADDR] \(afi [NUM]\): [NUM] exceed limit [NUM]
+green [LOGDATE] BGP: %NOTIFICATION: sent to neighbor [IPADDR] [NUM]/[NUM] \(Cease/Maximum Number of Prefixes Reached\) [NUM] bytes
+
 yellow [LOGDATE] BGP: %NOTIFICATION: received from neighbor [IPADDR] [NUM]/[NUM] \(OPEN Message Error/Authentication Failure\) [NUM] bytes
