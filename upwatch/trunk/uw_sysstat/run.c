@@ -317,9 +317,6 @@ xmlNodePtr newnode(xmlDocPtr doc, char *name)
   time_t now = time(NULL);
 
   node = xmlNewChild(xmlDocGetRootElement(doc), NULL, name, NULL);
-  if (HAVE_OPT(DOMAIN)) {
-    xmlSetProp(node, "domain", OPT_ARG(DOMAIN));
-  }
   if (HAVE_OPT(REALM)) {
     xmlSetProp(node, "realm", OPT_ARG(REALM));
   }

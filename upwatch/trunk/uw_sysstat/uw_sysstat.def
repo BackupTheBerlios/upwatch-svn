@@ -147,6 +147,14 @@ flag = {
 };
 
 flag = {
+    name      = ignorediskfree;
+    arg_type  = string;   /* option argument indication  */
+    stack_arg;
+    descrip   = "Ignore the diskfree status of this disk";
+};
+
+
+flag = {
     name      = ipaddress;
     arg_type  = string;   /* option argument indication  */
     arg_default = "127.0.0.1";
