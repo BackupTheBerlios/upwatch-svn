@@ -508,20 +508,36 @@ void add_diskfree_info(xmlNodePtr node)
 {
   float fullest = 0.0;
   char info[32768];
+  int i, ignore;
 
   if (st.disk) {
     sg_fs_stats *disk_stat_ptr = st.disk;
     int counter;
 
-    for (counter=0; counter < st.disk_entries; counter++){
+    for (counter=0, ignore=0; counter < st.disk_entries; counter++){
       float use;
-      use = 100.00 * ((float) disk_stat_ptr->used / (float) (disk_stat_ptr->used + disk_stat_ptr->avail));
-      if (use > fullest) fullest = use;
-      disk_stat_ptr++;
+
+    if (HAVE_OPT( IGNOREDISKFREE )) {
+        int     ct = STACKCT_OPT(  IGNOREDISKFREE );
+        char**  pp = (char **) &STACKLST_OPT( IGNOREDISKFREE );
+
+        do  {
+            char* p = *pp++;
+            if (strcmp(disk_stat_ptr->device_name, p) ==0 ) ignore=1;
+        } while (--ct > 0);
+    }
+
+     if (ignore == 0 ) {
+        use = 100.00 * ((float) disk_stat_ptr->used / (float) (disk_stat_ptr->used + disk_stat_ptr->avail));
+        if (use > fullest) fullest = use;
+      }
+      ignore=0; /* Reset the ignore flag */
+      disk_stat_ptr++; /* next partition please */
     }
   }
 
-  if (fullest > OPT_VALUE_DISKFREE_YELLOW) { // if some disk is more then 80% full give `df` listing
+  if (fullest > OPT_VALUE_DISKFREE_YELLOW) { // if some disk is more then the yellow treshold full give `df` listing
+
     char cmd[1024];
     char buffer[24];
     FILE *in;
@@ -628,6 +644,7 @@ extern int forever;
   node = newnode(doc, "diskfree");
   add_diskfree_info(node);
   color = xmlGetPropInt(node, "color");
+
   if (color > highest_color) highest_color = color;
 
   if (HAVE_OPT(HPQUEUE) && (highest_color != prv_highest_color)) {
