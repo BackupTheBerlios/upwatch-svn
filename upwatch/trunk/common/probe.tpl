@@ -24,7 +24,7 @@ CREATE TABLE pr_[+name+]_def (
   delay int unsigned NOT NULL default '1',	-- after this many minutes of red light
   disable enum('yes', 'no') not null default 'no', -- disable this probe
   hide enum('yes', 'no') not null default 'no', -- hide probe results from viewing
-  ipaddress varchar(15) NOT NULL default '127.0.0.1',	-- target ipaddress 
+  ipaddress varchar(128) NOT NULL default '127.0.0.1',	-- target ipaddress or hostname
   description text NOT NULL default '',		-- description
   freq smallint unsigned NOT NULL default '1',	-- frequency in minutes
   yellow float NOT NULL default '[+yellow+]',	-- value for yellow alert
