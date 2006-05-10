@@ -72,3 +72,5 @@ green [LOGDATE] sshd[PID]: input_userauth_request: invalid user [USER]
 green [LOGDATE] sshd[PID]: Authentication refused: bad ownership or modes for file [PATH]
 green [LOGDATE] sshd: sshd shutdown failed
 ignore [LOGDATE] sshd[PID]: Read error from remote host [IPADDR]: Connection timed out
+ignore [LOGDATE] sshd[PID]: error: Bind to port [NUM] on [IPADDR] failed: Address already in use.
+green [LOGDATE] sshd\(pam_unix\)[PID]: service\(sshd\) ignoring max retries; [NUM] > [NUM]
