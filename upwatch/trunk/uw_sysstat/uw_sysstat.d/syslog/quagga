@@ -1,0 +1,2 @@
+green [LOGDATE] bgpd[PID]: SMUX connection closed: [NUM]
+green [LOGDATE] zebra[PID]: SMUX connection closed: [NUM]

@@ -701,6 +701,10 @@ green [LOGDATE] kernel: {IPADDR] sent an invalid ICMP type [NUM], code [NUM] err
 green [LOGDATE] kernel: ACPI: System description tables not found
 green [LOGDATE] kernel: ESR value before enabling vector: [NUM]
 green [LOGDATE] kernel: \.\.TIMER: 
+green [LOGDATE] kernel: kmod: runaway modprobe loop assumed and stopped
+green [LOGDATE] kernel: CIFS VFS: Calculated size 0x[NUM] vs actual length 0x[NUM]
+green [LOGDATE] kernel: CIFS VFS: bad smb size detected for Mid=[NUM]
+ignore [LOGDATE] kernel: CIFS VFS: Send error in read = [NUM]
 
 yellow [LOGDATE]  kernel: eth[NUM]: [NUM] transmit timed out, status .*, resetting...
 
