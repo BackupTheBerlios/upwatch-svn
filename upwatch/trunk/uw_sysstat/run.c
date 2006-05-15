@@ -22,6 +22,11 @@
 #if USE_XMBMON
 #include "mbmon.h"
 #endif
+#ifdef __OpenBSD__
+#include <sys/param.h>
+#include <sys/sysctl.h>
+#include <sys/sensors.h>
+#endif
 
 char ipaddress[24];
 
@@ -54,7 +59,7 @@ typedef struct {
 } stats_t;
 stats_t st;
 
-#if USE_XMBMON
+#if USE_XMBMON|| defined (__OpenBSD__)
 typedef struct {
   float temp1;
   float temp2;
@@ -111,6 +116,56 @@ void get_hwstats(void)
   getVolt(&hw.vc0, &hw.vc1, &hw.v33, &hw.v50p, &hw.v50n, &hw.v12p, &hw.v12n);
   //printf(" Vcore = %4.2f, %4.2f; Volt. = %4.2f, %4.2f, %5.2f, %6.2f, %5.2f\n", 
   //       hw.vc0, hw.vc1, hw.v33, hw.v50p, hw.v12p, hw.v12n, hw.v50n);
+}
+#endif
+#ifdef __OpenBSD__
+void get_hwstats(void)
+{
+  int i;
+  struct sensor s; 
+  size_t slen = sizeof(s); 
+  float value;
+  for (i=0;i<256;i++)
+  {
+    int mib[] = { CTL_HW, HW_SENSORS, i }; 
+    if ( sysctl(mib, sizeof(mib)/sizeof(mib[0]), &s, &slen, NULL, 0) == -1 ) continue;
+    if (s.flags & SENSOR_FINVALID) continue;
+
+    /* Ok, we have a valid sensor now, now check the type */
+    switch (s.type) {
+      case SENSOR_TEMP:
+              if ( debug > 5 ) printf("Sensor %d is a temparature sensor\n", s.num);
+              value = (s.value - 273150000) / 1000000.0;
+              if(strcmp(s.desc,"Temp1")==0)  hw.temp1 = value; 
+              if(strcmp(s.desc,"Temp2")==0)  hw.temp2 = value;
+              if(strcmp(s.desc,"Temp3")==0)  hw.temp3 = value;
+              break;
+      case SENSOR_FANRPM:
+              if ( debug > 4 ) printf("Sensor %d is a fan speed sensor\n", s.num);
+              if(strcmp(s.desc,"Fan1")==0)  hw.rot1 = (int) s.value;
+              if(strcmp(s.desc,"Fan2")==0)  hw.rot2 = (int) s.value;
+              if(strcmp(s.desc,"Fan3")==0)  hw.rot3 = (int) s.value;
+              break;
+      case SENSOR_VOLTS_DC:
+              if ( debug > 5 ) printf("Sensor %d is a voltage sensor\n", s.num);
+              value = s.value / 1000000.0;
+              if(strcmp(s.desc,"VCore A")==0)  hw.vc0 = value;
+              if(strcmp(s.desc,"VCore B")==0)  hw.vc1 = value;
+              if(strcmp(s.desc,"+3.3V")==0)  hw.v33 = value;
+              if(strcmp(s.desc,"+5V")==0)  hw.v50p = value;
+              if(strcmp(s.desc,"+12V")==0)  hw.v12p = value;
+              if(strcmp(s.desc,"-12V")==0)  hw.v12n = value;
+              if(strcmp(s.desc,"-5V")==0)  hw.v50n = value;
+              break;
+      default:
+              if ( debug > 5 ) printf("Sensor hw.sensors.%d is of a unknown type! It describes itselve as: %s\n", s.num, s.desc);
+              break;
+    }
+  }
+  if ( debug > 4 ) printf("Temp = %4.1f, %4.1f, %4.1f;",hw.temp1, hw.temp2, hw.temp3);
+  if ( debug > 4 ) printf("Rot = %4d, %4d, %4d\n", hw.rot1, hw.rot2, hw.rot3);
+  if ( debug > 4 ) printf("Vcore = %4.2f, %4.2f\nVolt = %4.2f, %4.2f, %5.2f, %6.2f, %5.2f\n", 
+         hw.vc0, hw.vc1, hw.v33, hw.v50p, hw.v12p, hw.v12n, hw.v50n);
 }
 #endif
 
@@ -330,7 +385,7 @@ xmlNodePtr newnode(xmlDocPtr doc, char *name)
   return node;
 }
 
-#if USE_XMBMON
+#if USE_XMBMON || defined (__OpenBSD__)
 void add_hwstat(xmlNodePtr node)
 {
   char buffer[24];
@@ -613,8 +668,8 @@ extern int forever;
   add_sysstat_info(node);
   color = xmlGetPropInt(node, "color");
   if (color > highest_color) highest_color = color;
-#if USE_XMBMON
-  if (OPT_VALUE_HWSTATS) {
+#if USE_XMBMON|| defined (__OpenBSD__)
+  if (OPT_VALUE_HWSTATS || __OpenBSD__) { /* FIXME, should be optional for OpenBSD users too (should it?)*/
     // do the hwstat
     get_hwstats();
     node = newnode(doc, "hwstat");
