@@ -669,7 +669,7 @@ extern int forever;
   color = xmlGetPropInt(node, "color");
   if (color > highest_color) highest_color = color;
 #if USE_XMBMON|| defined (__OpenBSD__)
-  if (OPT_VALUE_HWSTATS || __OpenBSD__) { /* FIXME, should be optional for OpenBSD users too (should it?)*/
+  if (OPT_VALUE_HWSTATS ) { 
     // do the hwstat
     get_hwstats();
     node = newnode(doc, "hwstat");
