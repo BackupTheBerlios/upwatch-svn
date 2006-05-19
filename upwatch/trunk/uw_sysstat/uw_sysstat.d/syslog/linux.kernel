@@ -173,6 +173,7 @@ green [LOGDATE] kernel: EXT[NUM]-fs: sd\([NUM],[NUM]\): [NUM] orphan inodes dele
 green [LOGDATE] kernel: EXT[NUM]-fs: sd\([NUM],[NUM]\): orphan cleanup on readonly fs
 green [LOGDATE] kernel: EXT[NUM]-fs warning: checktime reached, running e[NUM]fsck is recommended
 green [LOGDATE] kernel: EXT[NUM]-fs: write access will be enabled during recovery\.
+green [LOGDATE] kernel: EXT3 FS on .*?, internal journal
 green [LOGDATE] kernel: Failure registering capabilities with the kernel
 green [LOGDATE] kernel: FDC [NUM] is a
 green [LOGDATE] kernel: Fixup res [NUM] \([NUM]\) of dev [NUM]:[NUM]\.[NUM]: [NUM] -> [NUM]

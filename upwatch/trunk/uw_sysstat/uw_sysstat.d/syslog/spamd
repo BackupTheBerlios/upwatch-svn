@@ -4,3 +4,4 @@ green [LOGDATE] spamd[PID]: [IPADDR]: To: .* <[EMAIL]>
 green [LOGDATE] spamd[PID]: [IPADDR]: connected \([NUM]/[NUM]\)
 green [LOGDATE] spamd[PID]: [IPADDR]: disconnected after [NUM] seconds\.
 green [LOGDATE] spamd[PID]: \(GREY\) [IPADDR]: <[EMAIL]> -> <[EMAIL]>
+green [LOGDATE] spamd[PID]: listening for incoming connections.
