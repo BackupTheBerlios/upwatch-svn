@@ -234,5 +234,3 @@ Mainly used in dialup situations.';
 
 #include license_gpl.def
 #include generic_options.def
-#include dbase_options_ign.def
-

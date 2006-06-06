@@ -95,4 +95,3 @@ This flag may be given multiple times.';
 #include license_gpl.def
 #include dbase_options.def
 #include generic_options.def
-

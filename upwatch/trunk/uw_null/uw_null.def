@@ -79,7 +79,6 @@ This is useful is you want to run uw_null under cron or for debugging.';
 };
 
 #include license_gpl.def
-#include dbase_options.def
 #include generic_options.def
 #include option_realm_ign.def
 #include minimal_options.def
