@@ -139,6 +139,11 @@ void get_hwstats(void)
               if(strcmp(s.desc,"Temp1")==0)  hw.temp1 = value; 
               if(strcmp(s.desc,"Temp2")==0)  hw.temp2 = value;
               if(strcmp(s.desc,"Temp3")==0)  hw.temp3 = value;
+
+	      // The admtmp driver only tells us about Internal and External temperatures
+              if(strcmp(s.desc,"External Temp")==0 && strncmp(s.device,"admtemp", 7) == 0)  hw.temp1 = value; 
+              if(strcmp(s.desc,"Internal Temp")==0 && strncmp(s.device,"admtemp", 7) == 0)  hw.temp2 = value; 
+
               break;
       case SENSOR_FANRPM:
               if ( debug > 4 ) printf("Sensor %d is a fan speed sensor\n", s.num);
