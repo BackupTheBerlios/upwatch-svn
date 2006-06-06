@@ -27,7 +27,7 @@ flag = {
     arg_type  = string;
     descrip   = "print lines and error info in output lines";
     doc       =
-"Print line numbers and erros statuses.";
+"Print line numbers and error statuses.";
 };
 
 flag = {
