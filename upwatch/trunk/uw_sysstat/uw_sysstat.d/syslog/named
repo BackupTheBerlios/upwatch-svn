@@ -16,7 +16,6 @@ ignore [LOGDATE] named[PID]: dispatch [HEX]: shutting down due to TCP receive er
 green [LOGDATE] named[PID]: dns_master_load: [PATH]:[NUM]: ignoring out-of-zone data \(.*\)
 green [LOGDATE] named[PID]: drained [NUM] queries \(delay [NUM] sec\)
 green [LOGDATE] named[PID]: exiting
-
 green [LOGDATE] named[PID]: Forwarding source address is \[[IPADDR]\]\.[NUM]
 green [LOGDATE] named[PID]: group = [NUM]
 green [LOGDATE] named[PID]: hint zone "" \(IN\) loaded \(serial [NUM]\)

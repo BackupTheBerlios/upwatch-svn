@@ -47,6 +47,7 @@ green [LOGDATE] postfix/anvil[PID]: statistics:
 green [LOGDATE] postfix/scache[PID]: statistics: 
 green [LOGDATE] postfix/smtp[PID]: connect to [HOSTNAME]\[[IPADDR]\]: Connection refused \(port [NUM]\) 
 green [LOGDATE] postfix/sendmail[PID]: fatal: No recipient addresses found in message header
+yellow [LOGDATE] postfix/[WORD][PID]: warning: My hostname [WORD] is not a fully qualified name - set myhostname or mydomain in [PATH]
 ignore [LOGDATE] postfix/smtpd[PID]: too many errors after NOOP from [HOSTNAME]\[[IPADDR]\]
 ignore [LOGDATE] postfix/smtpd[PID]: too many errors after RCPT from [HOSTNAME]\[[IPADDR]\]
 ignore [LOGDATE] postfix/smtp[PID]: .*?: host [HOSTNAME]\[[IPADDR]\] said: 451

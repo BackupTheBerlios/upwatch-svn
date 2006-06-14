@@ -8,6 +8,6 @@ green [LOGDATE] sendmail[PID]: gethostbyaddr\([IPADDR]\) failed:
 green [LOGDATE] sendmail[PID]: gethostbyaddr\(IPv(4|6):[IPADDR]\) failed:
 green [LOGDATE] sendmail[PID]: accepting new messages \(again\)
 green [LOGDATE] sendmail[PID]: accepting connections again for daemon MTA
-green [LOGDATE] sendmail[PID]: [MSGID]: HOSTNAME] \[[IPADDR]\] did not issue MAIL/EXPN/VRFY/ETRN during connection to MTA
-
+green [LOGDATE] sendmail[PID]: [MSGID]: [HOSTNAME] \[[IPADDR]\] did not issue MAIL/EXPN/VRFY/ETRN during connection to MTA
 red [LOGDATE] sendmail[PID]: rejecting new messages: min free: [NUM]
+red [LOGDATE] sendmail[PID]: grew WorkList for /var/spool/mqueue to 8000

@@ -1,1 +1,3 @@
 green [LOGDATE] in.tftpd[PID]: nak: Operation not permitted
+green [LOGDATE] in.tftpd[PID]: sending NAK \([NUM], File not found\) to [IPADDR]
+green [LOGDATE] in.tftpd[PID]: RRQ from [IPADDR] filename .*
