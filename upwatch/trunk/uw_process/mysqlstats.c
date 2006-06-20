@@ -30,7 +30,7 @@ static gint mysqlstats_store_raw_result(trx *t)
   result = my_query(t->probe->db, 0,
                     "insert into pr_mysqlstats_raw "
                     "set    probe = '%u', yellow = '%f', red = '%f', stattime = '%u', color = '%u', "
-                    "       selectq = '%u', insertq = '%u', updateq = '%u', deleteq = '%u',` "
+                    "       selectq = '%u', insertq = '%u', updateq = '%u', deleteq = '%u', "
                     "       message = '%s' ",
                     def->probeid, def->yellow, def->red, res->stattime, res->color, 
                     res->selectq, res->insertq, res->updateq, res->deleteq,escmsg);
