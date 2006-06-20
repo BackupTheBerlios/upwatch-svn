@@ -210,10 +210,10 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60)); 
     xmlSetProp(mysqlstats, "expires", buffer);
   sprintf(buffer, "%d", color);               xmlSetProp(mysqlstats, "color", buffer);
-  sprintf(buffer, "%llu", probe->selectq);      subtree = xmlNewChild(mysqlstats, NULL, "select", buffer);
-  sprintf(buffer, "%llu", probe->insertq);      subtree = xmlNewChild(mysqlstats, NULL, "insert", buffer);
-  sprintf(buffer, "%llu", probe->updateq);      subtree = xmlNewChild(mysqlstats, NULL, "update", buffer);
-  sprintf(buffer, "%llu", probe->deleteq);      subtree = xmlNewChild(mysqlstats, NULL, "delete", buffer);
+  sprintf(buffer, "%llu", probe->selectq);      subtree = xmlNewChild(mysqlstats, NULL, "selectq", buffer);
+  sprintf(buffer, "%llu", probe->insertq);      subtree = xmlNewChild(mysqlstats, NULL, "insertq", buffer);
+  sprintf(buffer, "%llu", probe->updateq);      subtree = xmlNewChild(mysqlstats, NULL, "updateq", buffer);
+  sprintf(buffer, "%llu", probe->deleteq);      subtree = xmlNewChild(mysqlstats, NULL, "deleteq", buffer);
   if (probe->msg) {
     subtree = xmlNewTextChild(mysqlstats, NULL, "info", probe->msg);
     free(probe->msg);
