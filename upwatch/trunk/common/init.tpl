@@ -19,6 +19,9 @@ then
   . /etc/sysconfig/upwatch
 fi
 
+# Needed for glibc 2.4
+export LD_POINTER_GUARD=0
+
 # See how we were called.
 case "$1" in
   start)
@@ -73,6 +76,9 @@ exit 0
 # Default-Stop:        0 1 6
 # Description:         start [+prog-name+]
 ### END INIT INFO
+
+# Needed for glibc 2.4
+export LD_POINTER_GUARD=0
 
 DEAMON=[+(getenv "sbindir")+]/[+prog-name+]
 
