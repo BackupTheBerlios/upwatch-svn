@@ -7,6 +7,7 @@ PACKAGE=upwatch
 AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
+AM_PROG_AS
 
 AC_DEFINE_UNQUOTED([RELEASE], ["${RELEASE}"], [Package release string])
 
@@ -688,7 +689,7 @@ AC_CONFIG_FILES([scripts/Makefile])
 
 if test "$enable_server" = "yes" -o "$enable_monitors" = "yes"
 then
-AC_CONFIG_FILES([st-1.6/Makefile])
+AC_CONFIG_FILES([st-1.7/Makefile])
 AC_CONFIG_FILES([uw_httpget/Makefile])
 AC_CONFIG_FILES([uw_dns/Makefile])
 AC_CONFIG_FILES([uw_ping/Makefile])

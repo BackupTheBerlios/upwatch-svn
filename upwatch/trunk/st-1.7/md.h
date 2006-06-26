@@ -266,6 +266,10 @@
 #define MD_USE_BSD_ANON_MMAP
 #define MD_ACCEPT_NB_NOT_INHERITED
 #define MD_ALWAYS_UNSERIALIZED_ACCEPT
+/*
+ * Modern GNU/Linux is Posix.1g compliant.
+ */
+#define MD_HAVE_SOCKLEN_T
 
 /*
  * All architectures and flavors of linux have the gettimeofday
@@ -287,11 +291,10 @@
  * because their implementation implicitly assumes that only one
  * register stack exists.
  */
-#define MD_SETJMP(env) _ia64_cxt_save(env)
-#define MD_LONGJMP(env, val) _ia64_cxt_restore(env, val)
-
-extern int _ia64_cxt_save(jmp_buf env);
-extern void _ia64_cxt_restore(jmp_buf env, int val);
+#ifdef USE_LIBC_SETJMP
+#undef USE_LIBC_SETJMP
+#endif
+#define MD_USE_BUILTIN_SETJMP
 
 #define MD_STACK_PAD_SIZE 128
 /* Last register stack frame must be preserved */
@@ -309,38 +312,42 @@ extern void _ia64_cxt_restore(jmp_buf env, int val);
 #elif defined(__mips__)
 #define MD_STACK_GROWS_DOWN
 
-#define MD_SETJMP(env) setjmp(env)
-#define MD_LONGJMP(env, val) longjmp(env, val)
-
 #define MD_INIT_CONTEXT(_thread, _sp, _main)               \
   ST_BEGIN_MACRO                                           \
   MD_SETJMP((_thread)->context);                           \
   _thread->context[0].__jmpbuf[0].__pc = (__ptr_t) _main;  \
   _thread->context[0].__jmpbuf[0].__sp = _sp;              \
   ST_END_MACRO
-  
-#else /* Not IA-64 or mips everyone else just uses setjmp/longjmp */
+
+#else /* Not IA-64 or mips */
 
 /*
  * On linux, there are a few styles of jmpbuf format.  These vary based
  * on architecture/glibc combination.
- */
- 
-/*
- * However, all of these architectures will be using setjmp/longjmp.
- */
-#define MD_SETJMP(env) setjmp(env)
-#define MD_LONGJMP(env, val) longjmp(env, val)
- 
-/*
+ *
  * Most of the glibc based toggles were lifted from:
  * mozilla/nsprpub/pr/include/md/_linux.h
+ */
+
+/*
+ * Starting with glibc 2.4, JB_SP definitions are not public anymore.
+ * They, however, can still be found in glibc source tree in
+ * architecture-specific "jmpbuf-offsets.h" files.
+ * Most importantly, the content of jmp_buf is mangled by setjmp to make
+ * it completely opaque (the mangling can be disabled by setting the
+ * LD_POINTER_GUARD environment variable before application execution).
+ * Therefore we will use built-in _st_md_cxt_save/_st_md_cxt_restore
+ * functions as a setjmp/longjmp replacement wherever they are available
+ * unless USE_LIBC_SETJMP is defined.
  */
 
 #if defined(__powerpc__)
 #define MD_STACK_GROWS_DOWN
 
 #if (__GLIBC__ > 2) || (__GLIBC__ == 2 && __GLIBC_MINOR__ >= 1)
+#ifndef JB_GPR1
+#define JB_GPR1 0
+#endif
 #define MD_GET_SP(_t) (_t)->context[0].__jmpbuf[JB_GPR1]   
 #else
 /* not an error but certainly cause for caution */
@@ -352,6 +359,9 @@ extern void _ia64_cxt_restore(jmp_buf env, int val);
 #define MD_STACK_GROWS_DOWN
 
 #if defined(__GLIBC__) && __GLIBC__ >= 2
+#ifndef JB_SP
+#define JB_SP 8
+#endif
 #define MD_GET_SP(_t) (_t)->context[0].__jmpbuf[JB_SP]
 #else
 /* not an error but certainly cause for caution */
@@ -369,6 +379,9 @@ extern void _ia64_cxt_restore(jmp_buf env, int val);
 #define MD_STACK_GROWS_DOWN
 
 #if defined(__GLIBC__) && __GLIBC__ >= 2
+#ifndef JB_SP
+#define JB_SP 0
+#endif
 #define MD_GET_SP(_t) (_t)->context[0].__jmpbuf[JB_SP]
 #else
 /* not an error but certainly cause for caution */
@@ -378,10 +391,10 @@ extern void _ia64_cxt_restore(jmp_buf env, int val);
 
 #elif defined(__i386__)
 #define MD_STACK_GROWS_DOWN
+#define MD_USE_BUILTIN_SETJMP
 
 #if defined(__GLIBC__) && __GLIBC__ >= 2
 #ifndef JB_SP
-/* From sysdeps/i386/jmpbuf-offsets.h in glibc 2.4 */
 #define JB_SP 4
 #endif
 #define MD_GET_SP(_t) (_t)->context[0].__jmpbuf[JB_SP]
@@ -391,11 +404,12 @@ extern void _ia64_cxt_restore(jmp_buf env, int val);
 #define MD_GET_SP(_t) (_t)->context[0].__jmpbuf[0].__sp
 #endif
 
-#elif defined(__amd64__)
+#elif defined(__amd64__) || defined(__x86_64__)
 #define MD_STACK_GROWS_DOWN
+#define MD_USE_BUILTIN_SETJMP
+
 #ifndef JB_RSP
-/* From sysdeps/x86_64/jmpbuf-offsets.h in glibc 2.4 */
-#define JB_RSP  6
+#define JB_RSP 6
 #endif
 #define MD_GET_SP(_t) (_t)->context[0].__jmpbuf[JB_RSP]
 
@@ -436,6 +450,17 @@ extern void _ia64_cxt_restore(jmp_buf env, int val);
   ST_END_MACRO
 
 #endif /* Cases with different MD_INIT_CONTEXT */
+
+#if defined(MD_USE_BUILTIN_SETJMP) && !defined(USE_LIBC_SETJMP)
+#define MD_SETJMP(env) _st_md_cxt_save(env)
+#define MD_LONGJMP(env, val) _st_md_cxt_restore(env, val)
+
+extern int _st_md_cxt_save(jmp_buf env);
+extern void _st_md_cxt_restore(jmp_buf env, int val);
+#else
+#define MD_SETJMP(env) setjmp(env)
+#define MD_LONGJMP(env, val) longjmp(env, val)
+#endif
 
 #elif defined (NETBSD)
 

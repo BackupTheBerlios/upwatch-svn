@@ -1,5 +1,5 @@
 noinst_LIBRARIES = libst.a
-libst_a_SOURCES = sched.c stk.c sync.c key.c io.c st.h common.h  md.h public.h
+libst_a_SOURCES = sched.c stk.c sync.c key.c io.c st.h common.h  md.h md.S public.h
 if LINUX
 MYCFLAGS = -DUSE_POLL -DLINUX
 endif
@@ -26,5 +26,5 @@ sched.c: st.h
 
 st.h:
 	cp public.h st.h
-	sed "s/@VERSION@/1.4/g" < st.pc.in > st.pc
+	sed "s/@VERSION@/1.7/g" < st.pc.in > st.pc
 

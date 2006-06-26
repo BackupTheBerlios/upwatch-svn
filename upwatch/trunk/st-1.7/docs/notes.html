@@ -43,6 +43,16 @@ calls should be used instead of <TT>setjmp(3)/longjmp(3)</TT> (that is
 the calls that manipulate only the stack and registers and do <I>not</I>
 save and restore the process's signal mask).</LI>
 <P>
+Starting with glibc 2.4 on Linux the opacity of the <TT>jmp_buf</TT> data
+structure is enforced by <TT>setjmp(3)/longjmp(3)</TT> so the
+<TT>jmp_buf</TT> ingredients cannot be accessed directly anymore (unless
+special environmental variable LD_POINTER_GUARD is set before application
+execution). To avoid dependency on custom environment, the State Threads
+library provides <TT>setjmp/longjmp</TT> replacement functions for
+all Intel CPU architectures. Other CPU architectures can also be easily
+supported (the <TT>setjmp/longjmp</TT> source code is widely available for
+many CPU architectures).
+<P>
 <LI><I>High resolution time function</I>: Some platforms (IRIX, Solaris)
 provide a high resolution time function based on the free running hardware
 counter.  This function returns the time counted since some arbitrary
@@ -74,7 +84,9 @@ defined.</LI>
 </UL>
 <P>
 All machine-dependent feature test macros should be defined in the
-<TT>md.h</TT> header file.
+<TT>md.h</TT> header file. The assembly code for <TT>setjmp/longjmp</TT>
+replacement functions for all CPU architectures should be placed in
+the <TT>md.S</TT> file.
 <P>
 The current version of the library is ported to:
 <UL>

@@ -198,6 +198,13 @@ Make selected stack frame return now? (y or n) y
 
 CHANGE LOG
 
+Changes from 1.6 to 1.7.
+------------------------
+o  Support glibc 2.4, which breaks programs that manipulate jump buffers.
+   Replaced Linux IA64 special cases with new md.S that covers all
+   Linux.
+
+
 Changes from 1.5.2 to 1.6.
 --------------------------
 none
