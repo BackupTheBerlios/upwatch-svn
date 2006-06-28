@@ -1,4 +1,5 @@
 AutoGen Definitions options;
+
 export        = "#define progOptions uw_purpleOptions";
 prog-name     = uw_purple;
 prog-title    = "Upwatch purple daemon";
@@ -53,8 +54,7 @@ flag = {
     descrip   = "name of queue to drop results";
     doc       =
 'The argument is taken to be a maildir under the directory `spooldir`.
-All results are placed in this queue.
-This flag may be given multiple times.';
+All results are placed in this queue.';
 };
 
 #include license_gpl.def
