@@ -1,0 +1,60 @@
+AutoGen Definitions options;
+export        = "#define progOptions uw_templateOptions";
+prog-name     = uw_template;
+prog-title    = "Upwatch uw_templater";
+version       = `cat ../VERSION`;
+homerc        = `echo $sysconfdir/upwatch.conf`;
+homerc        = `echo $confdir/uw_template.conf`;
+homerc        = "$HOME/.upwatchrc";
+homerc        = "$HOME";
+homerc        = "$$/upwatch.conf";
+homerc        = "$$/uw_template.conf";
+detail        = 
+'uw_template (give an extensive description of what uw_template does here)';
+
+// this section is for the generated specfile
+spec-requires = "glib2";
+spec-files = `echo "%attr(0770,root,upwatch)" $sbindir/uw_template`;
+spec-files = `echo "%attr(0770,root,upwatch) %dir" $spooldir/uw_template`;
+spec-files = `echo "%attr(0770,root,upwatch) %dir" $spooldir/uw_template/tmp`;
+spec-files = `echo "%attr(0770,root,upwatch) %dir" $spooldir/uw_template/new`;
+
+flag = {
+    name      = spooldir;
+    value     = S;
+    arg_type  = string;
+    arg_default = '/var/spool/upwatch';
+    descrip   = "maildir-type spooldirectory for result files";
+    doc       =
+'Probes generates files with data. These are put in maildir style
+spooldirectories. This parameter denotes the basedirectory. 
+For some more info about maildir see http://www.qmail.org/man/man5/maildir.html.';
+};
+
+flag = {
+    name      = input;
+    value     = I;
+    stack_arg;
+    arg_type  = string;
+    descrip   = "name of queue to read from";
+    doc       =
+'The argument is taken to be a maildir under the directory `spooldir`.
+Everything placed in this queue is transferred. More then one queue may
+be given, and these will be matched with corresponding 
+host/port/uwuser/uwpasswd arguments, so the second queue given will be
+uploaded to the second host given etcetera. Special behaviour in case
+of overriding values: set hostname to `none` to delete an earlier
+defined input queue.';
+};
+
+flag = {
+    name      = threads;
+    value     = t;
+    stack_arg;
+    arg_type  = string;
+    descrip   = "number of threads per queue";
+    doc       =
+'Number of threads for each queue. Setting to one is probably best.';
+};
+
+#include generic_options.def

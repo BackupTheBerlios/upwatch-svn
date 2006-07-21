@@ -1,0 +1,19 @@
+bbd-tee.patch:
+
+Patch for bbd, so every incoming bb result will be mirrored
+ot another bbd-compatible host. Can be used while converting
+a bb setup to upwatch, to let results flow into both systems.
+NOTE: after patching, fill in the ip address of the mirror host!!
+
+
+libpcap-linux-timeout.patch:
+
+Adds timeout support to the linux libpcap library.
+Don't know if that's still needed for the newest versions.
+
+
+libstatgrab-openbsd.patch
+
+Old patch to add openbsd support to libpcap
+
+

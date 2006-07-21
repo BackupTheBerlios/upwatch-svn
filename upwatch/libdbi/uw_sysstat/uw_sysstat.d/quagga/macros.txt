@@ -1,0 +1,8 @@
+# macros for regex replacements
+# choose your macronames carefully. regular expressions should never
+# match a macroname!!
+# entries are matched in the order specified
+LOGDATE \d\d\d\d/\d\d/\d\d \d\d:\d\d:\d\d
+IPADDR (25[0-5]|2[0-4][\d]|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}
+PID 	\[\d+\]
+NUM     [-+]?\d+

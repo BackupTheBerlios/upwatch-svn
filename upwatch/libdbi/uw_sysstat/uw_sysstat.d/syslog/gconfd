@@ -1,0 +1,10 @@
+green [LOGDATE] gconfd \([USER]-[NUM]\): Exiting
+green [LOGDATE] gconfd \([USER]-[NUM]\): Gestopt
+green [LOGDATE] gconfd \([USER]-[NUM]\): \(versie [NUM].[NUM].[NUM]\) gestart, pid [USER] gebruiker '[USER]'
+green [LOGDATE] gconfd \([USER]-[NUM]\): GConf server is not in use, shutting down\.
+green [LOGDATE] gconfd \([USER]-[NUM]\): GConf server wordt niet gebruikt, bezig met afsluiten\.
+green [LOGDATE] gconfd \([USER]-[NUM]\): Resolved address "xml:readonly:[PATH]" to a read-only config source at position [NUM]
+green [LOGDATE] gconfd \([USER]-[NUM]\): adres gevonden "xml:readonly:[PATH]" naar een alleen-lezen configuratiebron op positie [NUM]
+green [LOGDATE] gconfd \([USER]-[NUM]\): Resolved address "xml:readwrite:[PATH]" to a writable config source at position [NUM]
+green [LOGDATE] gconfd \([USER]-[NUM]\): Adres gevonden "xml:readwrite:[PATH]" naar een schrijfbare configuratiebron op positie [NUM]
+

@@ -1,0 +1,22 @@
+docdir = $(datadir)/doc/$(PACKAGE)-$(VERSION)
+upwatchdir = $(datadir)/$(PACKAGE)
+confdir = $(sysconfdir)/$(PACKAGE).d
+dtddir = $(upwatchdir)/dtd
+initdir = $(upwatchdir)/init
+logdir = ${localstatedir}/log/upwatch
+spooldir = ${localstatedir}/spool/upwatch
+
+if ENABLE_SERVER
+SERVER_CFLAGS = -DENABLE_SERVER
+endif
+
+if ENABLE_MONITORS
+MONITORS_CFLAGS = -DENABLE_MONITOR
+endif
+
+if ENABLE_IPTRAF
+IPTRAF_CFLAGS =-DENABLE_IPTRAF
+endif
+
+AM_CFLAGS = $(SERVER_CFLAGS) $(MONITORS_CFLAGS) $(IPTRAF_CFLAGS)
+

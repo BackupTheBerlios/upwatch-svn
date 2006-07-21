@@ -1,0 +1,67 @@
+#! /bin/sh
+#
+# Upwatch        Upwatch generic script, starts all daemons
+#
+# Author: Ron Arts <raarts@upwatch.com>
+#
+# /etc/init.d/upwatch
+#
+### BEGIN INIT INFO
+# Provides:            upwatch
+# Required-Start:      $network
+# Required-Stop:
+# Default-Start:       2 3 5
+# Default-Stop:        0 1 6
+# Description:         start upwatch
+### END INIT INFO
+
+case "$1" in
+    start)
+        for i in /etc/init.d/uw_*
+        do
+                $i start
+        done
+	;;
+    stop)
+        for i in /etc/init.d/uw_*
+        do
+                $i stop
+        done
+	;;
+    try-restart)
+        for i in /etc/init.d/uw_*
+        do
+                $i try-restart
+        done
+	;;
+    restart)
+        for i in /etc/init.d/uw_*
+        do
+                $i restart
+        done
+	;;
+    force-reload)
+        for i in /etc/init.d/uw_*
+        do
+                $i force-reload
+        done
+	;;
+    reload)
+        for i in /etc/init.d/uw_*
+        do
+                $i reload
+        done
+	;;
+    status)
+	cd /etc/init.d
+        for i in uw_*
+        do
+                $i status
+        done
+	;;
+    *)
+	echo "Usage: $0 {start|stop|try-restart|restart|force-reload|reload|status}"
+	exit 1
+	;;
+esac
+

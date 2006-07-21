@@ -1,0 +1,5 @@
+green [LOGDATE] rsyncd[PID]: rsync to n[NUM]/[USER]/ from UNKNOWN \(localhost\) 
+green [LOGDATE] rsyncd[PID]: wrote [NUM] bytes  read [NUM] bytes  total size [NUM] 
+red [LOGDATE] rsyncd[PID]: rsync error: error in rsync protocol data stream \(code [NUM]\) at io\.c\([NUM]\) 
+red [LOGDATE] rsyncd[PID]: rsync: error writing [NUM] unbuffered bytes - exiting: Broken pipe 
+red [LOGDATE] rsyncd[PID]: rsync: forward name lookup for [HOSTNAME] failed: ai_family not supported 

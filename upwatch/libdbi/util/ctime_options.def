@@ -1,0 +1,15 @@
+AutoGen Definitions options;
+export        = "#define progOptions ctimeOptions";
+prog-name     = ctime;
+prog-title    = "commandline version of the ctime function call";
+version       = `cat ../VERSION`;
+detail        = 
+'ctime acts just like ctime(). Give it a the number of seconds
+since 1 jan 1970, and it prints out the time';
+
+argument      = "[string]";
+
+#include minimal_options.def
+#include dbase_options_ignored.def
+#include license_gpl.def
+

@@ -1,0 +1,2 @@
+green [LOGDATE] su: \(to [USER]\) [USER] on none
+green [LOGDATE] su: pam_unix2: session finished for user [USER], service su

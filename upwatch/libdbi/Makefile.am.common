@@ -1,0 +1,61 @@
+# included from Makefile.am in every program subdirectory
+
+include $(top_srcdir)/Makefile.am.libs
+
+SHELL = /bin/sh
+
+MAIN_O = main.o
+DB_O = db.o
+
+MAN1TPL = $(top_srcdir)/common/man1.tpl
+SPECTPL = $(top_srcdir)/common/spec.tpl
+PROBTPL = $(top_srcdir)/common/probe.tpl
+INITTPL = $(top_srcdir)/common/init.tpl
+CMDDEF  = $(top_srcdir)/common/generic_options.def $(top_srcdir)/common/dbase_options.def \
+ $(top_srcdir)/common/minimal_options.def
+PROBDEF = $(top_srcdir)/common/probe_generic.def
+if CYGWIN
+GENINCL = -L /usr/local/share/autogen -L $(top_srcdir)/common
+else
+GENINCL = -L /usr/share/autogen -L $(top_srcdir)/common
+endif
+
+if XMBMON
+ag_xmbmon = -DXMBMON
+endif
+
+SPECFILES = $(program:%=%.spec-requires) $(program:%=%.spec-buildrequires) $(program:%=%.spec-files)
+INITFILES = $(program:%=%.redhat) $(program:%=%.suse) $(program:%=%.solaris)
+PROBFILES  = probe.def_h probe.res_h probe.enum probe.def_mysql probe.raw_mysql probe.xml probe.dtd probe.dtd-inc
+AGDEFINES = -Dconfdir=$(confdir) -Dsysconfdir=$(sysconfdir) -Dsbindir=$(sbindir) \
+ -Dlogdir=$(logdir) -Dspooldir=$(spooldir) $(ag_xmbmon)
+
+%_main.o: $(top_srcdir)/common/main.c $(@:%_main.o=%.def) $(CMDDEF)
+	$(COMPILE) -include $(@:%_main.o=%.h) -o $@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ \
+		@MYSQL_CFLAGS@ @LIBOPTS_CFLAGS@ $(AM_CFLAGS) -c $(top_srcdir)/common/main.c
+
+%_db.o: $(top_srcdir)/common/db.c $(@:%_db.o=%.def) $(CMDDEF)
+	$(COMPILE) -include $(@:%_db.o=%.h) -o $@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ \
+		@MYSQL_CFLAGS@ @LIBOPTS_CFLAGS@ $(AM_CFLAGS) -c $(top_srcdir)/common/db.c
+
+%.c %.h: %.def
+	autogen -b $(<:%.def=%) $(AGDEFINES) $(GENINCL) $<
+	
+probe.def_h probe.res_h probe.enum probe.def_mysql probe.raw_mysql probe.dtd probe.dtd-inc probe.xml: probe.def $(PROBDEF)
+	autogen -b probe $(AGDEFINES) $(GENINCL) -T $(PROBTPL) probe.def
+
+%.1: %.def
+	autogen -b $(<:%.def=%) $(AGDEFINES) $(GENINCL) -T $(MAN1TPL) $<
+
+%.redhat %.suse %.solaris: %.def
+	autogen -b $(<:%.def=%) $(AGDEFINES) $(GENINCL) -T $(INITTPL) $<
+	chmod +x $(<:%.def=%).redhat
+	chmod +x $(<:%.def=%).suse
+	chmod +x $(<:%.def=%).solaris
+
+%.spec-requires %.spec-buildrequires %.spec-files: %.def
+	autogen -b $(<:%.def=%) $(AGDEFINES) $(GENINCL) -T $(SPECTPL) $<
+
+CLEANFILES = $(program:%=%.c) $(program:%=%.h) $(program:%=%.1) \
+  $(PROBFILES) $(SPECFILES) $(INITFILES)
+

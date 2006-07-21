@@ -1,0 +1,138 @@
+AutoGen Definitions options;
+export        = "#define progOptions uw_iptrafOptions";
+prog-name     = uw_iptraf;
+prog-title    = "Upwatch probe daemon";
+version       = `cat ../VERSION`;
+homerc        = `echo $sysconfdir/upwatch.conf`;
+homerc        = `echo $confdir/uw_iptraf.conf`;
+homerc        = "$HOME/.upwatchrc";
+homerc        = "$HOME";
+homerc        = "$$/upwatch.conf";
+homerc        = "$$/uw_iptraf.conf";
+detail        = 
+'uw_iptraf does the following: ';
+
+// this section is for the generated specfile
+spec-requires = "libpcap glib2 >= 2.0.4";
+spec-files = `echo "%attr(4770,root,upwatch)" $sbindir/uw_iptraf`;
+
+// describe commandline flags
+flag = {
+    name      = realm;
+    value     = R;
+    arg_type  = string;
+    descrip   = "upwatch realm where this probe belongs to";
+    doc       =
+'The upwatch backend can work with several realm. Each realm is maintained in
+a separate database, defines its own probes, and receives its own results.
+With this option you can specify the realm where the result for this probe
+will be stored';
+};
+
+// describe commandline flags
+flag = {
+    name      = domain;
+    value     = D;
+    arg_type  = string;
+    descrip   = "upwatch domain where this probe belongs to";
+    doc       =
+'The upwatch backend can work with several domains. Each domain is maintained in
+a separate database, defines its own probes, and receives its own results.
+With this option you can specify the domain where the result for this probe
+will be stored';
+};
+
+flag = {
+    name      = compress;
+    value     = C;
+    arg_type  = number;
+    arg-default = 9;
+    arg-range = '0->9';
+    descrip   = "XML compression factor";
+    doc       =
+'The generated resultfile, will normally be compressed to save datatraffic costs.
+The compression can be set between 0 no (compression) and 9 (highest compression).
+Decompression is automatic';
+};
+
+flag = {
+    name      = interval;
+    arg_default  = 180;  /* option argument indication  */
+    arg_type  = number;   /* option argument indication  */
+    descrip   = "Time between writing results in seconds";
+    doc       =
+'Results are written to disk at regular intervals. This argument
+set the interval in seconds.';
+};
+
+// describe commandline flags
+flag = {
+    name      = expires;
+    arg_default  = 15;  /* option argument indication  */
+    arg_type  = number;   /* option argument indication  */
+    descrip   = "Probe results expire time in minutes";
+    doc       =
+'When no results have been received from a probe after this many
+minutes, its color will turn to blue.';
+};
+
+flag = {
+    name      = spooldir;
+    value     = S;
+    arg_type  = string;
+    descrip   = "maildir-type spooldirectory for result files";
+    doc       =
+'This probe generates files with data. These are put in maildir style
+spooldirectories. This parameter denotes the basedirectory.
+For some more info about maildir see http://www.qmail.org/man/man5/maildir.html.';
+};
+
+flag = {
+    name      = output;
+    value     = O;
+    stack_arg;
+    arg_type  = string;
+    descrip   = "name of queue to drop results";
+    doc       =
+'The argument is taken to be a maildir under the directory `spooldir`.
+All results are placed in this queue.
+This flag may be given multiple times.';
+};
+
+flag = {
+    name      = interface;
+    value     = i;
+    stack_arg;
+    arg_type  = string;
+    descrip   = "name of interface to capture traffic";
+    doc       =
+'This specifies the name of the interface iptraf should bind to,
+and capture packets from';
+};
+
+flag = {
+    name      = network;
+    value     = n;
+    arg_type  = string;
+    stack_arg;
+    descrip   = "internal network in CIDR format";
+    doc       =
+'iptraf needs to know which network are internal and which are external,
+specificy those with one or more -n options. Note only CIDR format is supported
+(192.168.170.0/24)';
+};
+
+flag = {
+    name      = extignore;
+    value     = n;
+    arg_type  = string;
+    stack_arg;
+    descrip   = "external network (in CIDR format) to ignore";
+    doc       =
+"Don't count packets to of from the internal network if they come
+from or to the specified network. Note only CIDR format is supported
+(192.168.170.0/24)";
+};
+
+#include license_gpl.def
+#include generic_options.def

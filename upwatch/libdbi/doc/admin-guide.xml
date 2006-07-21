@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+                      "/usr/share/sgml/docbook/xml-dtd-4.2-1.0-17/docbookx.dtd" [
+<!ENTITY about SYSTEM "about.xml">
+<!ENTITY installation SYSTEM "installation.xml">
+<!ENTITY configuration SYSTEM "configuration.xml">
+<!ENTITY administration SYSTEM "administration.xml">
+]>
+
+<book id="upwatch" lang="en" status="draft">
+    <bookinfo>
+        <title>Upwatch Administration Guide</title>
+        <author>
+            <firstname>Ron</firstname>
+            <surname>Arts</surname>
+        </author>
+        <copyright>
+            <year>2002-2005</year>
+            <holder>NeoNova BV, The Netherlands</holder>
+        </copyright>
+    </bookinfo>
+    <preface>
+        <title>Preface</title>
+        <para> People, especially managers, like to have facts and figures when taking decisions,
+            either because a lot of money may be involved, or their job (or both). If you want to
+            prove your website (or switch, or basically any other device) was available, showed the
+            proper performance, or just want to know current and past CPU load, you've come to the
+            right place.</para>
+
+    </preface>
+    &about;
+    &installation;
+    &configuration;
+    &administration;
+    <index>
+    </index>
+</book>

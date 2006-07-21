@@ -1,0 +1,48 @@
+flag = {
+    name      = syslog;
+    value     = s;
+    arg_type  = bool;
+    descrip   = "Use syslog for runtime messages";
+    doc       =
+'If this options is enabled (which it default is), the program writes 
+messages to the system log using syslogd using facility LOG_DAEMON';
+};
+
+flag = {
+    name      = stderr;
+    settable;
+    value     = e;
+    arg_type  = bool;
+    descrip   = "Write non-debug messages to stderr";
+    doc       =
+'If this options is enabled (which it default is), the program writes 
+non-debug messages to standard error';
+};
+
+flag = {
+    name      = debug;
+    value     = d;
+    arg_type  = number;
+    arg-default = 0;
+    arg-range = '0->9';
+    descrip   = "Debug mode";
+    doc       =
+'Debug values are between 0 and 9. The higher the value, the more debugging output.
+Generally values below 3 are useful for debugging the setup, higher values tend to be useful
+only for debugging the software itself. Values 3 and higher cause the program to run in 
+the foreground, and pause only 1 second between probe runs';
+};
+
+flag = {
+    name      = logfile;
+    value     = l;
+    arg_type  = string;
+    arg-default = "/var/log/upwatch/upwatch.log";
+    descrip   = "Log messages to this file";
+    doc       =
+'Specify the outputfile where all log messages should be written
+please note the directory and file should be writable for the current user. 
+The logfile is written in the same format as the system log uses, i.e. date/time, 
+hostname, program name + process id, message.';
+};
+

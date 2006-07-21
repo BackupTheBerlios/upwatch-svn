@@ -1,0 +1,91 @@
+AutoGen Definitions pop3;
+#include probe_generic.def
+#include license_gpl.def
+
+probe = {
+  name = "pop3";
+  id = 8;
+  descrip = "Test a POP3 server, optionally with user/password";
+  addbyhand = "yes";
+  class = "";
+  graphgroup = "ct";
+  graphtypes = "default";
+  comment = "";
+  yellow = "3";
+  red = "5";
+  message = "Optional error message";
+
+  attribute = {
+    name = "id";
+    required = true;
+    descrip = "id of this probe in the database";
+  };
+
+  attribute = {
+    name = "realm";
+    required = true;
+    descrip = "database realm for these values";
+  };
+
+  attribute = {
+    name = "ipaddress";
+    default = "127.0.0.1";
+    descrip = "target ip address";
+  };
+
+  attribute = {
+    name = "date";
+    required = true;
+    descrip = "date/time for this result";
+  };
+
+  attribute = {
+    name = "expires";
+    required = true;
+    descrip = "when this result expires";
+  };
+
+  attribute = {
+    name = "color";
+    required = true;
+    descrip = "color as this probe thinks it should be";
+  };
+
+  attribute = {
+    name = "received";
+    default = "0";
+    descrip = "date/time this result was received by the upwatch server";
+  };
+
+  def = {
+    name = "username";
+    type = "varchar";
+    length = 64;
+    null = false;
+    default = "";
+    descrip = "Username";
+  };
+  def = {
+    name = "password";
+    type = "char";
+    length = 16;
+    null = false;
+    default = "";
+    descrip = "Password";
+  };
+
+  result = {
+    name = "connect";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "time for connection to complete";
+  };
+  result = {
+    name = "total";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "total time needed";
+  };
+};

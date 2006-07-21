@@ -1,0 +1,12 @@
+flag = {
+    name      = verbose;
+    value     = v;
+    arg_type  = number;
+    arg-default = 0;
+    arg-range = '0->9';
+    descrip   = "Verbose mode";
+    doc       =
+'Verbose values are between 0 and 9. The higher the value, the more output.';
+};
+
+

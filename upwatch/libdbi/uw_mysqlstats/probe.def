@@ -1,0 +1,112 @@
+AutoGen Definitions mysql;
+#include probe_generic.def
+
+probe = {
+  name = "mysqlstats";
+  id = 18;
+  descrip = "Show statistics for a MySQL server";
+  addbyhand = "yes";
+  class = "";
+  graphgroup = "ct";
+  graphtypes = "default";
+  comment = "";
+  yellow = "0.3";
+  red = "0.5";
+  message = "Optional error message";
+
+  attribute = {
+    name = "id";
+    required = true;
+    descrip = "id of this probe in the database";
+  };
+
+  attribute = {
+    name = "realm";
+    required = true;
+    descrip = "database realm for these values";
+  };
+
+  attribute = {
+    name = "ipaddress";
+    default = "127.0.0.1";
+    descrip = "target ip address";
+  };
+
+  attribute = {
+    name = "date";
+    required = true;
+    descrip = "date/time for this result";
+  };
+
+  attribute = {
+    name = "expires";
+    required = true;
+    descrip = "when this result expires";
+  };
+
+  attribute = {
+    name = "color";
+    required = true;
+    descrip = "color as this probe thinks it should be";
+  };
+
+  attribute = {
+    name = "received";
+    default = "0";
+    descrip = "date/time this result was received by the upwatch server";
+  };
+
+  def = {
+    name = "dbname";
+    type = "char";
+    length = 24;
+    null = false;
+    default = "";
+    descrip = "Name of the database for the query";
+  };
+  def = {
+    name = "dbuser";
+    type = "char";
+    length = 16;
+    null = false;
+    default = "";
+    descrip = "Database user";
+  };
+  def = {
+    name = "dbpasswd";
+    type = "char";
+    length = 16;
+    null = false;
+    default = "";
+    descrip = "Database password";
+  };
+
+  result = {
+    name = "selectq";
+    type = "bigint";
+    null = false;
+    default = "0";
+    descrip = "Number of SELECT queries";
+  };
+  result = {
+    name = "insertq";
+    type = "bigint";
+    null = false;
+    default = "0";
+    descrip = "Number of INSERT queries";
+  };
+  result = {
+    name = "updateq";
+    type = "bigint";
+    null = false;
+    default = "0";
+    descrip = "Number of UPDATE queries";
+  };
+  result = {
+    name = "deleteq";
+    type = "bigint";
+    null = false;
+    default = "0";
+    descrip = "Number of DELETE queries";
+  };
+};

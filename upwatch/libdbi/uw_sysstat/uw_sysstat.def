@@ -1,0 +1,244 @@
+AutoGen Definitions options;
+export        = "#define progOptions uw_sysstatOptions";
+prog-name     = uw_sysstat;
+prog-title    = "Upwatch probe daemon";
+version       = `cat ../VERSION`;
+homerc        = `echo $sysconfdir/upwatch.conf`;
+homerc        = `echo $confdir/uw_sysstat.conf`;
+homerc        = "$HOME/.upwatchrc";
+homerc        = "$HOME/.uw_sysstatrc";
+homerc        = "$$/upwatch.conf";
+homerc        = "$$/uw_sysstat.conf";
+detail        = 
+'uw_sysstat does the following: ';
+
+// this section is for the generated specfile
+spec-requires = "glib2";
+spec-files = `echo "%attr(4770,root,upwatch)" $sbindir/uw_sysstat`;
+#ifdef XMBMON
+spec-files = `echo "%attr(4755,root,root)" /usr/local/bin/mbmon`;
+#endif
+spec-files = `echo "%dir" $confdir/uw_sysstat.d`;
+
+// repeat these two lines for every logfile format
+spec-files = `echo "%dir" $confdir/uw_sysstat.d/syslog`;
+spec-files = `for i in \`find uw_sysstat.d/syslog -type f | grep -v .svn\` ; do echo $confdir/$i; done`;
+spec-files = `echo "%dir" $confdir/uw_sysstat.d/maillog`;
+spec-files = `for i in \`find uw_sysstat.d/maillog -type f | grep -v .svn\` ; do echo $confdir/$i; done`;
+spec-files = `echo "%dir" $confdir/uw_sysstat.d/mysql`;
+spec-files = `for i in \`find uw_sysstat.d/mysql -type f | grep -v .svn\` ; do echo $confdir/$i; done`;
+spec-files = `echo "%dir" $confdir/uw_sysstat.d/upwatch`;
+spec-files = `for i in \`find uw_sysstat.d/upwatch -type f | grep -v .svn\` ; do echo $confdir/$i; done`;
+spec-files = `echo "%dir" $confdir/uw_sysstat.d/quagga`;
+spec-files = `for i in \`find uw_sysstat.d/quagga -type f | grep -v .svn\` ; do echo $confdir/$i; done`;
+
+// describe commandline flags
+flag = {
+    name      = domain;
+    value     = D;
+    arg_type  = string;
+    descrip   = "upwatch domain where this probe belongs to";
+    doc       =
+'The upwatch backend can work with several domains. Each domain is maintained in
+a separate database, defines its own probes, and receives its own results. 
+With this option you can specify the domain where the result for this probe
+will be stored';
+};
+
+// describe commandline flags
+flag = {
+    name      = realm;
+    value     = R;
+    arg_type  = string;
+    descrip   = "upwatch realm where this probe belongs to";
+    doc       =
+'The upwatch backend can work with several realm. Each realm is maintained in
+a separate database, defines its own probes, and receives its own results. 
+With this option you can specify the realm where the result for this probe
+will be stored';
+};
+
+flag = {
+    name      = tyan-tiger-mp;
+    value     = Y;
+    arg_type  = bool;
+    descrip   = "Set this to on if this is a Tyan Tiger MP/MPX motherboard";
+    doc       =
+'These motherboards are Dual Athlon, and temperatures will be off if you don\'t
+specify this flag.';
+};
+
+flag = {
+    name      = compress;
+    value     = C;
+    arg_type  = number;
+    arg-default = 9;
+    arg-range = '0->9';
+    descrip   = "XML compression factor";
+    doc       =
+'The generated resultfile, will normally be compressed to save datatraffic costs.
+The compression can be set between 0 no (compression) and 9 (highest compression).
+Decompression is automatic';
+};
+
+flag = {
+    name      = interval;
+    arg_default  = 60;  /* option argument indication  */
+    arg_type  = number;   /* option argument indication  */
+    descrip   = "Time in seconds between writing results";
+    doc       =
+'Results are written to disk at regular intervals. This argument
+sets the interval in seconds.';
+};
+
+flag = {
+    name      = expires;
+    arg_default  = 8;  /* option argument indication  */
+    arg_type  = number;   /* option argument indication  */
+    descrip   = "Probe results expire time in minutes";
+    doc       =
+'When no results have been received from a probe after this many
+minutes, its color will turn to blue.';
+};
+
+flag = {
+    name      = loadavg-red;
+    arg_default  = "5.0";  /* option argument indication  */
+    arg_type  = string;   /* option argument indication  */
+    descrip   = "Load average value for a red condition";
+    doc       =
+'When the loadaverage reaches the given value, the probe color will turn red';
+};
+
+flag = {
+    name      = loadavg-yellow;
+    arg_default  = "3.0";  /* option argument indication  */
+    arg_type  = string;   /* option argument indication  */
+    descrip   = "Load average value for a yellow condition";
+    doc       =
+'When the loadaverage reaches the given value, the probe color will turn yellow';
+};
+
+flag = {
+    name      = hwstats;
+    value     = h;
+    arg_type  = bool;
+    descrip   = "Generate hardware statistics";
+    doc       =
+'This program includes part of the xmbmon toolkit, to collect information
+on CPU temp, fan speed etc. But talking to hardware has a remote possibility
+of crashing your machine. This option defaults to off, first try the supplied
+`mbmon` program to see if your hardware is supported';
+};
+
+flag = {
+    name      = diskfree-red;
+    arg_default  = 95;
+    arg_type  = number;
+    arg-range = "1->100";
+    descrip   = "Turn red when more than this percentage used";
+    doc       =
+'When any disk is more full then this percentage, the probe color will turn red';
+};
+
+flag = {
+    name      = diskfree-yellow;
+    arg_default  = 90;
+    arg-range = "1->100";
+    arg_type  = number;
+    descrip   = "Turn yellow when more than this percentage used";
+    doc       =
+'When any disk is more full then this percentage, the probe color will turn yellow';
+};
+
+flag = {
+    must-set; 
+    name      = errlog;
+    arg_type  = string;   /* option argument indication  */
+    stack_arg;
+    descrip   = "The format and the full path to a file to check";
+};
+
+flag = {
+    name      = ipaddress;
+    arg_type  = string;   /* option argument indication  */
+    arg_default = "127.0.0.1";
+    descrip   = "Use this ipaddress in the XML result";
+};
+
+flag = {
+    must-set; 
+    name      = serverid;
+    value     = i;        /* flag style option character */
+    arg_type  = number;   /* option argument indication  */
+    descrip   = "Numeric id of this server in the upwatch database";
+};
+
+flag = {
+    name      = systemp_command;
+    arg_type  = string;   /* option argument indication  */
+    descrip   = "command that produces the system temperature";
+    doc       =
+'This command is used to determine the temperature in the box.
+The command should print the termperature in Celsius to standard output';
+};
+
+flag = {
+    name      = df_command;
+    arg_type  = string;   /* option argument indication  */
+    arg_default = "df -k";
+    descrip   = "command for running `df`";
+    doc       =
+'This command is used to run a `df` report';
+};
+
+flag = {
+    name      = top_command;
+    arg_type  = string;   /* option argument indication  */
+    arg_default = "top -b -n 1 | head -30";
+    descrip   = "command for running `top`";
+    doc       =
+'This command is used to run a `top` in batch mode';
+};
+
+// describe commandline flags
+flag = {
+    name      = spooldir;
+    value     = S;
+    arg_type  = string;
+    descrip   = "maildir-type spooldirectory for result files";
+    doc       =
+'This probe generates files with data. These are put in maildir style
+spooldirectories. This parameter denotes the basedirectory.
+For some more info about maildir see http://www.qmail.org/man/man5/maildir.html.';
+};
+
+flag = {      
+    name      = output;
+    value     = O;
+    stack_arg;
+    arg_type  = string;
+    descrip   = "name of queue to drop results";
+    doc       =
+'The argument is taken to be a maildir under the directory `spooldir`.
+All results are placed in this queue.
+This flag may be given multiple times.';
+};
+
+flag = {      
+    name      = hpqueue;
+    value     = H;
+    arg_type  = string;
+    descrip   = "name of high-priority queue to drop status changes";
+    doc       =
+'The argument is taken to be a maildir under the directory `spooldir`.
+When a probe changes status (color) results should be sent out immediately.
+This denotes the name of the queue to drop results in.
+Mainly used in dialup situations.';
+};
+
+
+#include license_gpl.def
+#include generic_options.def
+#include dbase_options_ign.def
+

@@ -1,0 +1,5 @@
+green [LOGDATE] shutdown: shutting down for system (halt|reboot)
+green [LOGDATE] exiting on signal 15
+
+green [LOGDATE] wall[PID]: wall: user [USER] broadcasted [NUM] lines \([NUM] chars\)
+

@@ -1,0 +1,2 @@
+green [LOGDATE] useradd[PID]: new group: name=[USER], gid=[NUM] 
+green [LOGDATE] useradd[PID]: new user: name=[USER], uid=[NUM], gid=[NUM], home=[PATH], shell=[PATH] 

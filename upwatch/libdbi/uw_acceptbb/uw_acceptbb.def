@@ -1,0 +1,80 @@
+AutoGen Definitions options;
+export        = "#define progOptions uw_acceptbbOptions";
+prog-name     = uw_acceptbb;
+prog-title    = "Upwatch daemon for accepting reports from Big Brother clients";
+version       = `cat ../VERSION`;
+homerc        = `echo $sysconfdir/upwatch.conf`;
+homerc        = `echo $confdir/uw_acceptbb.conf`;
+homerc        = "$HOME/.upwatchrc";
+homerc        = "$HOME";
+homerc        = "$$/upwatch.conf";
+homerc        = "$$/uw_acceptbb.conf";
+detail        = 
+'uw_acceptbb listen on port 1984 for incoming reports from clients of the infamous 
+Big Brother package (www.bb4.com)';
+
+// this section is for the generated specfile 
+spec-requires = "/usr/bin/mysql glib2";
+spec-files = `echo "%attr(0770,root,upwatch)" $sbindir/uw_acceptbb`;
+
+// describe commandline flags
+flag = {
+    name      = compress;
+    value     = C;
+    arg_type  = number;
+    arg-default = 9;
+    arg-range = '0->9';
+    descrip   = "XML compression factor";
+    doc       =
+'The generated resultfile, will normally be compressed to save datatraffic costs.
+The compression can be set between 0 no (compression) and 9 (highest compression).
+Decompression is automatic';
+};
+
+flag = {
+    must-set;
+    name      = listen;
+    value     = l;        /* flag style option character */
+    arg_default  = 1984;  /* option argument indication  */
+    arg_type  = number;   /* option argument indication  */
+    max       = NOLIMIT;  /* occurrence limit (none)     */
+    descrip   = "port to listen to";
+};
+
+// describe commandline flags
+flag = {
+    name      = expires;
+    arg_default  = 200;  /* option argument indication  */
+    arg_type  = number;   /* option argument indication  */
+    descrip   = "Probe results expire time in minutes";
+    doc       =
+'When no results have been received from a probe after this many
+minutes, its color will turn to blue.';
+};
+
+flag = {
+    name      = output;
+    value     = O;
+    stack_arg;
+    arg_type  = string;
+    descrip   = "name of queue to drop results";
+    doc       =
+'The argument is taken to be a maildir under the directory `spooldir`.
+All results are placed in this queue. This usually will be the uw_process queue.
+This flag may be given multiple times.';
+};
+
+flag = {
+    name      = spooldir;
+    value     = S;
+    arg_type  = string;
+    descrip   = "maildir-type spooldirectory for result files";
+    doc       =
+'This probe generates files with data. These are put in maildir style
+spooldirectories. This parameter denotes the basedirectory.
+For some more info about maildir see http://www.qmail.org/man/man5/maildir.html.';
+};
+
+#include license_gpl.def
+#include generic_options.def
+

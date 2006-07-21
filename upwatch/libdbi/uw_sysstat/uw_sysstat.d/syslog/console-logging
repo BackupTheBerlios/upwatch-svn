@@ -1,0 +1,3 @@
+green [LOGDATE] console-logging: Show ISDN line status information on tty[NUM] \(Alt-F[NUM]\)
+green [LOGDATE] console-logging: Show kernel messages on tty[NUM] \(Alt-F[NUM]\)
+green [LOGDATE] console-logging: Shutting down <console-logging>: 

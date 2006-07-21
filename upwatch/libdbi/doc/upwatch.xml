@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+                      "/usr/share/sgml/docbook/xml-dtd-4.2-1.0-17/docbookx.dtd" [
+<!ENTITY client-about SYSTEM "client-about.xml">
+<!ENTITY client-install SYSTEM "client-install.xml">
+<!ENTITY client-configuration SYSTEM "client-configuration.xml">
+<!ENTITY utilities SYSTEM "utilities.xml">
+]>
+
+<book id="upwatch" lang="en" status="draft">
+    <bookinfo>
+        <title>Upwatch User Guide</title>
+        <author>
+            <firstname>Ron</firstname>
+            <surname>Arts</surname>
+        </author>
+        <copyright>
+            <year>2002-2005</year>
+            <holder>NeoNova BV, The Netherlands</holder>
+        </copyright>
+    </bookinfo>
+    <preface>
+        <title>Preface</title>
+        <para>This book describes the client side installation and configuration
+        of UpWatch.</para>
+    </preface>
+    &client-about;
+    &client-install;
+    &client-configuration;
+    &utilities;
+    <index>
+    </index>
+</book>

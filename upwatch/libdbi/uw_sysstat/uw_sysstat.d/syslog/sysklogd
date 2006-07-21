@@ -1,0 +1,5 @@
+green [LOGDATE] last message repeated [NUM] times
+green [LOGDATE] syslogd [NUM]\.[NUM]-[NUM]: restart\.
+green [LOGDATE] syslogd [NUM]\.[NUM]\.[NUM]: restart\.
+green [LOGDATE] syslog: syslogd shutdown failed 
+green [LOGDATE] syslog: syslogd startup failed

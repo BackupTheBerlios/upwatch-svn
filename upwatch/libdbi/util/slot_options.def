@@ -1,0 +1,16 @@
+AutoGen Definitions options;
+export        = "#define progOptions slotOptions";
+prog-name     = slot;
+prog-title    = "prints out slotnumbers for given time values";
+version       = `cat ../VERSION`;
+detail        = 
+'Upwatch keeps statistics by day, by week, by month, year and 5 year
+periods. Each period is divided in 100 `slots`. This utility prints
+slotnumbers, given a ctime argument';
+
+argument      = "[string]";
+
+#include minimal_options.def
+#include dbase_options_ignored.def
+#include license_gpl.def
+

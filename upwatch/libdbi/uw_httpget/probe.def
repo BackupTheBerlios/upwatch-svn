@@ -1,0 +1,113 @@
+AutoGen Definitions mysql;
+#include probe_generic.def
+#include license_gpl.def
+
+probe = {
+  name = "httpget";
+  id = 3;
+  descrip = "Do a HTTP GET request";
+  addbyhand = "yes";
+  class = "";
+  graphgroup = "ncft";
+  graphtypes = "default";
+  comment = "";
+  yellow = "1";
+  red = "3";
+  message = "Optional error message";
+
+  attribute = {
+    name = "id";
+    required = true;
+    descrip = "id of this probe in the database";
+  };
+
+  attribute = {
+    name = "realm";
+    required = true;
+    descrip = "database realm for these values";
+  };
+
+  attribute = {
+    name = "ipaddress";
+    default = "127.0.0.1";
+    descrip = "target ip address";
+  };
+
+  attribute = {
+    name = "date";
+    required = true;
+    descrip = "date/time for this result";
+  };
+
+  attribute = {
+    name = "expires";
+    required = true;
+    descrip = "when this result expires";
+  };
+
+  attribute = {
+    name = "color";
+    required = true;
+    descrip = "color as this probe thinks it should be";
+  };
+
+  attribute = {
+    name = "received";
+    default = "0";
+    descrip = "date/time this result was received by the upwatch server";
+  };
+
+  def = {
+    name = "hostname";
+    type = "varchar";
+    length = 80;
+    null = false;
+    default = "";
+    descrip = "Hostname for the HTTP request";
+  };
+  def = {
+    name = "port";
+    type = "int";
+    unsigned = true;
+    null = false;
+    default = "80";
+    descrip = "Port for the HTTP request";
+  };
+  def = {
+    name = "uri";
+    type = "varchar";
+    length = 255;
+    null = false;
+    default = "";
+    descrip = "URI part";
+  };
+
+  result = {
+    name = "lookup";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "time needed for DNS lookup";
+  };
+  result = {
+    name = "connect";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "time for connection to complete";
+  };
+  result = {
+    name = "pretransfer";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "time for any pre-transfer actions";
+  };
+  result = {
+    name = "total";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "total time needed";
+  };
+};

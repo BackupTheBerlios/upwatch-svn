@@ -1,0 +1,3 @@
+green [LOGDATE] pwrctl: calling [PATH] (lid-closed|lid-opened|maximum|minimum|sleep|wakeup|warning) (ac|battery)
+green [LOGDATE] pwrctl-local: (lid-closed|lid-opened|maximum|minimum|sleep|wakeup|warning) (ac|battery)
+green [LOGDATE] pwrctl-local: skipping pwrctl-main

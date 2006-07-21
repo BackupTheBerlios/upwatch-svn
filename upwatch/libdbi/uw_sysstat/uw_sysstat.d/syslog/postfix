@@ -1,0 +1,4 @@
+green [LOGDATE] postfix:\s*$
+green [LOGDATE] postfix:  failed
+green [LOGDATE] postfix: \^\[\[[NUM]G
+green [LOGDATE] postfix: Shutting down postfix: 

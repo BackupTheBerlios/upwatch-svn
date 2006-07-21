@@ -1,0 +1,6 @@
+green [LOGDATE] deliver[PID]: connect\([PATH]\) failed: Connection refused
+green [LOGDATE] vhost[PID]: chroot to [PATH] and exec [PATH]
+green [LOGDATE] vhost[PID]: connection from [HEX]
+green [LOGDATE] vhost[PID]: connection from [HOSTNAME]
+green [LOGDATE] vhost[PID]: connection from \(nil\)
+green [LOGDATE] vhost[PID]: [WORD] attempt to .* rejected

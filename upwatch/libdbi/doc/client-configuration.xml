@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<chapter id="Configuration">
+    <title>Configuration</title>
+    <sect1 id="Configuration_Files">
+       <title>Configuration Files</title>
+       <para>First: it is extremely important your host clock is set correctly,
+       and please use NTP to keep it up-to-date. If you don't, you will see very strange
+       things happening, and what's more, if this gets into the database, it will
+       be impossible to correct (apart from deleting all results alltogether).</para>
+       <para>The directory structure for configuration files is as follows. At
+       the toplevel is <filename>upwatch.conf</filename> (usually residing in /etc). This
+       file is read by all programs, and contains global parameters, and parameters
+       you want to make globally known. At the same level is the directory 
+       <filename>upwatch.d</filename>. This contains config files for every program.
+       The <filename>upwatch.conf</filename> file looks like this:</para>
+       <literallayout>
+       # Upwatch configuration file
+       # contains defaults for all modules 
+       # these can be overridden in /etc/upwatch.d/&lt;module&gt;.conf
+       #
+
+       realm neonova
+       debug 2
+       syslog no
+       stderr no
+
+       logfile /var/log/upwatch/messages
+
+       spooldir /var/spool/upwatch
+       </literallayout>
+       <para>All values in this file can be overridden or augmented in program-specific
+       files. <command>realm</command> denotes the short name for the database this system
+       belongs to, This usually corresponds to your company name. 
+       <command>debug</command> speaks for itself. Never set it higher than two. Zero
+       suppresses all debugging except the most critical ones, 'debug 1' will output
+       only warnings, 'debug 2' will send progress information to the log.
+       <command>syslog yes</command> will enable logging to the system log, 
+       <command>stderr</command> is really not very useful because the commandline 
+       parameter <command>-e1</command> accomplishes the same for every program.
+       The <command>logfile</command> value denotes where logging will takes place. 
+       This file should be writable by the user <command>upwatch</command>. The same
+       holds for the <command>spooldir</command> base directory. It should contain 
+       subdirectories of the maildir format (meaning: each having a <filename>new</filename>
+       and <filename>tmp</filename> subdirectory).</para>
+       <para>On the average client two processes will be running continuously: 
+       <command>uw_sysstat</command> and <command>uw_send</command>. The first program
+       collects info on your system, and writes an XML file, the second sends it to
+       the central database. <filename>upwatch.d</filename> will contain the files
+       <filename>uw_sysstat.conf</filename> and <filename>uw_send.conf</filename>. Lets first
+       look at uw_send. It looks like this:</para>
+       <literallayout>
+       # where to send to
+       host cms-db.office.netland.nl
+       port 1985
+       uwuser 20010631
+       uwpasswd SaSNF8bu
+       debug 2
+       threads 1
+       # where to read from
+       input uw_send
+       </literallayout>
+       <para><command>Host</command> and <command>port</command> refer to the central
+       database location. You need <command>uwuser</command> and <command>uwpasswd</command>
+       to log into that. The <command>debug</command> setting determines the amount of
+       logging that the program does, <command>threads</command> how many files to send
+       at the same time, and finally, the <command>input</command> tells <command>uw_send</command>
+       where to find its XML files to send out. Pretty straightforward.</para>
+       <para>The <filename>uw_sysstat.conf</filename> file is comparable:</para>
+       <literallayout>
+       serverid 381
+       output uw_send
+       hwstats on
+       errlog syslog /var/log/messages
+       errlog maillog /var/log/maillog
+       </literallayout>
+       <para>The <command>serverid</command> is the numerical id of this server in that particular 
+       database. Without <command>output</command> it would not know where to store
+       the XML result file. <command>hwstats</command> determines (where supported) if 
+       <command>uw_sysstat</command> will try to talk to the motherboard to get
+       hardware values like temperature and fanspeed (run <command>mbmon</command> first
+       to test if this is supported) and the <command>errlog</command> parameters tell 
+       <command>uw_sysstat</command> which files to monitor and their format.</para>
+    </sect1>
+    <sect1 id="troubleshooting">
+       <title>Trouble shooting</title>
+       <sect2 id="uw_send_crash">
+       <title>uw_send crashes immediately when it is started</title>
+       <para>Most probably you have an libxml2 with compiled-in thread support on your system. 
+       libxml2 should not be compiled with thread support, so you'll have to replace it. You 
+       can check this with:</para>
+       <literallayout>
+       # ldd /usr/lib/libxml2.so
+       </literallayout>
+       <para>The output should not contain any threading libraries.</para>
+       </sect2>
+       <sect2 id="Hardware_monitoring_problems">
+       <title>Hardware Monitoring problems</title>
+       <para>Hardware monitoring does not work for all hardware. There is a list of supported
+       hardware in the ReadMe file in the xmbmon subdirectory. Here are solutions for some
+       common problems.</para>
+       <sect3 id="ASUS_Pentium4_motherboards">
+       <title>ASUS Pentium4 motherboards</title>
+       <para> Some of the ASUS Pen4 motherboard with ICH2(82801BA) and ICH4(82801DB)
+       chipsets switch off the SMBus PCI device.  Therefore, one has to enable
+       it explicitly in order to make hardware-monitoring possible.</para>
+       <para>If "mbmon/xmbmon" does not search the SMBuses, it's not the fault of
+       "mbmon/xmbmon", but the results of ASUS's BIOS setting.  For users who
+       experienced this, try the following:</para>
+       <itemizedlist>
+       <listitem><para>Check the chipset.  ICH2/ICH4 chipset is identified by the following PCI configuration
+       data:</para>
+       <literallayout>
+pci-device ID  ---  ICH2:     vendorID = 0x8086, chipID = 0x2440
+                    ICH4:     vendorID = 0x8086, chipID = 0x24C0
+
+pci-device ID  ---  ICH2(PM): vendorID = 0x8086, chipID = 0x2443
+                    ICH4(PM): vendorID = 0x8086, chipID = 0x24C3
+        </literallayout>   
+       <para>(PM means Power Management Controller, which provides SMBus access.)</para>
+       <para>By using the command: </para>
+
+       <literallayout>
+# pciconf -l (FreeBSD)
+
+# pcitweak -l (Linux)
+       </literallayout>
+
+       <para> list up the pci-devices recognized by OS, and try to find whether your
+       chipset is ICH2 or ICH4.  If you find ICH2 or ICH4 in the list, while
+       do not find ICH2(PM) or ICH4(PM), then you are one of sufferers of this
+       problem.  If not, your problem is of different kind, sorry.</para></listitem>
+       <listitem><para>Enable the SMBus access.  You have to enable the ICH2(PM) or ICH4(PM) by 
+       turning off the bits number 8 and 3 (counting from 0) in the word data of the LPC register
+       of ICH2 or ICH4 at 0xF2.  First, find the value of the actual data:</para>
+
+       <literallayout>
+# pciconf -r -h [selector of ICH2 or ICH4] 0xf2 (FreeBSD)
+
+# setpci -d 8086:2440/24c0 f2.w (Linux).
+
+            (bit)  15 14 13 12 11 10  9  8  7  6  5  4  3  2  1  0
+word data at 0xF2   x  x  x  x  x  x  x  *  x  x  x  x  *  x  x  x
+       </literallayout>
+
+      <para>Next, after calculating the byte by VAL = VAL &amp; 0xFEF7, set this VAL
+      to ICH2 or ICH4 by the following command:</para>
+
+      <literallayout>
+# pciconf -w -h [selector of ICH2 or ICH4] 0xf2 VAL (FreeBSD)
+
+# setpci -d 8086:2440/24c0 f2.w=VAL (Linux).
+      </literallayout>
+      </listitem>
+
+      <listitem><para>Check ICH2(PM) or ICH4(PM) appears.  
+      List up the pci-device again, and confirm that now ICH2(PM) or ICH4(PM)
+      are there.  Then, try "mbmon/xmbmon" again.</para>
+
+      <para>Reference:  ./prog/hotplug/README.p4b 
+      of the lm_sensors package downloadable from http://www.lm-sensors.nu/</para>
+      </listitem>
+      </itemizedlist>
+
+       </sect3>
+       <sect3 id="OpenBSD_problems">
+       <title>OpenBSD problems</title>
+<para>
+<literallayout>
+>From: "andreas guetl" 
+>To: 
+>Subject: fix for mbmon on openbsd
+>Date: Fri, 5 Sep 2003 10:35:37 +0200
+
+hello!
+
+i tried various progs for monitoring cpu-temp on openbsd boxes
+but none of them worked. then i found the solution on
+http://archives.neohapsis.com/archives/openbsd/2001-02/2550.html
+and id simply did the trick, not only for healthd (which gave me
+wrong values) but also for mbmon which works very fine.
+
+1.) enable the option APERTURE in the kernel
+enabled by default but disabled in any selfmade kernel, who needs
+x on openbsd ;)
+
+2.) uncomment machdep.allowaperture in /etc/sysctl.conf and change
+the value from 2 to 1
+
+after rebooting with the new kernel the monitoring works really
+fine.
+
+thanks for your fine program!!
+
+(but what has the agp-aperture to do with monitoring hw?)
+
+so long,
+andy 
+</literallayout>
+</para>
+       </sect3>
+       </sect2>
+    </sect1>
+    <sect1 id="Monitoring_specific_logfiles">
+       <title>Monitoring specific logfiles</title>
+       <para>uw_sysstat is special in that it allows you to scan every (line-oriented) logfile
+       you want. It uses regular expressions to set a yellow or red state. It works as follows:</para>
+       <para>On startup it reads <filename>/etc/upwatch.d/uw_sysstat.conf</filename>, and
+       searches for <command>logfile</command> statements. Say it encounters the statement:</para>
+       <literallayout>
+       logfile errlog /var/log/messages
+       </literallayout>
+       <para>what it does is it reads all files in the directory 
+       <filename>/etc/upwatch.d/uw_sysstat.d/errlog</filename> (except <filename>rmacros.txt</filename>
+       and <filename>macros.txt</filename>). 
+       These files should contain regular expressions prefixed by one of the keywords 
+       <command>green</command>, <command>yellow</command>, or <command>red</command>. Next 
+       uw_sysstat starts scanning <filename>/var/log/messages</filename>. It reads a line
+       from the logfile and the following happens:</para>
+       <itemizedlist>
+       <listitem><para>Check against the red list. If match found, flag red
+       condition, and send the offending line to the upwatch server</para></listitem>
+       <listitem><para>Check line against the yellow list. If matches, flag yellow
+       and send to server</para></listitem>
+       <listitem><para>Check agains green list. If it matches, ignore this line and
+       go the next line in the logfile. If the current line does not match any of the
+       green list, flag yellow, and send line to server</para></listitem>
+       </itemizedlist>
+       <para>The regular expressions may (for readability) contain macros, they should
+       be entered in <filename>/etc/upwatch.d/uw_sysstat.d/syslog/macros.txt</filename>.</para>
+       <para>You can easily add a directory of youw own, containing regular expressions
+       for you own logfiles. In fact upwatch includes a handy utility <command>chklog</command> to
+       help you create regular expression lists. Here is an example how to do it. </para>
+       <para>Suppose you plan to scan the logfile for the imaginary 'timtim' navigational 
+       system. It resides in <filename>/var/log/timtim.log</filename>.</para>
+       <itemizedlist>
+       <listitem><para>First create the directory:</para>
+       <literallayout>
+         # cd /etc/upwatch.d/uw_sysstat.d
+         # mkdir timtim
+         # cp syslog/rmacros.txt timtim
+         # cp syslog/general timtim
+         # chown -R root:upwatch timtim
+         # chmod 770 timtim
+         # chmod 660 timtim/*
+       </literallayout></listitem>
+       <listitem><para>Next look at <filename>rmacros.txt</filename> and tailor it to
+       accomodate specifics for the timtim logfile. It might for example contain
+       entries for zipcodes, or latitudes/longitudes for which you would like to create
+       macros.</para></listitem>
+       <listitem><para>Next step: extract regular expressions from an example logfile:</para>
+       <literallayout>
+         # chklog -t timtim -r /var/log/timtim.log | sort -u > /tmp/timtim
+       </literallayout></listitem>
+       <listitem><para>edit this file. Maybe it will contain dupes, you should try to
+       keep the number of regular expressions low. If you are satisfied you
+       can try copying it to <filename>/etc/upwatch.d/uw_sysstat/timtim</filename> using
+       any filename, and use <command>chklog</command> to test it:</para>
+       <literallayout>
+         # chklog -t timtim -m /var/log/timtim.log
+       </literallayout>
+       <para>Now you should only see the lines you want to be reported by uw_sysstat. Repeat
+       steps until you are satisfied</para></listitem>
+       <listitem><para>Finally tell uw_sysstat that you want it to start scanning by
+       adding <command>errlog timtim /var/log/timtim.log</command> to its configuration
+       file. That's it. Occasionally you may see loglines showing up as yellow, but they should
+       in fact be ignored. You can always add regular expressions for such lines. You
+       don't need to restart <command>uw_sysstat</command>, it will notice the file was modified.</para></listitem>
+       </itemizedlist>
+    </sect1>
+    <sect1 id="Client_Maintenance_and_Upgrades">
+       <title>Maintenance and Upgrades</title>
+       <para>The RPM files contain logrotate.d files to rotate the upwatch logfiles, 
+       other platforms should supply their own.</para>
+       <para>If the <command>uw_send</command> daemon for some reason is not running,
+       probing results will stack up in the queue. They will be sent out when 
+       <command>uw_send</command> is restarted.</para>
+       <para>Upgrades with yum or apt-get are automatic. There are repositories available,
+       please ask our helpdesk for the proper addresses.</para>
+    </sect1>
+</chapter>
+

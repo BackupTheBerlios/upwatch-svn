@@ -1,0 +1,5 @@
+green [LOGDATE] ibod: ibod shutdown failed
+green [LOGDATE] ibod[PID]: added new link 
+green [LOGDATE] ibod[PID]: Parameter (ENABLE|FILTER|INTERVAL) reconfigured to [NUM] 
+green [LOGDATE] ibod[PID]: [PATH]: No such device 
+green [LOGDATE] ibod[PID]: removed link 

@@ -1,0 +1,11 @@
+green [LOGDATE] xntpd[PID]: bind\(\) fd [NUM], family [NUM], port [NUM], addr e[NUM], in_classd=[NUM] flags=[NUM] fails: Address already in use
+green [LOGDATE] xntpd[PID]: kernel pll status change [NUM]
+green [LOGDATE] xntpd[PID]: \.\.\.multicast address [IPADDR] using wildcard socket
+green [LOGDATE] xntpd[PID]: precision = [NUM] usec
+green [LOGDATE] xntpd[PID]: read drift of [NUM]\.[NUM] from [PATH]
+green [LOGDATE] xntpd[PID]: synchronisation lost
+green [LOGDATE] xntpd[PID]: synchronized to [IPADDR], stratum=[NUM]
+green [LOGDATE] xntpd[PID]: tickadj = [NUM], tick = [NUM], tvu_maxslew = [NUM], est\. hz = [NUM]
+green [LOGDATE] xntpd[PID]: time reset
+green [LOGDATE] xntpd[PID]: xntpd exiting on signal [NUM]
+green [LOGDATE] xntpd[PID]: xntpd [NUM]-[NUM]\.[NUM]e [SMONTH] [LOGDATE] [NUM] \([NUM]\)

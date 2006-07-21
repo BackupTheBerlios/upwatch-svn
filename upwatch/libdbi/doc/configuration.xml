@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<chapter id="Configuration">
+    <title>Configuration</title>
+    <sect1 id="Probe_configuration">
+       <title>Probe configuration</title>
+       <para>First: it is extremely important your host clock is set correctly,
+       and please use NTP to keep it up-to-date. If you don't, you will see very strange
+       things happening, and what's more, if this gets into the database, it will
+       be impossible to correct (apart from deleting all results alltogether).</para>
+       <para>
+          Each probe first reads the general configuration file <filename>/etc/upwatch.conf</filename>
+          and then its own configurationfile in <filename>/etc/upwatch.d</filename> if it exists.
+          Normally some general things like the debug and logging level, and the database access
+          are specified in the first file, and any probe-specific setting in the second file. You can also
+          override settings from the generic file in the probe-specific file.
+       </para>
+       <para> Each program has a manual page that documents options. Every long commandine option
+          can also be entered in a configuration file.
+       </para>
+    </sect1>
+    <sect1 id="Database_configuration">
+       <title>Database configuration</title>
+        <para> First things first. Depending on the size of your installation you may
+           run out of database or record space. It happened to me on the iptraf probe.
+           I was measuring traffic for 4000 IP addresses and ran out of space after a month
+           on the pr_iptraf_raw table - it hit the max_data_length limit. 
+           I had to issue the following commands:
+        <literallayout>
+           $ mysql -u root --password=PASSWORD
+           mysql> alter table pr_iptraf_raw max_rows = 1000000000;
+        </literallayout>
+           and this took almost two hours! So you better look at your own situation and
+           adjust the settings MAX_ROWS and AVG_RECORD_SIZE accordingly for each table.
+        </para>
+   </sect1>
+</chapter>
+

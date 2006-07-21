@@ -1,0 +1,4 @@
+green [LOGDATE] fsck: [PATH]\s*$ 
+green [LOGDATE] fsck: [PATH]: clean, [NUM]/[NUM] files (\([NUM].[NUM]% non-contiguous\))?, [NUM]/[NUM] blocks 
+green [LOGDATE] fsck: [PATH]: recovering journal
+

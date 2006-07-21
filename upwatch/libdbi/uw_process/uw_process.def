@@ -1,0 +1,219 @@
+AutoGen Definitions options;
+export        = "#define progOptions uw_processOptions";
+prog-name     = uw_process;
+prog-title    = "Upwatch parallel probe daemon";
+version       = `cat ../VERSION`;
+homerc        = `echo $sysconfdir/upwatch.conf`;
+homerc        = `echo $confdir/uw_process.conf`;
+homerc        = "$HOME/.upwatchrc";
+homerc        = "$HOME";
+homerc        = "$$/upwatch.conf";
+homerc        = "$$/uw_process.conf";
+detail        = 
+'uw_process reads probe resultfiles, and stores them in the database';
+
+// this section is for the generated specfile
+spec-buildrequires = "libesmtp-devel";
+spec-requires = "/usr/bin/mysql glib2";
+spec-files = `echo "%attr(0770,root,upwatch)" $sbindir/uw_process`;
+spec-files = `echo "%attr(0770,root,upwatch) %dir " $spooldir/q_failed`;
+spec-files = `echo "%attr(0770,root,upwatch) %dir " $spooldir/q_failed/new`;
+spec-files = `echo "%attr(0770,root,upwatch) %dir " $spooldir/q_failed/tmp`;
+#shell
+for i in `cat ../probes.enum | sed -e 's:PROBE_::g' | cut -f1 -d=`
+do
+  echo spec-files = "\"%attr(0770,root,upwatch) %dir $spooldir/q_$i\";";
+  echo spec-files = "\"%attr(0770,root,upwatch) %dir $spooldir/q_$i/new\";";
+  echo spec-files = "\"%attr(0770,root,upwatch) %dir $spooldir/q_$i/tmp\";";
+done
+#endshell
+
+// describe commandline flags
+flag = {
+    name      = compress;
+    value     = C;
+    arg_type  = number;
+    arg-default = 9;
+    arg-range = '0->9';
+    descrip   = "XML compression factor";
+    doc       =
+'The generated resultfile, will normally be compressed to save datatraffic costs.
+The compression can be set between 0 no (compression) and 9 (highest compression).
+Decompression is automatic';
+};
+
+flag = {
+    name      = spooldir;
+    value     = S;
+    arg_type  = string;
+    descrip   = "maildir-type spooldirectory for result files";
+    doc       =
+'This parameter denotes the basedirectory for reading input files. Inside
+this directory another directory is expected named by the `input` parameter.
+Inside this directory directories called `tmp` and `new` should exist. All files
+will be read from `new`. You should set up some cron job that
+removes any files in `tmp` that are older then 36 hours. For some more info
+about maildir see http://www.qmail.org/man/man5/maildir.html.';
+};
+
+// describe commandline flags
+flag = {
+    name      = input;
+    value     = I;
+    arg_type  = string;
+    stack_arg;
+    descrip   = "name of queue to read from";
+    doc       =
+'The argument is taken to be a maildir under the directory `spooldir`.
+Everything placed in this queue is transferred. May be specified more then once.
+For every input queue given a new reader process is started';
+};
+
+flag = {
+    name      = output;
+    value     = O;
+    stack_arg;
+    arg_type  = string;
+    descrip   = "name of queue to drop results - normally uw_notify";
+    doc       =
+'The argument is taken to be a maildir under the directory `spooldir`.
+All results are (after processing) placed in this queue.
+This flag may be given multiple times.';
+};
+
+flag = {
+    name      = failures;
+    value     = f;
+    arg_type  = string;
+    descrip   = "name of queue to store failed transactions";
+    doc       =
+'For some reason storing results for a particular probe may fail.
+These transactions are placed in the queue given here';
+};
+
+flag = {
+    name      = smtpserver;
+    arg_type  = string;
+    arg_default = "localhost";
+    descrip   = "Outgoing SMTP server";
+    doc       =
+'SMTP server to send email notifications to';
+};
+
+flag = {
+    name      = smtpserverport;
+    arg_type  = number;
+    arg_default = 25;
+    descrip   = "Outgoing SMTP server port";
+    doc       =
+'SMTP server port number to send email notifications to';
+};
+
+flag = {
+    name      = from-email;
+    arg_type  = string;
+    arg_default = "beheer@netland.nl";
+    descrip   = "Email address for outgoing messages";
+};
+
+flag = {
+    name      = from-name;
+    arg_type  = string;
+    arg_default = "CMS Netland Internet Services BV";
+    descrip   = "Email name for outgoing messages";
+};
+
+flag = {
+    name      = noc-mail;
+    arg_type  = string;
+    arg_default = "root@localhost";
+    descrip   = "Email address for warnings about Upwatch itself";
+};
+
+flag = {
+    name      = copy;
+    value     = c;
+    arg_type  = string;
+    descrip   = "file to copy all transactions to";
+    doc       =
+'You can copy all transactions to the specified queue, for inspecting
+them later';
+};
+
+// describe commandline flags
+flag = {
+    name      = trust;
+    value     = t;
+    arg_type  = string;
+    stack_arg;
+    descrip   = "create definition record for this probe if not found";
+    doc       =
+'If a probe result is being processed, but no definition is found for it,
+create the definition record with default values. This may result in
+spurios probe definitions is your input data is not bugfree, or comes
+from untrusted sources. You may specify this option for any probetype,
+or give the special values `all` or `none`. For some probes this setting
+will be ignored because there is not enough information in the probe
+result block.';
+
+};
+
+flag = {
+    name      = run_queue;
+    value     = q;
+    descrip   = "Process the queue once, and then exit";
+    doc       =
+'You might just want to process the files in the queue, and then exit.
+This is useful is you want to run uw_process under cron or for debugging.';
+};
+
+flag = { 
+    name      = summarize; 
+    arg_type  = string;
+    arg_name  = "probe[,starttime[,enddtime]]"; 
+    descrip   = "Re-summarize a named probe in a certain period";
+    doc       =
+'Occasionally you may want to recreate all or some summarized data for a probe.
+In this case determine the calendar time when to start, and specify it together
+with the probename. For example `uw_process --summarize ping,1041679172`  will 
+read all data from the pr_ping_raw table starting at Sat Jan  4 12:19:37 CET 2003
+and re-summarize it.  You can use the `ctime` and `slot` programs to help in 
+determining the exact values. Use -d3 if you want to run in the foreground.';
+};
+
+flag = {
+    name      = multi_value_inserts;
+    arg_type  = bool;
+    descrip   = "combine single inserts into multi value inserts for speed";
+    doc       =
+'When you need to do high-volume processing, the turn-around time of repeatedly
+sending queries, and reading the results increasingly becomes a performance
+bottleneck. With this flag you can combine multiple insert queries into
+one long statement. You loose some reliability in this case because the
+process can crash with some pending values still in memory';
+};
+
+flag = {
+    name      = multi_value_cache_size;
+    arg_type  = number;
+    arg-default = 20;
+    arg-range = '10->1000';
+    descrip   = "How many insert to combine into one";
+    doc       =
+'How many insert queries should be combined into one. Only
+valid when multi_value_inserts is set.';
+};
+
+flag = { 
+    name      = slave; 
+    arg_type  = string;
+    descrip   = "Force this instance to act as a slave for the given queue";
+    doc       =
+'Mostly used in debugging. If you want to debug a particular slave on the queue q_iptraf
+then start the debugger and run the program with `-d3 --slave q_iptraf`';
+};
+
+#include license_gpl.def
+#include dbase_options.def
+#include generic_options.def
+

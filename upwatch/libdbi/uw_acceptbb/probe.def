@@ -1,0 +1,187 @@
+AutoGen Definitions mysql;
+#include probe_generic.def
+
+probe = {
+  name = "bb";
+  id = 1000;
+  descrip = "Big Brother generic probe";
+  addbyhand = "no";
+  class = "";
+  graphgroup = "";
+  graphtypes = "default";
+  comment = "";
+
+  attribute = {
+    name = "ipaddress";
+    default = "127.0.0.1";
+    descrip = "target ip address";
+  };
+
+  attribute = {
+    name = "date";
+    required = true;
+    descrip = "date/time for this result";
+  };
+
+  attribute = {
+    name = "expires";
+    required = true;
+    descrip = "when this result expires";
+  };
+
+  attribute = {
+    name = "color";
+    required = true;
+    descrip = "color as this probe thinks it should be";
+  };
+
+  attribute = {
+    name = "received";
+    default = "0";
+    descrip = "date/time this result was received by the upwatch server";
+  };
+
+  element = {
+    name = "host";
+    descrip = "host where this element originated";
+  };
+
+  def = {
+    name = "bbname";
+    type = "char";
+    length = 16;
+    null = false;
+    descrip = "Big Brother name of this probe";
+  };
+};
+
+probe = {
+  name = "bb_cpu";
+  id = 1001;
+  descrip = "Big Brother System probe";
+  addbyhand = "no";
+  class = "";
+  graphgroup = "sysstat";
+  graphtypes = "cpu loadavg memory";
+  comment = "";
+  yellow = "3";
+  red = "5";
+
+  attribute = {
+    name = "ipaddress";
+    default = "127.0.0.1";
+    descrip = "target ip address";
+  };
+
+  attribute = {
+    name = "date";
+    required = true;
+    descrip = "date/time for this result";
+  };
+
+  attribute = {
+    name = "expires";
+    required = true;
+    descrip = "when this result expires";
+  };
+
+  attribute = {
+    name = "color";
+    required = true;
+    descrip = "color as this probe thinks it should be";
+  };
+
+  attribute = {
+    name = "received";
+    default = "0";
+    descrip = "date/time this result was received by the upwatch server";
+  };
+
+  element = {
+    name = "host";
+    descrip = "host where this element originated";
+  };
+
+  result = {
+    name = "loadavg";
+    type = "float";
+    unsigned = true;
+    null = false;
+    default = "0";
+    descrip = "Load average as computed by upwatch";
+    noelement;
+  };
+  result = {
+    name = "user";
+    type = "tinyint";
+    unsigned = true;
+    null = false;
+    default = "0";
+    descrip = "CPU user time";
+    noelement;
+  };
+  result = {
+    name = "system";
+    type = "tinyint";
+    unsigned = true;
+    null = false;
+    default = "0";
+    descrip = "CPU system time";
+    noelement;
+  };
+  result = {
+    name = "idle";
+    type = "tinyint";
+    unsigned = true;
+    null = false;
+    default = "0";
+    descrip = "CPU idle time";
+    noelement;
+  };
+  result = {
+    name = "swapped";
+    type = "int";
+    unsigned = true;
+    null = false;
+    default = "0";
+    descrip = "Amount of blocks written to swap device";
+    noelement;
+  };
+  result = {
+    name = "free";
+    type = "int";
+    unsigned = true;
+    null = false;
+    default = "0";
+    descrip = "Free memory";
+    noelement;
+  };
+  result = {
+    name = "buffered";
+    type = "int";
+    unsigned = true;
+    null = false;
+    default = "0";
+    descrip = "Amount of memory used for OS buffers";
+    noelement;
+  };
+  result = {
+    name = "cached";
+    type = "int";
+    unsigned = true;
+    null = false;
+    default = "0";
+    descrip = "Amount of memory used for disk buffers";
+    noelement;
+  };
+  result = {
+    name = "used";
+    type = "int";
+    unsigned = true;
+    null = false;
+    default = "0";
+    descrip = "Amount of memory used by processes";
+    noelement;
+  };
+};
+

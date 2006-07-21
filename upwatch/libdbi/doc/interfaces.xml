@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<appendix>
+   <title>Interfaces and file layouts</title>
+   <sect1 id="Probe_result_file">
+   <title>Probe result file</title>
+   <para> Every probe result is written in XML format into a queue file. This file will be picked up by the process
+      emptying the queue, usually uw_send, or uw_process. The file must have a specific name,
+      and a specific layout.
+   </para>
+   <sect2>
+       <title id="Probe_file_name">Probe file name</title>
+       <para> The name of the file is composed of the current epoch time in seconds, microseconds, process
+           id, and hostname on which the queue resides, all separated by dots. An example would be:
+       </para>
+       <itemizedlist>
+          <listitem><para>1031601982.341878.27470.ron-ibook.nbs.arts-betel.org</para></listitem>
+       </itemizedlist>
+       <para>From a shell you can generate such a name using <command>echo `date +%s`.500.$$.`hostname`</command></para>
+   </sect2>
+   <sect2>
+      <title id="Generic_probe_file_layout">Generic probe file layout</title>
+      <para>The probe result file is in XML format, described in <filename>/usr/lib/upwatch/dtdt/result.dtd</filename>.
+      </para>
+   </sect2>
+   <sect2 id="uw_accept_protocol">
+      <title>uw_accept protocol</title>
+      <para>The protocol used by uw_accept is almost exactly like the POP3 protocol. login with USER and PASS, then
+      enter DATA filesize and start uploading</para>
+   </sect2>
+   </sect1>
+</appendix>

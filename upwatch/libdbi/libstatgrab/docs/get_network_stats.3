@@ -1,0 +1,78 @@
+.TH get_network_stats 3 $Date: 2003/12/04 18:59:17 $ i\-scream 
+.SH NAME
+get_network_stats, get_network_stats_diff \- get network statistics
+.SH SYNOPSIS
+.nf
+#include <statgrab.h>
+.fi
+.sp 1
+.PP
+network_stat_t *\fIget_network_stats\fR(int *\fIentries\fR);
+.PP
+network_stat_t *\fIget_network_stats_diff\fR(int *\fIentries\fR);
+.SH DESCRIPTION
+Both calls take a pointer to an int,
+entries, which is filled with the number
+of network interfaces the machine has. This is needed to know how
+many network_stat_t structures have been
+returned. A pointer is returned to the first
+network_stat_t.
+.PP
+get_network_stats returns the network
+traffic stored in the kernel which holds the amount of data
+transferred since bootup. On some platforms, such as Solaris 7,
+this value is stored in a 32bit int, so wraps around when it
+reaches 4GB. Other platforms, such as Solaris 8, hold the value
+in a 64bit int, which wraps somewhere near 17 million terabytes.
+.PP
+get_network_stats_diff is the same as
+get_network_stats except it will return the
+difference since the last call. So, for instance a call to
+get_network_stats_diff is made, and called
+again 5 seconds later. Over that time, 20 bytes of traffic was
+transmitted and 10 bytes received. Tx will store 20, rx will
+store 10 and systime will store 5. This function copes with wrap
+arounds by the O/S so should be seemless to use.
+.SH RETURN\ VALUES
+All network statistics return a pointer to a structure of type
+network_stat_t.
+.PP
+.nf
+
+typedef struct{
+        char *interface_name;
+        long long tx;
+        long long rx;
+        time_t systime;
+}network_stat_t;
+    
+.fi
+.TP 
+interface_name  
+The name known to the operating system.
+(eg. on linux it might be eth0)
+.TP 
+tx  
+The number of bytes transmitted.
+.TP 
+rx  
+The number of bytes received.
+.TP 
+systime  
+The time period over which tx
+and rx were transferred.
+.SH BUGS
+On the very first call
+get_network_stats_diff will return the same
+as get_network_stats. After the first call
+it will always return the difference.
+.PP
+On operating system that hold only 32bits of data there is a
+problem if the values wrap twice. For example, on Solaris 7 if
+9GB is transferred and the operating system wraps at 4GB, the
+get_network_stats_diff function will return
+5GB.
+.SH SEE\ ALSO
+\fBstatgrab\fR(3)
+.SH WEBSITE
+http://www.i\-scream.org

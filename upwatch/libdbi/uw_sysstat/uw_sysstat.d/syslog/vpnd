@@ -1,0 +1,2 @@
+green [LOGDATE] vpnd[PID]: connected to [IPADDR]
+green [LOGDATE] vpnd[PID]: peer link failed, reason=[NUM], will retry in [NUM] seconds\.

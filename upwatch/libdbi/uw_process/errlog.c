@@ -1,0 +1,34 @@
+#include "config.h"
+#include <string.h>
+#include <generic.h>
+#include "slot.h"
+#include "uw_process_glob.h"
+
+#ifdef DMALLOC
+#include "dmalloc.h"
+#endif
+
+module errlog_module  = {
+  STANDARD_MODULE_STUFF(errlog),
+  NO_FREE_DEF,
+  NO_FREE_RES,
+  INIT_NO_CACHE,
+  NO_START_RUN,
+  NO_ACCEPT_PROBE,
+  NO_XML_RESULT_NODE,
+  ct_get_from_xml,
+  accept_result,
+  NO_GET_DEF_FIELDS,
+  NO_SET_DEF_FIELDS,
+  get_def_by_servid,
+  NO_ADJUST_RESULT,
+  NO_END_RESULT,
+  NO_END_RUN,
+  NO_EXIT,
+  NO_FIND_DOMAIN,
+  NO_STORE_RESULTS,
+  NO_NOTIFY_MAIL_SUBJECT_EXTRA,
+  NO_NOTIFY_MAIL_BODY_PROBE_DEF,
+  NO_SUMMARIZE
+};
+

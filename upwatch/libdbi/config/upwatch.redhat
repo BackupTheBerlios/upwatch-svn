@@ -1,0 +1,45 @@
+#! /bin/sh
+#
+# upwatch	       Manage all upwatch daemons
+#
+# chkconfig: 2345 40 60
+# description: 	This script is used to restart every and all uw_xxxxxx dameons
+#
+
+# Source function library.
+. /etc/rc.d/init.d/functions
+
+# See how we were called.
+case "$1" in
+  start)
+	for i in /etc/init.d/uw_*
+	do
+		$i start
+	done
+	;;
+  stop)
+	for i in /etc/init.d/uw_*
+	do
+		$i stop
+	done
+	;;
+  status)
+	cd /etc/init.d
+	for i in uw_*
+	do
+		status $i
+	done
+	;;
+  restart)
+	for i in /etc/init.d/uw_*
+	do
+		$i restart
+	done
+	;;
+  *)
+	echo "Usage: upwatch {start|stop|restart|status}"
+	exit 1
+esac
+
+exit 0
+

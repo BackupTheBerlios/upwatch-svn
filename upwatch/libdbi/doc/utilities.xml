@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<chapter id="Utilities">
+    <title>Utilities</title>
+    <sect1 id="mbmon">
+       <title>mbmon</title>
+       <para>On x86 architectures and some operating systems hardware readouts may be
+       obtained. We use 
+       <ulink url="http://www.nt.phys.kyushu-u.ac.jp/shimizu/download/download.html">xmbmon</ulink> 
+       to get these values, so wherever that's supported, we can do it. But before switching on
+       hwstats in uw_sysstat, use <command>mbmon</command> to test if your setup is supported. By
+       the way, if <command>mbmon</command> is not on your system, its definitely not supported.
+       anyway, also look if the values given by mbmon are meaningful.
+       </para>
+       <para> Each program has a manual page that documents options. Every long commandine option
+          can also be entered in a configuration file.
+       </para>
+    </sect1>
+    <sect1 id="chklog">
+       <title>chklog</title>
+        <para>This utility makes it simpler to create your own set of regular expressions
+        for a particular logfile you want to be monitored by <command>uw_sysstat</command>.
+        It can both scan a test logfile and output regular expressions, as scan a logfile
+        and outputs lines that are suspicious, and to which uw_sysstat should repond
+        by flagging a yellow or red condition. See <link linkend="Monitoring_specific_logfiles">
+        Monitoring specific logfiles</link> for the procedure.
+        </para>
+   </sect1>
+   <sect1 id="uwq">
+       <title>uwq</title>
+        <para>You can show all queues on the cureent system with <command>uwq</command>.
+        We regularly use <command>watch uwq</command> to monitor queue status.
+        </para>
+   </sect1>
+   <sect1 id="uwregexp">
+       <title>uwregexp</title>
+        <para>While creating a regular expression for an application specific logfile, sometimes
+        you get problems creating a regular expressions that fits really well. This is
+        where <command>uwregexp</command> comes in handy. You feed it the line to match,
+        and the logfile type, can it gives you a prompt where you can try various
+        regular expressions. Use up and down arrows the circle through previous expressions.
+        </para>
+   </sect1>
+   <sect1 id="uwsaidar">
+       <title>uwsaidar</title>
+        <para>this is a general handy tool, a bit like <command>top</command>, it gives
+        you an ongoing system status screen with CPU, memory, and I/O usage and vaious
+        other parameters. It actually comes straight out of the 
+        <ulink url="http://www.i-scream.org/libstatgrab/">libstatgrab</ulink>
+        library, that accompanies the Upwatch client.
+        </para>
+   </sect1>
+   </chapter>
+

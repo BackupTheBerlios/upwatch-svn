@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<chapter>
+    <title>Installation</title>
+    <sect1 id="Getting_upwatch">
+        <title>Getting upwatch</title>
+        <para>The Upwatch software is released under the GPL on 26 Jan 2005.  </para>
+	 <para>Building and installing upwatch is not for the faint of heart. It uses lots of external
+          libraries which may or may not be available on your platform. I myself use Redhat 8/9
+          for development, and test compilation on RH7, Fedora Core 1/2, SuSE8.2, Solaris, 
+          FreeBSD, and Yellowdog Linux 3.0.
+       </para>
+    </sect1>
+    <sect1 id="Requirements">
+        <title>Requirements</title>
+        <sect2 id="Run-time_requirements">
+            <title>Run-time requirements</title>
+            <para>First ensure that the time/date on all hosts is correctly set. </para>
+            <para>Run time requirements differ per probe. Look in the corresponding .def file
+                (or in the spec file for the probe), here's a list of everything we expect on a
+                machine running all probes, and the database (I'll also list the version we use ourselves):</para>
+            <itemizedlist>
+                <listitem><para>glib2 >= 2.0.4</para></listitem>
+                <listitem><para>xml2 (any version will do)</para></listitem>
+                <listitem><para>freetds >= 0.6.0 compiled with --enable-threadsafe</para></listitem>
+                <listitem><para>mysql 3.23.49</para></listitem>
+                <listitem><para>postgreSQL 7.1.0</para></listitem>
+                <listitem><para>net-snmp 5.0.6</para></listitem>
+                <listitem><para>-lcrypto</para></listitem>
+                <listitem><para>libpcap 0.6.2</para></listitem>
+                <listitem><para>libpcre 3.9.10</para></listitem>
+                <listitem><para>libncurses 5.2</para></listitem>
+                <listitem><para>libesmtp 1.0.1</para></listitem>
+                <listitem><para>libreadline 4.3</para></listitem>
+            </itemizedlist>
+            <para>Delivered with upwatch are libstatgrab (0.7), xmbmon 2.03, and the State Threads Library (1,4).</para>
+        </sect2>
+        <sect2 id="Build_requirements">
+            <title>Build requirements</title>
+            <para>You probably don't want to build upwatch yourself. Most likely you'll 
+            grab the RPM packages and issue rpm -Uvh upwatch*rpm. Then skip to 
+            <link linkend="Configuration">Configuration</link>.
+            </para>
+            <para> But on the other hand: you can build the software yourself. Apart from the normal GNU
+                compilation tools, and the development versions of the above mentioned packages,
+                you'll need the following on your system to build upwatch:</para>
+            <itemizedlist>
+                <listitem><para>autogen 5.3.6 (autogen.sourceforge.net) which itself requires
+                guile and umb-scheme.</para></listitem>
+                <listitem><para>if you also want to rebuild the manual: lynx 2.8.4, libxslt 1.0.15 and 
+                docbook 1.48, including the entire toolchain: openjade, jadetex, tetex, 
+                netpbm, perl-SGMLSpm.</para></listitem>
+                <listitem><para>RPM tools, if you want to build RPM's</para></listitem>
+            </itemizedlist>
+            <para>If you run RedHat, Debian or SuSE, don't forget to install the *-devel packages
+                if there are any.</para>
+        </sect2>
+    </sect1>
+    <sect1 id="Compiling_upwatch">
+        <title>Compiling upwatch</title>
+        <para>Just in case you really want to (or need to) compile upwatch yourself, it's
+           pretty easy:
+        </para>
+           <literallayout>
+              $ tar xzvf upwatch-x.x.tar.gz
+              $ cd upwatch-x.x
+              $ ./configure
+              $ make
+           </literallayout>
+        <para> Nothing to it... In case of problems, you're probably missing some library or
+            header files, or they are in unexpected places. Look at the last parts
+            of config.log.</para>
+         <para>You can optionally specify --enable-monitors, --enable-iptraf --enable-server 
+         or --enable-all to configure. Default configure only builds the client, docs, and utils.</para>
+    </sect1>
+    <sect1 id="Actual_Installation">
+        <title>Actual Installation</title>
+        <para> Before you install the software decide on the architecture. If you know in
+            advance you'll have to monitor thousands of hosts, or the probes will exhaust your
+            machine otherwise, you may have to split your installation across several machines.
+            There may be more reasons to do that. Consult 'Scaling up' and 'How it all works' in the
+            Programmers Guide.
+        </para>
+        <para> For simplicity we assume you run everything on the same host. Type the following
+           command as root:
+        </para>
+        <literallayout>
+          $ make install
+        </literallayout>
+    </sect1>
+    <sect1 id="php_pages">
+       <title>PHP pages</title>
+       <para> The PHP pages can just be copied to any directory. There is an include directory. Copy
+          that a some location ouside the web root, and enter its location in the .htaccess file 
+          in the web root dir. Also enter the database details in config.php.
+       </para>
+    </sect1>
+    <sect1 id="Security_considerations">
+       <title>Security considerations</title>
+       <para> All upwatch directories are readable and writable by members of the group upwatch.
+          Most all executables run as user upwatch.
+          Some probes need root-access, most notable uw_ping, and they will be installed suid root.
+          These probes drop root privileges wherever possible. Further you can assign each probe
+          its own database user and grant that user access rights  to its own database tables.
+          The probes itself don't write to the database, they only read from the
+          <varname>pr_xxx_def</varname> tables.
+       </para>
+       <para> The PHP web user should have SELECT, UPDATE, DELETE access to all tables.
+       </para>
+       <para><command>uw_access</command>, and  <command>uw_accessbb</command> are
+             the programs most vulnerable to crackers, as they wait
+             for incoming connections on a TCP port (1985/1984). If possible, use <command>chroot</command>,
+             NX where available and firewall rules to limit connections to
+             real probes only. Something similar holds for <command>mysql</command>. Most probes 
+             will want access, and passwords can be sniffed. For real security use ssh-tunnels.
+       </para>
+    </sect1>
+    <sect1 id="Database">
+        <title>Database</title>
+        <para>You actually need to create two databases, one for the probes to read from, and one 
+        for the results to be written to. The first database should be called upwatch, the other
+        one can be any name (in this example we use netland). Create the databases as follows. (You DO have a root 
+        password set for mysql don't you?)</para>
+        <literallayout>
+           $ mysqladmin -u root --password=PASSWORD create upwatch
+           $ mysql -u root --password=PASSWORD upwatch &lt; upwatch-base.mysql
+           $ mysqladmin -u root --password=PASSWORD create netland
+           $ mysql -u root --password=PASSWORD netland &lt; upwatch-full.mysql
+        </literallayout>
+        <para>Of course you need to assign users and GRANT them access. We start with 
+           the probes. We assume the probes are running on a separate host with ip address 192.168.1.23.
+           Mosts probes need read access to their definition table. 
+           In many situations you can use just one user for that. Give that user access with:
+        </para>
+        <literallayout>
+           $ mysql -u root --PASSWORD=PASSWORD mysql
+           mysql> GRANT SELECT ON upwatch.* TO probe@'192.168.1.23' IDENTIFIED BY 'PASSWD'
+        </literallayout>
+        <para>Do this for every host that runs probes.</para>
+        <para>Next user is for the background processing (user upwatch) and the php access (user uwww):</para>
+        <literallayout>
+           $ mysql -u root --PASSWORD=PASSWORD upwatch
+           mysql> GRANT SELECT, INSERT, UPDATE, DELETE ON `netland`.* TO 'upwatch'@'localhost' IDENTIFIED BY 'PASSWD'
+           mysql> GRANT SELECT, INSERT, UPDATE, DELETE ON `upwatch`.* TO 'upwatch'@'localhost' IDENTIFIED BY 'PASSWD'
+           mysql> GRANT SELECT, INSERT, UPDATE, DELETE, PROCESS ON `netland`.* TO 'uwww'@'localhost' IDENTIFIED BY 'PASSWD'
+           mysql> insert into pr_realm set name = 'netland', host = 'localhost', db = 'netland', user = 'upwatch', password = 'PASSWORD';
+        </literallayout>
+        <para>Now enter the database connection info in /etc/upwatch.conf. This is for example that file on the 
+        host that runs uw_process:</para>
+        <literallayout>
+          # Upwatch configuration file
+          # contains defaults for all modules
+          # these can be overridden in /etc/upwatch.d/&lt;module&gt;.conf
+          #
+
+          # group we belong to
+          groupid 2
+          
+          # debug mode
+          debug 2
+
+          # realm
+          realm netland
+
+          # log to syslog
+          syslog no
+
+          # log errors to stderr
+          stderr no
+
+          # log to logfile
+          logfile /var/log/upwatch/messages
+
+          # spooldirectory
+          spooldir /var/spool/upwatch
+
+          # connect to database
+          dbtype mysql
+          dbhost localhost
+          dbport 3306
+          dbname dymos
+          dbuser upwatch
+          dbpasswd PASSWORD
+        </literallayout>
+    </sect1>
+</chapter>

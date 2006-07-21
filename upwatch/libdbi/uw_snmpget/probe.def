@@ -1,0 +1,115 @@
+AutoGen Definitions mysql;
+#include probe_generic.def
+#include license_gpl.def
+
+probe = {
+  name = "snmpget";
+  id = 7;
+  descrip = "Query an SNMP variable using an SNMP GET";
+  addbyhand = "yes";
+  class = "";
+  graphgroup = "snmpget";
+  graphtypes = "default";
+  comment = "";
+  yellow = "3";
+  red = "5";
+  message = "Optional error message";
+
+  attribute = {
+    name = "id";
+    required = true;
+    descrip = "id of this probe in the database";
+  };
+
+  attribute = {
+    name = "realm";
+    required = true;
+    descrip = "database realm for these values";
+  };
+
+  attribute = {
+    name = "ipaddress";
+    default = "127.0.0.1";
+    descrip = "target ip address";
+  };
+
+  attribute = {
+    name = "date";
+    required = true;
+    descrip = "date/time for this result";
+  };
+
+  attribute = {
+    name = "expires";
+    required = true;
+    descrip = "when this result expires";
+  };
+
+  attribute = {
+    name = "color";
+    required = true;
+    descrip = "color as this probe thinks it should be";
+  };
+
+  attribute = {
+    name = "received";
+    default = "0";
+    descrip = "date/time this result was received by the upwatch server";
+  };
+
+  def = {
+    name = "community";
+    type = "char";
+    length = 24;
+    null = false;
+    default = "public";
+    descrip = "community string for SNMPv1/v2c transactions";
+  };
+  def = {
+    name = "OID";
+    type = "varchar";
+    length = 255;
+    null = false;
+    default = "";
+    descrip = "Object ID";
+  };
+  def = {
+    name = "dispname";
+    type = "char";
+    length = 24;
+    null = false;
+    default = "";
+    descrip = "Display Name";
+  };
+  def = {
+    name = "dispunit";
+    type = "char";
+    length = 24;
+    null = false;
+    default = "";
+    descrip = "Display Unit";
+  };
+  def = {
+    name = "multiplier";
+    type = "float";
+    null = false;
+    default = "1";
+    descrip = "Multiplier for result values";
+  };
+  def = {
+    name = "mode";
+    type = "enum";
+    enumval = "'absolute', 'relative'";
+    null = false;
+    default = "absolute";
+    descrip = "plot absolute or relative values";
+  };
+
+  result = {
+    name = "value";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "Value of OID queried";
+  };
+};

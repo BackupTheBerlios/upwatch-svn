@@ -1,0 +1,92 @@
+AutoGen Definitions mysql;
+#include probe_generic.def
+
+probe = {
+  name = "ping";
+  id = 2;
+  descrip = "send ICMP echo requests";
+  addbyhand = "yes";
+  class = "";
+  graphgroup = "valminmax";
+  graphtypes = "default";
+  comment = "";
+  yellow = "3";
+  red = "5";
+  message = "optional error message";
+  doc = 
+"Five ICMP echo requests are sent. For each request the time is measured 
+between the echo and the resulting ICMP reply packet.";
+
+  attribute = {
+    name = "id";
+    required = true;
+    descrip = "id of this probe in the database";
+  };
+
+  attribute = {
+    name = "realm";
+    required = true;
+    descrip = "database realm for these values";
+  };
+
+  attribute = {
+    name = "ipaddress";
+    default = "127.0.0.1";
+    descrip = "target ip address";
+  };
+  attribute = {
+    name = "date";
+    required = true;
+    descrip = "date/time for this result";
+  };
+  attribute = {
+    name = "expires";
+    required = true;
+    descrip = "when this result expires";
+  };
+
+  attribute = {
+    name = "color";
+    required = true;
+    descrip = "color as this probe thinks it should be";
+  };
+
+  attribute = {
+    name = "received";
+    default = "0";
+    descrip = "date/time this result was received by the upwatch server";
+  };
+
+  def = {
+    name = "count";
+    type = "int";
+    length = 2;
+    unsigned = true;
+    null = false;
+    default = "5";
+    descrip = "Number of ping packets to send";
+  };
+
+  result = {
+    name = "average";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "Average turn-around time";
+  };
+  result = {
+    name = "lowest";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "lowest turn-around time";
+  };
+  result = {
+    name = "highest";
+    type = "float";
+    null = false;
+    default = "0";
+    descrip = "highest turn-around time";
+  };
+};
+

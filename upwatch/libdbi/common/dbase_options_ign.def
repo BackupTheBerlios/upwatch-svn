@@ -1,0 +1,44 @@
+flag = {
+    name      = dbtype;
+    value     = T;        /* flag style option character */
+    arg-default = mysql;
+    arg_type  = string;   /* option argument indication  */
+    descrip   = "ignored";
+};
+
+flag = {
+    name      = dbhost;
+    value     = h;        /* flag style option character */
+    arg_type  = string;   /* option argument indication  */
+    descrip   = "ignored";
+};  
+    
+flag = {
+    name      = dbport;
+    arg_type  = numeric;   /* option argument indication  */
+    arg-default = 3306;
+    descrip   = "ignored";
+};  
+    
+flag = {
+    name      = dbname;
+    value     = n;        /* flag style option character */
+    arg_type  = string;   /* option argument indication  */
+    descrip   = "ignored";
+};  
+    
+flag = {
+    name      = dbuser;   
+    value     = u;        /* flag style option character */
+    arg_type  = string;   /* option argument indication  */
+    descrip   = "ignored";
+};
+
+flag = {
+    name      = dbpasswd;
+    value     = p;        /* flag style option character */
+    arg_type  = string;   /* option argument indication  */
+    descrip   = "ignored";
+};  
+
+

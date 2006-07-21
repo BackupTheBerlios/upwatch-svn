@@ -1,0 +1,2 @@
+green [LOGDATE] oafd: server_is_alive: cnx\[IDL:Bonobo/ConfigDatabase:[NUM]\.[NUM]\] = [HEX] 
+green [LOGDATE] oafd: server_is_alive: cnx\[IDL:Bonobo/ConfigDatabase:[NUM]\.[NUM]\] = \(nil\) 

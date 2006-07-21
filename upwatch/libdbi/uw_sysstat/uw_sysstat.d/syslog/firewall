@@ -1,0 +1,3 @@
+green [LOGDATE] firewall: Installing Firewall packet filter failed
+green [LOGDATE] firewall[PID]: Firewall stopped
+green [LOGDATE] firewall[PID]: Firewall stopping

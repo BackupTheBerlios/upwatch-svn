@@ -1,0 +1,31 @@
+green [LOGDATE] FaxGetty[PID]: ANSWER: Can not lock modem device
+green [LOGDATE] FaxGetty[PID]: ANSWER: DATA CONNECTION
+green [LOGDATE] FaxGetty[PID]: ANSWER: FAX CONNECTION
+green [LOGDATE] FaxGetty[PID]: ANSWER: Ring detected without successful handshake
+green [LOGDATE] FaxGetty[PID]: CAUGHT SIGNAL [NUM]
+green [LOGDATE] FaxGetty[PID]: CLOSE [PATH]
+green [LOGDATE] FaxGetty[PID]: GETTY: exit status [NUM]
+green [LOGDATE] FaxGetty[PID]: GETTY: START "[PATH] \+pap -chap", pid [NUM]
+green [LOGDATE] FaxGetty[PID]: HELLO
+green [LOGDATE] FaxGetty[PID]: MODEM MULTI-TECH SYSTEMS MT[NUM]ZPXI/[NUM]
+green [LOGDATE] FaxGetty[PID]: OPEN [PATH]
+green [LOGDATE] FaxGetty[PID]: [PATH]: Can not lock device\.
+green [LOGDATE] FaxGetty[PID]: Purge stale UUCP lock [PATH]
+green [LOGDATE] FaxGetty[PID]: RECV FAX \([NUM]\): from .*, page [NUM] in [NUM]:[NUM], INF, [NUM]\.[NUM] line/mm, [NUM]-D MR, [NUM] bit/s
+green [LOGDATE] FaxGetty[PID]: RECV FAX \([NUM]\): [PATH] from .*, route to <unspecified>, [NUM] pages in [NUM]:[NUM]
+green [LOGDATE] FaxQueuer[PID]: Copyright \(c\) [NUM]-[NUM]
+green [LOGDATE] FaxQueuer[PID]: HylaFAX \(tm\) Version
+green [LOGDATE] FaxQueuer[PID]: NOTIFY: bin/notify "doneq/q[NUM]" "(done|timedout|blocked|requeued)"
+green [LOGDATE] FaxQueuer[PID]: QUIT
+green [LOGDATE] FaxQueuer[PID]: SUBMIT JOB [NUM]
+green [LOGDATE] FaxSend[PID]: MODEM MULTI-TECH SYSTEMS MT[NUM]ZPXI/[NUM]
+green [LOGDATE] FaxSend[PID]: SEND FAILED: Busy signal detected
+green [LOGDATE] FaxSend[PID]: SEND FAILED: No answer \(T\.[NUM] T[NUM] timeout\)
+green [LOGDATE] FaxSend[PID]: SEND FAX: JOB [NUM] DEST [NUM]
+green [LOGDATE] hylafax: hfaxd shutdown failed
+green [LOGDATE] HylaFAX[PID]: Filesystem has SysV-style file creation semantics\.
+green [LOGDATE] HylaFAX[PID]: HylaFAX INET: bind \(port [NUM]\): Address already in use
+green [LOGDATE] HylaFAX[PID]: HylaFAX INET Protocol Server: restarted\.
+green [LOGDATE] HylaFAX[PID]: Warning, client address "[IPADDR]" is not listed for host name "[HOSTNAME]"\.
+green [LOGDATE] HylaFAX[PID]: Warning, no inverse address mapping for client host name "[HOSTNAME]"\.
+green [LOGDATE] hylafax: Shutting down HylaFAX queue manager:  failed

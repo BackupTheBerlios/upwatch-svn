@@ -1,0 +1,25 @@
+#!/bin/sh
+#
+# cronjob for upwatch
+# delete files in any /tmp directory that are older than 2 days
+
+cd /var/spool/upwatch
+for i in *
+do
+	find $i/tmp -type f -atime +2 -exec rm -f {} \;
+done
+
+# remove failed entries older than 3 days
+if [ -d /var/spool/upwatch/q_failed/new ]
+then
+  find /var/spool/upwatch/q_failed/new -type f -mtime +3 -exec rm -f {} \;
+fi
+
+# remove old data from the database
+if [ -x /usr/bin/uw_maint.pl ]
+then
+	/usr/bin/uw_maint.pl -l 5000
+fi
+
+# retrieve regex updates
+uw_fetch_regexes

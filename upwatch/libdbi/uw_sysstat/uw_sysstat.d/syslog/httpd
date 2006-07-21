@@ -1,0 +1,9 @@
+green [LOGDATE] httpd: \{[HOSTNAME]\}[USER]
+green [LOGDATE] httpd: httpd shutdown failed
+green [LOGDATE] httpd: imap: [NUM]
+green [LOGDATE] httpd: \{nbs\.\}user\.
+green [LOGDATE] httpd: [PATH] .*
+green [LOGDATE] httpd: \[[SMONTH] [LOGDATE]\] \[warn\] module mod_status\.c is already added, skipping
+green [LOGDATE] httpd: \[[SMONTH] [LOGDATE]\] \[warn\] module status_module is already loaded, skipping
+green [LOGDATE] httpd: \[[SMONTH] [LOGDATE]\] \[warn\] NameVirtualHost [IPADDR]:[NUM] has no VirtualHosts
+green [LOGDATE] httpd: [USER]

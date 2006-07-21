@@ -1,0 +1,13 @@
+green [LOGDATE] ntpd: ntpd startup succeeded
+green [LOGDATE] ntpd[PID]: ntp engine ready
+green [LOGDATE] ntpd[PID]: peer [IPADDR] now invalid
+green [LOGDATE] ntpd[PID]: peer [IPADDR] now valid
+green [LOGDATE] services[NUM] ntpd[PID]: listening on [IPADDR]
+green [LOGDATE] services[NUM] ntpd[PID]: ntp engine ready
+green [LOGDATE] services[NUM] ntpd[PID]: peer [IPADDR] now valid
+green [LOGDATE] ntpd[PID]: adjusting local clock by
+green [LOGDATE] ntpd[PID]: Terminating
+green [LOGDATE] ntpd[PID]: ntp engine exiting
+green [LOGDATE] ntpd[PID]: dispatch_imsg in main: pipe closed
+green [LOGDATE] ntpd[PID]: Lost child: child exited
+red [LOGDATE] ntpd[PID]: adjtime failed: Invalid argument

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<appendix id="Probe_specifications">
+   <title>Probe specifications</title>
+   &acceptbb-specs;
+   &httpget-specs;
+   &imap-specs;
+   &iptraf-specs;
+   &mssql-specs;
+   &mysql-specs;
+   &ping-specs;
+   &pop3-specs;
+   &postgresql-specs;
+   &smtp-specs;
+   &snmpget-specs;
+   &sysstat-specs;
+   &tcpconnect-specs;
+</appendix>

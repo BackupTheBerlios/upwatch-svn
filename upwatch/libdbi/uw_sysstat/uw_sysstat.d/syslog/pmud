@@ -1,0 +1,10 @@
+green [LOGDATE] pmud[PID]: battery critically low: request system sleep 
+green [LOGDATE] pmud[PID]: daemon stopped \(catched signal [NUM]\)
+green [LOGDATE] pmud[PID]: daemon stopped \(parent exiting \[note PID\]\)
+green [LOGDATE] pmud[PID]: going to sleep
+green [LOGDATE] pmud[PID]: initiating \[USER_\] sleep
+green [LOGDATE] pmud[PID]: lid closed: request sleep
+green [LOGDATE] pmud[PID]: PMU version [NUM]: iBook/G[NUM]
+green [LOGDATE] pmud[PID]: running [PATH] (lid-closed|lid-opened|maximum|minimum|sleep|wakeup|warning) (ac|battery)
+green [LOGDATE] pmud[PID]: system awake again
+green [LOGDATE] pmud: PMU version [NUM]: iBook/G[NUM]

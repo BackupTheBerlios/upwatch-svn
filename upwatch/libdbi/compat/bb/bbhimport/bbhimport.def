@@ -1,0 +1,27 @@
+AutoGen Definitions options;
+export        = "#define progOptions bbhimportOptions";
+prog-name     = bbhimport;
+prog-title    = "Upwatch Big Brother import utility";
+version       = `cat $TOP_SRCDIR/VERSION`;
+homerc        = "/etc/upwatch.conf";
+homerc        = "$HOME/.upwatchrc";
+homerc        = "$$/upwatch.conf";
+detail        = 
+'bbhimport reads the bb-hosts file from a Big Brother installation
+to allow easy transitioning from BB to Upwatch';
+
+// describe commandline flags
+flag = {
+    name      = input;
+    must-set;
+    value     = I;
+    arg_type  = string;
+    descrip   = "path to inputfile in Big Brother bb-hosts format";
+    doc       =
+'From this file all BB probes are read and inserted in the database.';
+};
+
+#include dbase_options.def
+#include generic_options.def
+#include license_gpl.def
+

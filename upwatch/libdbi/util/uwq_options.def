@@ -1,0 +1,41 @@
+AutoGen Definitions options;
+export        = "#define progOptions uwqOptions";
+prog-name     = uwq;
+prog-title    = "print a list of upwatch queue statuses";
+version       = `cat ../VERSION`;
+homerc        = `echo $sysconfdir/upwatch.conf`;
+homerc        = "$HOME/.upwatchrc";
+homerc        = "$$/upwatch.conf";
+
+detail        = 
+'This utility lists an overview of the status of the queues';
+
+argument      = "[string]";
+
+// describe commandline flags
+flag = {
+    name      = spooldir;
+    value     = S;
+    arg_type  = string;
+    descrip   = "maildir-type spooldirectory for result files";
+    doc       =
+'This parameter denotes the basedirectory for reading input files. 
+Inside this directory directories called `tmp` and `new` should exist. All files
+will be read from `new`.'; 
+};
+
+flag = {
+    name      = no-stat;
+    value     = n;
+    arg_type  = bool;
+    descrip   = "Don't stat() every file for date/time";
+    doc       =
+'For really long queues, this option speeds up display';
+};
+
+#include license_gpl.def
+#include minimal_options.def
+
+#include dbase_options_ign.def
+#include generic_options_ign.def
+#include option_realm_ign.def

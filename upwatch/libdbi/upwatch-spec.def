@@ -1,0 +1,23 @@
+AutoGen Definitions upwatch-spec;
+
+version = `cat VERSION`;
+release = `cat RELEASE`;
+#shell 
+for i in $MONITORPROG
+do
+	echo "monitorprog = \""$i"\";"
+done
+for i in $CLIENTPROG
+do
+	echo "clientprog = \""$i"\";"
+done
+for i in $SERVERPROG
+do
+	echo "serverprog = \""$i"\";"
+done
+for i in $EXTRAPROG
+do
+	echo "extraprog = \""$i"\";"
+done
+#endshell
+

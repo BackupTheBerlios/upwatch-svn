@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<chapter id="How_it_all_works">
+    <title>How it all works</title>
+    <sect1 id="General_Overview">
+        <title>General Overview</title>
+        <para> The system primary function is to fill lots of database tables, to offer views on
+            those tables, and to page operators in case things go wrong. To enable this upwatch
+            consists of a MySQL database, lots of probe daemons (one daemon per probe, usually one probe
+            per daemon), some supporting daemons, a PHP website, and other software, like SMS and mail interfaces.</para>
+        <para>The software can be divided into four parts:</para>
+        <itemizedlist>
+            <listitem><para>upwatch client - runs on a machine</para></listitem>
+            <listitem><para>server, accepts and processes results</para></listitem>
+            <listitem><para>monitors, contains software for remotely monitoring.</para></listitem>
+            <listitem><para>special software, like iptraf</para></listitem>
+        </itemizedlist>        
+        <sect2 id="upwatch_client">
+        <title>The Upwatch client</title>
+        <para>The client consists of two programs: <filename>uw_sysstat</filename> and 
+        <filename>uw_send</filename>. <filename>uw_sysstat</filename> every minute collects
+         information like CPU load, disk I/O, swapping activity and so on, and writes it to an XML file
+         in the spooldirectory. This directory is checked every 5 seconds, and all files appearing there
+         are sent by uw_send to the central repository. <filename>uw_send</filename> has a 
+         commandline option (--once) to let it be started by cronjobs, or for example when an ISDN
+         connection has become online.</para>
+        </sect2>
+        <sect2 id="upwatch_server">
+        <title>The Upwatch server</title>
+        <para>The server consists of three programs: <filename>uw_accept</filename>, 
+        <filename>uw_setip</filename> and 
+        <filename>uw_process</filename>. The monitoring results are accept by 
+        <filename>uw_accept</filename> which listen on port 1985 (configurable), and drop 
+        the XML results into the <filename>uw_process</filename> spool directory, where it
+        is picked up, and stored into the database by <filename>uw_process</filename>.
+        For compatibility with Big Brother (www.bb4.com) clients, there is an <filename>uw_acceptbb</filename>
+        daemon, which listens on the Big Brother port (1984), and converts Big Brother messages into
+        upwatch XML files (Note: all bb clients are assumed to be in the same timezone. Converting charactermode
+        datestamps back to epoch time is unsupported, because timezone names are not unique).
+        Lastly, <filename>uw_setip</filename> listens to messages from the
+        uw_tellip script, which should be started by clients whenever their IP address changes.
+        </para>
+        </sect2>
+        <sect2 id="upwatch_monitors">
+        <title>The Upwatch monitors</title>
+        <para>The monitors are daemons that run on some central monitoring server, and run checks
+        on servers remotely, such as POP3, HTTP, SNMP or other services. Alll their results are
+        sent by <filename>uw_send</filename>, as usual.
+        </para>
+        </sect2>
+        <sect2 id="upwatch_iptraf">
+        <title>Special programs</title>
+        <para>Their are special programs that don't fall into any other category, for example 
+        <filename>uw_iptraf</filename>. This is a daemon that should run on a border gateway
+        router, and that measures IP traffic on a per-IP basis.
+        </para>
+        </sect2>
+     </sect1>
+     <sect1 id="Detailed_Description">
+        <title>A Detailed Description</title>
+        <sect2 id="Database_Layout">
+        <title>Database Layout</title>        
+        <para>Things start at the database. For every probe it contains the following tables:</para>
+        <itemizedlist>
+            <listitem><para>Definition table</para></listitem>
+            <listitem><para>Raw results table</para></listitem>
+            <listitem><para>Tables for compressed results per day, week, month, year and 5 year</para></listitem>
+            <listitem><para>A table with an overview of state changes</para></listitem>
+        </itemizedlist>
+        <para> The definition table contains, of course, the definition of this particular
+            probe, this is of course probe specific but at a minimum it contains usually contains the target ip address.
+            We'll see what the other tables are for later on.</para>
+       </sect2>
+       <sect2 id="What_a_probe_does">
+        <title>What a probe does</title>
+        <para>There are actually three kinds of probes:
+        <itemizedlist>
+           <listitem><para>Probes with database access, that measure a remote server</para></listitem>
+           <listitem><para>Probes without database access the measure remote servers</para></listitem>
+           <listitem><para>Probes without database access thatg measure localhost</para></listitem>
+        </itemizedlist>
+	   Every probe performs a repetative task: measuring some specific function on a specific host.
+           So first step is to know what to measure and on which host. For this it reads from the probe definition
+           table, or from its configfile if it does not depend on database access It creates a local - in memory -
+           copy of that table just in case the database becomes unreachable
+           for a period of time. It routinely walks this list and performs its task. The result are written in XML format
+           to a queue which is specified in the probe configuration (note: all queues normally reside in
+          <filename>/var/spool/upwatch</filename>). After that the probe just waits for the next round.
+       </para>
+       <para> Many probes have to do a lot of work. They are programmed to do this as efficient as possible.
+          For example: the uw_ping probe is coded as a tight loop around a single select statement. This is the
+          most efficient way (as far as I know) to ping thousands of hosts in, say, 20 seconds.
+          Other probes use pools of threads (like <varname>httpget</varname>) or are build using the
+          State Threads library.</para>
+       </sect2>
+       <sect2 id="What_happens_to_the_probe_results">
+        <title>What happens to the probe results?</title>
+        <para>First, all results with status non-green are handed over to <varname>uw_examine</varname>, which tries to
+           find out why the probe failed, and attaches a report to the probe. After this the results are put in
+           the same queue as every other probe: <varname>uw_notify</varname>.
+           <varname>uw_notify</varname> reads the result, looks at the probe status, and at previous statuses, and
+           decides if someone should be notified by sms, email, or if it should be put into a high-priority queue.
+        </para>
+        <para> The outgoing queue may be either the <varname>uw_process</varname> queue, or an
+           <varname>uw_send</varname> queue, which is emptied by the uw_send process which sends
+           all files to a remote queue on another host (received and queued by uw_accept).
+        </para>
+        <para> <varname>uw_examine</varname> can do some additional tests like traceroute to the target host.
+           It attaches this report
+           to the probe result, and in its turn puts everything in an <varname>uw_process</varname> or
+           <varname>uw_send</varname> queue.</para>
+       </sect2>
+       <sect2 id="uw_process_storing_results_in_the_database">
+        <title>uw_process: storing results in the database</title>
+        <para> When the probe results arrive in the uw_process queue it is picked up by the workhorse
+           of the lot, <varname>uw_process</varname>. It fills the result tables for the probes.</para>
+        <para> The raw results table contains just that, raw probe results.</para>
+        <para> Raw results are compressed into period tables in the following way (using week as
+            an example): a week is divided into 100 equal timeslots. For computing the plot
+            values for a slot the process reads all values from the day table in the same timeslot.
+            These values are averaged and put in the week table. The same process happens for
+            the month and year
+            tables. This way we ensure that we never have to read more then 100 database records
+            to produce a graph for a day, week, month, year or 5-year period.
+        </para>
+        <para> Status changes are logged in a 'current status' table and in a status history (pr_hist). These
+          two accomodate for easy retrieval by the webpages.</para>
+          <para>The pseudo-code below shows an example of how uw_process takes a probe result
+          and puts this result in the database. as an example I'll take a pop3 result (class = 5, and our example
+          probe has id 25)</para>
+      <para>
+      <literallayout>
+         IF PROBEDEFINITION NOT IN THE CACHE OR IT'S TOO OLD
+            select server, color, stattime, yellow, red from pr_status where  class = '8' and probe = '25'"
+            IF NOT FOUND IN STATUS FILE
+               select server, yellow, red  from   pr_pop3_def where  id = '25'
+               IF NOT FOUND IN DEFINITION TABLE
+                  SKIP THIS PROBE
+                  probes without id (because they don't have database access) may be added here
+               ENDIF not in definition table
+            ENDIF not in status file
+            GET MOST RECENT PROBE RESULT TIME:
+            select stattime from pr_pop3_raw use index(probstat) where probe = '25' order by stattime desc limit 1
+         ENDIF not in cache
+         STORE RESULT:
+         insert into pr_pop3_raw set probe = '25', yellow = '1', red = '2', stattime = 'xxxxx', color = 'xx',  
+           connect = '1', total = '2', message = 'none'
+         IF CURRENT PROBE IS NEWER THEN ANY WE'VE SEEN SO FAR
+            copy previous record stattime from def record
+         ELSE
+            select   color, stattime from pr_pop3_raw use index(probstat) where probe = '25' and stattime &lt; 'xxxx'
+            order by stattime desc limit 1
+         ENDIF
+
+         IF THIS IS THE FIRST RESULT EVER SEEN FOR THIS PROBE
+            insert into pr_status set class = '8', probe = '25', stattime = 'xxx', expires = 'xxx', color = '200', 
+               server = '2', message = 'none', yellow = '1', red = '2'
+         ELSE IF WE HAVE NOT SEEN THIS PROBE BEFORE
+            IF THE COLOR DIFFERS FROM THE PREVIOUS RECORD
+               CREATE HISTORY RECORD:
+               insert into pr_hist set server = '2', class = '8', probe = '25', stattime = 'xxx', prv_color = '500', color = '200', message = 'none'
+               RETRIEVE FOLLOWING RECORD:
+               select color, stattime from pr_pop3_raw use index(probstat) where probe = '25' and stattime &lt; 'xxxx' 
+               order by stattime desc limit 1
+               IF FOUND AND HAS THE SAME COLOR DELETE ANY HISTORY RECORDS:
+                  delete from pr_hist where stattime = 'xxxx' and probe = '25' and class = '8'
+	          delete from pr_status where stattime = 'xxx' and probe = '25' and class = '8'
+               ENDIF following found and has same color
+               IF CURRENT RECORD IS THE NEWEST UPDATE STATUS AND SERVER STATUS
+                  update pr_status set stattime = 'xxx', expires = 'xxxy', color = '200', message = 'none', yellow = '1', red = '2' 
+                  where probe = '25' and class = '8'
+                  update server set color = '20' where id = '2'
+               ENDIF newest
+            ENDIF color differs
+            IF CURRENT RAW RECORD IS THE MOST RECENT
+               FOR EACH PERIOD
+                  IF WE ENTERED A SLOT TIMESLOT IN THE PERIOD
+                     SUMMARIZE:
+                     select avg(connect), avg(total), max(color), avg(yellow), avg(red) from pr_pop3_day use index(probstat) 
+                     where probe = '25' and stattime &gt;= slotlow and stattime &lt; slothigh
+                     insert into pr_pop3_week set connect = '1', total = '2', probe = 25, color = '200', stattime = slot, 
+                        yellow = '1', red = '2', slot = '34'
+                  ENDIF
+               ENDFOR
+            ELSE
+              FOR EACH PERIOD
+                IF THE FIRST RECORD FOR THE NEXT SLOT HAS BEEN SEEN
+                   RE-SUMMARIZE CURRENT SLOT
+                   select avg(connect), avg(total), max(color), avg(yellow), avg(red) from pr_pop3_day use index(probstat) 
+                   where probe = '25' and stattime &gt;= slotlow and stattime &lt; slothigh
+                   insert into pr_pop3_week set connect = '1', total = '2', probe = 25, color = '200', stattime = slot, yellow = '1', 
+                      red = '2', slot = '34'
+                ENDIF
+            ENDIF
+         ENDIF
+      </literallayout>
+      </para>
+    </sect2>
+    </sect1>
+    <sect1 id="Scaling_up">
+        <title>Scaling up</title>
+        <para> Various parts of the system may need more resources. Luckily Upwatch is designed
+           to scale up considerably. Of course it cannot scale infinately. The last bottleneck will
+           probably be the database. Although MySQL is known for its speed, even that has its limits.
+        </para>
+        <para> The probes may be scaled up, sometimes by giving them more filehandles, later by moving them to another host</para>
+        <para> The website may be scaled up by spreading it out across several hosts</para>
+        <para> The database may be scaled up by putting it on separate hardware, using faster CPU and
+          more spindles (disks), and ultimately using MySQL mirrorring to divide reading and
+          writing across separate machines, or spreading out the tables across multtiple machines. 
+          MySQL has lots of info on increasing performance..</para>
+    </sect1>
+</chapter>

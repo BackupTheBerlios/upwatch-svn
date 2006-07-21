@@ -1,0 +1,4 @@
+green [LOGDATE] anacron[PID]: Job `[PATH]' terminated
+green [LOGDATE] anacron[PID]: Normal exit \([NUM] jobs run\)
+green [LOGDATE] anacron[PID]: Updated timestamp for job `[PATH]' to \d\d\d\d-\d\d-\d\d
+green [LOGDATE] anacron[PID]: Will run job `[PATH]' in [NUM] min\.

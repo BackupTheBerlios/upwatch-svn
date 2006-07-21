@@ -1,0 +1,80 @@
+AutoGen Definitions options;
+export        = "#define progOptions uw_acceptOptions";
+prog-name     = uw_accept;
+prog-title    = "Upwatch daemon for accepting reports";
+version       = `cat ../VERSION`;
+homerc        = `echo $sysconfdir/upwatch.conf`;
+homerc        = `echo $confdir/uw_accept.conf`;
+homerc        = "$HOME/.upwatchrc";
+homerc        = "$HOME";
+homerc        = "$$/upwatch.conf";
+homerc        = "$$/uw_accept.conf";
+
+detail        = 
+'uw_accept listens on port 1985 for incoming upwatch reports.
+Using a POP3-like protocol it asks for a username and password
+and copies incoming files to a queue.';
+
+// this section is for the generated specfile 
+spec-requires = "/usr/bin/mysql glib2";
+spec-files = `echo "%attr(0770,root,upwatch)" $sbindir/uw_accept`;
+
+// describe commandline flags
+flag = {
+    must-set;
+    name      = bind;
+    value     = b;        /* flag style option character */
+    arg_default  = "*";
+    arg_type  = string; 
+    descrip   = "local ip address to bind to (* for all)";
+};
+
+flag = {
+    must-set;
+    name      = listen;
+    value     = l;        /* flag style option character */
+    arg_default  = 1985;  /* option argument indication  */
+    arg_type  = number;   /* option argument indication  */
+    max       = NOLIMIT;  /* occurrence limit (none)     */
+    descrip   = "port to listen to";
+};
+
+flag = {
+    name      = authquery;
+    value     = A;
+    arg_type  = string;
+    arg_default = "select id from contact where username = '%.16s' and password = '%.8s'";
+    descrip   = "SQL query to use for authenticating connections";
+    doc       =
+'Every connection to uw_accept should login first with user/pass combination
+(just like POP3). This query will be issued after that, and it should return
+exactly one row for authentication to succeed.';
+};
+
+flag = {
+    name      = output;
+    value     = O;
+    stack_arg;
+    arg_type  = string;
+    descrip   = "name of queue to drop results";
+    doc       =
+'The argument is taken to be a maildir under the directory `spooldir`.
+All results are placed in this queue. This usually will be the uw_process queue.
+This flag may be given multiple times.';
+};
+
+flag = {
+    name      = spooldir;
+    value     = S;
+    arg_type  = string;
+    descrip   = "maildir-type spooldirectory for result files";
+    doc       =
+'This probe generates files with data. These are put in maildir style
+spooldirectories. This parameter denotes the basedirectory.
+For some more info about maildir see http://www.qmail.org/man/man5/maildir.html.';
+};
+
+#include license_gpl.def
+#include dbase_options.def
+#include generic_options.def
+

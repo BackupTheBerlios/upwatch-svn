@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sect1 id="Template">
+   <title>Template</title>
+   <para> The template probe ...
+   </para>
+   <sect2 id="Template_result_record">
+      <title>Template result record</title>
+      <table label="template result record layout" pgwide="1"><title>template result record layout</title>
+         <tgroup cols = "2">
+            <colspec colname = "1" colnum = "1" colwidth = "1.0in"/>
+            <colspec colname = "2" colnum = "2" colwidth = "4.0in"/>
+            <tbody>
+               <row>
+                  <entry colname = "1"><para><emphasis>Field:</emphasis></para></entry>
+                  <entry colname = "2"><para><emphasis>Type</emphasis></para></entry>
+               </row>
+               <row>
+                  <entry colname = "1"><para><emphasis>.....</emphasis></para></entry>
+                  <entry colname = "2"><para><emphasis>Standard header fields...</emphasis></para></entry>
+               </row>
+               <row>
+                  <entry colname = "1">
+                     <indexterm><primary>fields</primary><secondary>somevalue</secondary></indexterm>
+                     <para>somevalue</para>
+                  </entry>
+                  <entry colname = "2"><para>somevalue explanation</para></entry>
+               </row>
+            </tbody>
+         </tgroup>
+      </table>
+      <para> Any lines following the header record contain error messages.
+      </para>
+   </sect2>
+   <sect2 id="Template_database_layout">
+      <title>Template database layout</title>
+
+      <table label="template result record layout" pgwide="1"><title>template result record layout</title>
+         <tgroup cols = "6">
+            <colspec colname = "Field" colnum = "1" colwidth = "1.0in"/>
+            <colspec colname = "Type" colnum = "2" colwidth = "1.0in"/>
+            <colspec colname = "Null" colnum = "3" colwidth = "0.4in"/>
+            <colspec colname = "Key" colnum = "4" colwidth = "0.4in"/>
+            <colspec colname = "Default" colnum = "5" colwidth = "0.4in"/>
+            <colspec colname = "Extra" colnum = "6" colwidth = "2.0in"/>
+            <tbody>
+               <row>
+                  <entry colname = "Field"><para>Field </para></entry>
+                  <entry colname = "Type"><para>Type </para></entry>
+                  <entry colname = "Null"><para>Null </para></entry>
+                  <entry colname = "Key"><para>Key </para></entry>
+                  <entry colname = "Default"><para>Default </para></entry>
+                  <entry colname = "Extra"><para>Extra </para></entry>
+               </row>
+               <row>
+                  <entry colname = "Field"><para>id </para></entry>
+                  <entry colname = "Type"><para>int(8) </para></entry>
+                  <entry colname = "Null"><para> </para></entry>
+                  <entry colname = "Key"><para>PRI </para></entry>
+                  <entry colname = "Default"><para>NULL </para></entry>
+                  <entry colname = "Extra"><para>auto_increment </para></entry>
+               </row>
+           </tbody>
+         </tgroup>
+      </table>
+      <para></para>
+   </sect2>
+   <sect2 id="uw_template_daemon">
+      <title>uw_template daemon</title>
+      <para></para>
+   </sect2>
+</sect1>

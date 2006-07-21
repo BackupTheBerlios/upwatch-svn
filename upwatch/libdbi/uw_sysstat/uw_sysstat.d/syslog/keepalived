@@ -1,0 +1,29 @@
+green [LOGDATE] Keepalived_vrrp: Remote SMTP server \[[IPADDR]:[NUM]\] connected.
+green [LOGDATE] Keepalived_vrrp: SMTP alert successfully sent.
+green [LOGDATE] Keepalived_vrrp: VRRP_Group(SARA_S) Syncing instances to (MASTER|BACKUP) state
+green [LOGDATE] Keepalived_vrrp: VRRP_Instance(VI_eth[NUM]) Entering BACKUP STATE
+green [LOGDATE] Keepalived_vrrp: VRRP_Instance(VI_eth[NUM]) Received higher prio advert
+green [LOGDATE] Keepalived_vrrp: VRRP_Instance(VI_eth[NUM]) removing protocol Virtual Routes
+green [LOGDATE] Keepalived_vrrp: VRRP_Instance(VI_eth[NUM]) Transition to MASTER STATE
+ignore [LOGDATE] Keepalived: Watchdog: Error while sending data to Healthcheck Child\. error=\(Broken pipe\)\.
+green [LOGDATE] Keepalived: Watchdog: success connecting /tmp/\.healthcheckers wdog socket
+green [LOGDATE] Keepalived: Watchdog: Healthcheck Child no longer exist, restarting\.\.\.
+green [LOGDATE] Keepalived: Remove a zombie pid file /var/run/keepalived_checkers.pid
+green [LOGDATE] Keepalived_healthcheckers: Timeout connect, timeout server \[[IPADDR]:[NUM]\]\.
+green [LOGDATE] Keepalived_healthcheckers: Removing service \[[IPADDR]:[NUM]\] from VS \[[IPADDR]:[NUM]\]
+green [LOGDATE] Keepalived_healthcheckers: Remote SMTP server \[[IPADDR]:[NUM]\] connected\.
+green [LOGDATE] Keepalived_healthcheckers: SMTP alert successfully sent\.
+green [LOGDATE] Keepalived_healthcheckers: HTTP status code success to \[[IPADDR]:[NUM]\] url\([NUM]\)\.
+green [LOGDATE] Keepalived_healthcheckers: Remote Web server \[[IPADDR]:[NUM]\] succeed on service\.
+green [LOGDATE] Keepalived_healthcheckers: Adding service \[[IPADDR]:[NUM]\] to VS \[[IPADDR]:[NUM]\]
+green [LOGDATE] Keepalived_healthcheckers: Connection trouble to: \[[IPADDR]:[NUM]\]\.
+green [LOGDATE] Keepalived_healthcheckers: Read error with server \[[IPADDR]:[NUM]\]: Connection reset by peer
+ignore [LOGDATE] Keepalived_healthcheckers: Error connecting server \[[IPADDR]:[NUM]\]\.
+green [LOGDATE] Keepalived_healthcheckers: Timeout WEB read server \[[IPADDR]:[NUM]\]\.
+green [LOGDATE] Keepalived_healthcheckers: Netlink reflector reports IP [IPADDR] added
+green [LOGDATE] Keepalived_healthcheckers: Registering Kernel netlink reflector
+green [LOGDATE] Keepalived_healthcheckers: Registering Kernel netlink comand channel
+green [LOGDATE] Keepalived_healthcheckers: Configuration is using : [NUM] Bytes
+green [LOGDATE] Keepalived_healthcheckers: IPVS : Service already exists
+green [LOGDATE] Keepalived_healthcheckers: IPVS : Destination already exists
+green [LOGDATE] Keepalived_healthcheckers: Activating healtchecker for service \[[IPADDR]:[NUM]\]

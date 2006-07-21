@@ -1,0 +1,8 @@
+green [LOGDATE] squid:\s*$
+green [LOGDATE] squid: \.
+green [LOGDATE] squid: done
+green [LOGDATE] squid: init_cache_dir ufs\.\.\. 
+green [LOGDATE] squid: \^\[\[[NUM]G
+green [LOGDATE] squid: squid
+green [LOGDATE] squid: Stopping squid: 
+green [LOGDATE] squid[PID]: Squid Parent: child process [NUM] exited with status 0

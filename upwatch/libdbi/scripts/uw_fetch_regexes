@@ -1,0 +1,10 @@
+#!/bin/sh
+#
+# retrieve updated regexes from central server
+
+cd /etc/upwatch.d/uw_sysstat.d
+wget -q -r -N -nH --retr-symlinks --cut-dirs=5 ftp://ftp.upwatch.nl/pub/upwatch/upwatch/regex/linux
+chown root:upwatch -R .
+find . -type f -exec chmod 660 {} \;
+find . -type d -exec chmod 770 {} \;
+

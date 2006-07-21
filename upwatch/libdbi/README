@@ -1,0 +1,18 @@
+This is version 0.98 of UpWatch, a device monitoring and statistics
+framework. UpWatch boasts extendability, extreme speed and scalability,
+useful statistics and graphs, and a web interface.
+
+Currently it uses PHP, MySQL, and the daemons are written in C.
+ 
+SVN =================================================================
+
+If you have SVN access, issue the following commands:
+
+svn checkout svn://svn.berlios.de/upwatch/upwatch/trunk upwatch
+cd upwatch
+cfg/bootstrap
+./configure
+make
+
+Use `make rpm` to create rpm files.
+

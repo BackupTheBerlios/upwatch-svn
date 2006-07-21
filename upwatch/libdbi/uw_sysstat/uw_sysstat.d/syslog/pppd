@@ -1,0 +1,13 @@
+green [LOGDATE] pppd[PID]: CCP terminated by peer
+green [LOGDATE] pppd[PID]: Compression disabled by peer\.
+green [LOGDATE] pppd[PID]: Connection terminated\.
+green [LOGDATE] pppd[PID]: Connect: ppp[NUM] <--> [PATH]
+green [LOGDATE] pppd[PID]: Connect time [NUM]\.[NUM] minutes\.
+green [LOGDATE] pppd[PID]: Exit\.
+green [LOGDATE] pppd[PID]: Hangup \(SIGHUP\)
+green [LOGDATE] pppd[PID]: LCP terminated by peer
+green [LOGDATE] pppd[PID]: local  IP address [IPADDR]
+green [LOGDATE] pppd[PID]: Modem hangup
+green [LOGDATE] pppd[PID]: remote IP address [IPADDR]
+green [LOGDATE] pppd[PID]: Sent [NUM] bytes, received [NUM] bytes\.
+green [LOGDATE] pppd[PID]: Using interface ppp[NUM]
