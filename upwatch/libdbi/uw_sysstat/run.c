@@ -22,6 +22,11 @@
 #if USE_XMBMON
 #include "mbmon.h"
 #endif
+#ifdef __OpenBSD__
+#include <sys/param.h>
+#include <sys/sysctl.h>
+#include <sys/sensors.h>
+#endif
 
 char ipaddress[24];
 
@@ -54,7 +59,7 @@ typedef struct {
 } stats_t;
 stats_t st;
 
-#if USE_XMBMON
+#if USE_XMBMON|| defined (__OpenBSD__)
 typedef struct {
   float temp1;
   float temp2;
@@ -111,6 +116,61 @@ void get_hwstats(void)
   getVolt(&hw.vc0, &hw.vc1, &hw.v33, &hw.v50p, &hw.v50n, &hw.v12p, &hw.v12n);
   //printf(" Vcore = %4.2f, %4.2f; Volt. = %4.2f, %4.2f, %5.2f, %6.2f, %5.2f\n", 
   //       hw.vc0, hw.vc1, hw.v33, hw.v50p, hw.v12p, hw.v12n, hw.v50n);
+}
+#endif
+#ifdef __OpenBSD__
+void get_hwstats(void)
+{
+  int i;
+  struct sensor s; 
+  size_t slen = sizeof(s); 
+  float value;
+  for (i=0;i<256;i++)
+  {
+    int mib[] = { CTL_HW, HW_SENSORS, i }; 
+    if ( sysctl(mib, sizeof(mib)/sizeof(mib[0]), &s, &slen, NULL, 0) == -1 ) continue;
+    if (s.flags & SENSOR_FINVALID) continue;
+
+    /* Ok, we have a valid sensor now, now check the type */
+    switch (s.type) {
+      case SENSOR_TEMP:
+              if ( debug > 5 ) printf("Sensor %d is a temparature sensor\n", s.num);
+              value = (s.value - 273150000) / 1000000.0;
+              if(strcmp(s.desc,"Temp1")==0)  hw.temp1 = value; 
+              if(strcmp(s.desc,"Temp2")==0)  hw.temp2 = value;
+              if(strcmp(s.desc,"Temp3")==0)  hw.temp3 = value;
+
+	      // The admtmp driver only tells us about Internal and External temperatures
+              if(strcmp(s.desc,"External Temp")==0 && strncmp(s.device,"admtemp", 7) == 0)  hw.temp1 = value; 
+              if(strcmp(s.desc,"Internal Temp")==0 && strncmp(s.device,"admtemp", 7) == 0)  hw.temp2 = value; 
+
+              break;
+      case SENSOR_FANRPM:
+              if ( debug > 4 ) printf("Sensor %d is a fan speed sensor\n", s.num);
+              if(strcmp(s.desc,"Fan1")==0)  hw.rot1 = (int) s.value;
+              if(strcmp(s.desc,"Fan2")==0)  hw.rot2 = (int) s.value;
+              if(strcmp(s.desc,"Fan3")==0)  hw.rot3 = (int) s.value;
+              break;
+      case SENSOR_VOLTS_DC:
+              if ( debug > 5 ) printf("Sensor %d is a voltage sensor\n", s.num);
+              value = s.value / 1000000.0;
+              if(strcmp(s.desc,"VCore A")==0)  hw.vc0 = value;
+              if(strcmp(s.desc,"VCore B")==0)  hw.vc1 = value;
+              if(strcmp(s.desc,"+3.3V")==0)  hw.v33 = value;
+              if(strcmp(s.desc,"+5V")==0)  hw.v50p = value;
+              if(strcmp(s.desc,"+12V")==0)  hw.v12p = value;
+              if(strcmp(s.desc,"-12V")==0)  hw.v12n = value;
+              if(strcmp(s.desc,"-5V")==0)  hw.v50n = value;
+              break;
+      default:
+              if ( debug > 5 ) printf("Sensor hw.sensors.%d is of a unknown type! It describes itselve as: %s\n", s.num, s.desc);
+              break;
+    }
+  }
+  if ( debug > 4 ) printf("Temp = %4.1f, %4.1f, %4.1f;",hw.temp1, hw.temp2, hw.temp3);
+  if ( debug > 4 ) printf("Rot = %4d, %4d, %4d\n", hw.rot1, hw.rot2, hw.rot3);
+  if ( debug > 4 ) printf("Vcore = %4.2f, %4.2f\nVolt = %4.2f, %4.2f, %5.2f, %6.2f, %5.2f\n", 
+         hw.vc0, hw.vc1, hw.v33, hw.v50p, hw.v12p, hw.v12n, hw.v50n);
 }
 #endif
 
@@ -225,7 +285,7 @@ int init(void)
 
   if (HAVE_OPT(ERRLOG)) {
     int ct  = STACKCT_OPT(ERRLOG);
-    char **errlog = STACKLST_OPT(ERRLOG);
+    char **errlog = (char **) &STACKLST_OPT(ERRLOG);
     for (idx=0, i=0; i < ct && idx < 255; i++) {
       char *start, *end;
   
@@ -317,9 +377,6 @@ xmlNodePtr newnode(xmlDocPtr doc, char *name)
   time_t now = time(NULL);
 
   node = xmlNewChild(xmlDocGetRootElement(doc), NULL, name, NULL);
-  if (HAVE_OPT(DOMAIN)) {
-    xmlSetProp(node, "domain", OPT_ARG(DOMAIN));
-  }
   if (HAVE_OPT(REALM)) {
     xmlSetProp(node, "realm", OPT_ARG(REALM));
   }
@@ -333,7 +390,7 @@ xmlNodePtr newnode(xmlDocPtr doc, char *name)
   return node;
 }
 
-#if USE_XMBMON
+#if USE_XMBMON || defined (__OpenBSD__)
 void add_hwstat(xmlNodePtr node)
 {
   char buffer[24];
@@ -511,20 +568,36 @@ void add_diskfree_info(xmlNodePtr node)
 {
   float fullest = 0.0;
   char info[32768];
+  int i, ignore;
 
   if (st.disk) {
     sg_fs_stats *disk_stat_ptr = st.disk;
     int counter;
 
-    for (counter=0; counter < st.disk_entries; counter++){
+    for (counter=0, ignore=0; counter < st.disk_entries; counter++){
       float use;
-      use = 100.00 * ((float) disk_stat_ptr->used / (float) (disk_stat_ptr->used + disk_stat_ptr->avail));
-      if (use > fullest) fullest = use;
-      disk_stat_ptr++;
+
+    if (HAVE_OPT( IGNOREDISKFREE )) {
+        int     ct = STACKCT_OPT(  IGNOREDISKFREE );
+        char**  pp = (char **) &STACKLST_OPT( IGNOREDISKFREE );
+
+        do  {
+            char* p = *pp++;
+            if (strcmp(disk_stat_ptr->device_name, p) ==0 ) ignore=1;
+        } while (--ct > 0);
+    }
+
+     if (ignore == 0 ) {
+        use = 100.00 * ((float) disk_stat_ptr->used / (float) (disk_stat_ptr->used + disk_stat_ptr->avail));
+        if (use > fullest) fullest = use;
+      }
+      ignore=0; /* Reset the ignore flag */
+      disk_stat_ptr++; /* next partition please */
     }
   }
 
-  if (fullest > OPT_VALUE_DISKFREE_YELLOW) { // if some disk is more then 80% full give `df` listing
+  if (fullest > OPT_VALUE_DISKFREE_YELLOW) { // if some disk is more then the yellow treshold full give `df` listing
+
     char cmd[1024];
     char buffer[24];
     FILE *in;
@@ -567,7 +640,7 @@ int run(void)
   xmlDocPtr doc;
   xmlNodePtr node;
   int ct  = STACKCT_OPT(OUTPUT);
-  char **output = STACKLST_OPT(OUTPUT);
+  char **output = (char **) &STACKLST_OPT(OUTPUT);
   GString *log;
   int i;
   int color;
@@ -600,8 +673,8 @@ extern int forever;
   add_sysstat_info(node);
   color = xmlGetPropInt(node, "color");
   if (color > highest_color) highest_color = color;
-#if USE_XMBMON
-  if (OPT_VALUE_HWSTATS) {
+#if USE_XMBMON|| defined (__OpenBSD__)
+  if (OPT_VALUE_HWSTATS ) { 
     // do the hwstat
     get_hwstats();
     node = newnode(doc, "hwstat");
@@ -631,6 +704,7 @@ extern int forever;
   node = newnode(doc, "diskfree");
   add_diskfree_info(node);
   color = xmlGetPropInt(node, "color");
+
   if (color > highest_color) highest_color = color;
 
   if (HAVE_OPT(HPQUEUE) && (highest_color != prv_highest_color)) {

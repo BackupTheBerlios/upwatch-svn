@@ -120,7 +120,7 @@
         <para>You actually need to create two databases, one for the probes to read from, and one 
         for the results to be written to. The first database should be called upwatch, the other
         one can be any name (in this example we use netland). If you have a new database installation
-        create a password for the root account, and remove the anonymous accounts as follows:<para>
+        create a password for the root account, and remove the anonymous accounts as follows:
         <literallayout>
            $ mysql -u root 
            mysql> DELETE FROM mysql.user WHERE User = '';

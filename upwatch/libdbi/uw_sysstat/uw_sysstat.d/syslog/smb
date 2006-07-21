@@ -1,2 +1,22 @@
 green [LOGDATE] smb: nmbd shutdown failed
 green [LOGDATE] smb: smbd shutdown failed
+green [LOGDATE] mount.smbfs[PID]: \[[NUM]/[NUM]/[NUM] [NUM]:[NUM]:[NUM], [NUM]\] client/smbmount.c:send_fs_socket\([NUM]\)
+green [LOGDATE] smbd[PID]: \[[NUM]/[NUM]/[NUM] [NUM]:[NUM]:[NUM], [NUM]\] lib/access.c:check_access\([NUM]\)
+green [LOGDATE] smbd[PID]: \[[NUM]/[NUM]/[NUM] [NUM]:[NUM]:[NUM], [NUM]\] lib/util_sock.c:get_peer_addr\([NUM]\)
+ignore [LOGDATE] smbd[PID]:\s*getpeername failed. Error was Transport endpoint is not connected
+green [LOGDATE] smbd[PID]: \[[NUM]/[NUM]/[NUM] [NUM]:[NUM]:[NUM], [NUM]\] lib/util_sock.c:read_socket_data\([NUM]\)
+ignore [LOGDATE] smb_lookup: find .* failed, error=-512
+green [LOGDATE] smb_add_request: request \[.*, .*\] timed out!
+green [LOGDATE] mount.smbfs[PID]: tdb\([PATH]\): tdb_lock failed on list [NUM] ltype=[NUM] \(Bad file descriptor\)
+green [LOGDATE] mount.smbfs[PID]: \[[NUM]/[NUM]/[NUM] [NUM]:[NUM]:[NUM], [NUM]\] tdb/tdbutil.c:tdb_log\([NUM]\) 
+green [LOGDATE] kernel: smb_proc_readX_data:
+ignore [LOGDATE] smbd[PID]:\s*Error writing [NUM] bytes to client. [NUM]. \(Connection reset by peer\)
+green [LOGDATE] smbd[PID]: \[[NUM]/[NUM]/[NUM] [NUM]:[NUM]:[NUM], [NUM]\] lib/util_sock.c:send_smb\([NUM]\)
+ignore [LOGDATE] smbd[PID]: write_socket_data: write failure. Error = Connection reset by peer
+green [LOGDATE] smbd[PID]: \[[NUM]/[NUM]/[NUM] [NUM]:[NUM]:[NUM], [NUM]\] lib/util_sock.c:write_socket_data\([NUM]\) 
+green [LOGDATE] smb_add_request: request \[.*\] timed out!
+green [LOGDATE] mount.smbfs[PID]: tdb\([PATH]\): tdb_lock failed on list [NUM] ltype=[NUM] \(Bad file descriptor\)
+green [LOGDATE] nmbd[PID]: \[[NUM]/[NUM]/[NUM] [NUM]:[NUM]:[NUM], [NUM]\] nmbd/nmbd_responserecordsdb.c:find_response_record\([NUM]\) 
+green [LOGDATE] nmbd[PID]: find_response_record: response packet id [NUM] received with no matching record.
+green [LOGDATE] smbd[13734]: \[[NUM]/[NUM]/[NUM] [NUM]:[NUM]:[NUM], [NUM]\] lib/util_sock.c:write_data\([NUM]\)
+ignore [LOGDATE] smbd[13734]:\s*write_data: write failure in writing to client [IPADDR]. Error Connection reset by peer

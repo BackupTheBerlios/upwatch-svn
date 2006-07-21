@@ -10,7 +10,7 @@ homerc        = "$HOME";
 homerc        = "$$/upwatch.conf";
 homerc        = "$$/uw_route.conf";
 detail        = 
-'uw_route reads probe resultfiles, and stores them in the database';
+'uw_route reads probe resultfiles, and stores them in the right processing queue';
 
 // this section is for the generated specfile
 spec-requires = "libdbi >= 0.8 glib2";

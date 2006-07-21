@@ -11,9 +11,3 @@ libpcap-linux-timeout.patch:
 Adds timeout support to the linux libpcap library.
 Don't know if that's still needed for the newest versions.
 
-
-libstatgrab-openbsd.patch
-
-Old patch to add openbsd support to libpcap
-
-

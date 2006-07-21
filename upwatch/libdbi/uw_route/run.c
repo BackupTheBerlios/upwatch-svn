@@ -36,7 +36,7 @@ int init(void)
   if (HAVE_OPT(ROUTE)) {
     int i=0;
     int     ct  = STACKCT_OPT( ROUTE );
-    char**  pn = STACKLST_OPT( ROUTE );
+    char**  pn = (char **) &STACKLST_OPT( ROUTE );
 
     while (ct--) {
       char probe[256], queue[256];
@@ -98,7 +98,7 @@ extern int forever;
     g_ptr_array_free(arr, TRUE);
     return 0;
   }
-  g_ptr_array_sort(arr, mystrcmp);
+  g_ptr_array_sort(arr, (GCompareFunc) mystrcmp);
   if (debug > 3) { fprintf(stderr, "%u files in directory\n", files); sleep(3); }
 
   // now we have a sorted list of files 

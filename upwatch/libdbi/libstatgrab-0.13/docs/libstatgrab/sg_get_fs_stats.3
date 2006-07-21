@@ -1,0 +1,103 @@
+.TH sg_get_fs_stats 3 $Date:\ 2005/07/13\ 13:01:23\ $ i\-scream 
+.SH NAME
+sg_get_fs_stats \- get filesystem statistics
+.SH SYNOPSIS
+.nf
+#include <statgrab.h>
+.fi
+.sp 1
+.PP
+sg_fs_stats *\fIsg_get_fs_stats\fR(int *\fIentries\fR);
+.SH DESCRIPTION
+The sg_get_fs_stats takes a pointer to an
+int, entries, which is filled with the
+number of mounted file systems the machine has. The return
+value is a pointer to the first member of an array of
+sg_fs_stats structures; the number of
+entries in the array is returned in entries.
+.PP
+The function returns statistics about mounted filesystems,
+including free space and inode usage.
+.SH RETURN\ VALUES
+sg_get_fs_stats returns a pointer to a
+structure of type sg_fs_stats.
+.PP
+.nf
+
+typedef struct {
+        char *device_name;
+        char *fs_type;
+        char *mnt_point;
+        long long size;
+        long long used;
+        long long avail;
+        long long total_inodes;
+        long long used_inodes;
+        long long free_inodes;
+        long long avail_inodes;
+        long long io_size;
+        long long block_size;
+        long long total_blocks;
+        long long free_blocks;
+        long long used_blocks;
+        long long avail_blocks;
+} sg_fs_stats;
+    
+.fi
+.TP 
+device_name  
+The name known to the operating system.
+(eg. on linux it might be hda)
+.TP 
+fs_type  
+The type of the filesystem.
+.TP 
+mnt_point  
+The mount point of the file system.
+.TP 
+size  
+The size, in bytes, of the file system.
+.TP 
+used  
+The amount of space, in bytes, used on the
+filesystem.
+.TP 
+avail  
+The amount of space, in bytes, available on
+the filesystem.
+.TP 
+total_inodes  
+The total number of inodes in the filesystem.
+.TP 
+used_inodes  
+The number of used inodes in the filesystem.
+.TP 
+free_inodes  
+The number of free inodes in the filesystem.
+.TP 
+avail_inodes  
+The number of free inodes available to non\-privileged processes.
+.TP 
+io_size  
+A suggested optimal block size for IO operations \-\- if you're
+reading or writing lots of data, do it in chunks of this size.
+.TP 
+block_size  
+How big blocks actually are on the underlying filesystem
+(typically for purposes of stats reporting).
+.TP 
+total_blocks  
+The total number of blocks in the filesystem.
+.TP 
+free_blocks  
+The number of free blocks in the filesystem.
+.TP 
+used_blocks  
+The number of used blocks in the filesystem.
+.TP 
+avail_blocks  
+The number of free blocks available to non\-privileged processes.
+.SH SEE\ ALSO
+\fBstatgrab\fR(3)
+.SH WEBSITE
+http://www.i\-scream.org/libstatgrab/

@@ -41,9 +41,21 @@ green [LOGDATE] postfix/smtp[PID]: connect to [HOSTNAME]\[[IPADDR]\]:
 green [LOGDATE] postfix/smtp[PID]: [MSGID]: enabling PIX <CRLF>\.<CRLF> workaround for [HOSTNAME]\[[IPADDR]\]
 green [LOGDATE] postfix/smtp[PID]: warning: host [HOSTNAME]\[[IPADDR]\] greeted me with my own hostname [HOSTNAME]
 green [LOGDATE] postfix/smtp[PID]: warning: host [HOSTNAME]\[[IPADDR]\] replied to HELO/EHLO with my own hostname [HOSTNAME]
+green [LOGDATE] postfix/smtp[PID]: connect to [HOSTNAME]\[[IPADDR]\]: Network is unreachable \(port [NUM]\)
+green [LOGDATE] postfix/smtp[PID]: connect to [HOSTNAME] \[[IPADDR]\]: read timeout \(port [NUM]\)
+green [LOGDATE] postfix/anvil[PID]: statistics: 
+green [LOGDATE] postfix/scache[PID]: statistics: 
+green [LOGDATE] postfix/smtp[PID]: connect to [HOSTNAME]\[[IPADDR]\]: Connection refused \(port [NUM]\) 
+green [LOGDATE] postfix/sendmail[PID]: fatal: No recipient addresses found in message header
+yellow [LOGDATE] postfix/[WORD][PID]: warning: My hostname [WORD] is not a fully qualified name - set myhostname or mydomain in [PATH]
+ignore [LOGDATE] postfix/smtpd[PID]: too many errors after NOOP from [HOSTNAME]\[[IPADDR]\]
+ignore [LOGDATE] postfix/smtpd[PID]: too many errors after RCPT from [HOSTNAME]\[[IPADDR]\]
+ignore [LOGDATE] postfix/smtp[PID]: .*?: host [HOSTNAME]\[[IPADDR]\] said: 451
 red [LOGDATE] postfix/local[PID]: table has changed -- exiting
 red [LOGDATE] postfix/postfix-script: fatal: the Postfix mail system is already running
 red [LOGDATE] postfix/postfix-script: fatal: the Postfix mail system is not running
 red [LOGDATE] postfix/smtpd[PID]: lookup table has changed -- exiting
 red [LOGDATE] postfix/trivial-rewrite[PID]: table has changed -- exiting
 red [LOGDATE] postfix/smtp[PID]: fatal:
+red [LOGDATE] postfix/sendmail[PID]: fatal: [WORD]\([NUM]\): Message file too big [PATH]:
+red [LOGDATE] postfix/postdrop[PID]: warning: uid=[NUM]: File too large

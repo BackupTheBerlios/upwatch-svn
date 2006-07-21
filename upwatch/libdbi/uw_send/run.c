@@ -1,5 +1,7 @@
 #include "config.h"
+#include <signal.h>
 #include <sys/types.h>
+#include <sys/signal.h>
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <sys/socket.h>
@@ -103,12 +105,12 @@ int init(void)
   }
 
   ct    = STACKCT_OPT( INPUT );
-  input = STACKLST_OPT(INPUT);
-  host  = STACKLST_OPT(HOST);
-  port  = STACKLST_OPT(PORT);
-  user  = STACKLST_OPT(UWUSER);
-  pwd   = STACKLST_OPT(UWPASSWD);
-  thr   = STACKLST_OPT(THREADS);
+  input = (char **) &STACKLST_OPT(INPUT);
+  host  = (char **) &STACKLST_OPT(HOST);
+  port  = (char **) &STACKLST_OPT(PORT);
+  user  = (char **) &STACKLST_OPT(UWUSER);
+  pwd   = (char **) &STACKLST_OPT(UWPASSWD);
+  thr   = (char **) &STACKLST_OPT(THREADS);
 
   // read in options for queuing
   for (i=0; input[i] && i < ct && i < 4; i++) {

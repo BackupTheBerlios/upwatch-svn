@@ -30,13 +30,15 @@
     <listitem><para>Extensive and complete documentation, partly generated from source</para></listitem>
     <listitem><para>Multi-tenanting: multiple companies can run monitoring services for network
     of multiple client-companies using the same backend+probe serverpark</para></listitem>
-    <listitem><para>OS support: clients available for Linux, Windows, FreeBSD, Solaris, server runs on
-    linux or freeBSD, remote monitoring is linux only.</para></listitem>
+    <listitem><para>OS support: clients available for Linux, OpenBSD, NetBSD, Windows, FreeBSD, Solaris, server runs on
+    Linux, OpenBSD or NetBSD, remote monitoring is linux only.</para></listitem>
     <listitem><para>Monitoring results are in XML, and can be pre- and postprocessed</para></listitem>
-    <listitem><para>Secure: run as ordinary user, developed with security in mind</para></listitem>
+    <listitem><para>Secure: runs mostly as ordinary user, developed with security in mind</para></listitem>
     <listitem><para>Compatible with all Big Brother clients, imports bb-hosts file</para></listitem>
+<!-- We have no GUI
     <listitem><para>GUI is multi-language enabled (uses gettext)</para></listitem>
-    <listitem><para>GUI has mobile client support</para></listitem>
+    <listitem><para>GUI has mobile client support</para></listitem> 
+-->
     <listitem><para>Generates realtime graphs from the database</para></listitem>
     <listitem><para>Notifications by email or SMS.</para></listitem>
     <listitem><para>Clients for: HTTP GET, IMAP, MSSQL, MySQL, PING, POP3, PostgreSQL, SMTP, 
@@ -44,7 +46,8 @@
     <listitem><para>Local client detects: CPU load, loadavg, swap use, I/O use, memory use, and
     where supported hardware info like CPU temperature, fan speed and Power voltages. Also you can
     set it up to scan any logfile using regular expressions you supply.</para></listitem>
-    <listitem><para>Fully opensource: GUI built on Apache/PHP, Backend on C/Perl, 
+    <listitem><para>Fully opensource: Backend on C/Perl, 
+    <!-- <listitem><para>Fully opensource: GUI built on Apache/PHP, Backend on C/Perl,  -->
     Database is MySQL. Uses GNU configure.</para></listitem>
     </itemizedlist>
     </sect1>

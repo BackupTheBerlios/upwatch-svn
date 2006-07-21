@@ -163,42 +163,6 @@ word data at 0xF2   x  x  x  x  x  x  x  *  x  x  x  x  *  x  x  x
       </itemizedlist>
 
        </sect3>
-       <sect3 id="OpenBSD_problems">
-       <title>OpenBSD problems</title>
-<para>
-<literallayout>
->From: "andreas guetl" 
->To: 
->Subject: fix for mbmon on openbsd
->Date: Fri, 5 Sep 2003 10:35:37 +0200
-
-hello!
-
-i tried various progs for monitoring cpu-temp on openbsd boxes
-but none of them worked. then i found the solution on
-http://archives.neohapsis.com/archives/openbsd/2001-02/2550.html
-and id simply did the trick, not only for healthd (which gave me
-wrong values) but also for mbmon which works very fine.
-
-1.) enable the option APERTURE in the kernel
-enabled by default but disabled in any selfmade kernel, who needs
-x on openbsd ;)
-
-2.) uncomment machdep.allowaperture in /etc/sysctl.conf and change
-the value from 2 to 1
-
-after rebooting with the new kernel the monitoring works really
-fine.
-
-thanks for your fine program!!
-
-(but what has the agp-aperture to do with monitoring hw?)
-
-so long,
-andy 
-</literallayout>
-</para>
-       </sect3>
        </sect2>
     </sect1>
     <sect1 id="Monitoring_specific_logfiles">
@@ -214,10 +178,13 @@ andy
        <filename>/etc/upwatch.d/uw_sysstat.d/errlog</filename> (except <filename>rmacros.txt</filename>
        and <filename>macros.txt</filename>). 
        These files should contain regular expressions prefixed by one of the keywords 
-       <command>green</command>, <command>yellow</command>, or <command>red</command>. Next 
+       <command>green</command>, <command>yellow</command>, <command>red</command> or <command>ignore</command>. Next 
        uw_sysstat starts scanning <filename>/var/log/messages</filename>. It reads a line
        from the logfile and the following happens:</para>
        <itemizedlist>
+       <listitem><para>Check against the ignore list. If a match is found, flag green
+       condition, and continue with the next line. This is mostly used to skip lines that
+       would otherwise be flagged as red, for example because they contain the word ERROR.</para></listitem>
        <listitem><para>Check against the red list. If match found, flag red
        condition, and send the offending line to the upwatch server</para></listitem>
        <listitem><para>Check line against the yellow list. If matches, flag yellow

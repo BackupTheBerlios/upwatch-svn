@@ -7,6 +7,7 @@ PACKAGE=upwatch
 AM_INIT_AUTOMAKE($PACKAGE,$VERSION)
 AM_CONFIG_HEADER(config.h:config-h.in)
 AC_SUBST(VERSION)
+AM_PROG_AS
 
 AC_DEFINE_UNQUOTED([RELEASE], ["${RELEASE}"], [Package release string])
 
@@ -58,88 +59,89 @@ case $host in
     if test "$oldincludedir" = '/usr/include' ; 	then oldincludedir='/usr/include' ; fi
     if test "$infodir" = '${prefix}/info' ; 		then infodir='/usr/share/info' ; fi
     if test "$mandir" = '${prefix}/man' ;		then mandir='/usr/share/man' ; fi
+    LDFLAGS="${LDFLAGS} -L/usr/lib64"
     ;;
   *-*-freebsd*) 
     freebsd=true
-    if test "$bindir" = '${exec_prefix}/bin' ; 		then bindir='/usr/bin' ; fi
-    if test "$sbindir" = '${exec_prefix}/sbin' ; 	then sbindir='/usr/sbin' ; fi
-    if test "$libexecdir" = '${exec_prefix}/libexec';	then libexecdir='/usr/libexec' ; fi
-    if test "$datadir" = '${prefix}/share' ;		then datadir='/usr/local/share' ; fi
-    if test "$sysconfdir" = '${prefix}/etc' ;		then sysconfdir='/etc' ; fi
-    if test "$sharedstatedir" = '${prefix}/com' ;	then sharedstatedir='/usr/local/com' ; fi
-    if test "$localstatedir" = '${prefix}/var' ; 	then localstatedir='/var' ; fi
-    if test "$libdir" = '${exec_prefix}/lib' ; 		then libdir='/usr/lib' ; fi
-    if test "$includedir" = '${prefix}/include' ; 	then includedir='/usr/include' ; fi
-    if test "$oldincludedir" = '/usr/include' ; 	then oldincludedir='/usr/include' ; fi
-    if test "$infodir" = '${prefix}/info' ; 		then infodir='/usr/share/info' ; fi
-    if test "$mandir" = '${prefix}/man' ;		then mandir='/usr/share/man' ; fi
+    if ! test "$bindir" = '${exec_prefix}/bin' ; 		then bindir='/usr//local/bin' ; fi
+    if ! test "$sbindir" = '${exec_prefix}/sbin' ; 	then sbindir='/usr/local/sbin' ; fi
+    if ! test "$libexecdir" = '${exec_prefix}/libexec';	then libexecdir='/usr/local/libexec' ; fi
+    if ! test "$datadir" = '${prefix}/share' ;		then datadir='/usr/local/share' ; fi
+    if ! test "$sysconfdir" = '${prefix}/etc' ;		then sysconfdir='/usr/local/etc' ; fi
+    if ! test "$sharedstatedir" = '${prefix}/com' ;	then sharedstatedir='/usr/local/com' ; fi
+    if ! test "$localstatedir" = '${prefix}/var' ; 	then localstatedir='/var' ; fi
+    if ! test "$libdir" = '${exec_prefix}/lib' ; 		then libdir='/usr/local/lib' ; fi
+    if ! test "$includedir" = '${prefix}/include' ; 	then includedir='/usr/local/include' ; fi
+    if ! test "$oldincludedir" = '/usr/include' ; 	then oldincludedir='/usr/local/include' ; fi
+    if ! test "$infodir" = '${prefix}/info' ; 		then infodir='/usr/local/share/info' ; fi
+    if ! test "$mandir" = '${prefix}/man' ;		then mandir='/usr/local/share/man' ; fi
     CFLAGS="${CFLAGS} -I/usr/local/include"
     LDFLAGS="-L/usr/local/lib"
     ;;
   *-*-netbsd*) 
     netbsd=true
-    if test "$bindir" = '${exec_prefix}/bin' ; 		then bindir='/usr/bin' ; fi
-    if test "$sbindir" = '${exec_prefix}/sbin' ; 	then sbindir='/usr/sbin' ; fi
-    if test "$libexecdir" = '${exec_prefix}/libexec';	then libexecdir='/usr/libexec' ; fi
-    if test "$datadir" = '${prefix}/share' ;		then datadir='/usr/local/share' ; fi
-    if test "$sysconfdir" = '${prefix}/etc' ;		then sysconfdir='/etc' ; fi
-    if test "$sharedstatedir" = '${prefix}/com' ;	then sharedstatedir='/usr/local/com' ; fi
-    if test "$localstatedir" = '${prefix}/var' ; 	then localstatedir='/var' ; fi
-    if test "$libdir" = '${exec_prefix}/lib' ; 		then libdir='/usr/lib' ; fi
-    if test "$includedir" = '${prefix}/include' ; 	then includedir='/usr/include' ; fi
-    if test "$oldincludedir" = '/usr/include' ; 	then oldincludedir='/usr/include' ; fi
-    if test "$infodir" = '${prefix}/info' ; 		then infodir='/usr/share/info' ; fi
-    if test "$mandir" = '${prefix}/man' ;		then mandir='/usr/share/man' ; fi
+    if ! test "$bindir" = '${exec_prefix}/bin' ; 		then bindir='/usr/local/bin' ; fi
+    if ! test "$sbindir" = '${exec_prefix}/sbin' ; 	then sbindir='/usr/local/sbin' ; fi
+    if ! test "$libexecdir" = '${exec_prefix}/libexec';	then libexecdir='/usr/local/libexec' ; fi
+    if ! test "$datadir" = '${prefix}/share' ;		then datadir='/usr/local/share' ; fi
+    if ! test "$sysconfdir" = '${prefix}/etc' ;		then sysconfdir='/usr/local/etc' ; fi
+    if ! test "$sharedstatedir" = '${prefix}/com' ;	then sharedstatedir='/usr/local/com' ; fi
+    if ! test "$localstatedir" = '${prefix}/var' ; 	then localstatedir='/var' ; fi
+    if ! test "$libdir" = '${exec_prefix}/lib' ; 		then libdir='/usr/local/lib' ; fi
+    if ! test "$includedir" = '${prefix}/include' ; 	then includedir='/usr/local/include' ; fi
+    if ! test "$oldincludedir" = '/usr/include' ; 	then oldincludedir='/usr/local/include' ; fi
+    if ! test "$infodir" = '${prefix}/info' ; 		then infodir='/usr/local/share/info' ; fi
+    if ! test "$mandir" = '${prefix}/man' ;		then mandir='/usr/local/share/man' ; fi
     CFLAGS="${CFLAGS} -I/usr/local/include -I/usr/pkg/include"
     LDFLAGS="-L/usr/local/lib -L/usr/pkg/lib"
     ;;
   *-*-openbsd*)
     openbsd=true
-    if test "$bindir" = '${exec_prefix}/bin' ;          then bindir='/usr/bin' ; fi
-    if test "$sbindir" = '${exec_prefix}/sbin' ;        then sbindir='/usr/sbin' ; fi
-    if test "$libexecdir" = '${exec_prefix}/libexec';   then libexecdir='/usr/libexec' ; fi
-    if test "$datadir" = '${prefix}/share' ;            then datadir='/usr/local/share' ; fi
-    if test "$sysconfdir" = '${prefix}/etc' ;           then sysconfdir='/etc' ; fi
-    if test "$sharedstatedir" = '${prefix}/com' ;       then sharedstatedir='/usr/local/com' ; fi
-    if test "$localstatedir" = '${prefix}/var' ;        then localstatedir='/var' ; fi
-    if test "$libdir" = '${exec_prefix}/lib' ;          then libdir='/usr/lib' ; fi
-    if test "$includedir" = '${prefix}/include' ;       then includedir='/usr/include' ; fi
-    if test "$oldincludedir" = '/usr/include' ;         then oldincludedir='/usr/include' ; fi
-    if test "$infodir" = '${prefix}/info' ;             then infodir='/usr/share/info' ; fi
-    if test "$mandir" = '${prefix}/man' ;               then mandir='/usr/share/man' ; fi
+    if ! test "$bindir" = '${exec_prefix}/bin' ;          then bindir='/usr/local/bin' ; fi
+    if ! test "$sbindir" = '${exec_prefix}/sbin' ;        then sbindir='/usr/local/sbin' ; fi
+    if ! test "$libexecdir" = '${exec_prefix}/libexec';   then libexecdir='/usr/local/libexec' ; fi
+    if ! test "$datadir" = '${prefix}/share' ;            then datadir='/usr/local/share' ; fi
+    if ! test "$sysconfdir" = '${prefix}/etc' ;           then sysconfdir='/etc' ; fi
+    if ! test "$sharedstatedir" = '${prefix}/com' ;       then sharedstatedir='/usr/local/com' ; fi
+    if ! test "$localstatedir" = '${prefix}/var' ;        then localstatedir='/var' ; fi
+    if ! test "$libdir" = '${exec_prefix}/lib' ;          then libdir='/usr/local/lib' ; fi
+    if ! test "$includedir" = '${prefix}/include' ;       then includedir='/usr/local/include' ; fi
+    if ! test "$oldincludedir" = '/usr/include' ;         then oldincludedir='/usr/local/include' ; fi
+    if ! test "$infodir" = '${prefix}/info' ;             then infodir='/usr/local/share/info' ; fi
+    if ! test "$mandir" = '${prefix}/man' ;               then mandir='/usr/local/share/man' ; fi
     CFLAGS="${CFLAGS} -I/usr/local/include"
     LDFLAGS="-L/usr/local/lib"
     ;;
   *-*-solaris*)
     solaris=true
-    if test "$bindir" = '${exec_prefix}/bin' ; 		then bindir='/usr/bin' ; fi
-    if test "$sbindir" = '${exec_prefix}/sbin' ; 	then sbindir='/usr/sbin' ; fi
-    if test "$libexecdir" = '${exec_prefix}/libexec';	then libexecdir='/usr/libexec' ; fi
-    if test "$datadir" = '${prefix}/share' ;		then datadir='/usr/share' ; fi
-    if test "$sysconfdir" = '${prefix}/etc' ;		then sysconfdir='/etc' ; fi
-    if test "$sharedstatedir" = '${prefix}/com' ;	then sharedstatedir='/usr/local/com' ; fi
-    if test "$localstatedir" = '${prefix}/var' ; 	then localstatedir='/var' ; fi
-    if test "$libdir" = '${exec_prefix}/lib' ; 		then libdir='/usr/local/lib' ; fi
-    if test "$includedir" = '${prefix}/include' ; 	then includedir='/usr/include' ; fi
-    if test "$oldincludedir" = '/usr/include' ; 	then oldincludedir='/usr/include' ; fi
-    if test "$infodir" = '${prefix}/info';  		then infodir='/usr/share/info' ; fi
-    if test "$mandir" = '${prefix}/man' ;		then mandir='/usr/share/man' ; fi
+    if ! test "$bindir" = '${exec_prefix}/bin' ; 		then bindir='/usr/local/bin' ; fi
+    if ! test "$sbindir" = '${exec_prefix}/sbin' ; 	then sbindir='/usr/local/sbin' ; fi
+    if ! test "$libexecdir" = '${exec_prefix}/libexec';	then libexecdir='/usr/local/libexec' ; fi
+    if ! test "$datadir" = '${prefix}/share' ;		then datadir='/usr/local/share' ; fi
+    if ! test "$sysconfdir" = '${prefix}/etc' ;		then sysconfdir='/etc' ; fi
+    if ! test "$sharedstatedir" = '${prefix}/com' ;	then sharedstatedir='/usr/local/com' ; fi
+    if ! test "$localstatedir" = '${prefix}/var' ; 	then localstatedir='/var' ; fi
+    if ! test "$libdir" = '${exec_prefix}/lib' ; 		then libdir='/usr/local/lib' ; fi
+    if ! test "$includedir" = '${prefix}/include' ; 	then includedir='/usr/local/include' ; fi
+    if ! test "$oldincludedir" = '/usr/include' ; 	then oldincludedir='/usr/local/include' ; fi
+    if ! test "$infodir" = '${prefix}/info';  		then infodir='/usr/local/share/info' ; fi
+    if ! test "$mandir" = '${prefix}/man' ;		then mandir='/usr/local/share/man' ; fi
     LIBS="-lgen ${LIBS}"
     ;;
   *-*-cygwin*)
     cygwin=true
-    if test "$bindir" = '${exec_prefix}/bin' ; 		then bindir='/usr/bin' ; fi
-    if test "$sbindir" = '${exec_prefix}/sbin' ; 	then sbindir='/usr/sbin' ; fi
-    if test "$libexecdir" = '${exec_prefix}/libexec';	then libexecdir='/usr/libexec' ; fi
-    if test "$datadir" = '${prefix}/share' ;		then datadir='/usr/share' ; fi
-    if test "$sysconfdir" = '${prefix}/etc' ;		then sysconfdir='/etc' ; fi
-    if test "$sharedstatedir" = '${prefix}/com' ;	then sharedstatedir='/usr/local/com' ; fi
-    if test "$localstatedir" = '${prefix}/var' ; 	then localstatedir='/var' ; fi
-    if test "$libdir" = '${exec_prefix}/lib' ; 		then libdir='/usr/local/lib' ; fi
-    if test "$includedir" = '${prefix}/include' ; 	then includedir='/usr/include' ; fi
-    if test "$oldincludedir" = '/usr/include' ; 	then oldincludedir='/usr/include' ; fi
-    if test "$infodir" = '${prefix}/info';  		then infodir='/usr/share/info' ; fi
-    if test "$mandir" = '${prefix}/man' ;		then mandir='/usr/share/man' ; fi
+    if ! test "$bindir" = '${exec_prefix}/bin' ; 		then bindir='/usr/bin' ; fi
+    if ! test "$sbindir" = '${exec_prefix}/sbin' ; 	then sbindir='/usr/sbin' ; fi
+    if ! test "$libexecdir" = '${exec_prefix}/libexec';	then libexecdir='/usr/libexec' ; fi
+    if ! test "$datadir" = '${prefix}/share' ;		then datadir='/usr/share' ; fi
+    if ! test "$sysconfdir" = '${prefix}/etc' ;		then sysconfdir='/etc' ; fi
+    if ! test "$sharedstatedir" = '${prefix}/com' ;	then sharedstatedir='/usr/local/com' ; fi
+    if ! test "$localstatedir" = '${prefix}/var' ; 	then localstatedir='/var' ; fi
+    if ! test "$libdir" = '${exec_prefix}/lib' ; 		then libdir='/usr/local/lib' ; fi
+    if ! test "$includedir" = '${prefix}/include' ; 	then includedir='/usr/include' ; fi
+    if ! test "$oldincludedir" = '/usr/include' ; 	then oldincludedir='/usr/include' ; fi
+    if ! test "$infodir" = '${prefix}/info';  		then infodir='/usr/share/info' ; fi
+    if ! test "$mandir" = '${prefix}/man' ;		then mandir='/usr/share/man' ; fi
     ;;
   *)
     generic=true
@@ -219,7 +221,11 @@ if test x$enable_all = xyes
 then
   enable_server=yes
   enable_monitors=yes
-  enable_iptraf=yes
+  case $host in
+    *-*-linux*)
+    enable_iptraf=yes
+    ;;
+  esac
 fi
 
 AM_CONDITIONAL(ENABLE_SERVER, test x$enable_all = xyes)
@@ -302,6 +308,19 @@ AC_ARG_WITH(mysql-libs,
     [MYSQL_LIB_PREFIX=/usr/lib/mysql]
 )
 AC_SUBST(MYSQL_LIB_PREFIX)
+
+for libpath in /usr/lib/mysql $MYSQL_LIB_PREFIX /usr/local/lib/mysql /usr/lib /cygdrive/c/mysql/lib/opt /usr/pkg/lib/mysql /usr/lib64/mysql
+do
+  for file in $libpath/libmysqlclient.so* $libpath/mysqlclient.lib
+  do
+    if test -f $file
+    then
+      MYSQL_LIBS="-L${libpath} -lmysqlclient"
+      break
+    fi
+  done
+done
+
 # path to mysql includes
 AC_ARG_WITH(mysql-include,
     [  --with-mysql-include=<path>        prefix of MySQL headers. Default /usr/include/mysql],
@@ -558,7 +577,7 @@ AC_SUBST(LIBSNMP_LIBS)
 if test "$enable_server" = "yes"
 then
 	# libesmtp
-	AC_CHECK_LIB([esmtp], [smtp_create_session], [HAVE_LIBESMTP=1], [HAVE_LIBESMTP=0])
+	AC_CHECK_LIB([esmtp], [smtp_create_session], [HAVE_LIBESMTP=1], [HAVE_LIBESMTP=0], $LIBPTHREAD_LIBS)
 	if test $HAVE_LIBESMTP -eq 1
 	then
 	        LIBESMTP_LIBS=-lesmtp
@@ -707,24 +726,7 @@ AC_CONFIG_FILES([scripts/Makefile])
 
 if test "$enable_server" = "yes" -o "$enable_monitors" = "yes"
 then
-  AC_CONFIG_FILES([st-1.4/Makefile])
-fi
-
-# server 
-if test "$enable_server" = "yes"
-then
-  AC_CONFIG_FILES([uw_setip/Makefile])
-  AC_CONFIG_FILES([uw_accept/Makefile])
-  AC_CONFIG_FILES([uw_acceptbb/Makefile])
-  AC_CONFIG_FILES([uw_purple/Makefile])
-  AC_CONFIG_FILES([uw_route/Makefile])
-  AC_CONFIG_FILES([uw_process/Makefile])
-  AC_CONFIG_FILES([uw_syncprobes/Makefile])
-  AC_CONFIG_FILES([compat/Makefile])
-  AC_CONFIG_FILES([compat/sometests/Makefile])
-  AC_CONFIG_FILES([compat/sometests/setproctitle/Makefile])
-  AC_CONFIG_FILES([compat/bb/Makefile])
-  AC_CONFIG_FILES([compat/bb/bbhimport/Makefile])
+  AC_CONFIG_FILES([st-1.7/Makefile])
 fi
 
 # monitors
@@ -744,15 +746,29 @@ then
   AC_CONFIG_FILES([uw_postgresql/Makefile])
 fi
 
-# extra
-if test "$enable_iptraf" = "yes"
+if test "$enable_server" = "yes" -o "$enable_iptraf" = "yes"
 then
 if test $HAVE_LIBPCAP -eq 1; then
   AC_CONFIG_FILES([uw_iptraf/Makefile])
 fi
 fi
 
-( cd libstatgrab ; ./configure --disable-manpages --disable-examples \
+# server 
+if test "$enable_server" = "yes"
+then
+AC_CONFIG_FILES([uw_setip/Makefile])
+AC_CONFIG_FILES([uw_accept/Makefile])
+AC_CONFIG_FILES([uw_acceptbb/Makefile])
+AC_CONFIG_FILES([uw_purple/Makefile])
+AC_CONFIG_FILES([uw_route/Makefile])
+AC_CONFIG_FILES([uw_process/Makefile])
+AC_CONFIG_FILES([uw_syncprobes/Makefile])
+AC_CONFIG_FILES([compat/Makefile])
+AC_CONFIG_FILES([compat/bb/Makefile])
+AC_CONFIG_FILES([compat/bb/bbhimport/Makefile])
+fi
+
+( cd libstatgrab-0.13 ; ./configure --disable-manpages --disable-examples \
   --disable-statgrab --disable-saidar --disable-shared ; cd .. )
 
 if test "$enable_xmbmon" = "yes"

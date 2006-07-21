@@ -1,0 +1,33 @@
+.TH statgrab\-make\-mrtg\-config 1 $Date:\ 2005/04/25\ 12:37:22\ $ i\-scream 
+.SH NAME
+statgrab\-make\-mrtg\-config \- generates MRTG configuration
+.SH SYNOPSIS
+\fBstatgrab\-make\-mrtg\-config\fR [OPTION]\&...
+.SH DESCRIPTION
+statgrab\-make\-mrtg\-config generates MRTG
+configuration from statgrab output and writes it to stdout.
+.SH OPTIONS
+The following options are supported.
+.TP 
+\fB\-\-no\-header\fR
+Don't print MRTG global options; useful if you
+want to include the output of this script in
+another MRTG config file
+.TP 
+\fB\-\-workdir\fR \fIPATH\fR
+Use PATH for MRTG's WorkDir option
+.TP 
+\fB\-\-statgrab\fR \fIPATH\fR
+Specify location of statgrab binary
+(default "statgrab")
+.TP 
+\fB\-\-help\fR
+Display help and exit
+.SH SEE\ ALSO
+\fBstatgrab\fR(1)
+\fBstatgrab\-make\-mrtg\-index\fR(1)
+.SH AUTHORS
+This man page was derived from the man page written by Bartosz
+Fenski for the Debian GNU/Linux distribution.
+.SH WEBSITE
+http://www.i\-scream.org/libstatgrab/

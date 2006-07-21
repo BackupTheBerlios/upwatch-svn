@@ -3,6 +3,7 @@
 
 #include <unistd.h>
 #include <sys/socket.h>
+#include <sys/types.h>
 #include <arpa/inet.h>
 #include <netinet/in_systm.h>
 #include <netinet/in.h>
@@ -41,7 +42,7 @@ void writeXMLresult(struct ipnetw *ipnets, int count_ipnets)
   time_t now;
   struct ipnetw *net;
   int ct  = STACKCT_OPT(OUTPUT);
-  char **output = STACKLST_OPT(OUTPUT);
+  char **output = (char **) &STACKLST_OPT(OUTPUT);
   int i;
 
   doc = UpwatchXmlDoc("result", NULL);
@@ -94,7 +95,7 @@ extern int forever;
     int i, oldcount_ipnets;
     struct ipnetw *newnet, *oldnet, *net;
     int     ct  = STACKCT_OPT( NETWORK );
-    char**  pn = STACKLST_OPT( NETWORK );
+    char**  pn = (char **) &STACKLST_OPT( NETWORK );
 
     for (i=0; i < OPT_VALUE_INTERVAL; i++) { // wait some seconds
       sleep(1);
@@ -150,7 +151,7 @@ int init(void)
   }
   if (HAVE_OPT(EXTIGNORE)) {
     int     ct  = STACKCT_OPT(EXTIGNORE);
-    char**  pn = STACKLST_OPT(EXTIGNORE);
+    char**  pn = (char **) &STACKLST_OPT(EXTIGNORE);
     int i;
 
     if (ct >= 255) { LOG(LOG_ERR, "Too many extignore statements, only 255 are supported"); }
@@ -224,7 +225,7 @@ int run(void)
   mypid = getpid() & 0xffff;
   if (HAVE_OPT(INTERFACE)) {
     int     ct  = STACKCT_OPT( INTERFACE );
-    char**  pn = STACKLST_OPT( INTERFACE );
+    char**  pn = (char **) &STACKLST_OPT( INTERFACE );
 
     while (ct--) {
       dev = *pn++;

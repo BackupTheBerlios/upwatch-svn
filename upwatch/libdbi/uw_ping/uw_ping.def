@@ -92,36 +92,7 @@ certain groups. This setting tells this probe its group id, so
 it knows which probe to retrieve from the definition table';
 };
 
-flag = {
-    must-set;
-    name      = statfile;
-    value     = K;
-    arg_type  = string;
-    descrip   = "file to keep current state of probes";
-    doc       =
-'To determine if probe status changed, we keep the previous status
-in a file. This is the name of that file';
-};
-
-flag = {
-    must-set;
-    name      = uwuser;
-    value     = U;        /* flag style option character */
-    arg_type  = string;   /* option argument indication  */
-    max       = NOLIMIT;  /* occurrence limit (none)     */
-    descrip   = "Upwatch username";
-};
-
-flag = {
-    must-set;
-    name      = uwpasswd;
-    value     = P;        /* flag style option character */
-    arg_type  = string;   /* option argument indication  */
-    max       = NOLIMIT;  /* occurrence limit (none)     */
-    descrip   = "UpWatch password";
-};
-
 #include license_gpl.def
 #include dbase_options.def
 #include generic_options.def
-
+#include option_realm_ign.def

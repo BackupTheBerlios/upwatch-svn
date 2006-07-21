@@ -3,3 +3,15 @@ green [LOGDATE] dhcpd: DHCP(ACK|DISCOVER|INFORM|OFFER|RELEASE|REQUEST) (on|of|fo
 green [LOGDATE] dhcpd: DHCPDISCOVER from [MACADDR]
 green [LOGDATE] dhcpd: Wrote [NUM] leases to leases file\.
 green [LOGDATE] dhcpd: No hostname for [IPADDR]
+green [LOGDATE] dhcpd: Remove host declaration [WORD] or remove [IPADDR]
+green [LOGDATE] dhcpd: from the dynamic address pool for 
+green [LOGDATE] dhcpd: Dynamic and static leases present for [IPADDR].
+green [LOGDATE] dhcpd: Internet Software Consortium DHCP Server
+green [LOGDATE] dhcpd: Copyright [NUM]-[NUM] Internet Software Consortium.
+green [LOGDATE] dhcpd: All rights reserved.
+green [LOGDATE] dhcpd: For info, please visit http://www.isc.org/products/DHCP
+green [LOGDATE] dhcpd: (Listening|Sending) on LPF/.*?/.*?/[IPADDR]/[NUM]
+green [LOGDATE] dhcpd: Sending on\s+Socket/fallback/fallback-net
+green [LOGDATE] dhcpd: Wrote [NUM] deleted host decls to leases file.
+green [LOGDATE] dhcpd: Wrote [NUM] new dynamic host decls to leases file.
+green [LOGDATE] dhcpd:\s*$

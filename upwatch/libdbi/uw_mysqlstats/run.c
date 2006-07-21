@@ -190,7 +190,7 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   xmlDocPtr doc = (xmlDocPtr) user_data;
   struct probedef *probe = (struct probedef *)value;
 
-  xmlNodePtr subtree, mysql;
+  xmlNodePtr subtree, mysqlstats;
   int color;
   char info[1024];
   char buffer[1024];
@@ -203,22 +203,22 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
     color = STAT_GREEN;
   }
 
-  mysql = xmlNewChild(xmlDocGetRootElement(doc), NULL, "mysql", NULL);
+  mysqlstats = xmlNewChild(xmlDocGetRootElement(doc), NULL, "mysqlstats", NULL);
   if (probe->realm) {
-    xmlSetProp(mysql, "realm", probe->realm);
+    xmlSetProp(mysqlstats, "realm", probe->realm);
   }
-  sprintf(buffer, "%d", probe->probeid);      xmlSetProp(mysql, "id", buffer);
-  sprintf(buffer, "%s", probe->ipaddress);    xmlSetProp(mysql, "ipaddress", buffer);
-  sprintf(buffer, "%d", (int) now);           xmlSetProp(mysql, "date", buffer);
+  sprintf(buffer, "%d", probe->probeid);      xmlSetProp(mysqlstats, "id", buffer);
+  sprintf(buffer, "%s", probe->ipaddress);    xmlSetProp(mysqlstats, "ipaddress", buffer);
+  sprintf(buffer, "%d", (int) now);           xmlSetProp(mysqlstats, "date", buffer);
   sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60)); 
-    xmlSetProp(mysql, "expires", buffer);
-  sprintf(buffer, "%d", color);               xmlSetProp(mysql, "color", buffer);
-  sprintf(buffer, "%llu", probe->selectq);      subtree = xmlNewChild(mysql, NULL, "select", buffer);
-  sprintf(buffer, "%llu", probe->insertq);      subtree = xmlNewChild(mysql, NULL, "insert", buffer);
-  sprintf(buffer, "%llu", probe->updateq);      subtree = xmlNewChild(mysql, NULL, "update", buffer);
-  sprintf(buffer, "%llu", probe->deleteq);      subtree = xmlNewChild(mysql, NULL, "delete", buffer);
+    xmlSetProp(mysqlstats, "expires", buffer);
+  sprintf(buffer, "%d", color);               xmlSetProp(mysqlstats, "color", buffer);
+  sprintf(buffer, "%llu", probe->selectq);      subtree = xmlNewChild(mysqlstats, NULL, "selectq", buffer);
+  sprintf(buffer, "%llu", probe->insertq);      subtree = xmlNewChild(mysqlstats, NULL, "insertq", buffer);
+  sprintf(buffer, "%llu", probe->updateq);      subtree = xmlNewChild(mysqlstats, NULL, "updateq", buffer);
+  sprintf(buffer, "%llu", probe->deleteq);      subtree = xmlNewChild(mysqlstats, NULL, "deleteq", buffer);
   if (probe->msg) {
-    subtree = xmlNewTextChild(mysql, NULL, "info", probe->msg);
+    subtree = xmlNewTextChild(mysqlstats, NULL, "info", probe->msg);
     free(probe->msg);
     probe->msg = NULL;
   }
@@ -227,7 +227,7 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
 void write_results(void)
 {
   int ct  = STACKCT_OPT(OUTPUT);
-  const char **output = STACKLST_OPT(OUTPUT);
+  char **output = (char **) &STACKLST_OPT(OUTPUT);
   int i;
   xmlDocPtr doc;
 
@@ -265,8 +265,7 @@ void probe(gpointer data, gpointer user_data)
   dbuser = probe->dbuser;
   dbpasswd = probe->dbpasswd;
 
-  mysql_options(mysql, MYSQL_OPT_COMPRESS, 0);
-  mysql_options(mysql, MYSQL_OPT_CONNECT_TIMEOUT, (const char *)&timeout);
+  mysql_options(mysql, MYSQL_OPT_CONNECT_TIMEOUT, (char * ) &timeout);
 
   LOG(LOG_DEBUG, "%s %s %s %s", dbhost, dbuser, dbpasswd, dbname);
   if (!mysql_real_connect(mysql, dbhost, dbuser, dbpasswd, dbname, 0, NULL, 0)) {

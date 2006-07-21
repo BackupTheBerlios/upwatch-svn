@@ -1,0 +1,29 @@
+.TH saidar 1 $Date:\ 2005/04/26\ 10:31:07\ $ i\-scream 
+.SH NAME
+saidar \- a curses\-based tool for viewing system statistics
+.SH SYNOPSIS
+\fBsaidar\fR [\-d \fBdelay\fR] [\-v] [\-h]
+.SH DESCRIPTION
+saidar is a curses\-based tool for viewing the
+system statistics available through libstatgrab. Statistics include
+CPU, processes, load, memory, swap, network I/O, disk I/O, and file
+system information.
+.SH OPTIONS
+The following options are supported.
+.TP 
+\fB\-d\fR \fIDELAY\fR
+Wait DELAY seconds between updates (default 3)
+.TP 
+\fB\-v\fR
+Prints the version number
+.TP 
+\fB\-h\fR
+Display help and exits
+.SH SEE\ ALSO
+\fBstatgrab\fR(1)
+\fBstatgrab\fR(3)
+.SH AUTHORS
+This man page was derived from the man page written by Bartosz
+Fenski for the Debian GNU/Linux distribution.
+.SH WEBSITE
+http://www.i\-scream.org/libstatgrab/

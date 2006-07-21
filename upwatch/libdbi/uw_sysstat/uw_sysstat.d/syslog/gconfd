@@ -7,4 +7,4 @@ green [LOGDATE] gconfd \([USER]-[NUM]\): Resolved address "xml:readonly:[PATH]" 
 green [LOGDATE] gconfd \([USER]-[NUM]\): adres gevonden "xml:readonly:[PATH]" naar een alleen-lezen configuratiebron op positie [NUM]
 green [LOGDATE] gconfd \([USER]-[NUM]\): Resolved address "xml:readwrite:[PATH]" to a writable config source at position [NUM]
 green [LOGDATE] gconfd \([USER]-[NUM]\): Adres gevonden "xml:readwrite:[PATH]" naar een schrijfbare configuratiebron op positie [NUM]
-
+green [LOGDATE] gconfd

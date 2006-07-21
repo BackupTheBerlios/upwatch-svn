@@ -265,13 +265,12 @@ Chapter 1. About UpWatch
      * Multi-tenanting: multiple companies can run monitoring services for
        network  of multiple client-companies using the same backend+probe
        serverpark
-     * OS support: clients available for Linux, Windows, FreeBSD, Solaris,
-       server runs on linux or freeBSD, remote monitoring is linux only.
+     * OS support: clients available for Linux, OpenBSD, NetBSD, Windows,
+       FreeBSD,  Solaris, server runs on Linux, OpenBSD or NetBSD, remote
+       monitoring is linux only.
      * Monitoring results are in XML, and can be pre- and postprocessed
-     * Secure: run as ordinary user, developed with security in mind
+     * Secure: runs mostly as ordinary user, developed with security in mind
      * Compatible with all Big Brother clients, imports bb-hosts file
-     * GUI is multi-language enabled (uses gettext)
-     * GUI has mobile client support
      * Generates realtime graphs from the database
      * Notifications by email or SMS.
      * Clients for: HTTP GET, IMAP, MSSQL, MySQL, PING, POP3, PostgreSQL, SMTP,
@@ -280,8 +279,8 @@ Chapter 1. About UpWatch
        and where supported hardware info like CPU temperature, fan speed and
        Power voltages. Also you can set it up to scan any logfile using regular
        expressions you supply.
-     * Fully opensource: GUI built on Apache/PHP, Backend on C/Perl, Database
-       is MySQL. Uses GNU configure.
+     * Fully  opensource:  Backend on C/Perl, Database is MySQL. Uses GNU
+       configure.
 
 Chapter 2. How it all works
 
@@ -405,10 +404,6 @@ Chapter 2. How it all works
    The outgoing queue may be either the uw_process queue, or an uw_send queue,
    which is emptied by the uw_send process which sends all files to a remote
    queue on another host (received and queued by uw_accept).
-
-   uw_examine can do some additional tests like traceroute to the target host.
-   It attaches this report to the probe result, and in its turn puts everything
-   in an uw_process or uw_send queue.
 
 2.2.4. uw_process: storing results in the database
 

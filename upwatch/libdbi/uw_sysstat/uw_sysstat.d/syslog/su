@@ -1,2 +1,4 @@
 green [LOGDATE] su: \(to [USER]\) [USER] on none
+green [LOGDATE] su: [USER] to [USER] on /dev/[WORD][NUM]
 green [LOGDATE] su: pam_unix2: session finished for user [USER], service su
+green [LOGDATE] su[PID]: Warning! Could not relabel with user_u:object_r:devpts_t, not relabeling. 

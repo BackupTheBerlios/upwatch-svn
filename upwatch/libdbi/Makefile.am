@@ -1,9 +1,5 @@
 include $(top_srcdir)/Makefile.am.path
 
-#if HAVE_LIBNET
-#USE_LIBNET = uw_investigate
-#endif
-
 if HAVE_LIBPCAP
 UW_IPTRAF = uw_iptraf
 endif
@@ -70,11 +66,11 @@ PROGNAMES = ${CLIENTPROG} ${MONITORPROG} ${EXTRAPROG} ${SERVERPROG}
 export PROGNAMES MONITORPROG CLIENTPROG SERVERPROG EXTRAPROG
 export TOP_SRCDIR = $(top_srcdir)
 
-SUBDIRS = upwatch st-1.4 ${XMBMON} libstatgrab uw_send uw_sysstat uw_null \
-  uw_httpget uw_dns uw_ping uw_pop3 uw_smtp uw_tcpconnect uw_imap \
-  uw_mysql uw_mysqlstats uw_postgresql uw_snmpget uw_mssql uw_iptraf \
-  uw_acceptbb uw_accept uw_purple uw_route uw_syncprobes uw_setip uw_process \
-  ${COMPAT} util scripts config common
+if ENABLE_SERVER
+SUBDIRS = upwatch st-1.7 ${XMBMON} libstatgrab-0.13 ${PROGNAMES} compat util scripts config common
+else
+SUBDIRS = upwatch ${XMBMON} libstatgrab-0.13 ${PROGNAMES} util scripts config common 
+endif
 
 DIST_SUBDIRS = ${SUBDIRS} doc
 
@@ -88,7 +84,7 @@ EXTRA_DIST = Makefile.am.common Makefile.am.libs Makefile.am.path VERSION RELEAS
   upwatch-spec.def upwatch-spec.tpl upwatch.spec templates \
   patches/libpcap-linux-timeout.patch mswindows \
   ${SERVER_DIST} \
-  install-sh config.sub mkinstalldirs depcomp cfg/cvs2cl.pl
+  install-sh config.sub mkinstalldirs depcomp
 
 
 upwatch.spec: force upwatch-spec.def upwatch-spec.tpl common/spec.tpl \
@@ -160,3 +156,4 @@ endif
 
 #	rm -f $(distdir)/doc/program-guide.*
 #	rm -f $(distdir)/doc/admin-guide.*
+

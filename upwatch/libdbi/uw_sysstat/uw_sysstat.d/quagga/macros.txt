@@ -3,6 +3,6 @@
 # match a macroname!!
 # entries are matched in the order specified
 LOGDATE \d\d\d\d/\d\d/\d\d \d\d:\d\d:\d\d
-IPADDR (25[0-5]|2[0-4][\d]|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3}
+IPADDR ((([0-9a-fA-F]+:){7}[0-9a-fA-F]+)|(([0-9a-fA-F]+:)*[0-9a-fA-F]+)?::(([0-9a-fA-F]+:)*[0-9a-fA-F]+)?)|((25[0-5]|2[0-4][\d]|[0-1]?\d?\d)(\.(25[0-5]|2[0-4]\d|[0-1]?\d?\d)){3})
 PID 	\[\d+\]
 NUM     [-+]?\d+

@@ -1,2 +1,6 @@
 green [LOGDATE] gdm-binary[PID]: Couldn't authenticate user
-
+green [LOGDATE] gdm[PID]: Couldn't authenticate user
+ignore [LOGDATE] gdm[PID]: gdm_slave_xioerror_handler: Fatal X error - Restarting [HOSTNAME]:[NUM]
+ignore [LOGDATE] gdm[PID]: gdm_slave_xioerror_handler: Fatal X error - Restarting [IPADDR]:[NUM]
+green [LOGDATE] gdm[PID]: QUERY_VT request denied: Not authenticated
+green [LOGDATE] gdm[PID]: QUERY_LOGOUT_ACTION request denied: Not authenticated

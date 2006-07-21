@@ -19,7 +19,7 @@
 char *progname;
 int _log2stderr;
 int _log2syslog;
-char *_logfilename;
+const char *_logfilename;
 
 /****************************
  logging utility function

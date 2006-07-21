@@ -1,0 +1,9 @@
+green [LOGDATE] amavis[PID]: Perl version 
+green [LOGDATE] amavis[PID]: Module
+green [LOGDATE] amavis[PID]: [WORD]::[WORD] code loaded
+green [LOGDATE] amavis[PID]: [WORD] code loaded
+green [LOGDATE] amavis[PID]: [WORD]::[WORD] code NOT loaded
+green [LOGDATE] amavis[PID]: [WORD] code NOT loaded
+green [LOGDATE] amavis[PID]: Found $[WORD] at [PATH]
+green [LOGDATE] amavis[PID]: No $[WORD], not using it
+green [LOGDATE] amavis[PID]: Creating db in

@@ -1,0 +1,30 @@
+noinst_LIBRARIES = libst.a
+libst_a_SOURCES = sched.c stk.c sync.c key.c io.c st.h common.h  md.h md.S public.h
+if LINUX
+MYCFLAGS = -DUSE_POLL -DLINUX
+endif
+if FREEBSD
+MYCFLAGS = -DFREEBSD
+endif
+if NETBSD
+MYCFLAGS = -DNETBSD
+endif
+if OPENBSD
+MYCFLAGS = -DOPENBSD
+endif
+if SOLARIS
+MYCFLAGS = -DSOLARIS
+endif
+if CYGWIN
+MYCFLAGS = -DCYGWIN
+endif
+AM_CFLAGS = ${MYCFLAGS}
+
+EXTRA_DIST = osguess.sh
+
+sched.c: st.h
+
+st.h:
+	cp public.h st.h
+	sed "s/@VERSION@/1.7/g" < st.pc.in > st.pc
+

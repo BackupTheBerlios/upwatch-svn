@@ -7,7 +7,7 @@
 #include <netdb.h>
 #include <signal.h>
 #include <string.h>
-#include <malloc.h>
+#include <stdlib.h>
 #include <ctype.h>
 
 #include <generic.h>
@@ -147,8 +147,8 @@ static int uw_password_ok(char *user, char *passwd)
 static int uw_set_ip(char *user, char *ip, char *remotehost) 
 {
   dbi_conn conn;
-  conn = open_database(OPT_ARG(DBTYPE), OPT_ARG(DBHOST), OPT_ARG(DBPORT), OPT_ARG(DBNAME), 
-			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
+  conn = open_database((char *) &OPT_ARG(DBTYPE), (char *) &OPT_ARG(DBHOST), (char *) &OPT_ARG(DBPORT), 
+                        (char *) &OPT_ARG(DBNAME), (char *) &OPT_ARG(DBUSER), (char *) &OPT_ARG(DBPASSWD));
   if (conn) {
     gchar buffer[256];
 

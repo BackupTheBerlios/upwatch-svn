@@ -1,0 +1,87 @@
+.TH sg_get_cpu_stats 3 $Date:\ 2005/04/25\ 11:25:45\ $ i\-scream 
+.SH NAME
+sg_get_cpu_stats, sg_get_cpu_stats_diff, sg_get_cpu_percents \- get cpu usage
+.SH SYNOPSIS
+.nf
+#include <statgrab.h>
+.fi
+.sp 1
+.PP
+sg_cpu_percents *\fIsg_get_cpu_percents\fR(void);
+.PP
+sg_cpu_stats *\fIsg_get_cpu_stats\fR(void);
+.PP
+sg_cpu_stats *\fIsg_get_cpu_stats_diff\fR(void);
+.SH DESCRIPTION
+sg_get_cpu_stats() and
+sg_get_cpu_stats_diff() both return static pointers
+of type sg_cpu_stats.
+sg_get_cpu_stats() returns the total amount of
+"ticks" the operating system has spent in each of the different
+states. sg_get_cpu_stats_diff() returns the
+difference in "ticks" for each of the states since last time
+sg_get_cpu_stats_diff() or
+sg_get_cpu_stats() was called. If it has never
+been called, it will return the result of
+sg_get_cpu_stats().
+.PP
+The value stored (the "ticks") will vary between operating
+systems. For example Solaris has a total of 100 per second,
+while Linux has substantially more. Also, different operating
+systems store different information \- you won't find nice cpu on
+Solaris for example.
+.PP
+Because of this, you will ideally always want to work on a scale
+against the total, or in percentages.
+.PP
+sg_get_cpu_percents() returns a pointer to a
+static sg_cpu_percents. The function
+calls sg_get_cpu_stats_diff() and changes the values
+into percentages. If it has never been called before (and nor has
+sg_get_cpu_stats() or
+sg_get_cpu_stats_diff()), the returned percentages
+will be the systems total ever since its uptime. (Unless the
+counters have cycled)
+.SH RETURN\ VALUES
+There are two structures returned by the CPU statistics
+functions.
+.PP
+.nf
+
+typedef struct{
+        long long user;
+        long long kernel;
+        long long idle;
+        long long iowait;
+        long long swap;
+        long long nice;
+        long long total;
+        time_t systime;
+}sg_cpu_stats;
+    
+.fi
+.PP
+.nf
+
+typedef struct{
+        float user;
+        float kernel;
+        float idle;
+        float iowait;
+        float swap;
+        float nice;
+        time_t time_taken;
+}sg_cpu_percents;
+    
+.fi
+.TP 
+user  kernel  idle  iowait  swap  nice  
+The different CPU states.
+.TP 
+systime  time_taken  
+The time taken in seconds since the last call of the
+function, or the system time.
+.SH SEE\ ALSO
+\fBstatgrab\fR(3)
+.SH WEBSITE
+http://www.i\-scream.org/libstatgrab/

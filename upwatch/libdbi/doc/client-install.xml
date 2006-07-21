@@ -45,6 +45,8 @@
                 you'll need the following on your system to build upwatch:</para>
             <itemizedlist>
                 <listitem><para>lynx</para></listitem>
+                <listitem><para>autoconf 2.59</para></listitem>
+                <listitem><para>automake 1.9</para></listitem>
                 <listitem><para>autogen 5.3.6 (autogen.sourceforge.net)</para></listitem>
                 <listitem><para>autogen needs libguile and umb-scheme</para></listitem>
                 <listitem><para>RPM tools, if you want to build RPM's</para></listitem>
@@ -63,6 +65,8 @@
               $ cd upwatch-x.x
               $ ./configure
               $ make 
+              $ groupadd upwatch
+              $ useradd -d /etc/upwatch.d -s /sbin/nologin -g upwatch upwatch
               $ make install
            </literallayout>
         <para> Nothing to it... In case of problems, you're probably missing some library or

@@ -6,5 +6,5 @@ green [LOGDATE] rpc.mountd: authenticated (un)?mount request from [IPADDR]:[NUM]
 green [LOGDATE] rpc.mountd: authenticated (un)?mount request from [HOSTNAME]:[NUM] for [PATH] \([PATH]\)
 green [LOGDATE] rpc.mountd: refused mount request from [HOSTNAME] for [PATH] \([PATH]\)
 green [LOGDATE] rpc.statd[PID]: Caught signal [NUM], un-registering and exiting\.
-
+green [LOGDATE] rpc.mountd: Caught signal [NUM], un-registering and exiting.
 

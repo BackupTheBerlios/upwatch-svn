@@ -3,7 +3,7 @@
 # test if libtoolize is called glibtoolize (MacOSX)
 BOGUS=`glibtoolize -n 2>/dev/null`
 TEST=$?
-if [ x$TEST == "x0" ]
+if [ $TEST -eq 0 ]
 then
 	LIBTOOLIZE=glibtoolize
 else
@@ -14,17 +14,12 @@ fi
 set -x
 
 # libstatgrab
-cd libstatgrab
-#if [ ! -f libstatgrab-openbsd.patch ]
-#then
-#  cp ../patches/libstatgrab-openbsd.patch .
-#  patch -p1 < libstatgrab-openbsd.patch
+cd libstatgrab-0.13
   aclocal
   autoheader
   $LIBTOOLIZE
   autoconf
   automake --gnu --add-missing
-#fi
 cd ..
 
 aclocal \
@@ -36,4 +31,4 @@ aclocal \
 cd xmbmon203
 autoconf
 cd ..
-
+svnversion . > RELEASE

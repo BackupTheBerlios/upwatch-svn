@@ -1,0 +1,55 @@
+.TH sg_get_host_info 3 $Date:\ 2005/04/25\ 11:25:45\ $ i\-scream 
+.SH NAME
+sg_get_host_info \- get general operating system statistics
+.SH SYNOPSIS
+.nf
+#include <statgrab.h>
+.fi
+.sp 1
+.PP
+sg_host_info *\fIsg_get_host_info\fR(void);
+.SH DESCRIPTION
+This call returns details on the operating system.
+.PP
+It returns a pointer to a static buffer of
+sg_host_info.
+.SH RETURN\ VALUES
+The structure returned is of type
+sg_host_info.
+.PP
+.nf
+
+typedef struct{
+        char *os_name;
+        char *os_release;
+        char *os_version;
+        char *platform;
+        char *hostname;
+        time_t uptime;
+}sg_host_info;
+    
+.fi
+.TP 
+os_name
+the operating system name.
+(eg. SunOS or Linux)
+.TP 
+os_release
+the operating system release.
+(eg. 5.8 or 5.9 or Solaris)
+.TP 
+os_version
+the version level of the OS.
+.TP 
+platform
+the hardware platform (architecture) the OS runs on.
+.TP 
+hostname
+the name of the machine.
+.TP 
+uptime
+the uptime of the machine in seconds.
+.SH SEE\ ALSO
+\fBstatgrab\fR(3)
+.SH WEBSITE
+http://www.i\-scream.org/libstatgrab/

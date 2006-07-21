@@ -1,45 +1,59 @@
 green [LOGDATE] rpm[PID]: installe
-green [LOGDATE] uw_ping[PID]: run\.c\([NUM]\): ICMP Echo from [IPADDR]
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): [WORD]: purpled [NUM] probes
-green [LOGDATE] uw_[WORD][PID]: last message repeated [NUM] times
-green [LOGDATE] uw_[WORD][PID]: logregex\.c\([NUM]\): loading [PATH]
-green [LOGDATE] uw_[WORD][PID]: logregex\.c\([NUM]\): reloading [PATH]
-green [LOGDATE] uw_[WORD][PID]: main\.c\([NUM]\): exit
-green [LOGDATE] uw_[WORD][PID]: main\.c\([NUM]\): run [NUM]: processed [NUM] items in [NUM]\.[NUM] seconds
-green [LOGDATE] uw_[WORD][PID]: main\.c\([NUM]\): signal [NUM] received - finishing up
-green [LOGDATE] uw_[WORD][PID]: main\.c\([NUM]\): sleeping for [NUM] seconds
-green [LOGDATE] uw_[WORD][PID]: main\.c\([NUM]\): start
-green [LOGDATE] uw_[WORD][PID]: notify\.c\([NUM]\): MAILTO: [EMAIL] [NUM] [NUM] Message accepted for delivery
-green [LOGDATE] uw_[WORD][PID]: notify\.c\([NUM]\): MAILTO: [EMAIL] [NUM] Ok: queued as
-green [LOGDATE] uw_[WORD][PID]: notify\.c\([NUM]\): [HOSTNAME]: [WORD] [COLOR] \(was [COLOR]\)
-green [LOGDATE] uw_[WORD][PID]: pr_process\.c\([NUM]\): Processing [PATH]
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): can't resolve [HOSTNAME]: No such file or directory
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): child [NUM] exited with status [NUM]
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): [IPADDR]
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): [IPADDR]:
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): [IPADDR]: Broken pipe
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): [IPADDR]: Connection reset by peer
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): [IPADDR]: Login error:
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): [IPADDR]: new connection
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): [IPADDR]: [PATH] close error
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): [IPADDR]: spooled to [PATH]
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): [IPADDR]: timeout on greeting string
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): [IPADDR]: timeout reading DATA statement
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): [IPADDR]: timeout reading fileblock
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): [IPADDR]: timeout reading PASS response
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): [IPADDR]: timeout reading USER string
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): [PATH]: empty file
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): reading info from database
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): running [NUM] probes
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): signal [NUM] received - finishing up
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): started [PID]: on [PATH]
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): st_read: Connection reset by peer
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): unknown message:
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): uploaded [PATH]
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): user [WORD], pwd [WORD] not found
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): [WORD]: purpled [WORD] [NUM]
-green [LOGDATE] uw_[WORD][PID]: run\.c\([NUM]\): writing results
-green [LOGDATE] uw_[WORD][PID]: spool\.c\([NUM]\): spooled to [PATH]
-red [LOGDATE] uw_[WORD][PID]: db\.c\([NUM]\): Too many connections
-red [LOGDATE] uw_[WORD][PID]: notify\.c\([NUM]\): UPWATCH: probe mysqlstats is lagging in processing
-
+green [LOGDATE] uw_ping[PID] run\.c\([NUM]\): ICMP Echo from [IPADDR]
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [WORD]: purpled [NUM] probes
+green [LOGDATE] uw_[WORD][PID] last message repeated [NUM] times
+green [LOGDATE] uw_[WORD][PID] logregex\.c\([NUM]\): loading [PATH]
+green [LOGDATE] uw_[WORD][PID] logregex\.c\([NUM]\): reloading [PATH]
+green [LOGDATE] uw_[WORD][PID] main\.c\([NUM]\): exit
+green [LOGDATE] uw_[WORD][PID] main\.c\([NUM]\): run [NUM]: processed [NUM] items in [NUM]\.[NUM] seconds
+green [LOGDATE] uw_[WORD][PID] main\.c\([NUM]\): signal [NUM] received - finishing up
+green [LOGDATE] uw_[WORD][PID] main\.c\([NUM]\): sleeping for [NUM] seconds
+green [LOGDATE] uw_[WORD][PID] main\.c\([NUM]\): start
+green [LOGDATE] uw_[WORD][PID] notify\.c\([NUM]\): MAILTO: [EMAIL] [NUM] [NUM] Message accepted for delivery
+green [LOGDATE] uw_[WORD][PID] notify\.c\([NUM]\): MAILTO: [EMAIL] [NUM] Ok: queued as
+green [LOGDATE] uw_[WORD][PID] notify\.c\([NUM]\): [HOSTNAME]: [WORD] [COLOR] \(was [COLOR]\)
+green [LOGDATE] uw_[WORD][PID] pr_process\.c\([NUM]\): Processing [PATH]
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): can't resolve [HOSTNAME]: No such file or directory
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): child [NUM] exited with status [NUM]
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [IPADDR]
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [IPADDR]:
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [IPADDR]: Broken pipe
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [IPADDR]: Connection reset by peer
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [IPADDR]: Login error:
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [IPADDR]: new connection
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [IPADDR]: [PATH] close error
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [IPADDR]: spooled to [PATH]
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [IPADDR]: timeout on greeting string
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [IPADDR]: timeout reading DATA statement
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [IPADDR]: timeout reading fileblock
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [IPADDR]: timeout reading PASS response
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [IPADDR]: timeout reading USER string
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [PATH]: empty file
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): reading info from database
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): running [NUM] probes
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): signal [NUM] received - finishing up
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): started [PID]: on [PATH]
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): st_read: Connection reset by peer
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): read: Connection reset by peer
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): unknown message:
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): uploaded [PATH]
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): user [WORD], pwd [WORD] not found
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [WORD]: purpled [WORD] [NUM]
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): writing results
+green [LOGDATE] uw_[WORD][PID] spool\.c\([NUM]\): spooled to [PATH]
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): [HOSTNAME]:[NUM]: Timer expired
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): timeout reading [WORD] response
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): timeout reading [WORD] command
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): timeout reading login request string
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): st_read: Connection reset by peer
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): timeout reading OK enter password
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): SIGALRM received
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): read: Interrupted system call
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\):\s*$ 
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): Processing [PATH]
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): processing ..
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): sleeping
+green [LOGDATE] uw_[WORD][PID] run\.c\([NUM]\): syncing..
+red [LOGDATE] uw_[WORD][PID] db\.c\([NUM]\): Too many connections
+red [LOGDATE] uw_[WORD][PID] notify\.c\([NUM]\): UPWATCH: probe [WORD] is lagging in processing
+red [LOGDATE] uw_[WORD][PID] db\.c\([NUM]\): Can't connect to MySQL server on '[HOSTNAME]' \([NUM]\) dbhost=[HOSTNAME],dbport=[NUM],dbname=[WORD],db

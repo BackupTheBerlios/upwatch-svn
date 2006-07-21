@@ -1,0 +1,4 @@
+green [LOGDATE] postgres[PID]: \[[NUM]-[NUM]\] LOG:\s+recycled transaction log file
+green [LOGDATE] postgres[PID]: \[[NUM]-[NUM]\] FATAL: no pg_hba.conf entry for host "\[[HOSTNAME]\]", user "[WORD]", database "[WORD]", SSL (on|off)
+green [LOGDATE] postgres[PID]: \[[NUM]-[NUM]\] FATAL: Password authentication failed for user "[WORD]"
+green [LOGDATE] postgres[PID]: \[[NUM]-[NUM]\] LOG: duration: [NUM] ms statement: .*

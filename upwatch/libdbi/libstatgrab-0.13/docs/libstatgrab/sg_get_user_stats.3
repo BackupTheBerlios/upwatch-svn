@@ -1,0 +1,36 @@
+.TH sg_get_user_stats 3 $Date:\ 2005/04/25\ 11:25:45\ $ i\-scream 
+.SH NAME
+sg_get_user_stats \- get the current logged in users
+.SH SYNOPSIS
+.nf
+#include <statgrab.h>
+.fi
+.sp 1
+.PP
+sg_user_stats *\fIsg_get_user_stats\fR(void);
+.SH DESCRIPTION
+This call returns a pointer to a static buffer of
+sg_user_stats.
+.SH RETURN\ VALUES
+The structure returned is of type
+sg_user_stats.
+.PP
+.nf
+
+typedef struct{
+        char *name_list;
+        int num_entries;
+}sg_user_stats;
+    
+.fi
+.TP 
+name_list
+A pointer to a space seperated list of the currently
+logged in users.
+.TP 
+num_entries
+The number of users currently logged in.
+.SH SEE\ ALSO
+\fBstatgrab\fR(3)
+.SH WEBSITE
+http://www.i\-scream.org/libstatgrab/

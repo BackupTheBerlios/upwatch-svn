@@ -233,7 +233,7 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
 void write_results(void)
 {
   int ct  = STACKCT_OPT(OUTPUT);
-  char **output = STACKLST_OPT(OUTPUT);
+  char **output = (char **) &STACKLST_OPT(OUTPUT);
   int i;
   xmlDocPtr doc;
 

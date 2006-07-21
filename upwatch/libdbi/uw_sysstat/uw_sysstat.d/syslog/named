@@ -3,8 +3,8 @@ green [LOGDATE] named[PID]: bad referral \([HOSTNAME] !< [HOSTNAME]\)
 green [LOGDATE] named[PID]: check_hints: A records for J\.ROOT-SERVERS\.NET class [NUM] do not match hint records
 green [LOGDATE] named[PID]: Cleaned cache of [NUM] RRset
 green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: bad zone transfer request: '[HOSTNAME]/IN': non-authoritative zone \(NOTAUTH\)
-ignore [LOGDATE] named[PID]: client [IPADDR]#[NUM]: error sending response: host unreachable
 ignore [LOGDATE] named[PID]: client [IPADDR]#[NUM]: error sending response: invalid file
+ignore [LOGDATE] named[PID]: client [IPADDR]#[NUM]: error sending response: host unreachable
 green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: no more recursive clients: quota reached
 green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: update forwarding denied
 green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: update '[HOSTNAME]/IN' denied
@@ -16,7 +16,6 @@ ignore [LOGDATE] named[PID]: dispatch [HEX]: shutting down due to TCP receive er
 green [LOGDATE] named[PID]: dns_master_load: [PATH]:[NUM]: ignoring out-of-zone data \(.*\)
 green [LOGDATE] named[PID]: drained [NUM] queries \(delay [NUM] sec\)
 green [LOGDATE] named[PID]: exiting
-
 green [LOGDATE] named[PID]: Forwarding source address is \[[IPADDR]\]\.[NUM]
 green [LOGDATE] named[PID]: group = [NUM]
 green [LOGDATE] named[PID]: hint zone "" \(IN\) loaded \(serial [NUM]\)

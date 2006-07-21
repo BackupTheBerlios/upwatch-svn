@@ -17,5 +17,7 @@ green [LOGDATE] [WORD]\(pam_unix\)[PID]: [NUM] more authentication failure
 green [LOGDATE] [WORD]\(pam_unix\)[PID]: session closed for [USER_]
 green [LOGDATE] [WORD]\(pam_unix\)[PID]: session (opened|closed) for [USER_]
 green [LOGDATE] [WORD]\(pam_unix\)[PID]: session opened for [USER_]
-green [LOGDATE] [WORD]\(pam_unix\)[PID]: password changed for raarts
-
+green [LOGDATE] [WORD]\(pam_unix\)[PID]: password changed for [USER]
+green [LOGDATE] [WORD]\(pam_unix\)[PID]: auth could not identify password for \[[USER]\]
+green [LOGDATE] unix_chkpwd[PID]: password check failed for user \([USER]\)
+green [LOGDATE] passwd(pam_unix)[PID]: password changed for [USER]

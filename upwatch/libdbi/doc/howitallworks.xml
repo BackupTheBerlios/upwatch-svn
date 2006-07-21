@@ -105,10 +105,6 @@
            <varname>uw_send</varname> queue, which is emptied by the uw_send process which sends
            all files to a remote queue on another host (received and queued by uw_accept).
         </para>
-        <para> <varname>uw_examine</varname> can do some additional tests like traceroute to the target host.
-           It attaches this report
-           to the probe result, and in its turn puts everything in an <varname>uw_process</varname> or
-           <varname>uw_send</varname> queue.</para>
        </sect2>
        <sect2 id="uw_process_storing_results_in_the_database">
         <title>uw_process: storing results in the database</title>
