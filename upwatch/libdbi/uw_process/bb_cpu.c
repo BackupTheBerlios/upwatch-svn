@@ -32,31 +32,34 @@ int bb_cpu_find_realm(trx *t)
 //*******************************************************************
 static gint bb_cpu_store_raw_result(trx *t)
 {
-  MYSQL_RES *result;
+  dbi_result result;
   struct bb_cpu_result *res = (struct bb_cpu_result *)t->res;
   struct probe_def *def = (struct probe_def *)t->def;
   char *escmsg;
+  const char *errmsg;
+  int lasterr;
 
   if (t->res->color == STAT_PURPLE) return 1;
   t->seen_before = FALSE;
   if (res->message) {
-    escmsg = g_malloc(strlen(res->message) * 2 + 1);
-    mysql_real_escape_string(t->probe->db, escmsg, res->message, strlen(res->message)) ;
+    escmsg = strdup(res->message);
+    dbi_conn_quote_string(t->probe->db, &escmsg);
   } else {
     escmsg = strdup("");
   }
     
-  result = my_query(t->probe->db, 0,
+  result = db_query(t->probe->db, 0,
                     "insert into pr_bb_cpu_raw "
                     "set    probe = '%u', stattime = '%u', color = '%u', loadavg = '%f', "
                     "       user = '%u',  idle = '%u', free = '%u', used = '%u', message = '%s'",
                     def->probeid, res->stattime, res->color, res->loadavg,
                     res->user, res->idle, res->free, res->used, escmsg);
   g_free(escmsg);
-  if (result) mysql_free_result(result);
-  if (mysql_errno(t->probe->db) == ER_DUP_ENTRY) {
+  if (result) dbi_result_free(result);
+  lasterr = dbi_conn_error(t->probe->db, &errmsg);
+  if (errmsg && (lasterr == 1062)) { // MySQL ER_DUP_ENTRY(1062)
     t->seen_before = TRUE;
-  } else if (mysql_errno(t->probe->db)) {
+  } else if (lasterr > -1) { // otther error
     return 0; // other failure
   }
   return 1; // success
@@ -67,8 +70,7 @@ static gint bb_cpu_store_raw_result(trx *t)
 //*******************************************************************
 static void bb_cpu_summarize(trx *t, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint resummarize)
 {
-  MYSQL_RES *result;
-  MYSQL_ROW row;
+  dbi_result result;
   struct probe_def *def = (struct probe_def *)t->def;
   float avg_yellow, avg_red;
   gfloat avg_loadavg;
@@ -79,56 +81,57 @@ static void bb_cpu_summarize(trx *t, char *from, char *into, guint slot, guint s
 
   stattime = slotlow + ((slothigh-slotlow)/2);
 
-  result = my_query(t->probe->db, 0,
-                    "select avg(loadavg), avg(user), avg(system), avg(idle), "
-                    "       avg(swapped), avg(free), avg(buffered), avg(cached), "
-                    "       avg(used), max(color), avg(yellow), avg(red) " 
+  result = db_query(t->probe->db, 0,
+                    "select avg(loadavg) as avg_loadavg, avg(user) as avg_user, avg(system) as avg_system, "
+                    "       avg(idle) as avg_idle, avg(swapped) avg_swapped, avg(free) as avg_free, " 
+                    "       avg(buffered) as avg_buffered, avg(cached) as avg_cached, "
+                    "       avg(used) as avg_used, max(color) as max_color, "
+                    "       avg(yellow) as avg_yellow, avg(red) as avg_red " 
                     "from   pr_bb_cpu_%s use index(probstat) "
                     "where  probe = '%d' and stattime >= %d and stattime < %d",
                     from, def->probeid, slotlow, slothigh);
   
   if (!result) return;
-  if (mysql_num_rows(result) == 0) { // no records found
+  if (dbi_result_get_numrows(result) == 0) { // no records found
     LOG(LOG_NOTICE, "nothing to summarize from %s for probe %u %u %u",
                        from, def->probeid, slotlow, slothigh);
-    mysql_free_result(result);
+    dbi_result_free(result);
     return;
   }
 
-  row = mysql_fetch_row(result);
-  if (!row) {
-    mysql_free_result(result);
+  if (!dbi_result_next_row(result)) {
+    dbi_result_free(result);
     return;
   }
-  if (row[0] == NULL) {
+  if (dbi_result_get_string(result, "avg_loadavg") == NULL) {
     LOG(LOG_NOTICE, "nothing to summarize from %s for probe %u %u %u", 
                        from, def->probeid, slotlow, slothigh);
-    mysql_free_result(result);
+    dbi_result_free(result);
     return;
   }
 
-  avg_loadavg = atof(row[0]);
-  avg_user    = atoi(row[1]);
-  avg_system  = atoi(row[2]);
-  avg_idle    = atoi(row[3]);
-  avg_swapped = atoi(row[4]);
-  avg_free    = atoi(row[5]);
-  avg_buffered= atoi(row[6]);
-  avg_cached  = atoi(row[7]);
-  avg_used    = atoi(row[8]);
-  max_color   = atoi(row[9]);
-  avg_yellow  = atof(row[10]);
-  avg_red     = atof(row[11]);
-  mysql_free_result(result);
+  avg_loadavg = dbi_result_get_float(result, "avg_loadavg");
+  avg_user    = dbi_result_get_uint(result, "avg_user");
+  avg_system  = dbi_result_get_uint(result, "avg_system");
+  avg_idle    = dbi_result_get_uint(result, "avg_idle");
+  avg_swapped = dbi_result_get_uint(result, "avg_swapped");
+  avg_free    = dbi_result_get_uint(result, "avg_free");
+  avg_buffered= dbi_result_get_uint(result, "avg_buffered");
+  avg_cached  = dbi_result_get_uint(result, "avg_cached");
+  avg_used    = dbi_result_get_uint(result, "avg_used");
+  max_color   = dbi_result_get_uint(result, "max_color");
+  avg_yellow  = dbi_result_get_float(result, "avg_yellow");
+  avg_red     = dbi_result_get_float(result, "avg_red");
+  dbi_result_free(result);
 
   if (resummarize) {
     // delete old values
-    result = my_query(t->probe->db, 0,
+    result = db_query(t->probe->db, 0,
                     "delete from pr_bb_cpu_%s where probe = '%u' and stattime = '%u'",
                     into, def->probeid, stattime);
-    mysql_free_result(result);
+    dbi_result_free(result);
   }
-  result = my_query(t->probe->db, 0,
+  result = db_query(t->probe->db, 0,
                     "insert into pr_bb_cpu_%s " 
                     "set    loadavg = '%f', user = '%u', system = '%u', idle = '%u', "
                     "       swapped = '%u', free = '%u', buffered = '%u', cached = '%u', "
@@ -139,7 +142,7 @@ static void bb_cpu_summarize(trx *t, char *from, char *into, guint slot, guint s
                     avg_swapped, avg_free, avg_buffered, avg_cached, 
                     avg_used, def->probeid, max_color, stattime,
                     avg_yellow, avg_red, slot);
-  mysql_free_result(result);
+  dbi_result_free(result);
 }
 
 module bb_cpu_module  = {

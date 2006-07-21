@@ -18,8 +18,7 @@ static int do_notification(trx *t);
 int notify(trx *t)
 {
   int notified = FALSE;
-  MYSQL_RES *result;
-  MYSQL_ROW row;
+  dbi_result result;
 
   if (debug > 3) fprintf(stderr, "%s %u %s (was %s). %s\n", t->probe->module_name, t->def->probeid, 
                   color2string(t->res->color), color2string(t->res->prevhistcolor), t->res->hostname);
@@ -32,7 +31,7 @@ int notify(trx *t)
 
   // now go back to the last time the user received a warning, and
   // retrieve the color we had at that time
-  result = my_query(t->probe->db, 0,
+  result = db_query(t->probe->db, 0,
                     "select   color "
                     "from     pr_hist  "
                     "where    probe = '%u' and class = '%u' and stattime <= '%u' "
@@ -40,13 +39,12 @@ int notify(trx *t)
                     "order by stattime desc limit 1",
                     t->def->probeid, t->probe->class, t->res->stattime);
   if (!result) return(notified);
-  row = mysql_fetch_row(result);
-  if (row) {
-    t->res->prevhistcolor = atoi(row[0]);
+  if (dbi_result_next_row(result)) {
+    t->res->prevhistcolor = dbi_result_get_uint(result, "color");
   } else {
     t->res->prevhistcolor = 0;
   }
-  mysql_free_result(result);
+  dbi_result_free(result);
 
   // if it's the same, we don't really need to warn right?
   if (t->res->prevhistcolor == t->res->color) {
@@ -93,7 +91,7 @@ libesmtp_messagefp_cb(void **buf, int *len, void *arg)
   return *buf;
 }
 
-int mail(char *to, char *subject, char *body, time_t date)
+int mail(const char *to, const char *subject, const char *body, time_t date)
 {
   int notified = FALSE;
 

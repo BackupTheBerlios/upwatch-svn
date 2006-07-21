@@ -119,13 +119,19 @@
         <title>Database</title>
         <para>You actually need to create two databases, one for the probes to read from, and one 
         for the results to be written to. The first database should be called upwatch, the other
-        one can be any name (in this example we use netland). Create the databases as follows. (You DO have a root 
-        password set for mysql don't you?)</para>
+        one can be any name (in this example we use netland). If you have a new database installation
+        create a password for the root account, and remove the anonymous accounts as follows:<para>
+        <literallayout>
+           $ mysql -u root 
+           mysql> DELETE FROM mysql.user WHERE User = '';
+           mysql> SET PASSWORD FOR 'root'@'localhost' = PASSWORD('newpwd');
+        </literallayout></para>
+        <para>Now create the databases as follows.</para>
         <literallayout>
            $ mysqladmin -u root --password=PASSWORD create upwatch
-           $ mysql -u root --password=PASSWORD upwatch &lt; upwatch-base.mysql
+           $ mysql -u root --password=PASSWORD upwatch &lt; /usr/share/doc/upwatch-xxx/upwatch-base.mysql
            $ mysqladmin -u root --password=PASSWORD create netland
-           $ mysql -u root --password=PASSWORD netland &lt; upwatch-full.mysql
+           $ mysql -u root --password=PASSWORD netland &lt; i/usr/share/doc/upwatch-xxx/upwatch-full.mysql
         </literallayout>
         <para>Of course you need to assign users and GRANT them access. We start with 
            the probes. We assume the probes are running on a separate host with ip address 192.168.1.23.
@@ -178,7 +184,7 @@
           dbtype mysql
           dbhost localhost
           dbport 3306
-          dbname dymos
+          dbname netland
           dbuser upwatch
           dbpasswd PASSWORD
         </literallayout>

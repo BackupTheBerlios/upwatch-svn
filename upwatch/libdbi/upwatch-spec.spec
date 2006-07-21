@@ -6,7 +6,7 @@ Version: 0.1
 Release: 1
 Source: http://www.upwatch.com/%{name}-%{version}.tar.gz
 Packager: Ron Arts <raarts@upwatch.com>
-Copyright: Proprietary
+License: GPL 
 Group: Application/Monitoring
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 BuildRequires: gzip glib2-devel mysql-devel curl-devel autogen 

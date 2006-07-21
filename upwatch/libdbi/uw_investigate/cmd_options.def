@@ -13,7 +13,7 @@ detail        =
 'uw_investigate does the following: ';
 
 // this section is for the generated specfile
-spec-requires = "libpcap = 0.6.2-13uw /usr/bin/mysql glib2 >= 2.0.4 curl >= 7.9.3 libnet >= 1.0.2";
+spec-requires = "libpcap = 0.6.2-13uw libdbi >= 0.8 glib2 >= 2.0.4 curl >= 7.9.3 libnet >= 1.0.2";
 spec-files    = `echo %dir $spooldir/uw_investigate/new`;
 spec-files    = `echo %dir $spooldir/uw_investigate/tmp`;
 

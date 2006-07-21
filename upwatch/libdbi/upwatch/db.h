@@ -1,12 +1,16 @@
 #if !defined(__DB_H) 
 #define __DB_H
 
-#include <mysql.h>
-#include <mysqld_error.h>
+#include <dbi/dbi.h>
 
-MYSQL *open_database(char *dbhost, int dbport, char *dbname, char *dbuser, char *dbpasswd);
-void close_database(MYSQL *mysql);
-MYSQL_RES *my_query(MYSQL *mysql, int log_dupes, char *qry, ...);
-MYSQL_RES *my_rawquery(MYSQL *mysql, int log_dupes, char *qry);
+dbi_conn open_database(const char *dbtype, const char *dbhost, const char *dbport, const char *dbname, const char *dbuser, const char *dbpasswd);
+void close_database(dbi_conn conn);
+dbi_result db_query(dbi_conn conn, int log_dupes, const char *qry, ...);
+dbi_result db_rawquery(dbi_conn conn, int log_dupes, const char *qry);
+
+#ifndef HAVE_LIBDBI_GET_UINT
+#define dbi_result_get_uint(a,b)  dbi_result_get_ulong(a,b)
+#define dbi_result_get_uint_idx(a,b)  dbi_result_get_ulong_idx(a,b)
+#endif
 
 #endif /* __DB_H */

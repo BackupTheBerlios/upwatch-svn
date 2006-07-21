@@ -30,15 +30,15 @@ int dblist_cnt;
 
 void update_last_seen(module *probe)
 {
-  MYSQL_RES *result;
+  dbi_result result;
 
-  result = my_query(probe->db, 0,
+  result = db_query(probe->db, 0,
                     "update probe set lastseen = %u where id = '%u'",
                     probe->lastseen, probe->class);
-  if (result) mysql_free_result(result);
+  if (result) dbi_result_free(result);
 }
 
-int realm_exists(char *realm)
+int realm_exists(const char *realm)
 {
   int i;
 
@@ -57,7 +57,7 @@ int realm_exists(char *realm)
   return FALSE;
 }
 
-MYSQL *open_realm(char *realm)
+dbi_conn open_realm(const char *realm)
 {
   int i;
 
@@ -66,29 +66,28 @@ MYSQL *open_realm(char *realm)
     return NULL;
   }
   if (realm == NULL || realm[0] == 0) {
-    if (dblist[0].mysql) return(dblist[0].mysql);
-    dblist[0].mysql = open_database(dblist[0].host, dblist[0].port, 
+    if (dblist[0].conn) return(dblist[0].conn);
+    dblist[0].conn = open_database(OPT_ARG(DBTYPE), dblist[0].host, dblist[0].port, 
                       dblist[0].db, dblist[0].user, dblist[0].password);
-    return(dblist[0].mysql);
+    return(dblist[0].conn);
   }
 
   for (i=0; i < dblist_cnt; i++) {
     if (strcmp(dblist[i].realm, realm) == 0) {
-      if (dblist[i].mysql) return(dblist[i].mysql);
-      dblist[i].mysql = open_database(dblist[i].host, dblist[i].port, 
+      if (dblist[i].conn) return(dblist[i].conn);
+      dblist[i].conn = open_database(OPT_ARG(DBTYPE), dblist[i].host, dblist[i].port, 
                         dblist[i].db, dblist[i].user, dblist[i].password);
-      return(dblist[i].mysql);
+      return(dblist[i].conn);
     }
   }
   LOG(LOG_ERR, "could not find realm %s", realm);
   return(NULL);
 }
 
-int realm_server_by_name(char *realm, char *name)
+int realm_server_by_name(const char *realm, const char *name)
 {
   int i, id = -1;
-  MYSQL_RES *result;
-  MYSQL_ROW row;
+  dbi_result result;
 
   if (!dblist) {
     LOG(LOG_ERR, "realm_server_by_name but no dblist found");
@@ -105,19 +104,19 @@ int realm_server_by_name(char *realm, char *name)
   }
   if (i == dblist_cnt) return id;
   if (!dblist[i].db) return id;
-  result = my_query(dblist[i].mysql, 0, dblist[i].srvrbyname, name, name, name, name, name);
+  result = db_query(dblist[i].conn, 0, dblist[i].srvrbyname, name, name, name, name, name);
   if (!result) return id;
-  row = mysql_fetch_row(result);
-  if (row) id = atoi(row[0]);
-  mysql_free_result(result);
+  if (dbi_result_next_row(result)) {
+    id = dbi_result_get_uint(result, "id");
+  }
+  dbi_result_free(result);
   return(id);
 }
 
-int realm_server_by_ip(char *realm, char *ip)
+int realm_server_by_ip(const char *realm, char *ip)
 {
   int i, id = -1;
-  MYSQL_RES *result;
-  MYSQL_ROW row;
+  dbi_result result;
 
   if (!dblist) {
     LOG(LOG_ERR, "realm_server_by_name but no dblist found");
@@ -134,20 +133,20 @@ int realm_server_by_ip(char *realm, char *ip)
   }
   if (i == dblist_cnt) return id;
   if (!dblist[i].db) return id;
-  result = my_query(dblist[i].mysql, 0, dblist[i].srvrbyip, ip, ip, ip, ip, ip);
+  result = db_query(dblist[i].conn, 0, dblist[i].srvrbyip, ip, ip, ip, ip, ip);
   if (!result) return id;
-  row = mysql_fetch_row(result);
-  if (row) id = atoi(row[0]);
-  mysql_free_result(result);
+  if (dbi_result_next_row(result)) {
+    id = dbi_result_get_uint(result, "id");
+  }
+  dbi_result_free(result);
   return(id);
 }
 
-char *realm_server_by_id(char *realm, int id)
+char *realm_server_by_id(const char *realm, int id)
 {
   int i;
   char *name = NULL;
-  MYSQL_RES *result;
-  MYSQL_ROW row;
+  dbi_result result;
 
   if (!dblist) {
     LOG(LOG_ERR, "realm_server_by_name but no dblist found");
@@ -164,11 +163,12 @@ char *realm_server_by_id(char *realm, int id)
   }
   if (i == dblist_cnt) return name;
   if (!dblist[i].db) return name;
-  result = my_query(dblist[i].mysql, 0, dblist[i].srvrbyid, id, id, id, id, id);
+  result = db_query(dblist[i].conn, 0, dblist[i].srvrbyid, id, id, id, id, id);
   if (!result) return name;
-  row = mysql_fetch_row(result);
-  if (row) name = strdup(row[0]);
-  mysql_free_result(result);
+  if (dbi_result_next_row(result)) {
+    id = dbi_result_get_uint(result, "id");
+  }
+  dbi_result_free(result);
   return(name);
 }
 
@@ -182,17 +182,18 @@ static void modules_end_run(void)
   buf[0] = 0;
 
   for (i=0; i < dblist_cnt; i++) {
-    if (dblist[i].realm) free(dblist[i].realm);
-    if (dblist[i].host) free(dblist[i].host);
-    if (dblist[i].db) free(dblist[i].db);
-    if (dblist[i].user) free(dblist[i].user);
-    if (dblist[i].password) free(dblist[i].password);
-    if (dblist[i].srvrbyname) free(dblist[i].srvrbyname);
-    if (dblist[i].srvrbyid) free(dblist[i].srvrbyid);
-    if (dblist[i].srvrbyip) free(dblist[i].srvrbyip);
+    if (dblist[i].realm) free((void *)dblist[i].realm);
+    if (dblist[i].host) free((void *)dblist[i].host);
+    if (dblist[i].port) free((void *)dblist[i].port);
+    if (dblist[i].db) free((void *)dblist[i].db);
+    if (dblist[i].user) free((void *)dblist[i].user);
+    if (dblist[i].password) free((void *)dblist[i].password);
+    if (dblist[i].srvrbyname) free((void *)dblist[i].srvrbyname);
+    if (dblist[i].srvrbyid) free((void *)dblist[i].srvrbyid);
+    if (dblist[i].srvrbyip) free((void *)dblist[i].srvrbyip);
 
-    if (dblist[i].mysql) {
-      close_database(dblist[i].mysql);
+    if (dblist[i].conn) {
+      close_database(dblist[i].conn);
     }
   }
   free(dblist);
@@ -241,61 +242,58 @@ extern void free_res(void *res);
 static void modules_start_run(void)
 {
   int i;
-  MYSQL *db;
+  dbi_conn db;
 
-  db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
+  db = open_database(OPT_ARG(DBTYPE), OPT_ARG(DBHOST), OPT_ARG(DBPORT), OPT_ARG(DBNAME),
                      OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
   if (db) {
-    MYSQL_RES *result;
+    dbi_result result;
     dblist = calloc(100, sizeof(struct dbspec));
     dblist_cnt = 0;
     
-    result = my_query(db, 0, "select pr_realm.name, pr_realm.host, "
+    result = db_query(db, 0, "select pr_realm.name, pr_realm.host, "
                              "       pr_realm.port, pr_realm.db, pr_realm.user, "
                              "       pr_realm.password, pr_realm.srvrbyname, "
                              "       pr_realm.srvrbyid, pr_realm.srvrbyip "
                              "from   pr_realm "
                              "where  pr_realm.id > 1");
     if (result) {
-      MYSQL_ROW row;
-      while ((row = mysql_fetch_row(result)) != NULL) {
-        dblist[dblist_cnt].realm = strdup(row[0]);
-        dblist[dblist_cnt].host = strdup(row[1]);
-        dblist[dblist_cnt].port = atoi(row[2]);
-        dblist[dblist_cnt].db = strdup(row[3]);
-        dblist[dblist_cnt].user = strdup(row[4]);
-        dblist[dblist_cnt].password = strdup(row[5]);
-        dblist[dblist_cnt].srvrbyname = strdup(row[6]);
-        dblist[dblist_cnt].srvrbyid = strdup(row[7]);
-        dblist[dblist_cnt].srvrbyip = strdup(row[8]);
+      while (dbi_result_next_row(result)) {
+        dblist[dblist_cnt].realm = dbi_result_get_string_copy(result, "name");
+        dblist[dblist_cnt].host = dbi_result_get_string_copy(result, "host");
+        dblist[dblist_cnt].port = dbi_result_get_string_copy(result, "port");
+        dblist[dblist_cnt].db = dbi_result_get_string_copy(result, "db");
+        dblist[dblist_cnt].user = dbi_result_get_string_copy(result, "user");
+        dblist[dblist_cnt].password = dbi_result_get_string_copy(result, "password");
+        dblist[dblist_cnt].srvrbyname = dbi_result_get_string_copy(result, "srvrbyname");
+        dblist[dblist_cnt].srvrbyid = dbi_result_get_string_copy(result, "srvrbyid");
+        dblist[dblist_cnt].srvrbyip = dbi_result_get_string_copy(result, "srvrbyip");
         dblist_cnt++;
       }
-      mysql_free_result(result);
+      dbi_result_free(result);
     }
     close_database(db);
   }
 
   for (i = 0; modules[i]; i++) {
-    MYSQL_RES *result;
+    dbi_result result;
 
     modules[i]->filecount = 0;
     modules[i]->resultcount = 0;
     modules[i]->errors = 0;
 
-    modules[i]->db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
+    modules[i]->db = open_database(OPT_ARG(DBTYPE), OPT_ARG(DBHOST), OPT_ARG(DBPORT), OPT_ARG(DBNAME),
                                    OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
     if (modules[i]->db) {
-      result = my_query(modules[i]->db, 0, "select fuse, lastseen from probe where id = '%d'", modules[i]->class);
+      result = db_query(modules[i]->db, 0, "select fuse, lastseen from probe where id = '%d'", modules[i]->class);
       if (result) {
-        MYSQL_ROW row;
-        row = mysql_fetch_row(result);
-        if (row) {
-          if (row[0]) modules[i]->fuse  = (strcmp(row[0], "yes") == 0) ? 1 : 0;
-          if (row[1]) modules[i]->lastseen = atoi(row[1]);
+        if (dbi_result_next_row(result)) {
+          modules[i]->fuse  = (strcmp(dbi_result_get_string(result, "fuse"), "yes") == 0) ? 1 : 0;
+          modules[i]->lastseen = dbi_result_get_uint(result, "lastseen");
         } else {
           LOG(LOG_NOTICE, "probe record for id %u not found", modules[i]->class);
         }
-        mysql_free_result(result);
+        dbi_result_free(result);
       }
       close_database(modules[i]->db);
       modules[i]->db = NULL;
@@ -395,7 +393,7 @@ int init(void)
   if (HAVE_OPT(TRUST)) {
     int i, found=0;
     int     ct  = STACKCT_OPT( TRUST );
-    char**  pn = STACKLST_OPT( TRUST );
+    const char**  pn = STACKLST_OPT( TRUST );
 
     while (ct--) {
       for (i=0; modules[i]; i++) {
@@ -458,7 +456,7 @@ int trust(char *name)
 {
   int trust;
   int     ct  = STACKCT_OPT( TRUST );
-  char**  pn = STACKLST_OPT( TRUST );
+  const char**  pn = STACKLST_OPT( TRUST );
 
   for (trust=0; trust < ct; trust++) {
     if (strcmp(pn[trust], "all") == 0) {
@@ -526,7 +524,7 @@ extern int forever;
     trx t;
     int j;
     int output_ct = STACKCT_OPT(OUTPUT);
-    char **output_pn = STACKLST_OPT(OUTPUT);
+    const char **output_pn = STACKLST_OPT(OUTPUT);
     char *filebase;
 
     filebase = strrchr((char *)g_ptr_array_index(arr,i), '/');
@@ -589,7 +587,7 @@ int master_checks(void)
 {
   int i;
   int     ct  = STACKCT_OPT( INPUT );
-  char**  pn = STACKLST_OPT( INPUT );
+  const char**  pn = STACKLST_OPT( INPUT );
 
   childpidcnt = ct;
   if (debug > 2) fprintf(stderr, "pondering..\n");
@@ -617,22 +615,19 @@ int master_checks(void)
   } 
 
   for (i = 0; modules[i]; i++) {
-    modules[i]->db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
+    modules[i]->db = open_database(OPT_ARG(DBTYPE), OPT_ARG(DBHOST), OPT_ARG(DBPORT), OPT_ARG(DBNAME),
                                    OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
     if (modules[i]->db) {
-      MYSQL_RES *result;
+      dbi_result result;
 
-      result = my_query(modules[i]->db, 0, "select lastseen, maxlag, lagwarn from probe where id = '%u'", 
+      result = db_query(modules[i]->db, 0, "select lastseen, maxlag, lagwarn from probe where id = '%u'", 
                                            modules[i]->class);
       if (result) {
-        MYSQL_ROW row;
-
-        row = mysql_fetch_row(result);
-        if (row && row[0]) {
+        if (dbi_result_next_row(result)) {
           unsigned now;
-          int lastseen = atoi(row[0]);
-          int maxlag = atoi(row[1]);
-          int lagwarn = strcmp(row[2], "yes") == 0;
+          int lastseen = dbi_result_get_uint(result, "lastseen");
+          int maxlag = dbi_result_get_uint(result, "maxlag");
+          int lagwarn = strcmp(dbi_result_get_string(result, "lagwarn"), "yes") == 0;
 
           now = (int) time(NULL);
           if ((now - lastseen) > maxlag) {
@@ -641,7 +636,7 @@ int master_checks(void)
 
               sprintf(subject, "UPWATCH: probe %s is lagging in processing", modules[i]->module_name);
               mail(OPT_ARG(NOC_MAIL), subject, subject, (time_t)NULL);
-              my_query(modules[i]->db, 0, "update probe set lagwarn = 'yes' where id = '%u'",
+              db_query(modules[i]->db, 0, "update probe set lagwarn = 'yes' where id = '%u'",
                                            modules[i]->class);
             }
           } else {
@@ -650,14 +645,14 @@ int master_checks(void)
 
               sprintf(subject, "UPWATCH: probe %s is up-to-date again", modules[i]->module_name);
               mail(OPT_ARG(NOC_MAIL), subject, subject, (time_t)NULL);
-              my_query(modules[i]->db, 0, "update probe set lagwarn = 'no' where id = '%u'",
+              db_query(modules[i]->db, 0, "update probe set lagwarn = 'no' where id = '%u'",
                                            modules[i]->class);
             }
           }
         } else {
           LOG(LOG_NOTICE, "probe record for id %u not found", modules[i]->class);
         }
-        mysql_free_result(result);
+        dbi_result_free(result);
       }
       close_database(modules[i]->db);
       modules[i]->db = NULL;
@@ -696,14 +691,13 @@ int resummarize(void)
   trx t;
   struct probe_result res;
   struct probe_def def;
-  MYSQL *mysql;
-  MYSQL_RES *result;
-  MYSQL_ROW row;
+  dbi_conn conn;
+  dbi_result result;
 extern int forever;
   guint lowtime, hightime; 
   char *p;
 
-  res.name = strtok(OPT_ARG(SUMMARIZE), ",");
+  res.name = strtok((char *)OPT_ARG(SUMMARIZE), ",");
   lowtime = 0;
   hightime = time(NULL);
   p = strtok(NULL, ",");
@@ -739,34 +733,33 @@ extern int forever;
     return 0;
   }
 
-  mysql = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
+  conn = open_database(OPT_ARG(DBTYPE), OPT_ARG(DBHOST), OPT_ARG(DBPORT), OPT_ARG(DBNAME), 
 			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
-  if (!mysql) {
+  if (!conn) {
     return 0;
   }
   modules_start_run();
   found = 0;
-  result = my_query(mysql, 1, "select id, server from pr_%s_def where id > 1", res.name);
+  result = db_query(conn, 1, "select id, server from pr_%s_def where id > 1", res.name);
   if (result == NULL) return(0);
-  while ((row = mysql_fetch_row(result)) && forever) {
-    MYSQL_RES *presult;
-    MYSQL_ROW prow;
+  while (dbi_result_next_row(result) && forever) {
+    dbi_result presult;
 
-    def.probeid = atoi(row[0]);
-    def.server = atoi(row[1]);
+    def.probeid = dbi_result_get_uint(result, "id");
+    def.server = dbi_result_get_uint(result, "server");
     //printf("%u server %u\n", def.probeid, def.server);
 
-    presult = my_query(mysql, 1, "select stattime from pr_%s_raw where probe = '%u' "
+    presult = db_query(conn, 1, "select stattime from pr_%s_raw where probe = '%u' "
                                  "and stattime >= '%u' and stattime <= '%u'", 
                                  res.name, def.probeid, lowtime, hightime);
     if (presult == NULL) continue;
-    while ((prow = mysql_fetch_row(presult)) && forever) {
+    while (dbi_result_next_row(presult) && forever) {
       guint cur_slot, prev_slot;
       gulong dummy_low, dummy_high;
       gulong slotlow, slothigh;
       int i;
 
-      res.stattime = atoi(prow[0]);
+      res.stattime  = dbi_result_get_uint(presult, "stattime");
       if (def.newest == 0) def.newest = res.stattime;
       found++;
 
@@ -788,12 +781,12 @@ extern int forever;
         if (debug > 2) { fprintf(stderr, "%8u records processed\r", found); }
       }
     }
-    mysql_free_result(presult);
+    dbi_result_free(presult);
 
   }
-  mysql_free_result(result);
+  dbi_result_free(result);
   modules_end_run();
-  close_database(mysql);
+  close_database(conn);
   return(found);
 }
 

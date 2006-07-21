@@ -8,6 +8,10 @@ if HAVE_LIBPCAP
 UW_IPTRAF = uw_iptraf
 endif
 
+if HAVE_LIBMYSQL
+UW_MYSQL = uw_mysql uw_mysqlstats
+endif
+
 if HAVE_LIBPQ
 UW_POSTGRESQL = uw_postgresql
 endif
@@ -20,6 +24,10 @@ if HAVE_LIBTDS
 UW_MSSQL = uw_mssql
 endif
 
+if XMBMON
+XMBMON = xmbmon203
+endif
+
 # variables to build installable packages
 # packages are:
 # base (includes docs, utils, uw_sysstat, uw_null and uw_send).
@@ -29,8 +37,8 @@ endif
 CLIENTLIST = uw_send uw_sysstat uw_null
 # order is important here: uw_process should be last
 SERVERLIST = uw_acceptbb uw_accept uw_purple uw_route uw_syncprobes uw_setip uw_process
-MONITORLIST = uw_httpget uw_dns uw_ping uw_mysql uw_mysqlstats uw_pop3 uw_smtp uw_tcpconnect uw_imap \
- ${UW_POSTGRESQL} ${UW_SNMPGET} ${UW_MSSQL}
+MONITORLIST = uw_httpget uw_dns uw_ping uw_pop3 uw_smtp uw_tcpconnect uw_imap \
+ ${UW_MYSQL} ${UW_POSTGRESQL} ${UW_SNMPGET} ${UW_MSSQL}
 IPTRAFLIST = uw_iptraf
 EXTRALIST = ${IPTRAFLIST}
 
@@ -39,6 +47,7 @@ CLIENTPROG = ${CLIENTLIST}
 if ENABLE_SERVER
 SERVERPROG = ${SERVERLIST}
 ENABLE_SERVER = --enable-server
+COMPAT = compat
 endif
 
 if ENABLE_MONITORS
@@ -53,10 +62,6 @@ endif
 
 EXTRAPROG = ${IPTRAFPROG}
 
-if XMBMON
-XMBMON = xmbmon203
-endif
-
 CONFARGS = --enable-client $(ENABLE_SERVER) $(ENABLE_MONITOR) $(ENABLE_IPTRAF)
 
 # order is important: SERVERPROG should be last
@@ -65,11 +70,11 @@ PROGNAMES = ${CLIENTPROG} ${MONITORPROG} ${EXTRAPROG} ${SERVERPROG}
 export PROGNAMES MONITORPROG CLIENTPROG SERVERPROG EXTRAPROG
 export TOP_SRCDIR = $(top_srcdir)
 
-if ENABLE_SERVER
-SUBDIRS = upwatch st-1.4 ${XMBMON} libstatgrab ${PROGNAMES} compat util scripts config common
-else
-SUBDIRS = upwatch st-1.4 ${XMBMON} libstatgrab ${PROGNAMES} util scripts config common 
-endif
+SUBDIRS = upwatch st-1.4 ${XMBMON} libstatgrab uw_send uw_sysstat uw_null \
+  uw_httpget uw_dns uw_ping uw_pop3 uw_smtp uw_tcpconnect uw_imap \
+  uw_mysql uw_mysqlstats uw_postgresql uw_snmpget uw_mssql uw_iptraf \
+  uw_acceptbb uw_accept uw_purple uw_route uw_syncprobes uw_setip uw_process \
+  ${COMPAT} util scripts config common
 
 DIST_SUBDIRS = ${SUBDIRS} doc
 

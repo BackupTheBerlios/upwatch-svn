@@ -11,22 +11,29 @@
 //*******************************************************************
 // Get the results of the MySQL query into our probe_def structure
 //*******************************************************************
-static void tcpconnect_set_def_fields(trx *t, struct probe_def *probedef, MYSQL_RES *result)
+static void tcpconnect_set_def_fields(trx *t, struct probe_def *probedef, dbi_result result)
 {
   struct tcpconnect_def *def = (struct tcpconnect_def *) probedef;
-  MYSQL_ROW row = mysql_fetch_row(result);
 
-  if (row) {
-    if (row[0]) def->ipaddress   = strdup(row[0]);
-    if (row[1]) def->description = strdup(row[1]);
-    if (row[2]) def->server   = atoi(row[2]);
-    if (row[3]) def->yellow   = atof(row[3]);
-    if (row[4]) def->red      = atof(row[4]);
-    if (row[5]) def->contact  = atof(row[5]);
-    strcpy(def->hide, row[6] ? row[6] : "no");
-    strcpy(def->email, row[7] ? row[7] : "");
-    if (row[8]) def->delay = atoi(row[8]);
-    if (row[9]) def->port = atoi(row[9]);
+  if (dbi_result_next_row(result)) {
+    def->ipaddress   = dbi_result_get_string_copy_idx(result, 0);
+    def->description = dbi_result_get_string_copy_idx(result, 1);
+    def->server   = dbi_result_get_uint_idx(result, 2);
+    def->yellow   = dbi_result_get_float_idx(result, 3);
+    def->red      = dbi_result_get_float_idx(result, 4);
+    def->contact  = dbi_result_get_float_idx(result, 5);
+    if (dbi_result_get_string_idx(result, 6)) {
+      strcpy(def->hide, dbi_result_get_string_idx(result, 6));
+    } else {
+      strcpy(def->hide, "no");
+    }
+    if (dbi_result_get_string_idx(result, 7)) {
+      strcpy(def->email, dbi_result_get_string_idx(result, 7));
+    } else {
+      strcpy(def->email, "");
+    }
+    def->delay = dbi_result_get_uint_idx(result, 8);
+    def->port = dbi_result_get_uint_idx(result, 9);
   }
 }
 

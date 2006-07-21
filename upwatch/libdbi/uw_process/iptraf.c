@@ -59,13 +59,16 @@ static gint iptraf_store_raw_result(trx *t)
   if (HAVE_OPT(MULTI_VALUE_INSERTS)) {
     mod_ic_add(t->probe, "pr_iptraf_raw", strdup(buf));
   } else {
-    MYSQL_RES *result;
+    dbi_result result;
+    const char *errmsg;
+    int lasterr;
 
-    result = my_query(t->probe->db, 0, "insert into pr_iptraf_raw values %s", buf);
-    if (result) mysql_free_result(result);
-    if (mysql_errno(t->probe->db) == ER_DUP_ENTRY) {
+    result = db_query(t->probe->db, 0, "insert into pr_iptraf_raw values %s", buf);
+    if (result) dbi_result_free(result);
+    lasterr = dbi_conn_error(t->probe->db, &errmsg);
+    if (errmsg && (lasterr == 1062)) { // MySQL ER_DUP_ENTRY(1062)
       t->seen_before = TRUE;
-    } else if (mysql_errno(t->probe->db)) {
+    } else if (lasterr > -1) { // otther error
       return 0; // other failure
     }
   }
@@ -77,8 +80,7 @@ static gint iptraf_store_raw_result(trx *t)
 //*******************************************************************
 static void iptraf_summarize(trx *t, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint resummarize)
 {
-  MYSQL_RES *result;
-  MYSQL_ROW row;
+  dbi_result result;
   struct iptraf_def *def = (struct iptraf_def *)t->def;
   struct iptraf_result *res = (struct iptraf_result *)t->res;
   float avg_yellow, avg_red;
@@ -100,55 +102,55 @@ static void iptraf_summarize(trx *t, char *from, char *into, guint slot, guint s
     def->slotday_avg_yellow = def->yellow;
     def->slotday_avg_red = def->red;
   } else {
-    result = my_query(t->probe->db, 0,
-                      "select sum(incoming), sum(outgoing), max(color), avg(yellow), avg(red) "
+    result = db_query(t->probe->db, 0,
+                      "select sum(incoming) as incoming, sum(outgoing) as outgoing, "
+                      "       max(color) max_color, avg(yellow) as avg_yellow, avg(red) as avg_red "
                       "from   pr_iptraf_%s use index(probstat) "
                       "where  probe = '%u' and stattime >= '%u' and stattime < '%u'",
                       from, def->probeid, slotlow, slothigh);
 
     if (!result) return;
-    if (mysql_num_rows(result) == 0) { // no records found
+    if (dbi_result_get_numrows(result) == 0) { // no records found
       LOG(LOG_NOTICE, "nothing to summarize from %s for probe %u %u %u",
                          from, def->probeid, slotlow, slothigh);
-      mysql_free_result(result);
+      dbi_result_free(result);
       return;
     }
 
-    row = mysql_fetch_row(result);
-    if (!row) {
-      mysql_free_result(result);
+    if (!dbi_result_next_row(result)) {
+      dbi_result_free(result);
       return;
     }
-    if (row[0] == NULL) {
+    if (dbi_result_get_string(result, "incoming") == NULL) {
       LOG(LOG_NOTICE, "nothing to summarize from %s for probe %u %u %u", 
                        from, def->probeid, slotlow, slothigh);
-      mysql_free_result(result);
+      dbi_result_free(result);
       return;
     }
 
-    incoming    = atof(row[0]);
-    outgoing    = atof(row[1]);
-    max_color   = atoi(row[2]);
-    avg_yellow  = atof(row[3]);
-    avg_red     = atof(row[4]);
-    mysql_free_result(result);
+    incoming    = dbi_result_get_float(result, "incoming");
+    outgoing    = dbi_result_get_float(result, "outgoing");
+    max_color   = dbi_result_get_uint(result, "max_color");
+    avg_yellow  = dbi_result_get_float(result, "avg_yellow");
+    avg_red     = dbi_result_get_float(result, "avg_red");
+    dbi_result_free(result);
   }
 
   if (resummarize) {
     // delete old values
-    result = my_query(t->probe->db, 0,
+    result = db_query(t->probe->db, 0,
                     "delete from pr_iptraf_%s where probe = '%u' and stattime = '%u'",
                     into, def->probeid, stattime);
-    mysql_free_result(result);
+    dbi_result_free(result);
   }
-  result = my_query(t->probe->db, 0,
+  result = db_query(t->probe->db, 0,
                     "insert into pr_iptraf_%s "
                     "set    incoming = '%f', outgoing = '%f', "
                     "       probe = '%u', color = '%u', stattime = '%u', "
                     "       yellow = '%f', red = '%f', slot = '%u'",
                     into, incoming, outgoing, def->probeid, max_color, stattime, 
                     avg_yellow, avg_red, slot);
-  mysql_free_result(result);
+  dbi_result_free(result);
 }
 
 module iptraf_module  = {

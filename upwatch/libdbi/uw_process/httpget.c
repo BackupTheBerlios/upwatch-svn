@@ -13,21 +13,23 @@
 //*******************************************************************
 static gint httpget_store_raw_result(trx *t)
 {
-  MYSQL_RES *result;
+  dbi_result result;
   struct httpget_result *res = (struct httpget_result *)t->res;
   struct probe_def *def = (struct probe_def *)t->def;
   char *escmsg;
+  const char *errmsg;
+  int lasterr;
 
   if (t->res->color == STAT_PURPLE) return 1;
   t->seen_before = FALSE;
   if (res->message) {
-    escmsg = g_malloc(strlen(res->message) * 2 + 1);
-    mysql_real_escape_string(t->probe->db, escmsg, res->message, strlen(res->message)) ;
+    escmsg = strdup(res->message);
+    dbi_conn_quote_string(t->probe->db, &escmsg);
   } else {
     escmsg = strdup("");
   }
     
-  result = my_query(t->probe->db, 0,
+  result = db_query(t->probe->db, 0,
                     "insert into pr_httpget_raw "
                     "set    probe = '%u', yellow = '%f', red = '%f', stattime = '%u', color = '%u', "
                     "       lookup = '%f', connect = '%f', pretransfer = '%f', total = '%f', "
@@ -35,10 +37,11 @@ static gint httpget_store_raw_result(trx *t)
                     def->probeid, def->yellow, def->red, res->stattime, res->color, 
                     res->lookup, res->connect, res->pretransfer, res->total, escmsg);
   g_free(escmsg);
-  if (result) mysql_free_result(result);
-  if (mysql_errno(t->probe->db) == ER_DUP_ENTRY) {
+  if (result) dbi_result_free(result);
+  lasterr = dbi_conn_error(t->probe->db, &errmsg);
+  if (errmsg && (lasterr == 1062)) { // MySQL ER_DUP_ENTRY(1062)
     t->seen_before = TRUE;
-  } else if (mysql_errno(t->probe->db)) {
+  } else if (lasterr > -1) { // otther error
     return 0; // other failure
   }
   return 1; // success
@@ -49,8 +52,7 @@ static gint httpget_store_raw_result(trx *t)
 //*******************************************************************
 static void httpget_summarize(trx *t, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint resummarize)
 {
-  MYSQL_RES *result;
-  MYSQL_ROW row;
+  dbi_result result;
   struct probe_def *def = (struct probe_def *)t->def;
   float avg_yellow, avg_red;
   float avg_lookup, avg_connect, avg_pretransfer, avg_total;
@@ -59,51 +61,51 @@ static void httpget_summarize(trx *t, char *from, char *into, guint slot, guint 
 
   stattime = slotlow + ((slothigh-slotlow)/2);
 
-  result = my_query(t->probe->db, 0,
-                    "select avg(lookup), avg(connect), avg(pretransfer), avg(total), "
-                    "       max(color), avg(yellow), avg(red) "
+  result = db_query(t->probe->db, 0,
+                    "select avg(lookup) as avg_lookup, avg(connect) as avg_connect, "
+                    "       avg(pretransfer) as avg_pretransfer, avg(total) as avg_total, "
+                    "       max(color) as max_color, avg(yellow) avg_yellow, avg(red) as avg_red "
                     "from   pr_httpget_%s use index(probstat) "
                     "where  probe = '%d' and stattime >= %d and stattime < %d",
                     from, def->probeid, slotlow, slothigh);
 
   if (!result) return;
-  if (mysql_num_rows(result) == 0) { // no records found
+  if (dbi_result_get_numrows(result) == 0) { // no records found
     LOG(LOG_NOTICE, "nothing to summarize from %s for probe %u %u %u",
                        from, def->probeid, slotlow, slothigh);
-    mysql_free_result(result);
+    dbi_result_free(result);
     return;
   }
 
-  row = mysql_fetch_row(result);
-  if (!row) {
-    mysql_free_result(result);
+  if (!dbi_result_next_row(result)) {
+    dbi_result_free(result);
     return;
   }
-  if (row[0] == NULL) {
+  if (dbi_result_get_string(result, "avg_lookup") == NULL) {
     LOG(LOG_NOTICE, "nothing to summarize from %s for probe %u %u %u", 
                        from, def->probeid, slotlow, slothigh);
-    mysql_free_result(result);
+    dbi_result_free(result);
     return;
   }
 
-  avg_lookup = atof(row[0]);
-  avg_connect = atof(row[1]);
-  avg_pretransfer = atof(row[2]);
-  avg_total = atof(row[3]);
-  max_color   = atoi(row[4]);
-  avg_yellow  = atof(row[5]);
-  avg_red     = atof(row[6]);
-  mysql_free_result(result);
+  avg_lookup = dbi_result_get_float(result, "avg_lookup");
+  avg_connect = dbi_result_get_float(result, "avg_connect");
+  avg_pretransfer = dbi_result_get_float(result, "avg_pretransfer");
+  avg_total = dbi_result_get_float(result, "avg_total");
+  max_color   = dbi_result_get_uint(result, "max_color");
+  avg_yellow  = dbi_result_get_float(result, "avg_yellow");
+  avg_red     = dbi_result_get_float(result, "avg_red");
+  dbi_result_free(result);
 
   if (resummarize) {
     // delete old values
-    result = my_query(t->probe->db, 0,
+    result = db_query(t->probe->db, 0,
                     "delete from pr_httpget_%s where probe = '%u' and stattime = '%u'",
                     into, def->probeid, stattime);
-    mysql_free_result(result);
+    dbi_result_free(result);
   }
 
-  result = my_query(t->probe->db, 0,
+  result = db_query(t->probe->db, 0,
                     "insert into pr_httpget_%s "
                     "set    lookup = '%f', connect = '%f', pretransfer = '%f', total = '%f', "
                     "       probe = %d, color = '%u', stattime = %d, "
@@ -111,7 +113,7 @@ static void httpget_summarize(trx *t, char *from, char *into, guint slot, guint 
                     into, avg_lookup, avg_connect, avg_pretransfer, avg_total, def->probeid, 
                     max_color, stattime, avg_yellow, avg_red, slot);
 
-  mysql_free_result(result);
+  dbi_result_free(result);
 }
 
 module httpget_module  = {

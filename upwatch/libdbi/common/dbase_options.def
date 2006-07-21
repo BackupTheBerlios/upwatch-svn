@@ -27,8 +27,8 @@ resolvable of course, but an IP address may be specified';
 flag = {
     must-set;
     name      = dbport;
-    arg_type  = numeric;   /* option argument indication  */
-    arg-default = 3306;
+    arg_type  = string;   /* option argument indication  */
+    arg-default = "3306";
     descrip   = "Port number on database host";
     doc       = 
 'Port number to connect to';

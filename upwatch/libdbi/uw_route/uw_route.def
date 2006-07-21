@@ -13,7 +13,7 @@ detail        =
 'uw_route reads probe resultfiles, and stores them in the database';
 
 // this section is for the generated specfile
-spec-requires = "/usr/bin/mysql glib2";
+spec-requires = "libdbi >= 0.8 glib2";
 spec-files = `echo "%attr(0770,root,upwatch)" $sbindir/uw_route`;
 spec-files = `echo "%attr(0770,root,upwatch) %dir " $spooldir/uw_route`;
 spec-files = `echo "%attr(0770,root,upwatch) %dir " $spooldir/uw_route/new`;

@@ -20,7 +20,7 @@ struct dbspec {
   char db[64];
   char user[25];
   char password[25];
-  MYSQL *mysql;
+  dbi_conn conn;
 } *dblist;
 int dblist_cnt;
 
@@ -38,46 +38,45 @@ static char *chop(char *s, int i)
 
 void init_dblist(void)
 {
-  MYSQL *db;
+  dbi_conn conn;
 
-  db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
+  conn = open_database(OPT_ARG(DBTYPE), OPT_ARG(DBHOST), OPT_ARG(DBPORT), OPT_ARG(DBNAME),
                      OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
-  if (db) {
-    MYSQL_RES *result;
+  if (conn) {
+    dbi_result result;
 
     if (dblist) free(dblist);
     dblist = calloc(100, sizeof(struct dbspec));
 
-    result = my_query(db, 0, "select pr_realm.name, pr_realm.host, "
+    result = db_query(conn, 0, "select pr_realm.name, pr_realm.host, "
                              "       pr_realm.port, pr_realm.db, pr_realm.user, "
                              "       pr_realm.password "
                              "from   pr_realm "
                              "where  pr_realm.id > 1");
     if (result) {
-      MYSQL_ROW row;
       dblist_cnt = 0;
-      while ((row = mysql_fetch_row(result)) != NULL) {
-        strcpy(dblist[dblist_cnt].realm, row[0]);
-        strcpy(dblist[dblist_cnt].host, row[1]);
-        dblist[dblist_cnt].port = atoi(row[2]);
-        strcpy(dblist[dblist_cnt].db, row[3]);
-        strcpy(dblist[dblist_cnt].user, row[4]);
-        strcpy(dblist[dblist_cnt].password, row[5]);
+      while (dbi_result_next_row(result)) {
+        strcpy(dblist[dblist_cnt].realm, dbi_result_get_string(result, "name"));
+        strcpy(dblist[dblist_cnt].host, dbi_result_get_string(result, "host"));
+        dblist[dblist_cnt].port = dbi_result_get_uint(result, "port");
+        strcpy(dblist[dblist_cnt].db, dbi_result_get_string(result, "db"));
+        strcpy(dblist[dblist_cnt].user, dbi_result_get_string(result, "user"));
+        strcpy(dblist[dblist_cnt].password, dbi_result_get_string(result, "password"));
         dblist_cnt++;
       }
-      mysql_free_result(result);
+      dbi_result_free(result);
     }
-    close_database(db);
+    close_database(conn);
     LOG(LOG_INFO, "read %u realms", dblist_cnt);
   } else {
-    LOG(LOG_NOTICE, "could not open database %s@%s as user %s", OPT_ARG(DBNAME), OPT_ARG(DBHOST), OPT_ARG(DBUSER));
+    LOG(LOG_NOTICE, "could not open %s database %s@%s as user %s", OPT_ARG(DBTYPE), OPT_ARG(DBNAME), OPT_ARG(DBHOST), OPT_ARG(DBUSER));
   } 
 }
 
-MYSQL *open_realm(char *realm)
+dbi_conn open_realm(char *realm)
 {
   int i;
-  MYSQL *mysql;
+  dbi_conn conn;
 static int call_cnt = 0;
 
   if (!dblist || ++call_cnt == 100) {
@@ -89,16 +88,22 @@ static int call_cnt = 0;
     }
   }
   if (realm == NULL || realm[0] == 0) {
-    mysql = open_database(dblist[0].host, dblist[0].port,
+    char buf[10];
+
+    sprintf(buf, "%d", dblist[0].port);
+    conn = open_database(OPT_ARG(DBTYPE), dblist[0].host, buf,
             dblist[0].db, dblist[0].user, dblist[0].password);
-    return(mysql);
+    return(conn);
   }
 
   for (i=0; i < dblist_cnt; i++) {
     if (strcmp(dblist[i].realm, realm) == 0) {
-      mysql = open_database(dblist[i].host, dblist[i].port,
+      char buf[10];
+
+      sprintf(buf, "%d", dblist[0].port);
+      conn = open_database(OPT_ARG(DBTYPE), dblist[i].host, buf,
               dblist[i].db, dblist[i].user, dblist[i].password);
-      return(mysql);
+      return(conn);
     }
   }
   return(NULL);
@@ -106,8 +111,8 @@ static int call_cnt = 0;
 
 static int uw_password_ok(char *user, char *passwd) 
 {
-  MYSQL *mysql;
-  MYSQL_RES *result;
+  dbi_conn conn;
+  dbi_result result;
   char user_realm[256];
   char *realm;
 
@@ -116,33 +121,25 @@ static int uw_password_ok(char *user, char *passwd)
   if (realm) { 
     *realm++ = 0; 
   }
-  mysql = open_realm(realm);
-  if (mysql) {
+  conn = open_realm(realm);
+  if (conn) {
     gchar buffer[256];
-    MYSQL_ROW row;
 
     sprintf(buffer, OPT_ARG(AUTHQUERY), user, passwd);
     LOG(LOG_DEBUG, buffer);
-    if (mysql_query(mysql, buffer)) {
-      close_database(mysql);
+    result = dbi_conn_query(conn, buffer);
+    if (!result) {
+      close_database(conn);
       return(FALSE);
     }
-    result = mysql_store_result(mysql);
-    if (!result || mysql_num_rows(result) < 1) {
-      // LOG(LOG_NOTICE, "user %s, pwd %s not found", user, passwd);
-      close_database(mysql);
-      return(FALSE);
-    }
-    if ((row = mysql_fetch_row(result))) {
-      int id;
-
-      id = atoi(row[0]);
+    if (dbi_result_next_row(result)) {
+      int id = dbi_result_get_uint_idx(result, 0);
       LOG(LOG_DEBUG, "user %s, pwd %s resulted in id %d", user_realm, passwd, id);
     }
-    mysql_free_result(result);
-    close_database(mysql);
+    dbi_result_free(result);
+    close_database(conn);
   } else {
-    close_database(mysql);
+    close_database(conn);
     return(FALSE); // couldn't open database
   }
   return(TRUE);

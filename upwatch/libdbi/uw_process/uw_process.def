@@ -14,7 +14,7 @@ detail        =
 
 // this section is for the generated specfile
 spec-buildrequires = "libesmtp-devel";
-spec-requires = "/usr/bin/mysql glib2";
+spec-requires = "libdbi >= 0.8 glib2";
 spec-files = `echo "%attr(0770,root,upwatch)" $sbindir/uw_process`;
 spec-files = `echo "%attr(0770,root,upwatch) %dir " $spooldir/q_failed`;
 spec-files = `echo "%attr(0770,root,upwatch) %dir " $spooldir/q_failed/new`;
@@ -56,7 +56,6 @@ removes any files in `tmp` that are older then 36 hours. For some more info
 about maildir see http://www.qmail.org/man/man5/maildir.html.';
 };
 
-// describe commandline flags
 flag = {
     name      = input;
     value     = I;
@@ -79,6 +78,15 @@ flag = {
 'The argument is taken to be a maildir under the directory `spooldir`.
 All results are (after processing) placed in this queue.
 This flag may be given multiple times.';
+};
+
+flag = {
+    name      = realm;
+    value     = R;
+    arg_type  = string;
+    descrip   = "ignored";
+    doc       =
+'uw_process ignores this parameter when it encounters it in fir example upwatch.conf';
 };
 
 flag = {

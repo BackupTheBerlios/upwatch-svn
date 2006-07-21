@@ -1,6 +1,5 @@
 #include "config.h"
-#include <mysql.h>
-#include <mysqld_error.h>
+#include <dbi/dbi.h>
 #include <stdarg.h>
 #include <generic.h>
 
@@ -8,74 +7,75 @@
 #include "dmalloc.h"
 #endif
 
-#ifndef HAVE_MYSQL_REAL_ESCAPE
-unsigned long mysql_real_escape_string(MYSQL *mysql, char *to, const char *from, unsigned long length)
-{
-  return(mysql_escape_string(to, from, length));
-}
-#endif
-
-
 /****************************
  database functions. 
  NOTE: Don't use with multithreaded programs!
  ***************************/
-void close_database(MYSQL *mysql)
+void close_database(dbi_conn conn)
 {
-  if (mysql) {
-    //my_transaction("rollback");
-    mysql_close(mysql);
-  }
+  dbi_conn_close(conn);
 }
 
-MYSQL *open_database(char *dbhost, int dbport, char *dbname, char *dbuser, char *dbpasswd)
+dbi_conn open_database(const char *dbtype, const char *dbhost, const char *dbport, const char *dbname, const char *dbuser, const char *dbpasswd)
 {
-  MYSQL *mysql;
+  dbi_conn conn;
 
-  mysql = mysql_init(NULL);
-  mysql_options(mysql, MYSQL_OPT_COMPRESS, 0);
-  if (!mysql_real_connect(mysql, dbhost, dbuser, dbpasswd, dbname, dbport, NULL, 0)) {
+  conn = dbi_conn_new(dbtype);
+
+  dbi_conn_set_option(conn, "host", dbhost);
+  dbi_conn_set_option(conn, "port", dbport);
+  dbi_conn_set_option(conn, "username", dbuser);
+  dbi_conn_set_option(conn, "password", dbpasswd);
+  dbi_conn_set_option(conn, "dbname", dbname);
+  dbi_conn_set_option(conn, "encoding", "UTF-8");
+
+  if (dbi_conn_connect(conn) < 0) {
+    const char *errmsg;
+    dbi_conn_error(conn, &errmsg);
     LOG(LOG_ERR, "%s dbhost=%s,dbport=%d,dbname=%s,dbuser=%s,dbpasswd=%s",
-           mysql_error(mysql), dbhost, dbport, dbname, dbuser, dbpasswd);
+           errmsg, dbhost, dbport, dbname, dbuser, dbpasswd);
     return(NULL);
   }
-  return(mysql);
+  return(conn);
 }
 
-MYSQL_RES *my_rawquery(MYSQL *mysql, int log_dupes, char *qry)
+dbi_result db_rawquery(dbi_conn conn, int log_dupes, const char *qry)
 {
-  MYSQL_RES *result;
+  dbi_result result;
 
   if (debug > 4) {
     LOGRAW(LOG_DEBUG, qry);
   }
-  if (mysql_query(mysql, qry)) {
+  result = dbi_conn_query(conn, qry);
+  if (dbi_conn_error_flag(conn)) {
+    const char *errmsg;
+    dbi_conn_error(conn, &errmsg);
+/*
     switch (mysql_errno(mysql)) {
     case ER_DUP_ENTRY:
         if (!log_dupes) break;
     default:
-      LOG(LOG_WARNING, "%s:[%u] %s", qry, mysql_errno(mysql), mysql_error(mysql));
+*/
+    LOG(LOG_WARNING, "%s: %s", qry, errmsg);
+/*
       break;
     }
+*/
     return(NULL);
-  }
-  result = mysql_store_result(mysql);
-  if (mysql_errno(mysql)) {
-    LOG(LOG_WARNING, "%s: [%u] %s", qry, mysql_errno(mysql), mysql_error(mysql));
   }
   return(result);
 }
 
-MYSQL_RES *my_query(MYSQL *mysql, int log_dupes, char *fmt, ...)
+dbi_result db_query(dbi_conn conn, int log_dupes, const char *fmt, ...)
 {
 static char qry[65536]; // max query size for us
   va_list arg;
 
-  if (!mysql) return(NULL);
+  if (conn) return(NULL);
 
   va_start(arg, fmt);
   vsnprintf(qry, sizeof(qry)-1, fmt, arg);
   va_end(arg);
-  return my_rawquery(mysql, log_dupes, qry);
+  return db_rawquery(conn, log_dupes, qry);
 }
 

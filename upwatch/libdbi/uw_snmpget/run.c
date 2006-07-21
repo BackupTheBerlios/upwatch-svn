@@ -69,13 +69,13 @@ int init(void)
   return(1);
 }
 
-void refresh_database(MYSQL *mysql);
+void refresh_database(dbi_conn conn);
 void run_actual_probes(void);
 void write_results(void);
 
 int run(void)
 {
-  MYSQL *mysql;
+  dbi_conn conn;
 
   if (!cache) {
     cache = g_hash_table_new_full(g_int_hash, g_int_equal, g_free, free_probe);
@@ -83,11 +83,11 @@ int run(void)
   
   LOG(LOG_INFO, "reading info from database");
   uw_setproctitle("reading info from database");
-  mysql = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
+  conn = open_database(OPT_ARG(DBTYPE), OPT_ARG(DBHOST), OPT_ARG(DBPORT), OPT_ARG(DBNAME), 
 			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
-  if (mysql) {
-    refresh_database(mysql);
-    close_database(mysql);
+  if (conn) {
+    refresh_database(conn);
+    close_database(conn);
   }
 
   if (g_hash_table_size(cache) > 0) {
@@ -103,10 +103,9 @@ int run(void)
   return(g_hash_table_size(cache));
 }
 
-void refresh_database(MYSQL *mysql)
+void refresh_database(dbi_conn conn)
 {
-  MYSQL_RES *result;
-  MYSQL_ROW row;
+  dbi_result result;
   char qry[1024];
 
   sprintf(qry,  "SELECT pr_snmpget_def.id, pr_snmpget_def.domid, pr_snmpget_def.tblid, pr_realm.name, "
@@ -118,22 +117,22 @@ void refresh_database(MYSQL *mysql)
                 "       and pr_snmpget_def.pgroup = '%d' and pr_realm.id = pr_snmpget_def.domid",
                 (unsigned) OPT_VALUE_GROUPID);
 
-  result = my_query(mysql, 1, qry);
+  result = db_query(conn, 1, qry);
   if (!result) {
     return;
   }
     
-  while ((row = mysql_fetch_row(result))) {
+  while (dbi_result_next_row(result)) {
     int id;
     struct probedef *probe;
 
-    id = atol(row[0]);
+    id = dbi_result_get_uint(result, "id");
     probe = g_hash_table_lookup(cache, &id);
     if (!probe) {
       probe = g_malloc0(sizeof(struct probedef));
-      if (atoi(row[1]) > 1) {
-        probe->probeid = atoi(row[2]);
-        probe->realm = strdup(row[3]);
+      if (dbi_result_get_uint(result, "domid") > 1) {
+        probe->probeid = dbi_result_get_uint(result, "tblid");
+        strcpy(probe->realm, dbi_result_get_string(result, "name"));
       } else {
         probe->probeid = probe->id;
       }
@@ -142,25 +141,28 @@ void refresh_database(MYSQL *mysql)
     }
 
     if (probe->ipaddress) g_free(probe->ipaddress);
-    probe->ipaddress = strdup(row[4]);
+    probe->ipaddress = dbi_result_get_string_copy(result, "ipaddress");
     if (probe->community) g_free(probe->community);
-    probe->community = strdup(row[5]);
+    probe->community = dbi_result_get_string_copy(result, "community");
     if (probe->OID) g_free(probe->OID);
-    probe->OID = strdup(row[6]);
-    strcpy(probe->mode, row[7]);
-    probe->multiplier = atof(row[8]);
-    probe->yellow = atof(row[9]);
-    probe->red = atof(row[10]);
+    probe->OID = dbi_result_get_string_copy(result, "OID");
+    strcpy(probe->mode, dbi_result_get_string(result, "mode"));
+    probe->multiplier = dbi_result_get_float(result, "multiplier");
+    probe->yellow = dbi_result_get_float(result, "yellow");
+    probe->red = dbi_result_get_float(result, "red");
     if (probe->msg) g_free(probe->msg);
     probe->msg = NULL;
     probe->seen = 1;
   }
-  mysql_free_result(result);
-  if (mysql_errno(mysql)) {
+  if (dbi_conn_error_flag(conn)) {
+    const char *errmsg;
+    dbi_conn_error(conn, &errmsg);
+    LOG(LOG_ERR, "%s", errmsg);
     g_hash_table_foreach(cache, reset_seen, NULL);
   } else {
     g_hash_table_foreach_remove(cache, return_seen, NULL);
   }
+  dbi_result_free(result);
 }
 
 static int active_hosts;
@@ -346,7 +348,7 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
 void write_results(void)
 {
   int ct  = STACKCT_OPT(OUTPUT);
-  char **output = STACKLST_OPT(OUTPUT);
+  const char **output = STACKLST_OPT(OUTPUT);
   int i;
   xmlDocPtr doc;
 

@@ -94,6 +94,7 @@ ELSE +]default '[+default+]',   -- [+descrip+][+
 ENDIF +][+
 ESAC type +][+ ENDFOR def+]
   PRIMARY KEY  (id),
+  KEY tbldomid (tblid, domid, id),
   KEY server (server),
   KEY notify (notify),
   KEY ipaddress (ipaddress),

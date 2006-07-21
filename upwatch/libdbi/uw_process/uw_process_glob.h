@@ -48,27 +48,27 @@ extern void ct_summarize(trx *t, char *from, char *into,
                          guint slot, guint slotlow, guint slothigh, gint resummarize);
 
 struct dbspec {
-  char *realm;
-  char *host;
-  int port;
-  char *db;
-  char *user;
-  char *password;
-  char *srvrbyname; // query to retrieve the server id given the server name
-  char *srvrbyid;   // query to retrieve the server name given the server id
-  char *srvrbyip;   // query to retrieve the server id given the ipaddress
-  MYSQL *mysql;
+  const char *realm;
+  const char *host;
+  const char *port;
+  const char *db;
+  const char *user;
+  const char *password;
+  const char *srvrbyname; // query to retrieve the server id given the server name
+  const char *srvrbyid;   // query to retrieve the server name given the server id
+  const char *srvrbyip;   // query to retrieve the server id given the ipaddress
+  dbi_conn conn;
 };
 extern struct dbspec *dblist;
 extern int dblist_cnt;
 
-int realm_exists(char *realm);
-MYSQL *open_realm(char *realm);
-int realm_server_by_name(char *realm, char *name);
-char *realm_server_by_id(char *realm, int id);
-int realm_server_by_ip(char *realm, char *ip);
+int realm_exists(const char *realm);
+dbi_conn open_realm(const char *realm);
+int realm_server_by_name(const char *realm, const char *name);
+char *realm_server_by_id(const char *realm, int id);
+int realm_server_by_ip(const char *realm, char *ip);
 
-int mail(char *to, char *subject, char *body, time_t date);
+int mail(const char *to, const char *subject, const char *body, time_t date);
 
 #endif /* __UW_PROCESS_GLOB_H */
 

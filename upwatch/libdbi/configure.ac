@@ -35,6 +35,8 @@ AC_ARG_ENABLE(debug,
     fi]
 )
 
+CFLAGS="${CFLAGS} -I/usr/include/autoopts"
+
 # ----------------------------------------------------------------------
 # Set some global things based on os type
 # ----------------------------------------------------------------------
@@ -291,6 +293,7 @@ do
 done
 
 AC_SUBST(LIBOPTS_CFLAGS)
+
 ################## MYSQL
 # path to libmysqlclient stuff:.
 AC_ARG_WITH(mysql-libs,
@@ -299,19 +302,6 @@ AC_ARG_WITH(mysql-libs,
     [MYSQL_LIB_PREFIX=/usr/lib/mysql]
 )
 AC_SUBST(MYSQL_LIB_PREFIX)
-
-for libpath in /usr/lib/mysql $MYSQL_LIB_PREFIX /usr/local/lib/mysql /usr/lib /cygdrive/c/mysql/lib/opt /usr/pkg/lib/mysql
-do
-  for file in $libpath/libmysqlclient.so* $libpath/mysqlclient.lib
-  do
-    if test -f $file
-    then
-      MYSQL_LIBS="-L${libpath} -lmysqlclient"
-      break
-    fi
-  done
-done
-
 # path to mysql includes
 AC_ARG_WITH(mysql-include,
     [  --with-mysql-include=<path>        prefix of MySQL headers. Default /usr/include/mysql],
@@ -320,26 +310,36 @@ AC_ARG_WITH(mysql-include,
 )
 AC_SUBST(MYSQL_INC_PREFIX)
 
-for incpath in /usr/include/mysql $MYSQL_LIB_PREFIX /usr/local/include/mysql /cygdrive/c/mysql/include /usr/pkg/include/mysql
-do
-  if test -f $incpath/mysql.h
-  then
-    MYSQL_CFLAGS="-I${incpath}"
-  fi
-done
-
-if test "$enable_monitors" = "yes" -o "$enable_server" = "yes"
+if test x$enable_monitors = xyes
 then
-  if test -z "$MYSQL_LIBS"
-  then
-    AC_MSG_ERROR([Cannot find MySQL libraries, tell me where they are with --with-mysql-libs=])
-  fi
+  for libpath in /usr/lib/mysql $MYSQL_LIB_PREFIX /usr/local/lib/mysql /usr/lib /cygdrive/c/mysql/lib/opt /usr/pkg/lib/mysql
+  do
+    for file in $libpath/libmysqlclient.so* $libpath/mysqlclient.lib
+    do
+      if test -f $file
+      then
+        MYSQL_LIBS="-L${libpath} -lmysqlclient"
+        break
+      fi
+    done
+  done
+
+  for incpath in /usr/include/mysql $MYSQL_LIB_PREFIX /usr/local/include/mysql /cygdrive/c/mysql/include /usr/pkg/include/mysql
+  do
+    if test -f $incpath/mysql.h
+    then
+      MYSQL_CFLAGS="-I${incpath}"
+    fi
+  done
+
   if test -z "$MYSQL_CFLAGS"
   then
-    AC_MSG_ERROR([Cannot find MySQL include files, tell me where they are with --with-mysql-include=])
+    HAVE_LIBMYSQL="0"
+  else
+    HAVE_LIBMYSQL="1"
   fi
 fi
-
+AM_CONDITIONAL(HAVE_LIBMYSQL, test $HAVE_LIBMYSQL -eq 1)
 AC_SUBST(MYSQL_CFLAGS)
 AC_SUBST(MYSQL_LIBS)
 
@@ -483,11 +483,13 @@ AC_SUBST(LIBPTHREAD_CFLAGS)
 AC_CHECK_LIB([curses], [initscr], [HAVE_LIBCURSES=1], [HAVE_LIBCURSES=0])
 if test $HAVE_LIBCURSES -eq 1
 then
+	AC_DEFINE(HAVE_LIBCURSES,1,[is libcurses available on this system])
         LIBCURSES_LIBS=-lcurses
 fi
 AC_CHECK_LIB([ncurses], [initscr], [HAVE_LIBNCURSES=1], [HAVE_LIBNCURSES=0])
 if test $HAVE_LIBNCURSES -eq 1
 then
+	AC_DEFINE(HAVE_LIBCURSES,1,[is libcurses available on this system])
         LIBCURSES_LIBS=-lncurses
 fi
 AM_CONDITIONAL(HAVE_CURSES, test ! -z $LIBCURSES_LIBS)
@@ -501,6 +503,7 @@ AC_SUBST(LIBNCURSES_LIBS)
 AC_CHECK_LIB([pcap], [pcap_close], [HAVE_LIBPCAP=1], [HAVE_LIBPCAP=0])
 if test $HAVE_LIBPCAP -eq 1
 then
+	AC_DEFINE(HAVE_LIBPCAP,1,[is libpcap available on this system])
 	LIBPCAP_LIBS=-lpcap
 fi
 AM_CONDITIONAL(HAVE_LIBPCAP, test $HAVE_LIBPCAP -eq 1)
@@ -524,6 +527,18 @@ fi
 AM_CONDITIONAL(HAVE_LIBCRYPTO, test $HAVE_LIBCRYPTO -eq 1)
 AC_SUBST(LIBCRYPTO_LIBS)
 
+# libdbi
+AC_CHECK_LIB([dbi], [dbi_conn_quote_string], [HAVE_LIBDBI=1], [HAVE_LIBDBI=0])
+if test $HAVE_LIBDBI -eq 1
+then
+	LIBDBI_LIBS=-ldbi
+else
+	AC_MSG_ERROR([Sorry, we need libdbi >= 0.8 to continue])
+fi
+AM_CONDITIONAL(HAVE_LIBDBI, test $HAVE_LIBDBI -eq 1)
+AC_SUBST(LIBDBI_LIBS)
+AC_SUBST(LIBDBI_CFLAGS)
+
 # snmp
 AC_CHECK_LIB([snmp], [snmp_errno], [HAVE_LIBSNMP=1], [HAVE_LIBSNMP=0], -lcrypto)
 if test $HAVE_LIBSNMP -eq 1
@@ -533,6 +548,7 @@ else
 	AC_CHECK_LIB([netsnmp], [snmp_errno], [HAVE_LIBSNMP=1], [HAVE_LIBSNMP=0], -lcrypto)
 	if test $HAVE_LIBSNMP -eq 1
 	then
+		AC_DEFINE(HAVE_LIBSNMP,1,[are the netsnmp libraries available on this system])
 		LIBSNMP_LIBS=-lnetsnmp
 	fi
 fi
@@ -557,6 +573,7 @@ AM_CONDITIONAL(HAVE_LIBESMTP, test "$HAVE_LIBESMTP" = "1")
 AC_CHECK_LIB([readline], [readline], [HAVE_LIBREADLINE=1], [HAVE_LIBREADLINE=0], -lncurses)
 if test $HAVE_LIBREADLINE -eq 1
 then
+	AC_DEFINE(HAVE_LIBREADLINE,1,[Is the readline library available on this system])
 	LIBREADLINE_LIBS=-lreadline
         AC_DEFINE(HAVE_LIBREADLINE,1,[Do we have the readline library])
 else 
@@ -575,6 +592,7 @@ AC_CHECK_LIB([tds], [tds_alloc_login], [HAVE_LIBTDS=1], [HAVE_LIBTDS=0])
 if test $HAVE_LIBTDS -eq 1
 then
 	LIBTDS_LIBS=-ltds
+	AC_DEFINE(HAVE_LIBTDS,1,[Is libtds available on this system])
 fi
 AM_CONDITIONAL(HAVE_LIBTDS, test $HAVE_LIBTDS -eq 1)
 AC_SUBST(LIBTDS_LIBS)
@@ -583,6 +601,7 @@ AC_SUBST(LIBTDS_LIBS)
 AC_CHECK_LIB([pq], [PQclear], [HAVE_LIBPQ=1], [HAVE_LIBPQ=0])
 if test $HAVE_LIBPQ -eq 1
 then
+	AC_DEFINE(HAVE_LIBPQ,1,[Is postgres available on this system])
 	LIBPQ_LIBS=-lpq
 	LIBPQ_CFLAGS=""
 	if test -f /usr/include/pgsql/libpq-fe.h
@@ -630,7 +649,7 @@ AC_TYPE_SIGNAL
 AC_FUNC_STAT
 AC_FUNC_STRFTIME
 AC_CHECK_FUNCS([alarm atexit dup2 gethostbyname gethostname gettimeofday inet_ntoa memset putenv regcomp select socket strchr strdup strerror strncasecmp strrchr strstr strtol strtoul tzset uname])
-AC_CHECK_LIB(mysqlclient, mysql_real_escape_string, AC_DEFINE(HAVE_MYSQL_REAL_ESCAPE,1,[Does mysql have real_escape]),,[$MYSQL_LIBS])
+AC_CHECK_LIB(dbi, dbi_result_get_uint, AC_DEFINE(HAVE_LIBDBI_GET_UINT,1,[Does libdbi have dbi_result_get_uint]),,[$DBI_LIBS])
 
 echo 
 echo "*********************************************************"
@@ -650,17 +669,22 @@ if test "$enable_monitors" = "yes"
 then
   if test $HAVE_LIBSNMP -eq 0
   then
-    echo "* snmp libs (or openssl libs) not found, no SNMP support"
+    echo "* snmp libs (or openssl libs) not found, SNMP probes will not be built"
   fi
 
   if test $HAVE_LIBTDS -eq 0
   then
-    echo "* TDS lib not found, no MS-SQL support"
+    echo "* TDS lib not found, MS-SQL related probes will not be built"
+  fi
+
+  if test $HAVE_LIBMYSQL -eq 0
+  then
+    echo "* MySQL not found, related probes not built"
   fi
 
   if test $HAVE_LIBPQ -eq 0
   then
-    echo "* PostgreSQL not found, no PostgreSQL support"
+    echo "* PostgresSQL not found, related probes will not be built"
   fi
 fi
 
@@ -683,47 +707,49 @@ AC_CONFIG_FILES([scripts/Makefile])
 
 if test "$enable_server" = "yes" -o "$enable_monitors" = "yes"
 then
-AC_CONFIG_FILES([st-1.4/Makefile])
+  AC_CONFIG_FILES([st-1.4/Makefile])
 fi
 
 # server 
 if test "$enable_server" = "yes"
 then
-AC_CONFIG_FILES([uw_setip/Makefile])
-AC_CONFIG_FILES([uw_accept/Makefile])
-AC_CONFIG_FILES([uw_acceptbb/Makefile])
-AC_CONFIG_FILES([uw_purple/Makefile])
-AC_CONFIG_FILES([uw_route/Makefile])
-AC_CONFIG_FILES([uw_process/Makefile])
-AC_CONFIG_FILES([uw_syncprobes/Makefile])
-AC_CONFIG_FILES([compat/Makefile])
-AC_CONFIG_FILES([compat/sometests/Makefile])
-AC_CONFIG_FILES([compat/sometests/setproctitle/Makefile])
-AC_CONFIG_FILES([compat/bb/Makefile])
-AC_CONFIG_FILES([compat/bb/bbhimport/Makefile])
+  AC_CONFIG_FILES([uw_setip/Makefile])
+  AC_CONFIG_FILES([uw_accept/Makefile])
+  AC_CONFIG_FILES([uw_acceptbb/Makefile])
+  AC_CONFIG_FILES([uw_purple/Makefile])
+  AC_CONFIG_FILES([uw_route/Makefile])
+  AC_CONFIG_FILES([uw_process/Makefile])
+  AC_CONFIG_FILES([uw_syncprobes/Makefile])
+  AC_CONFIG_FILES([compat/Makefile])
+  AC_CONFIG_FILES([compat/sometests/Makefile])
+  AC_CONFIG_FILES([compat/sometests/setproctitle/Makefile])
+  AC_CONFIG_FILES([compat/bb/Makefile])
+  AC_CONFIG_FILES([compat/bb/bbhimport/Makefile])
 fi
 
 # monitors
 if test "$enable_monitors" = "yes"
 then
-AC_CONFIG_FILES([uw_httpget/Makefile])
-AC_CONFIG_FILES([uw_dns/Makefile])
-AC_CONFIG_FILES([uw_ping/Makefile])
-AC_CONFIG_FILES([uw_mysql/Makefile])
-AC_CONFIG_FILES([uw_mysqlstats/Makefile])
-AC_CONFIG_FILES([uw_pop3/Makefile])
-AC_CONFIG_FILES([uw_smtp/Makefile])
-AC_CONFIG_FILES([uw_tcpconnect/Makefile])
-AC_CONFIG_FILES([uw_imap/Makefile])
-AC_CONFIG_FILES([uw_snmpget/Makefile])
-AC_CONFIG_FILES([uw_mssql/Makefile])
-AC_CONFIG_FILES([uw_postgresql/Makefile])
+  AC_CONFIG_FILES([uw_httpget/Makefile])
+  AC_CONFIG_FILES([uw_dns/Makefile])
+  AC_CONFIG_FILES([uw_ping/Makefile])
+  AC_CONFIG_FILES([uw_mysql/Makefile])
+  AC_CONFIG_FILES([uw_mysqlstats/Makefile])
+  AC_CONFIG_FILES([uw_pop3/Makefile])
+  AC_CONFIG_FILES([uw_smtp/Makefile])
+  AC_CONFIG_FILES([uw_tcpconnect/Makefile])
+  AC_CONFIG_FILES([uw_imap/Makefile])
+  AC_CONFIG_FILES([uw_snmpget/Makefile])
+  AC_CONFIG_FILES([uw_mssql/Makefile])
+  AC_CONFIG_FILES([uw_postgresql/Makefile])
 fi
 
 # extra
 if test "$enable_iptraf" = "yes"
 then
-AC_CONFIG_FILES([uw_iptraf/Makefile])
+if test $HAVE_LIBPCAP -eq 1; then
+  AC_CONFIG_FILES([uw_iptraf/Makefile])
+fi
 fi
 
 ( cd libstatgrab ; ./configure --disable-manpages --disable-examples \

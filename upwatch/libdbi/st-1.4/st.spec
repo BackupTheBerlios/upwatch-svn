@@ -2,7 +2,7 @@ Summary:	State Threads Library
 Name:		st
 Version:	1.4
 Release:	1
-Copyright:	MPL 1.2 or GPL 2+
+License:	MPL 1.2 or GPL 2+
 Packager:	Wesley W. Terpstra <wesley@terpstra.ca>
 Source:		http://prdownloads.sourceforge.net/state-threads/st-%{version}.tar.gz
 Prefix:		/usr

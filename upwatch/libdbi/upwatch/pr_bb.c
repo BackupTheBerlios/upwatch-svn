@@ -8,7 +8,7 @@
 #include "dmalloc.h"
 #endif
 
-char *query_server_by_name;
+const char *query_server_by_name;
 
 void bb_free_res(void *res)
 {
@@ -41,8 +41,7 @@ void *bb_get_def(trx *t, int create)
 {
   struct probe_def *def;
   struct bb_result *res = (struct bb_result *)t->res;
-  MYSQL_RES *result;
-  MYSQL_ROW row;
+  dbi_result result;
 
   def = g_malloc0(t->probe->def_size);
   def->stamp    = time(NULL);
@@ -52,7 +51,7 @@ void *bb_get_def(trx *t, int create)
 
   if (res->color == STAT_PURPLE && res->probeid) {
     // find the definition based on the probe id
-    result = my_query(t->probe->db, 0,
+    result = db_query(t->probe->db, 0,
                       "select id, contact, hide, email, delay from pr_bb_def "
                       "where  id = '%u'", res->probeid);
     if (!result) {
@@ -68,26 +67,25 @@ void *bb_get_def(trx *t, int create)
         g_free(def);
         return(NULL);
       }
-      result = my_query(t->probe->db, 0, query_server_by_name, res->hostname, res->hostname, 
+      result = db_query(t->probe->db, 0, query_server_by_name, res->hostname, res->hostname, 
                         res->hostname, res->hostname, res->hostname);
       if (!result) {
         g_free(def);
         return(NULL);
       }
-      row = mysql_fetch_row(result);
-      if (row && row[0]) {
-        res->server   = atoi(row[0]);
-      } else {
+      if (dbi_result_get_numrows(result) == 0) {
         LOG(LOG_WARNING, "%s:%u@%s: server %s not found", res->realm, res->stattime, t->fromhost, res->hostname);
-        mysql_free_result(result);
+        dbi_result_free(result);
         g_free(def);
         return(NULL);
       }
-      mysql_free_result(result);
+      dbi_result_next_row(result);
+      res->server = dbi_result_get_uint(result, "id");
+      dbi_result_free(result);
     }
 
     // first find the definition based on the serverid
-    result = my_query(t->probe->db, 0,
+    result = db_query(t->probe->db, 0,
                       "select id, contact, hide, email, delay from pr_bb_def "
                       "where  bbname = '%s' and server = '%u'", res->bbname, res->server);
     if (!result) {
@@ -95,53 +93,53 @@ void *bb_get_def(trx *t, int create)
       return(NULL);
     }
   }
-  if (mysql_num_rows(result) == 0) { // DEF RECORD NOT FOUND
-    mysql_free_result(result);
-    result = my_query(t->probe->db, 0,
+  if (dbi_result_get_numrows(result) == 0) { // DEF RECORD NOT FOUND
+    dbi_result_free(result);
+    result = db_query(t->probe->db, 0,
                       "insert into pr_%s_def set server = '%u', ipaddress = '%s', " 
                       "       description = '%s', bbname = '%s'", 
                        res->name, res->server, res->ipaddress ? res->ipaddress : "", 
                        res->hostname, res->bbname);
-    mysql_free_result(result);
-    def->probeid = mysql_insert_id(t->probe->db);
+    dbi_result_free(result);
+    def->probeid = dbi_conn_sequence_last(t->probe->db, NULL);
     LOG(LOG_NOTICE, "%s:%u@%s: pr_bb_def %s created for %s, id = %u", 
         res->realm, res->stattime, t->fromhost, res->bbname, res->hostname, def->probeid);
-    result = my_query(t->probe->db, 0,
+    result = db_query(t->probe->db, 0,
                     "select id, contact, hide, email, delay from pr_bb_def "
                     "where  bbname = '%s' and server = '%u'", res->bbname, res->server);
     if (!result) return(NULL);
   }
-  row = mysql_fetch_row(result);
-  if (!row || !row[0]) {
+  if (dbi_result_get_numrows(result) == 0) {
     LOG(LOG_NOTICE, "%s:%u@%s: no pr_%s_def found for server %u - skipped", 
          res->realm, res->stattime, t->fromhost, res->name, res->server);
-    mysql_free_result(result);
+    dbi_result_free(result);
     return(NULL);
   }
 
-  if (row[0])  def->probeid = atoi(row[0]);
-  if (row[1])  def->contact = atoi(row[1]);
-  strcpy(def->hide, row[2] ? row[2] : "no");
-  strcpy(def->email, row[3] ? row[3] : "");
-  if (row[4]) def->delay = atoi(row[4]);
+  dbi_result_next_row(result);
+  def->probeid = dbi_result_get_uint(result, "id");
+  def->contact = dbi_result_get_uint(result, "contact");
+  strcpy(def->hide, dbi_result_get_string(result, "hide"));
+  strcpy(def->email, dbi_result_get_string(result, "email"));
+  def->delay = dbi_result_get_uint(result, "delay");
 
-  mysql_free_result(result);
+  dbi_result_free(result);
 
   // definition found, get the pr_status
-  result = my_query(t->probe->db, 0,
+  result = db_query(t->probe->db, 0,
                     "select color, stattime "
                     "from   pr_status "
                     "where  class = '%u' and probe = '%u'", t->probe->class, def->probeid);
   if (result) {
-    row = mysql_fetch_row(result);
-    if (row) {
-      if (row[0]) def->color   = atoi(row[0]);
-      if (row[1]) def->newest  = atoi(row[1]);
-    } else {
+    if (dbi_result_get_numrows(result) == 0) { // DEF RECORD NOT FOUND
       LOG(LOG_NOTICE, "%s:%u@%s: pr_status record for %s id %u (server %s) not found", 
                        res->realm, res->stattime, t->fromhost, res->name, def->probeid, res->hostname);
+    } else {
+      dbi_result_next_row(result);
+      def->color   = dbi_result_get_uint(result, "color");
+      def->newest  = dbi_result_get_uint(result, "stattime");
+      dbi_result_free(result);
     }
-    mysql_free_result(result);
   }
   if (!def->color) def->color = res->color;
   res->probeid = def->probeid;

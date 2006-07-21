@@ -7,8 +7,8 @@ conf_DATA = $(program:%=%.conf)
 init_DATA = $(INITFILES)
 
 uw_ping_SOURCES = run.c uw_ping.h uw_ping.c $(PROBFILES) $(SPECFILES) $(INITFILES)
-uw_ping_CFLAGS = @LIBGLIB2_CFLAGS@ @MYSQL_CFLAGS@ @LIBXML2_CFLAGS@ @LIBOPTS_CFLAGS@ $(AM_CFLAGS)
-uw_ping_LDADD = uw_ping_$(DB_O) uw_ping_$(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @MYSQL_LIBS@ @LIBXML2_LIBS@ @LIBGLIB2_LIBS@
+uw_ping_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @LIBOPTS_CFLAGS@ $(AM_CFLAGS)
+uw_ping_LDADD = uw_ping_$(DB_O) uw_ping_$(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @LIBDBI_LIBS@ @LIBXML2_LIBS@ @LIBGLIB2_LIBS@
 
 BUILT_SOURCES = $(program:%=%.1) $(program:%=%.h) $(program:%=%.c) $(PROBFILES) $(SPECFILES) $(INITFILES)
 INCLUDES = -I../upwatch

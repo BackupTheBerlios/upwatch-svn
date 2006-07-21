@@ -68,7 +68,7 @@ void init_no_cache(module *probe);
 #define STANDARD_MODULE_STRUCT \
   int class;					/* numberic probe class (id of record in probe table) */ \
   char *module_name; 				/* name of the module */ \
-  MYSQL *db;					/* database handle the methods should use */ \
+  dbi_conn db;					/* database handle the methods should use */ \
   int needs_cache;				/* true if this probe caches def records */ \
   GHashTable *cache;				/* cached definition records */ \
   GPtrArray *insertc;				/* cache for doing multi value insert statements */ \
@@ -88,7 +88,7 @@ void init_no_cache(module *probe);
   void (*get_from_xml)(trx *t);			/* process one child of the "result" node */ \
   int (*accept_result)(trx *t);			/* accept (and maybe convert) result */ \
   char *get_def_fields;				/* list of fields to be inserted into SQL get_def query */ \
-  void (*set_def_fields)(trx *t, struct probe_def *def, MYSQL_RES *result);/* convert MySQL ROW into probe_def */ \
+  void (*set_def_fields)(trx *t, struct probe_def *def, dbi_result result);/* convert result into probe_def */ \
   void *(*get_def)(trx *t, int create);		/* retrieve probe definition */ \
   void (*adjust_result)(trx *t);		/* adjust result: usually compute our own colors */ \
   int (*end_result)(trx *t);                    /* maybe do some cleanup for this result */  \
@@ -120,7 +120,7 @@ struct _module {
 
 extern module *modules[];
 
-int set_result_value(trx *t, char *name, char *value);
+int set_result_value(trx *t, char *name, unsigned char *value);
 int extract_info_from_xml(trx *t);
 int accept_result(trx *t);
 void *get_def(trx *t, int create);
@@ -140,7 +140,7 @@ struct bb_def {
 #include "../common/common.h"
 };
 
-extern char *query_server_by_name;
+extern const char *query_server_by_name;
 void bb_free_res(void *res);
 void bb_xml_result_node(trx *t);
 int bb_accept_result(module *probe, void *probe_res);
@@ -218,7 +218,7 @@ struct iptraf_def {
   float slotday_avg_red;    //
 };
 
-extern char *query_server_by_ip;
+extern const char *query_server_by_ip;
 void iptraf_xml_result_node(trx *t);
 void iptraf_get_from_xml(trx *t);
 void *iptraf_get_def(trx *t, int create);
