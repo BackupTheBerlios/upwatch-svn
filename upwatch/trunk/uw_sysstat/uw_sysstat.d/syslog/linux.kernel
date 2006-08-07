@@ -705,9 +705,12 @@ green [LOGDATE] kernel: \.\.TIMER:
 green [LOGDATE] kernel: kmod: runaway modprobe loop assumed and stopped
 green [LOGDATE] kernel: CIFS VFS: Calculated size 0x[NUM] vs actual length 0x[NUM]
 green [LOGDATE] kernel: CIFS VFS: bad smb size detected for Mid=[NUM]
+green [LOGDATE] kernel: DAC[NUM]#[NUM]: Enclosure [NUM] Temperature Sensor [NUM] Temperature Normal
 ignore [LOGDATE] kernel: CIFS VFS: Send error in read = [NUM]
 
 yellow [LOGDATE]  kernel: eth[NUM]: [NUM] transmit timed out, status .*, resetting...
+yellow [LOGDATE] kernel: zaptel Disabled echo canceller because of tone \(rx\) on channel [NUM
+yellow [LOGDATE] kernel: qozap: CRC error for HDLC frame on card [NUM] \(cardID [NUM]\) S/T port [NUM]
 
 red [LOGDATE] kernel: end_request: I/O error, dev [NUM]:[NUM] \(hd[a-z]\), sector [NUM]
 red [LOGDATE] kernel:   Error: Illegal request -- \(Sense key=[NUM]\)
@@ -721,3 +724,5 @@ red [LOGDATE] kernel: attempt to access beyond end of device
 red [LOGDATE] kernel: __alloc_pages: 0-order allocation failed 
 red [LOGDATE] kernel: VM: killing process
 red [LOGDATE] kernel: ip_conntrack: table full, dropping packet.
+red [LOGDATE] kernel: DAC[NUM]#[NUM]: Enclosure [NUM] Temperature Sensor [NUM] Temperature Exceeds Safe Limit
+

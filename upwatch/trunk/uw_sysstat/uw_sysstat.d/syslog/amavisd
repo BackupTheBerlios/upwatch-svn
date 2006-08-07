@@ -1,3 +1,5 @@
 green [LOGDATE] amavisd: No pid_file [PATH], can't stop the process
 green [LOGDATE] amavisd: Shutting down amavisd: failed
+green [LOGDATE] amavisd: Shutting down amavisd: succeeded
+green [LOGDATE] amavisd: Starting amavisd: succeeded
 

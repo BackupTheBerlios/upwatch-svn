@@ -3,3 +3,5 @@ green [LOGDATE] syslogd [NUM]\.[NUM]-[NUM]: restart\.
 green [LOGDATE] syslogd [NUM]\.[NUM]\.[NUM]: restart\.
 green [LOGDATE] syslog: syslogd shutdown failed 
 green [LOGDATE] syslog: syslogd startup failed
+green [LOGDATE] [HOSTNAME][PID]: reboot [IPADDR] sip:[EMAIL]:[NUM]
+green [LOGDATE] syslogd [NUM]\.[NUM]\.[NUM]: restart \(remote reception\)\.

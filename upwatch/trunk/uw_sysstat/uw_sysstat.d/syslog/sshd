@@ -1,5 +1,4 @@
 green [LOGDATE] sshd[PID]: refused connect from [IPADDR]
-
 green [LOGDATE] sshd:\s*$
 green [LOGDATE] sshd: Generating SSH[NUM] DSA host key: 
 green [LOGDATE] sshd: Generating SSH[NUM] RSA host key: 
