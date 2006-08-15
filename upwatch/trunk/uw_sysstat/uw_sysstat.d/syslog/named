@@ -4,7 +4,7 @@ green [LOGDATE] named[PID]: check_hints: A records for J\.ROOT-SERVERS\.NET clas
 green [LOGDATE] named[PID]: Cleaned cache of [NUM] RRset
 green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: bad zone transfer request: '[HOSTNAME]/IN': non-authoritative zone \(NOTAUTH\)
 ignore [LOGDATE] named[PID]: client [IPADDR]#[NUM]: error sending response: invalid file
-ignore [LOGDATE] named[PID]: client [IPADDR]#[NUM]: error sending response: host unreachable
+ignore [LOGDATE] named[PID]: client .*: error sending response: host unreachable
 green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: no more recursive clients: quota reached
 green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: update forwarding denied
 green [LOGDATE] named[PID]: client [IPADDR]#[NUM]: update '[HOSTNAME]/IN' denied
