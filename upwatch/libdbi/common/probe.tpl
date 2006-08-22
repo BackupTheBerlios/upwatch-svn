@@ -27,8 +27,10 @@ CREATE TABLE pr_[+name+]_def (
   ipaddress varchar(128) NOT NULL default '127.0.0.1',	-- target ipaddress or hostname
   description text NOT NULL default '',		-- description
   freq smallint unsigned NOT NULL default '1',	-- frequency in minutes
+[+ IF yellow +]
   yellow float NOT NULL default '[+yellow+]',	-- value for yellow alert
-  red float NOT NULL default '[+red+]', 	-- value for red alert [+ 		
+  red float NOT NULL default '[+red+]', 	-- value for red alert 
+[+ ENDIF yellow +] [+
 FOR def +][+
 CASE type +][+
 == float +]
