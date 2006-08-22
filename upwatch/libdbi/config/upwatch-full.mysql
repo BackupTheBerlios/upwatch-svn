@@ -32,7 +32,7 @@ CREATE TABLE pr_hist (
   UNIQUE KEY probtime (probe,stattime),
   UNIQUE KEY probclstat (probe,class,stattime),
   KEY stattime (stattime),
-  KEY contact (contact)
+  KEY contact_key (contact)
 ) TYPE=MyISAM;
 
 INSERT INTO pr_hist set id = '1', message = 'do NOT delete!';
@@ -57,10 +57,10 @@ CREATE TABLE pr_status (
   PRIMARY KEY  (id),
   UNIQUE KEY uprobe (class,probe),
   KEY class (class),
-  KEY probe (probe),
-  KEY server (server),
+  KEY probe_key (probe),
+  KEY server_key (server),
   KEY expires (expires),
-  KEY contact (contact)
+  KEY contact_key (contact)
 ) TYPE=MyISAM;
 
 INSERT INTO pr_status set id = '1', message = 'do NOT delete!';
@@ -108,7 +108,7 @@ CREATE TABLE notify (
   status enum('enabled', 'disabled', 'ok') NOT NULL default 'enabled',
   comment text NOT NULL,
   PRIMARY KEY  (id),
-  KEY (contact)
+  KEY contact_key (contact)
 ) TYPE=MyISAM;
 
 INSERT INTO notify set id = '1', name = 'empty', status = 'disabled', comment = 'do NOT delete!';
@@ -133,7 +133,7 @@ CREATE TABLE notifycond (
   persist enum('yes', 'no') NOT NULL default 'no',
   comment text NOT NULL,
   PRIMARY KEY  (id),
-  KEY (notify)
+  KEY notify_key (notify)
 ) TYPE=MyISAM;
 
 INSERT INTO notifycond set id = '1', notify = '1';

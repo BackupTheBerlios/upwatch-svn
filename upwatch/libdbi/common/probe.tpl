@@ -97,8 +97,8 @@ ENDIF +][+
 ESAC type +][+ ENDFOR def+]
   PRIMARY KEY  (id),
   KEY tbldomid (tblid, domid, id),
-  KEY server (server),
-  KEY notify (notify),
+  KEY server_key_[+name+] (server),
+  KEY notify_key_[+name+] (notify),
   KEY ipaddress (ipaddress),
   KEY domtbl (domid, tblid)
 ) TYPE=MyISAM;
