@@ -1,5 +1,3 @@
-
-
 --
 -- Table structure for table 'probe'
 --
@@ -22,5 +20,4 @@ CREATE TABLE probe (
   PRIMARY KEY  (id)
 ) TYPE=MyISAM;
 
-INSERT INTO probe set id = '1', name = 'empty', addbyhand = 'no', addbycust = 'no', comment = 'do NOT delete!';
-
+INSERT INTO probe ( id, name, addbyhand, addbycust, comment ) VALUES ( 1,'empty','no','no','do NOT delete!');

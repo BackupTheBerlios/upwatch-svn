@@ -9,8 +9,8 @@ CREATE TABLE pr_group (
   PRIMARY KEY  (id)
 ) TYPE=MyISAM;
 
-INSERT INTO pr_group set id = '1', name = 'empty', description = 'do NOT delete!';
-INSERT INTO pr_group set id = '2', name = 'Default';
+INSERT INTO pr_group (id, name, description ) VALUES (1,'empty','do NOT delete!');
+INSERT INTO pr_group (id, name) VALUES (2,'Default');
 
 --
 -- Table structure for table 'pr_hist'
@@ -18,12 +18,12 @@ INSERT INTO pr_group set id = '2', name = 'Default';
 
 CREATE TABLE pr_hist (
   id int unsigned NOT NULL auto_increment,
-  server int unsigned NOT NULL default '1',
+  server int unsigned NOT NULL default 1,
   hide enum('yes', 'no') not null default 'no',
-  contact int unsigned NOT NULL default '1',  -- user field: pointer to contact database
-  class smallint unsigned NOT NULL default '1',
-  probe int unsigned NOT NULL default '1',
-  pgroup int unsigned NOT NULL default '1',     -- group id
+  contact int unsigned NOT NULL default 1,  -- user field: pointer to contact database
+  class smallint unsigned NOT NULL default 1,
+  probe int unsigned NOT NULL default 1,
+  pgroup int unsigned NOT NULL default 1,     -- group id
   stattime int unsigned NOT NULL default '0',
   prv_color smallint unsigned NOT NULL default '200',
   color smallint unsigned NOT NULL default '200',
@@ -35,7 +35,7 @@ CREATE TABLE pr_hist (
   KEY contact_key (contact)
 ) TYPE=MyISAM;
 
-INSERT INTO pr_hist set id = '1', message = 'do NOT delete!';
+INSERT INTO pr_hist ( id, message ) VALUES ( 1,'do NOT delete!');
 
 --
 -- Table structure for table 'pr_status'
@@ -43,11 +43,11 @@ INSERT INTO pr_hist set id = '1', message = 'do NOT delete!';
 
 CREATE TABLE pr_status (
   id int unsigned NOT NULL auto_increment,
-  class int unsigned NOT NULL default '1',
-  probe int unsigned NOT NULL default '1',
-  server int unsigned NOT NULL default '1',
+  class int unsigned NOT NULL default 1,
+  probe int unsigned NOT NULL default 1,
+  server int unsigned NOT NULL default 1,
   hide enum('yes', 'no') not null default 'no',
-  contact int unsigned NOT NULL default '1',  -- user field: pointer to contact database
+  contact int unsigned NOT NULL default 1,  -- user field: pointer to contact database
   yellow float NOT NULL default '0',
   red float NOT NULL default '0',
   stattime int unsigned NOT NULL default '0',
@@ -63,11 +63,13 @@ CREATE TABLE pr_status (
   KEY contact_key (contact)
 ) TYPE=MyISAM;
 
-INSERT INTO pr_status set id = '1', message = 'do NOT delete!';
+INSERT INTO pr_status ( id, message ) VALUES ( 1,'do NOT delete!');
 
 --
 -- Table structure for table 'rack'
 --
+
+-- FIXME: this table does not belong in the upwatch database
   
 CREATE TABLE rack (
   id int unsigned NOT NULL auto_increment,
@@ -78,7 +80,7 @@ CREATE TABLE rack (
   PRIMARY KEY  (id) 
 ) TYPE=MyISAM;
 
-INSERT INTO rack set id = '1', name = 'empty', comment = 'do NOT delete!';
+INSERT INTO rack ( id, name, comment ) VALUES ( 1,'empty','do NOT delete!');
 
 --
 -- Table structure for table 'server'
@@ -93,7 +95,7 @@ CREATE TABLE server (
   PRIMARY KEY  (id)
 ) TYPE=MyISAM;
 
-INSERT INTO server set id = '1', name = 'empty', comment = 'do NOT delete!';
+INSERT INTO server ( id, name, comment ) VALUES ( 1,'empty','do NOT delete!');
 
 --
 -- Table structure for table 'notify'
@@ -111,7 +113,7 @@ CREATE TABLE notify (
   KEY contact_key (contact)
 ) TYPE=MyISAM;
 
-INSERT INTO notify set id = '1', name = 'empty', status = 'disabled', comment = 'do NOT delete!';
+INSERT INTO notify ( id, name, status, comment ) VALUES ( 1,'empty','disabled','do NOT delete!');
 
 --
 -- Table structure for table 'notifycond'
@@ -136,5 +138,5 @@ CREATE TABLE notifycond (
   KEY notify_key (notify)
 ) TYPE=MyISAM;
 
-INSERT INTO notifycond set id = '1', notify = '1';
+INSERT INTO notifycond ( id, notify, comment ) VALUES ( 1,1,'do NOT delete!');
 

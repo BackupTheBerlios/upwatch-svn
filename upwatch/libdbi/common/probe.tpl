@@ -110,7 +110,7 @@ ESAC type +][+ ENDFOR def+]
       (error (sprintf "addbyhand not set for probe %s" (get "probe.name")) )
   )
 +]
-INSERT into pr_[+name+]_def set id = '1', description = 'empty';
+INSERT into pr_[+name+]_def (id, description) VALUES (1, 'empty');
 INSERT into probe set id = '[+id+]', name = '[+name+]', description = '[+descrip+]', [+
  if (exist? "expiry") +]expiry = '[+expiry+]', [+ endif +]addbyhand = '[+addbyhand+]', [+
  if (exist? "fuse") +]fuse = '[+fuse+]', [+ endif +]class = '[+class+]', graphgroup = '[+graphgroup+]', graphtypes = '[+graphtypes+]', comment = '[+comment+]';[+ ENDFOR probe +][+

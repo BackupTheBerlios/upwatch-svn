@@ -17,7 +17,7 @@ CREATE TABLE pr_realm (
   PRIMARY KEY  (id)
 ) TYPE=MyISAM;
 
-INSERT INTO pr_realm set id = '1', name = 'empty', comment = 'do NOT delete!';
+INSERT INTO pr_realm ( id, name, comment ) VALUES ( 1, 'empty','do NOT delete!');
 
 CREATE TABLE pr_regex (
   id int unsigned NOT NULL auto_increment,
@@ -29,7 +29,7 @@ CREATE TABLE pr_regex (
   UNIQUE KEY packex (package,regex)
 ) TYPE=MyISAM;
 
-INSERT INTO pr_regex set id = '1', logtype = 'none', package = 'none', action = 'green', regex = 'do NOT delete!';
+INSERT INTO pr_regex ( id, logtype, package, action, regex ) VALUES (1,'none','none','green','do NOT delete!');
 
 CREATE TABLE pr_macros (
   id int unsigned NOT NULL auto_increment,
@@ -39,7 +39,7 @@ CREATE TABLE pr_macros (
   PRIMARY KEY  (id),
   UNIQUE KEY typename (logtype,name)
 ) TYPE=MyISAM;
-INSERT INTO pr_macros set id = '1', logtype = 'none', name = 'empty', regex = 'do NOT delete!';
+INSERT INTO pr_macros (id, logtype, name, regex) VALUES ( 1,'none','empty','do NOT delete!');
 
 CREATE TABLE pr_rmacros (
   id int unsigned NOT NULL auto_increment,
@@ -49,7 +49,7 @@ CREATE TABLE pr_rmacros (
   PRIMARY KEY  (id),
   UNIQUE KEY typex (logtype,regex)
 ) TYPE=MyISAM;
-INSERT INTO pr_rmacros set id = '1', logtype = 'none', name = 'empty', regex = 'do NOT delete!';
+INSERT INTO pr_rmacros (id, logtype, name, regex) VALUES ( 1,'none','empty','do NOT delete!');
 
 
 
