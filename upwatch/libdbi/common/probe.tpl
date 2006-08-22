@@ -125,8 +125,10 @@ INSERT into probe set id = '[+id+]', name = '[+name+]', description = '[+descrip
 CREATE TABLE pr_[+name+]_raw (
   id bigint unsigned NOT NULL auto_increment,   -- unique id for result
   probe int unsigned NOT NULL default '1',      -- probe identifier
+[+ IF yellow +]
   yellow float NOT NULL default '[+yellow+]',   -- value for yellow alert
   red float NOT NULL default '[+red+]',         -- value for red alert
+[+ ENDIF yellow +]
   stattime int unsigned NOT NULL default '0',   -- time when result was generated
   color smallint unsigned NOT NULL default '200', -- color value [+
 FOR result +][+
@@ -206,8 +208,10 @@ ENDIF +];
 CREATE TABLE pr_[+name+]_[+period+] (
   id bigint unsigned NOT NULL auto_increment,	-- unique id for result
   probe int unsigned NOT NULL default '1',	-- probe identifier
+[+ IF yellow +]
   yellow float NOT NULL default '[+yellow+]',	-- value for yellow alert
   red float NOT NULL default '[+red+]', 	-- value for red alert 
+[+ ENDIF yellow +]
   slot smallint(5) unsigned NOT NULL default '0', -- timeslot in this period
   stattime int unsigned NOT NULL default '0',	-- time when result was generated
   color smallint unsigned NOT NULL default '200', -- color value [+ 
@@ -463,6 +467,7 @@ IF (exist? "default") +] "[+default+]"[+ENDIF
                   <entry colname = "Extra"><para> </para></entry>
                   <entry colname = "Description"><para>frequency in minutes </para></entry>
                </row>
+[+ IF yellow +]
                <row>
                   <entry colname = "Field"><para>yellow </para></entry>
                   <entry colname = "Type"><para>float </para></entry>
@@ -479,6 +484,7 @@ IF (exist? "default") +] "[+default+]"[+ENDIF
                   <entry colname = "Extra"><para> </para></entry>
                   <entry colname = "Description"><para>value for red alert </para></entry>
                </row>
+[+ ENDIF yellow +]
                <row>
                   <entry colname = "Field"><para>disable </para></entry>
                   <entry colname = "Type"><para>enum('yes', 'no') </para></entry>
