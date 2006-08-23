@@ -66,23 +66,6 @@ CREATE TABLE pr_status (
 INSERT INTO pr_status ( id, message ) VALUES ( 1,'do NOT delete!');
 
 --
--- Table structure for table 'rack'
---
-
--- FIXME: this table does not belong in the upwatch database
-  
-CREATE TABLE rack (
-  id int unsigned NOT NULL auto_increment,
-  contact int NOT NULL default 1,
-  name varchar(128) NOT NULL default '',
-  comment text NOT NULL,
-  color smallint unsigned NOT NULL default '0',
-  PRIMARY KEY  (id) 
-) TYPE=MyISAM;
-
-INSERT INTO rack ( id, name, comment ) VALUES ( 1,'empty','do NOT delete!');
-
---
 -- Table structure for table 'server'
 --
 
@@ -96,47 +79,4 @@ CREATE TABLE server (
 ) TYPE=MyISAM;
 
 INSERT INTO server ( id, name, comment ) VALUES ( 1,'empty','do NOT delete!');
-
---
--- Table structure for table 'notify'
---
-
-CREATE TABLE notify (
-  id int NOT NULL auto_increment,
-  name varchar(128) NOT NULL default '',
-  contact int NOT NULL default 1,
-  mail int NOT NULL default 1,
-  sms int NOT NULL default 1,
-  status enum('enabled', 'disabled', 'ok') NOT NULL default 'enabled',
-  comment text NOT NULL,
-  PRIMARY KEY  (id),
-  KEY contact_key (contact)
-) TYPE=MyISAM;
-
-INSERT INTO notify ( id, name, status, comment ) VALUES ( 1,'empty','disabled','do NOT delete!');
-
---
--- Table structure for table 'notifycond'
---
-
-CREATE TABLE notifycond (
-  id int NOT NULL auto_increment,
-  notify int NOT NULL default 1,
-  bycolor enum('yes', 'no') NOT NULL default 'yes',
-  atcolor smallint NOT NULL default '400',
-  consecutive smallint NOT NULL default 1,
-  bydate enum('yes', 'no') NOT NULL default 'no',
-  fromwday tinyint NOT NULL default 0,
-  fromhour tinyint NOT NULL default 0,
-  frommin tinyint NOT NULL default 0,
-  towday tinyint NOT NULL default 0,
-  tohour tinyint NOT NULL default 0,
-  tomin tinyint NOT NULL default 0,
-  persist enum('yes', 'no') NOT NULL default 'no',
-  comment text NOT NULL,
-  PRIMARY KEY  (id),
-  KEY notify_key (notify)
-) TYPE=MyISAM;
-
-INSERT INTO notifycond ( id, notify, comment ) VALUES ( 1,1,'do NOT delete!');
 
