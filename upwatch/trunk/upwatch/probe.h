@@ -169,6 +169,15 @@ struct diskfree_def {
 #include "../common/common.h"
 };
 
+/****************************** probe local ************************/
+struct local_result {
+  STANDARD_PROBE_RESULT;
+};
+struct local_def {
+  STANDARD_PROBE_DEF;
+#include "../common/common.h"
+};
+
 /****************************** probe errlog ************************/
 struct errlog_result {
   STANDARD_PROBE_RESULT;

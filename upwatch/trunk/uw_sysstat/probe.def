@@ -523,3 +523,63 @@ probe = {
     descrip = "date/time this result was received by the upwatch server";
   };
 };
+
+probe = {
+  name = "local";
+  id = 19;
+  descrip = "Local checks";
+  addbyhand = "no";
+  class = "";
+  graphgroup = "";
+  graphtypes = "default";
+  comment = "";
+
+  attribute = {
+    name = "server";
+    required = true;
+    descrip = "id of this server in the database";
+  };
+
+  attribute = {
+    name = "ipaddress";
+    default = "127.0.0.1";
+    descrip = "target ip address";
+  };
+
+  attribute = {
+    name = "realm";
+    required = true;
+    descrip = "database realm for these values";
+  };
+
+  attribute = {
+    name = "date";
+    required = true;
+    descrip = "date/time for this result";
+  };
+
+  attribute = {
+    name = "expires";
+    required = true;
+    descrip = "when this result expires";
+  };
+
+  attribute = {
+    name = "color";
+    required = true;
+    descrip = "color as this probe thinks it should be";
+  };
+
+  attribute = {
+    name = "interval";
+    default = "60";
+    descrip = "time between measurements";
+  };
+
+  attribute = {
+    name = "received";
+    default = "0";
+    descrip = "date/time this result was received by the upwatch server";
+  };
+};
+

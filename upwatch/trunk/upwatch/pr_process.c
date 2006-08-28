@@ -325,8 +325,8 @@ void *get_def_by_servid(trx *t, int create)
                       "       description = '%s'", 
                        res->name, res->server, res->ipaddress ? res->ipaddress : "", 
                        res->hostname);
-    mysql_free_result(result);
     def->probeid = mysql_insert_id(t->probe->db);
+    mysql_free_result(result);
     LOG(LOG_NOTICE, "%s:%u@%s: pr_%s_def created for %s, id = %u", 
         res->realm, res->stattime, t->fromhost, res->name, res->hostname, def->probeid);
     result = my_query(t->probe->db, 0,
