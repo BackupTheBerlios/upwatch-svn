@@ -198,16 +198,17 @@ int do_local(xmlNodePtr doc )
  
   /* Don't allow directories writable by others */
   if (stat(path, &st) < 0) {
-    LOG(LOG_ERR,"Cannot check permissions for the uw_local_scripts directory");
+    LOG(LOG_ERR,"Cannot check permissions for %s", path);
   }
   if ( (st.st_uid == getuid()) && (st.st_mode & 077) != 0 ) {  /* we are world or group writable */
-    LOG(LOG_ERR,"The uw_local_scripts directory has bad permissions, refusing to run the scripts");
+    LOG(LOG_ERR,"%s has bad permissions, refusing to run the scripts", path);
     return;
   }
 
   /* Ok the directory is safe enough, lets open it. */
   dir = g_dir_open (path, 0, &error);
   if (dir == NULL) {
+    LOG(LOG_ERR,"Cannot open %s", path); /* Should not be reached */
     perror(path);
     return;
   }
