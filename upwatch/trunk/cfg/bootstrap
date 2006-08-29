@@ -1,5 +1,8 @@
 #! /bin/sh
 
+# Get the ChangeLog now
+svn log > ChangeLog
+
 # test if libtoolize is called glibtoolize (MacOSX)
 BOGUS=`glibtoolize -n 2>/dev/null`
 TEST=$?
