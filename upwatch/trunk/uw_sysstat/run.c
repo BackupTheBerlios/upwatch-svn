@@ -197,9 +197,13 @@ int do_local(xmlNodePtr doc )
   gettimeofday(&start, NULL);
  
   /* Don't allow directories writable by others */
-  if ( stat(path, &st ) == -1 ) return;
-  if ( (st.st_mode & 077) != 0)  return;  /* we are world or group writable */
-  /* XXX FIXME, we have to check the full path for bad permissions*/
+  if (stat(path, &st) < 0) {
+    LOG(LOG_ERR,"Cannot check permissions for the uw_local_scripts directory");
+  }
+  if ( (st.st_uid == getuid()) && (st.st_mode & 077) != 0 ) {  /* we are world or group writable */
+    LOG(LOG_ERR,"The uw_local_scripts directory has bad permissions, refusing to run the scripts");
+    return;
+  }
 
   /* Ok the directory is safe enough, lets open it. */
   dir = g_dir_open (path, 0, &error);
@@ -217,14 +221,21 @@ int do_local(xmlNodePtr doc )
     if (filename[0] == '.') continue;  // skip '.', '..' and hidden files
     sprintf(fullpath, "%s/%s", path, filename);
     if (!g_file_test(fullpath, G_FILE_TEST_IS_EXECUTABLE)) {
+      LOG(LOG_WARNING,"Script %s is not executable, skipping.", fullpath);
       continue;
     }
  
     if ( debug > 4 ) printf("Checking script %s\n", fullpath);
 
     /* The script should not be writable by others */
-    if ( stat(fullpath, &st ) == -1 ) continue;
-    if ( (st.st_mode & 077) != 0)  continue;  /* we are world or group writable */
+    if (stat(fullpath, &st) < 0) {
+      LOG(LOG_ERR,"Cannot check permissions for %s", fullpath);
+      continue;
+    }
+    if ( (st.st_uid == getuid()) && (st.st_mode & 077) != 0 ) {  /* we are world or group writable */
+      LOG(LOG_ERR,"Script %s has insecure permissions, refusing it.", fullpath);
+      continue;
+    }
     if ( debug > 4 ) printf("Script %s is ok\n", fullpath);
 
     uw_setproctitle("Running check %s", fullpath);
