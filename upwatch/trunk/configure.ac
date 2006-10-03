@@ -294,6 +294,10 @@ do
   then
     LIBOPTS_CFLAGS="-I${incpath}/autoopts"
   fi
+  if test -f $incpath/autogen/options.h
+  then
+    LIBOPTS_CFLAGS="-I${incpath}/autogen"
+  fi
 done
 
 AC_SUBST(LIBOPTS_CFLAGS)
