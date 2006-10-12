@@ -189,7 +189,7 @@ ESAC type +][+ ENDFOR result+]
   PRIMARY KEY (id),
   UNIQUE KEY probstat (probe,stattime),
   UNIQUE KEY statprob (stattime,probe)
-) TYPE=MyISAM [+
+) TYPE=MyISAM DELAYED_KEY_WRITE=1 [+
 IF max_rows +] MAX_ROWS=[+max_rows+] [+
 ENDIF+][+
 IF avg_row_length +] AVG_ROW_LENGTH=[+avg_row_length+][+
