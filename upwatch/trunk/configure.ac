@@ -262,27 +262,13 @@ fi
 
 if test -z "$LIBOPTS_LIBS"
 then
-  if test -f /usr/lib/libopts.a
-  then
-    LIBOPTS=/usr/lib/libopts.a
-  fi
-  if test -f /usr/lib64/libopts.a
-  then
-    LIBOPTS=/usr/lib64/libopts.a
-  fi
-  
-  if test -f /usr/local/lib/libopts.a
-  then
-    LIBOPTS=/usr/local/lib/libopts.a
-  fi
-  if test -f /usr/local/lib64/libopts.a
-  then
-    LIBOPTS=/usr/local/lib64/libopts.a
-  fi
-  if test -f /usr/pkg/lib/libopts.a
-  then
-    LIBOPTS=/usr/pkg/lib/libopts.a
-  fi
+  for libpath in /usr/lib /usr/local/lib /usr/lib/lib64 /usr/local/lib64 /usr/pkg/lib
+  do
+    if test -f $libpath/libopts.a
+    then
+      LIBOPTS_LIBS=$libpath/libopts.a
+    fi
+  done
 fi
 
 if test -z "$LIBOPTS_CFLAGS"
@@ -310,6 +296,10 @@ then
       LIBOPTS_CFLAGS="-I${incpath}/autogen"
     fi
   done
+fi
+if test -z "$LIBOPTS_LIBS" -o -z "$LIBOPTS_CFLAGS"
+then
+  AC_MSG_ERROR([You really need autogen or libopts to compile upwatch])
 fi
 AC_SUBST(LIBOPTS_LIBS)
 AC_SUBST(LIBOPTS_CFLAGS)
