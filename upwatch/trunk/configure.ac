@@ -266,7 +266,7 @@ then
   do
     if test -f $libpath/libopts.a
     then
-      LIBOPTS_LIBS=$libpath/libopts.a
+      LIBOPTS_LIBS="-L$libpath -lopts"
     fi
   done
 fi
