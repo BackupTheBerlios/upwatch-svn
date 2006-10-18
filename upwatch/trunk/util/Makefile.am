@@ -45,7 +45,7 @@ endif
 include $(top_srcdir)/Makefile.am.common
 
 uwq_SOURCES = uwq.c uwq_options.h uwq_options.c uwq_options.def 
-uwq_LDADD = $(LIBOPTS) @LIBGLIB2_LIBS@
+uwq_LDADD = @LIBOPTS_LIBS@ @LIBGLIB2_LIBS@
 uwq_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ @LIBOPTS_CFLAGS@
 BUILT_SOURCES += uwq_options.h uwq.1
 EXTRA_DIST += uwq_options.def
@@ -60,7 +60,7 @@ uwq.1: uwq_options.def $(top_srcdir)/common/man1.tpl
 
 ctime_SOURCES = ctime.c ctime_options.c ctime_options.h ctime_options.def 
 ctime_CFLAGS = @LIBOPTS_CFLAGS@
-ctime_LDADD = $(LIBOPTS) 
+ctime_LDADD = @LIBOPTS_LIBS@
 BUILT_SOURCES += ctime_options.h ctime.1
 EXTRA_DIST += ctime_options.def
 CLEAN_FILES += ctime_options.c ctime_options.h
@@ -74,7 +74,7 @@ ctime.1: ctime_options.def $(top_srcdir)/common/man1.tpl
 
 slot_SOURCES = slot.c slot_options.c slot_options.h slot_options.def
 slot_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ @LIBOPTS_CFLAGS@
-slot_LDADD = $(LIBOPTS) $(LIBUPWATCH) 
+slot_LDADD = @LIBOPTS_LIBS@ $(LIBUPWATCH) 
 BUILT_SOURCES += slot_options.h
 EXTRA_DIST += slot_options.def
 CLEAN_FILES +=  slot_options.c slot_options.h
@@ -88,7 +88,7 @@ slot.1: slot_options.def $(top_srcdir)/common/man1.tpl
 
 chklog_SOURCES = chklog.c chklog_options.c chklog_options.h chklog_options.def
 chklog_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ @LIBPCRE_CFLAGS@ @LIBOPTS_CFLAGS@
-chklog_LDADD = @LIBGLIB2_LIBS@ @LIBPCRE_LIBS@ $(LIBOPTS) $(LIBUPWATCH) 
+chklog_LDADD = @LIBGLIB2_LIBS@ @LIBPCRE_LIBS@ @LIBOPTS_LIBS@ $(LIBUPWATCH) 
 BUILT_SOURCES += chklog_options.h
 EXTRA_DIST += chklog_options.def
 CLEAN_FILES +=  chklog_options.c chklog_options.h

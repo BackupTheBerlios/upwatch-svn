@@ -12,7 +12,7 @@ init_DATA = $(INITFILES)
 
 uw_null_SOURCES = run.c uw_null.h uw_null.c $(SPECFILES) $(INITFILES) 
 uw_null_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @LIBOPTS_CFLAGS@ $(AM_CFLAGS)
-uw_null_LDADD = uw_null_$(MAIN_O) $(LIBOPTS) $(LIBUPWATCH) @LIBGLIB2_LIBS@ $(SOLARISLIBS)
+uw_null_LDADD = uw_null_$(MAIN_O) @LIBOPTS_LIBS@ $(LIBUPWATCH) @LIBGLIB2_LIBS@ $(SOLARISLIBS)
 
 BUILT_SOURCES = $(program:%=%.1) $(program:%=%.h) $(program:%=%.c) $(SPECFILES) $(INITFILES)
 INCLUDES = -I../upwatch

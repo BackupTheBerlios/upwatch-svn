@@ -253,54 +253,67 @@ AC_ARG_ENABLE(all,
 # Checks for libraries.
 
 ################# First the autogen autoopts library
-if test -f /usr/lib/libopts.a
+AC_CHECK_PROG([HAVE_LIBOPTS], [libopts-config], ["yes"], ["no"])
+if test "$HAVE_LIBOPTS" = "yes"
 then
-  LIBOPTS=/usr/lib/libopts.a
-fi
-if test -f /usr/lib64/libopts.a
-then
-  LIBOPTS=/usr/lib64/libopts.a
+  LIBOPTS_CFLAGS="`libopts-config --cflags`"
+  LIBOPTS_LIBS="`libopts-config --libs`"
 fi
 
-if test -f /usr/local/lib/libopts.a
+if test -z "$LIBOPTS_LIBS"
 then
-  LIBOPTS=/usr/local/lib/libopts.a
-fi
-if test -f /usr/local/lib64/libopts.a
-then
-  LIBOPTS=/usr/local/lib64/libopts.a
-fi
-if test -f /usr/pkg/lib/libopts.a
-then
-  LIBOPTS=/usr/pkg/lib/libopts.a
-fi
-AC_SUBST(LIBOPTS)
-
-# path to autoopts includes
-AC_ARG_WITH(autoopts-include,
-    [  --with-autoopts-include=<path>        prefix of autoopts headers. Default /usr/include/],
-    [LIBOPTS_INC_PREFIX=$with_autoopts_include],
-    [LIBOPTS_INC_PREFIX=/usr/include/]
-)
-AC_SUBST(LIBOPTS_INC_PREFIX)
-
-for incpath in /usr/include $LIBOPTS_LIB_PREFIX /usr/local/include /cygdrive/c/include /usr/pkg/include
-do
-  if test -f $incpath/options.h
+  if test -f /usr/lib/libopts.a
   then
-    LIBOPTS_CFLAGS="-I${incpath}"
+    LIBOPTS=/usr/lib/libopts.a
   fi
-  if test -f $incpath/autoopts/options.h
+  if test -f /usr/lib64/libopts.a
   then
-    LIBOPTS_CFLAGS="-I${incpath}/autoopts"
+    LIBOPTS=/usr/lib64/libopts.a
   fi
-  if test -f $incpath/autogen/options.h
+  
+  if test -f /usr/local/lib/libopts.a
   then
-    LIBOPTS_CFLAGS="-I${incpath}/autogen"
+    LIBOPTS=/usr/local/lib/libopts.a
   fi
-done
+  if test -f /usr/local/lib64/libopts.a
+  then
+    LIBOPTS=/usr/local/lib64/libopts.a
+  fi
+  if test -f /usr/pkg/lib/libopts.a
+  then
+    LIBOPTS=/usr/pkg/lib/libopts.a
+  fi
+fi
 
+if test -z "$LIBOPTS_CFLAGS"
+then
+  # path to autoopts includes
+  AC_ARG_WITH(autoopts-include,
+      [  --with-autoopts-include=<path>        prefix of autoopts headers. Default /usr/include/],
+      [LIBOPTS_INC_PREFIX=$with_autoopts_include],
+      [LIBOPTS_INC_PREFIX=/usr/include/]
+  )
+  AC_SUBST(LIBOPTS_INC_PREFIX)
+
+  for incpath in /usr/include $LIBOPTS_INC_PREFIX /usr/local/include /cygdrive/c/include /usr/pkg/include
+  do
+    if test -f $incpath/options.h
+    then
+      LIBOPTS_CFLAGS="-I${incpath}"
+    fi
+    if test -f $incpath/autoopts/options.h
+    then
+      LIBOPTS_CFLAGS="-I${incpath}/autoopts"
+    fi
+    if test -f $incpath/autogen/options.h
+    then
+      LIBOPTS_CFLAGS="-I${incpath}/autogen"
+    fi
+  done
+fi
+AC_SUBST(LIBOPTS_LIBS)
 AC_SUBST(LIBOPTS_CFLAGS)
+
 ################## MYSQL
 # path to libmysqlclient stuff:.
 AC_ARG_WITH(mysql-libs,
