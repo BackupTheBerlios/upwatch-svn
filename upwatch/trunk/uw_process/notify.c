@@ -181,7 +181,7 @@ static int do_notification(trx *t)
   } else {
     subject_extra[0] = 0;
   }
-  sprintf(subject, "%s: %s %s (was %s) %s", servername,
+  snprintf(subject, sizeof(subject), "%s: %s %s (was %s) %s", servername,
                    t->probe->module_name, color2string(t->res->color),
                    color2string(t->res->prevhistcolor), subject_extra);
 
@@ -195,7 +195,7 @@ static int do_notification(trx *t)
   } else {
     msg[0] = 0;
   }
-  sprintf(body, "Dear customer,\n\n"
+  snprintf(body, sizeof(body), "Dear customer,\n\n"
                 "Moments ago, at %s"
                 "the status of probe %s\n"
                 "at server %s\n"
