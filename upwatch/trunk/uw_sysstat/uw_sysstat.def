@@ -10,7 +10,7 @@ homerc        = "$HOME/.uw_sysstatrc";
 homerc        = "$$/upwatch.conf";
 homerc        = "$$/uw_sysstat.conf";
 detail        = 
-'uw_sysstat does the following: ';
+'Upwatch client for system health probes';
 
 // this section is for the generated specfile
 spec-requires = "glib2";
