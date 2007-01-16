@@ -25,8 +25,9 @@ static void ping_set_def_fields(trx *t, struct probe_def *probedef, MYSQL_RES *r
     if (row[5]) def->contact  = atof(row[5]);
     strcpy(def->hide, row[6] ? row[6] : "no");
     strcpy(def->email, row[7] ? row[7] : "");
-    if (row[8]) def->delay = atoi(row[8]);
-    if (row[9]) def->count = atoi(row[9]);
+    strcpy(def->sms, row[8] ? row[8] : "");
+    if (row[9]) def->delay = atoi(row[9]);
+    if (row[10]) def->count = atoi(row[10]);
   }
 }
 
@@ -163,7 +164,7 @@ module ping_module  = {
   NO_XML_RESULT_NODE,
   ping_get_from_xml,
   NO_ACCEPT_RESULT,
-  "ipaddress, description, server, yellow, red, contact, hide, email, delay, "
+  "ipaddress, description, server, yellow, red, contact, hide, email, sms, delay, "
   "count ",
   ping_set_def_fields,
   NO_GET_DEF,

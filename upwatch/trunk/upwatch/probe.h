@@ -36,6 +36,7 @@ struct probe_result {
   guint color; \
   guint newest; \
   char email[65]; \
+  char sms[65]; \
   guint delay; \
 
 struct probe_def {

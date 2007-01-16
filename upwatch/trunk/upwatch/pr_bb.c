@@ -53,7 +53,7 @@ void *bb_get_def(trx *t, int create)
   if (res->color == STAT_PURPLE && res->probeid) {
     // find the definition based on the probe id
     result = my_query(t->probe->db, 0,
-                      "select id, contact, hide, email, delay from pr_bb_def "
+                      "select id, contact, hide, email, sms, delay from pr_bb_def "
                       "where  id = '%u'", res->probeid);
     if (!result) {
       g_free(def);
@@ -88,7 +88,7 @@ void *bb_get_def(trx *t, int create)
 
     // first find the definition based on the serverid
     result = my_query(t->probe->db, 0,
-                      "select id, contact, hide, email, delay from pr_bb_def "
+                      "select id, contact, hide, email, sms, delay from pr_bb_def "
                       "where  bbname = '%s' and server = '%u'", res->bbname, res->server);
     if (!result) {
       g_free(def);
@@ -107,7 +107,7 @@ void *bb_get_def(trx *t, int create)
     LOG(LOG_NOTICE, "%s:%u@%s: pr_bb_def %s created for %s, id = %u", 
         res->realm, res->stattime, t->fromhost, res->bbname, res->hostname, def->probeid);
     result = my_query(t->probe->db, 0,
-                    "select id, contact, hide, email, delay from pr_bb_def "
+                    "select id, contact, hide, email, sms, delay from pr_bb_def "
                     "where  bbname = '%s' and server = '%u'", res->bbname, res->server);
     if (!result) return(NULL);
   }
@@ -123,7 +123,8 @@ void *bb_get_def(trx *t, int create)
   if (row[1])  def->contact = atoi(row[1]);
   strcpy(def->hide, row[2] ? row[2] : "no");
   strcpy(def->email, row[3] ? row[3] : "");
-  if (row[4]) def->delay = atoi(row[4]);
+  strcpy(def->sms, row[4] ? row[4] : "");
+  if (row[4]) def->delay = atoi(row[5]);
 
   mysql_free_result(result);
 

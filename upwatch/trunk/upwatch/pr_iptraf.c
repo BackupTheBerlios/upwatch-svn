@@ -100,7 +100,7 @@ void *iptraf_get_def(trx *t, int create)
     strcpy(def->hide, "no");
 
     result = my_query(t->probe->db, 0,
-                      "select id, server, yellow, red, contact, hide, email, delay, pgroup "
+                      "select id, server, yellow, red, contact, hide, email, sms, delay, pgroup "
                       "from   pr_%s_def "
                       "where  ipaddress = '%s'", res->name, res->ipaddress);
     if (!result) return(NULL);
@@ -146,7 +146,7 @@ void *iptraf_get_def(trx *t, int create)
                          res->name, res->ipaddress);
       }
       result = my_query(t->probe->db, 0,
-                        "select id, server, yellow, red, contact, hide, email, delay, pgroup "
+                        "select id, server, yellow, red, contact, hide, email, sms, lay, pgroup "
                         "from   pr_%s_def "
                         "where  ipaddress = '%s'", res->name, res->ipaddress);
       if (!result) return(NULL);
@@ -164,8 +164,9 @@ void *iptraf_get_def(trx *t, int create)
     def->contact  = atof(row[4]);
     strcpy(def->hide, row[5] ? row[5] : "no");
     strcpy(def->email, row[6] ? row[6] : "");
-    if (row[7]) def->delay = atoi(row[7]);
-    if (row[8]) def->pgroup = atoi(row[8]);
+    strcpy(def->sms, row[7] ? row[7] : "");
+    if (row[8]) def->delay = atoi(row[8]);
+    if (row[9]) def->pgroup = atoi(row[9]);
 
     mysql_free_result(result);
 

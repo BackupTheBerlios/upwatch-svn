@@ -563,8 +563,17 @@ then
 		AC_MSG_ERROR([You really need libesmtp to compile upwatch server])
 	fi
 	AC_SUBST(LIBESMTP_LIBS)
+
+	# libgnokii
+	AC_CHECK_LIB([gnokii], [gn_cfg_get], [HAVE_LIBGNOKII=1], [HAVE_LIBGNOKII=0])
+	if test $HAVE_LIBGNOKII -eq 1
+	then
+	        LIBGNOKII_LIBS=-lgnokii
+	fi
+	AC_SUBST(LIBGNOKII_LIBS)
 fi
 AM_CONDITIONAL(HAVE_LIBESMTP, test "$HAVE_LIBESMTP" = "1")
+AM_CONDITIONAL(HAVE_LIBGNOKII, test "$HAVE_LIBGNOKII" = "1")
 
 # readline
 AC_CHECK_LIB([readline], [readline], [HAVE_LIBREADLINE=1], [HAVE_LIBREADLINE=0], -lncurses)

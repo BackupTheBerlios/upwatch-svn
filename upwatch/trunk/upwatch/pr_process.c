@@ -180,7 +180,7 @@ void *get_def(trx *t, int create)
   MYSQL_RES *result;
   MYSQL_ROW row;
   time_t now = time(NULL);
-  char *def_fields = "ipaddress, description, server, yellow, red, contact, hide, email, delay, pgroup";
+  char *def_fields = "ipaddress, description, server, yellow, red, contact, hide, email, sms, delay, pgroup";
 
   def = g_hash_table_lookup(t->probe->cache, &res->probeid);
   if (def && def->stamp < now - (120 + uw_rand(240))) { // older then 2 - 6 minutes?
@@ -263,8 +263,9 @@ void *get_def(trx *t, int create)
         if (row[5]) def->contact   = atof(row[5]);
         strcpy(def->hide, row[6] ? row[6] : "no");
         strcpy(def->email, row[7] ? row[7] : "");
-        if (row[8]) def->delay = atoi(row[8]);
-        if (row[9]) def->pgroup = atoi(row[9]);
+        strcpy(def->sms, row[8] ? row[8] : "");
+        if (row[9]) def->delay = atoi(row[9]);
+        if (row[10]) def->pgroup = atoi(row[10]);
       }
     }
     mysql_free_result(result);
@@ -312,7 +313,7 @@ void *get_def_by_servid(trx *t, int create)
 
   // first find the definition based on the serverid
   result = my_query(t->probe->db, 0,
-                    "select id, contact, hide, email, delay from pr_%s_def "
+                    "select id, contact, hide, email, sms, delay from pr_%s_def "
                     "where  server = '%u'", res->name, res->server);
   if (!result) {
     g_free(def);
@@ -330,7 +331,7 @@ void *get_def_by_servid(trx *t, int create)
     LOG(LOG_NOTICE, "%s:%u@%s: pr_%s_def created for %s, id = %u", 
         res->realm, res->stattime, t->fromhost, res->name, res->hostname, def->probeid);
     result = my_query(t->probe->db, 0,
-                    "select id, contact, hide, email, delay from pr_%s_def "
+                    "select id, contact, hide, email, sms, delay from pr_%s_def "
                     "where  server = '%u'", res->server, res->name);
     if (!result) return(NULL);
   }
@@ -346,7 +347,8 @@ void *get_def_by_servid(trx *t, int create)
   if (row[1])  def->contact = atoi(row[1]);
   strcpy(def->hide, row[2] ? row[2] : "no");
   strcpy(def->email, row[3] ? row[3] : "");
-  if (row[4]) def->delay = atoi(row[4]);
+  strcpy(def->sms, row[4] ? row[4] : "");
+  if (row[5]) def->delay = atoi(row[5]);
 
   mysql_free_result(result);
 

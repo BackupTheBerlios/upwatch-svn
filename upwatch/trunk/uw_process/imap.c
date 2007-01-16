@@ -39,9 +39,10 @@ static void imap_set_def_fields(trx *t, struct probe_def *probedef, MYSQL_RES *r
     if (row[5]) def->contact  = atof(row[5]);
     strcpy(def->hide, row[6] ? row[6] : "no");
     strcpy(def->email, row[7] ? row[7] : "");
-    if (row[8]) def->delay = atoi(row[8]);
-    if (row[9]) def->username = strdup(row[9]);
-    if (row[10]) def->password = strdup(row[10]);
+    strcpy(def->sms, row[8] ? row[8] : "");
+    if (row[9]) def->delay = atoi(row[9]);
+    if (row[10]) def->username = strdup(row[10]);
+    if (row[11]) def->password = strdup(row[11]);
   }
 }
 
@@ -77,7 +78,7 @@ module imap_module  = {
   NO_XML_RESULT_NODE,
   ct_get_from_xml,
   NO_ACCEPT_RESULT,
-  "ipaddress, description, server, yellow, red, contact, hide, email, delay, "
+  "ipaddress, description, server, yellow, red, contact, hide, email, sms, delay, "
   "username, password ",
   imap_set_def_fields,
   NO_GET_DEF,

@@ -100,7 +100,7 @@ void *bb_cpu_get_def(trx *t, int create)
     strcpy(def->hide, "no");
 
     // first find the definition based on the serverid
-    result = my_query(t->probe->db, 0, "select id, yellow, red, contact, hide, email, delay "
+    result = my_query(t->probe->db, 0, "select id, yellow, red, contact, hide, email, sms, delay "
                                     "from pr_%s_def where server = '%u'", 
                       res->name, res->server);
     if (!result) {
@@ -117,7 +117,7 @@ void *bb_cpu_get_def(trx *t, int create)
       def->probeid = mysql_insert_id(t->probe->db);
       LOG(LOG_NOTICE, "%s:%u@%s: pr_%s_def created for %s, id = %u", 
           res->realm, res->stattime, t->fromhost, res->name, res->hostname, def->probeid);
-      result = my_query(t->probe->db, 0, "select id, yellow, red, contact, hide, email, delay "
+      result = my_query(t->probe->db, 0, "select id, yellow, red, contact, hide, email, sms, delay "
                                       "from pr_%s_def where id = '%u'", 
                         res->name, def->probeid);
     }
@@ -135,7 +135,8 @@ void *bb_cpu_get_def(trx *t, int create)
     if (row[3]) def->contact = atof(row[3]);
     strcpy(def->hide, row[4] ? row[4] : "no");
     strcpy(def->email, row[5] ? row[5] : "");
-    if (row[6]) def->delay = atoi(row[6]);
+    strcpy(def->sms, row[6] ? row[6] : "");
+    if (row[7]) def->delay = atoi(row[7]);
 
     mysql_free_result(result);
     result = my_query(t->probe->db, 0, 

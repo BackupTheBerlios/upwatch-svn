@@ -41,13 +41,14 @@ static void snmpget_set_def_fields(trx *t, struct probe_def *probedef, MYSQL_RES
     if (row[5]) def->contact  = atof(row[5]);
     strcpy(def->hide, row[6] ? row[6] : "no");
     strcpy(def->email, row[7] ? row[7] : "");
-    if (row[8]) def->delay = atoi(row[8]);
-    if (row[9]) def->community = strdup(row[9]);  /* community string for SNMPv1/v2c transactions */
-    if (row[10]) def->OID = strdup(row[10]);      /* Object ID */
-    if (row[11]) def->dispname = strdup(row[11]); /* Display Name */
-    if (row[12]) def->dispunit = strdup(row[12]); /* Display Unit */
-    if (row[13]) def->multiplier = atof(row[13]); /* Multiplier for result values */
-    if (row[14]) strcpy(def->mode, row[14]);      /* plot absolute or relative values */
+    strcpy(def->sms, row[8] ? row[8] : "");
+    if (row[9]) def->delay = atoi(row[9]);
+    if (row[10]) def->community = strdup(row[10]);/* community string for SNMPv1/v2c transactions */
+    if (row[11]) def->OID = strdup(row[11]);      /* Object ID */
+    if (row[12]) def->dispname = strdup(row[12]); /* Display Name */
+    if (row[13]) def->dispunit = strdup(row[13]); /* Display Unit */
+    if (row[14]) def->multiplier = atof(row[14]); /* Multiplier for result values */
+    if (row[15]) strcpy(def->mode, row[15]);      /* plot absolute or relative values */
   }
 }
 
@@ -201,7 +202,7 @@ module snmpget_module  = {
   NO_XML_RESULT_NODE,
   snmpget_get_from_xml,
   NO_ACCEPT_RESULT,
-  "ipaddress, description, server, yellow, red, contact, hide, email, delay, "
+  "ipaddress, description, server, yellow, red, contact, hide, email, sms, delay, "
   "community, OID, dispname, dispunit, multiplier, mode ",
   snmpget_set_def_fields,
   NO_GET_DEF,

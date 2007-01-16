@@ -8,6 +8,10 @@ if HAVE_LIBESMTP
 DEF_LIBESMTP = -DHAVE_LIBESMTP
 endif
 
+if HAVE_LIBGNOKII
+DEF_LIBGNOKII = -DHAVE_LIBGNOKII
+endif
+
 if HAVE_LIBPQ
 USE_LIBPQ = postgresql.c
 DEF_LIBPQ = -DHAVE_LIBPQ
@@ -34,9 +38,9 @@ uw_process_SOURCES = run.c process.c notify.c generic_ct.c uw_process.c insertca
 $(USE_LIBPQ) $(USE_LIBSNMP) $(USE_LIBTDS) imap.c errlog.c diskfree.c hwstat.c \
  uw_process.h uw_process_glob.h modules.inc $(SPECFILES) $(INITFILES)
 uw_process_CFLAGS = @MYSQL_CFLAGS@ @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @LIBOPTS_CFLAGS@ $(AM_CFLAGS) \
-  $(DEF_LIBPQ) $(DEF_LIBSNMP) $(DEF_LIBTDS) $(DEF_LIBESMTP) 
+  $(DEF_LIBPQ) $(DEF_LIBSNMP) $(DEF_LIBTDS) $(DEF_LIBESMTP) $(DEF_LIBGNOKII)
 uw_process_LDADD = uw_process_$(DB_O) uw_process_$(MAIN_O) @LIBOPTS_LIBS@ $(LIBUPWATCH) @MYSQL_LIBS@ \
-  @LIBESMTP_LIBS@ @LIBGLIB2_LIBS@ @LIBXML2_LIBS@ $(SOLARISLIBS) $(LIBGTHREAD2_LIBS)
+  @LIBESMTP_LIBS@ @LIBGNOKII_LIBS@ @LIBGLIB2_LIBS@ @LIBXML2_LIBS@ $(SOLARISLIBS) $(LIBGTHREAD2_LIBS)
 
 BUILT_SOURCES = $(program:%=%.1) $(program:%=%.h) $(program:%=%.c) $(SPECFILES) $(INITFILES) ../probes.enum
 INCLUDES = -I../upwatch

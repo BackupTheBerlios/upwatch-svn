@@ -114,7 +114,7 @@ void *hwstat_get_def(trx *t, int create)
     def->server = res->server;
 
     result = my_query(t->probe->db, 0,
-                      "select id, contact, hide, email, delay, "
+                      "select id, contact, hide, email, sms, delay, "
                       "       temp1_yellow, temp1_red, temp2_yellow, temp2_red, "
                       "       temp3_yellow, temp3_red, rot1_red, rot2_red, rot3_red, pgroup "
                       "from   pr_%s_def "
@@ -139,7 +139,7 @@ void *hwstat_get_def(trx *t, int create)
                          res->name, def->probeid, mysql_error(t->probe->db));
       }
       result = my_query(t->probe->db, 0,
-                        "select id, contact, hide, email, delay, "
+                        "select id, contact, hide, email, sms, delay, "
                         "       temp1_yellow, temp1_red, temp2_yellow, temp2_red, "
                         "       temp3_yellow, temp3_red, rot1_red, rot2_red, rot3_red, pgroup "
                         "from   pr_%s_def "
@@ -157,17 +157,18 @@ void *hwstat_get_def(trx *t, int create)
     if (row[1]) def->contact  = atoi(row[1]);
     strcpy(def->hide, row[2] ? row[2] : "no");
     strcpy(def->email, row[3] ? row[3] : "");
-    if (row[4]) def->delay = atoi(row[4]);
-    if (row[5]) def->temp1_yellow = atoi(row[5]);
-    if (row[6]) def->temp1_red = atoi(row[6]);
-    if (row[7]) def->temp2_yellow = atoi(row[7]);
-    if (row[8]) def->temp2_red = atoi(row[8]);
-    if (row[9]) def->temp3_yellow = atoi(row[9]);
-    if (row[10]) def->temp3_red = atoi(row[10]);
-    if (row[11]) def->rot1_red = atoi(row[11]);
-    if (row[12]) def->rot2_red = atoi(row[12]);
-    if (row[13]) def->rot3_red = atoi(row[13]);
-    if (row[14]) def->pgroup = atoi(row[14]);
+    strcpy(def->email, row[4] ? row[4] : "");
+    if (row[5]) def->delay = atoi(row[5]);
+    if (row[6]) def->temp1_yellow = atoi(row[6]);
+    if (row[7]) def->temp1_red = atoi(row[7]);
+    if (row[8]) def->temp2_yellow = atoi(row[8]);
+    if (row[9]) def->temp2_red = atoi(row[9]);
+    if (row[10]) def->temp3_yellow = atoi(row[10]);
+    if (row[11]) def->temp3_red = atoi(row[11]);
+    if (row[12]) def->rot1_red = atoi(row[12]);
+    if (row[13]) def->rot2_red = atoi(row[13]);
+    if (row[14]) def->rot3_red = atoi(row[14]);
+    if (row[15]) def->pgroup = atoi(row[15]);
 
     mysql_free_result(result);
 

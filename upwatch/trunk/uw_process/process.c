@@ -531,7 +531,7 @@ int process(trx *t)
     }
   }
 
-  if (t->def->email[0]) { // if we have an address
+  if (t->def->email[0] || t->def->sms[0]) { // if we have an address
     // RETRIEVE LAST HIST ENTRY FOR THIS PROBE
     get_previous_pr_hist(t);
 
