@@ -283,11 +283,11 @@ then
 
   for incpath in /usr/include $LIBOPTS_INC_PREFIX /usr/local/include /cygdrive/c/include /usr/pkg/include
   do
-    if test -f $incpath/libopts/options.h
+    if test -f $incpath/autoopts/options.h
     then
       LIBOPTS_CFLAGS="-I${incpath}"
     fi
-    if test -f $incpath/autogen/libopts/options.h
+    if test -f $incpath/autogen/autoopts/options.h
     then
       LIBOPTS_CFLAGS="-I${incpath}/autogen"
     fi
