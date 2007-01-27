@@ -112,9 +112,7 @@ ESAC type +][+ ENDFOR def+]
   )
 +]
 INSERT into pr_[+name+]_def (id, description) VALUES (1, 'empty');
-INSERT into probe set id = '[+id+]', name = '[+name+]', description = '[+descrip+]', [+
- if (exist? "expiry") +]expiry = '[+expiry+]', [+ endif +]addbyhand = '[+addbyhand+]', [+
- if (exist? "fuse") +]fuse = '[+fuse+]', [+ endif +]class = '[+class+]', graphgroup = '[+graphgroup+]', graphtypes = '[+graphtypes+]', comment = '[+comment+]';[+ ENDFOR probe +][+
+INSERT into probe (id, name, description,addbyhand,class,graphgroup,graphtypes,comment[+if (exist? "expiry") +],expiry[+ endif +][+if (exist? "fuse") +],fuse[+ endif +]) VALUES ('[+id+]','[+name+]','[+descrip+]','[+addbyhand+]','[+class+]','[+graphgroup+]','[+graphtypes+]','[+comment+]'[+if (exist? "expiry") +],'[+expiry+]'[+endif +][+ if (exist? "fuse") +],'[+fuse+]'[+endif+]); [+ ENDFOR probe +][+
    == raw_mysql +]--
 [+(dne "-- ")+]
 [+ FOR probe +]
