@@ -81,15 +81,6 @@ This flag may be given multiple times.';
 };
 
 flag = {
-    name      = realm;
-    value     = R;
-    arg_type  = string;
-    descrip   = "ignored";
-    doc       =
-'uw_process ignores this parameter when it encounters it in fir example upwatch.conf';
-};
-
-flag = {
     name      = failures;
     value     = f;
     arg_type  = string;
