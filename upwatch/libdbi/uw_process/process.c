@@ -150,6 +150,9 @@ static dbi_result update_pr_status(trx *t, struct probe_result *prv)
     }
     free(escmsg);
   }
+  else {
+    sprintf(&qry[strlen(qry)],", message = ''");
+  }
 
   sprintf(&qry[strlen(qry)], " where probe = '%u' and class = '%u'", t->def->probeid, t->probe->class);
   result = db_rawquery(t->probe->db, 0, qry);
@@ -521,7 +524,7 @@ int process(trx *t)
     }
   }
 
-  if (t->def->email[0]) { // if we have an address
+  if (t->def->email[0] || t->def->sms[0]) { // if we have an address
     // RETRIEVE LAST HIST ENTRY FOR THIS PROBE
     get_previous_pr_hist(t);
 

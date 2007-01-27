@@ -10,7 +10,7 @@ homerc        = "$HOME/.uw_sysstatrc";
 homerc        = "$$/upwatch.conf";
 homerc        = "$$/uw_sysstat.conf";
 detail        = 
-'uw_sysstat does the following: ';
+'Upwatch client for system health probes';
 
 // this section is for the generated specfile
 spec-requires = "glib2";
@@ -31,6 +31,10 @@ spec-files = `echo "%dir" $confdir/uw_sysstat.d/upwatch`;
 spec-files = `for i in \`find uw_sysstat.d/upwatch -type f | grep -v .svn\` ; do echo $confdir/$i; done`;
 spec-files = `echo "%dir" $confdir/uw_sysstat.d/quagga`;
 spec-files = `for i in \`find uw_sysstat.d/quagga -type f | grep -v .svn\` ; do echo $confdir/$i; done`;
+
+// Include the uw_local example scripts
+spec-files = `echo "%dir" $confdir/uw_local_scripts`;
+spec-files = `for i in \`find uw_local_scripts -type f | grep -v .svn\` ; do echo /usr/share/upwatch/examples/$i; done`;
 
 // describe commandline flags
 flag = {
@@ -116,6 +120,15 @@ on CPU temp, fan speed etc. But talking to hardware has a remote possibility
 of crashing your machine. This option defaults to off, first try the supplied
 `mbmon` program to see if your hardware is supported';
 };
+
+flag = {
+    name      = localchecks;
+    arg_type  = bool;
+    descrip   = "Run local scripts";
+    doc       =
+'Run local check scripts. Please make sure the uw_local scripts directory has proper permissions. ';
+};
+
 
 flag = {
     name      = diskfree-red;

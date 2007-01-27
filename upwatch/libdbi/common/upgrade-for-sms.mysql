@@ -1,0 +1,20 @@
+alter table pr_bb_cpu_def add column sms varchar(64) not null default '';
+alter table pr_bb_def add column sms varchar(64) not null default '';
+alter table pr_diskfree_def add column sms varchar(64) not null default '';
+alter table pr_dns_def add column sms varchar(64) not null default '';
+alter table pr_errlog_def add column sms varchar(64) not null default '';
+alter table pr_httpget_def add column sms varchar(64) not null default '';
+alter table pr_hwstat_def add column sms varchar(64) not null default '';
+alter table pr_imap_def add column sms varchar(64) not null default '';
+alter table pr_iptraf_def add column sms varchar(64) not null default '';
+alter table pr_mssql_def add column sms varchar(64) not null default '';
+alter table pr_mysql_def add column sms varchar(64) not null default '';
+alter table pr_mysqlstats_def add column sms varchar(64) not null default '';
+alter table pr_ping_def add column sms varchar(64) not null default '';
+alter table pr_pop3_def add column sms varchar(64) not null default '';
+alter table pr_postgresql_def add column sms varchar(64) not null default '';
+alter table pr_smtp_def add column sms varchar(64) not null default '';
+alter table pr_snmpget_def add column sms varchar(64) not null default '';
+alter table pr_sysstat_def add column sms varchar(64) not null default '';
+alter table pr_tcpconnect_def add column sms varchar(64) not null default '';
+

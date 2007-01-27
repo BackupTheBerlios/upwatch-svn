@@ -32,8 +32,13 @@ static void ping_set_def_fields(trx *t, struct probe_def *probedef, dbi_result r
     } else {
       strcpy(def->email, "");
     }
-    def->delay = dbi_result_get_uint_idx(result, 8);
-    def->count = dbi_result_get_uint_idx(result, 9);
+    if (dbi_result_get_string_idx(result, 8)) {
+      strcpy(def->sms, dbi_result_get_string_idx(result, 8));
+    } else {
+      strcpy(def->sms, "");
+    }
+    def->delay = dbi_result_get_uint_idx(result, 9);
+    def->count = dbi_result_get_uint_idx(result, 10);
   }
 }
 
@@ -173,7 +178,7 @@ module ping_module  = {
   NO_XML_RESULT_NODE,
   ping_get_from_xml,
   NO_ACCEPT_RESULT,
-  "ipaddress, description, server, yellow, red, contact, hide, email, delay, "
+  "ipaddress, description, server, yellow, red, contact, hide, email, sms, delay, "
   "count ",
   ping_set_def_fields,
   NO_GET_DEF,

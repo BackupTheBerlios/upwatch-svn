@@ -112,7 +112,7 @@ void *hwstat_get_def(trx *t, int create)
     def->server = res->server;
 
     result = db_query(t->probe->db, 0,
-                      "select id, contact, hide, email, delay, "
+                      "select id, contact, hide, email, sms, delay, "
                       "       temp1_yellow, temp1_red, temp2_yellow, temp2_red, "
                       "       temp3_yellow, temp3_red, rot1_red, rot2_red, rot3_red, pgroup "
                       "from   pr_%s_def "
@@ -139,7 +139,7 @@ void *hwstat_get_def(trx *t, int create)
                          res->name, def->probeid, errmsg);
       }
       result = db_query(t->probe->db, 0,
-                        "select id, contact, hide, email, delay, "
+                        "select id, contact, hide, email, sms, delay, "
                         "       temp1_yellow, temp1_red, temp2_yellow, temp2_red, "
                         "       temp3_yellow, temp3_red, rot1_red, rot2_red, rot3_red, pgroup "
                         "from   pr_%s_def "
@@ -158,6 +158,7 @@ void *hwstat_get_def(trx *t, int create)
     def->contact = dbi_result_get_uint(result, "contact");
     strcpy(def->hide, dbi_result_get_string(result, "hide"));
     strcpy(def->email, dbi_result_get_string(result, "email"));
+    strcpy(def->sms, dbi_result_get_string(result, "sms"));
     def->delay = dbi_result_get_uint(result, "delay");
     def->temp1_yellow = dbi_result_get_uint(result, "temp1_yellow");
     def->temp1_red = dbi_result_get_uint(result, "temp1_red");

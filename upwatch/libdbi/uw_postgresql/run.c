@@ -256,6 +256,11 @@ void probe(gpointer data, gpointer user_data)
   PGresult *res;
   struct timeval start, now;
 
+  if (!probe->query || strlen(probe->query) < 5) {
+    probe->msg = strdup("Please specify a valid query.");
+    return;
+  }
+    
   dbhost = probe->ipaddress;
   dbname = probe->dbname;
   dbuser = probe->dbuser;

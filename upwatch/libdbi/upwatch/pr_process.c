@@ -179,7 +179,7 @@ void *get_def(trx *t, int create)
   struct probe_def *def;
   dbi_result result;
   time_t now = time(NULL);
-  char *def_fields = "ipaddress, description, server, yellow, red, contact, hide, email, delay, pgroup";
+  char *def_fields = "ipaddress, description, server, yellow, red, contact, hide, email, sms, delay, pgroup";
 
   def = g_hash_table_lookup(t->probe->cache, &res->probeid);
   if (def && def->stamp < now - (120 + uw_rand(240))) { // older then 2 - 6 minutes?
@@ -263,6 +263,7 @@ void *get_def(trx *t, int create)
       def->contact     = dbi_result_get_uint(result, "contact");
       strcpy(def->hide, dbi_result_get_string(result, "hide"));
       strcpy(def->email, dbi_result_get_string_copy(result, "email"));
+      strcpy(def->sms, dbi_result_get_string_copy(result, "sms"));
       def->delay       = dbi_result_get_uint(result, "delay");
       def->pgroup      = dbi_result_get_uint(result, "pgroup");
     }
@@ -308,7 +309,7 @@ void *get_def_by_servid(trx *t, int create)
 
   // first find the definition based on the serverid
   result = db_query(t->probe->db, 0,
-                    "select id, contact, hide, email, delay from pr_%s_def "
+                    "select id, contact, hide, email, sms, delay from pr_%s_def "
                     "where  server = '%u'", res->name, res->server);
   if (!result) {
     g_free(def);
@@ -326,7 +327,7 @@ void *get_def_by_servid(trx *t, int create)
     LOG(LOG_NOTICE, "%s:%u@%s: pr_%s_def created for %s, id = %u", 
         res->realm, res->stattime, t->fromhost, res->name, res->hostname, def->probeid);
     result = db_query(t->probe->db, 0,
-                    "select id, contact, hide, email, delay from pr_%s_def "
+                    "select id, contact, hide, email, sms, delay from pr_%s_def "
                     "where  server = '%u'", res->server, res->name);
     if (!result) return(NULL);
   }
@@ -342,6 +343,7 @@ void *get_def_by_servid(trx *t, int create)
   def->contact = dbi_result_get_uint(result, "contact");
   strcpy(def->hide, dbi_result_get_string(result, "hide"));
   strcpy(def->email, dbi_result_get_string_copy(result, "email"));
+  strcpy(def->sms, dbi_result_get_string_copy(result, "sms"));
   def->delay       = dbi_result_get_uint(result, "delay");
 
   dbi_result_free(result);

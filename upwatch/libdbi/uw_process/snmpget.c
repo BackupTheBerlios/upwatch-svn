@@ -48,14 +48,19 @@ static void snmpget_set_def_fields(trx *t, struct probe_def *probedef, dbi_resul
     } else {
       strcpy(def->email, "");
     }
-    def->delay = dbi_result_get_uint_idx(result, 8);
-    def->community = dbi_result_get_string_copy_idx(result, 9); /* community string for SNMPv1/v2c transactions */
-    def->OID = dbi_result_get_string_copy_idx(result, 10);      /* Object ID */
-    def->dispname = dbi_result_get_string_copy_idx(result, 11); /* Display Name */
-    def->dispunit = dbi_result_get_string_copy_idx(result, 12); /* Display Unit */
-    def->multiplier = dbi_result_get_float_idx(result, 13);     /* Multiplier for result values */
-    if (dbi_result_get_string_idx(result, 14)) {
-      strcpy(def->mode, dbi_result_get_string_idx(result, 14)); /* plot absolute or relative values */
+    if (dbi_result_get_string_idx(result, 8)) {
+      strcpy(def->sms, dbi_result_get_string_idx(result, 8));
+    } else {
+      strcpy(def->sms, "");
+    }
+    def->delay = dbi_result_get_uint_idx(result, 9);
+    def->community = dbi_result_get_string_copy_idx(result, 10); /* community string for SNMPv1/v2c transactions */
+    def->OID = dbi_result_get_string_copy_idx(result, 11);      /* Object ID */
+    def->dispname = dbi_result_get_string_copy_idx(result, 12); /* Display Name */
+    def->dispunit = dbi_result_get_string_copy_idx(result, 13); /* Display Unit */
+    def->multiplier = dbi_result_get_float_idx(result, 14);     /* Multiplier for result values */
+    if (dbi_result_get_string_idx(result, 15)) {
+      strcpy(def->mode, dbi_result_get_string_idx(result, 15)); /* plot absolute or relative values */
     } else {
       strcpy(def->mode, "");
     }
@@ -213,7 +218,7 @@ module snmpget_module  = {
   NO_XML_RESULT_NODE,
   snmpget_get_from_xml,
   NO_ACCEPT_RESULT,
-  "ipaddress, description, server, yellow, red, contact, hide, email, delay, "
+  "ipaddress, description, server, yellow, red, contact, hide, email, sms, delay, "
   "community, OID, dispname, dispunit, multiplier, mode ",
   snmpget_set_def_fields,
   NO_GET_DEF,

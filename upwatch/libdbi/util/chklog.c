@@ -33,7 +33,7 @@ int main (int argc, char *argv[])
 
   setvbuf(stdout, (char *)NULL, _IOLBF, 0); // make stdout linebuffered
 
-  logregex_refresh_type("/etc/upwatch.d/uw_sysstat.d", (char *) &OPT_ARG(TYPE));
+  logregex_refresh_type("/etc/upwatch.d/uw_sysstat.d", (char *) OPT_ARG(TYPE));
 
   if (strcmp(*argv, "-") == 0) {
     in = stdin;

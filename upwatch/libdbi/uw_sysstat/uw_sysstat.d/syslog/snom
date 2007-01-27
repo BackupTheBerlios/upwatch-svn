@@ -1,0 +1,16 @@
+green [LOGDATE]\.[NUM]\.[NUM]\.[NUM] [IPADDR] .* Answering Challenge for REGISTER
+green [LOGDATE]\.[NUM]\.[NUM]\.[NUM] [IPADDR] .* Dialog [NUM]/[NUM] going to confirmed
+green [LOGDATE]\.[NUM]\.[NUM]\.[NUM] [IPADDR] .* Dialog [NUM]/[NUM] going to early
+green [LOGDATE]\.[NUM]\.[NUM]\.[NUM] [IPADDR] .* Dialog [NUM]/[NUM] going to proceeding
+green [LOGDATE]\.[NUM]\.[NUM]\.[NUM] [IPADDR] .* Dialog [NUM]/[NUM] going to terminated
+green [LOGDATE]\.[NUM]\.[NUM]\.[NUM] [IPADDR] .* Dialog [NUM]/[NUM] going to trying
+green [LOGDATE]\.[NUM]\.[NUM]\.[NUM] [IPADDR] .* end DST: [NUM][PATH] [NUM]:[NUM]:[NUM] \([NUM]\)
+green [LOGDATE]\.[NUM]\.[NUM]\.[NUM] [IPADDR] .* Registered at registrar as [EMAIL]
+green [LOGDATE]\.[NUM]\.[NUM]\.[NUM] [IPADDR] .* sip::process_auth:Match challenge for \[USER=\], realm=[WORD]
+green [LOGDATE]\.[NUM]\.[NUM]\.[NUM] [IPADDR] .* Deleting holding_call
+green [LOGDATE]\.[NUM]\.[NUM]\.[NUM] [IPADDR] .* Deleting transfer_dest
+green [LOGDATE]\.[NUM]\.[NUM]\.[NUM] [IPADDR] .* Deleting transfer_source
+green [LOGDATE]\.[NUM]\.[NUM]\.[NUM] [IPADDR] .* Denying call id=[NUM] reason=user-busy
+green [LOGDATE]\.[NUM]\.[NUM]\.[NUM] [IPADDR] .* start_dst\([NUM]\) end_dst\([NUM]\) offset_dst\([NUM]\) offset_utc\([NUM]\)
+green [LOGDATE]\.[NUM]\.[NUM]\.[NUM] [IPADDR] .* start DST: [NUM][PATH] [NUM]:[NUM]:[NUM] \([NUM]\)
+green [LOGDATE]\.[NUM]\.[NUM]\.[NUM] [IPADDR] .* timeout::callback: Registering with timeout of [NUM] ms

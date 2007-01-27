@@ -99,7 +99,7 @@ void *iptraf_get_def(trx *t, int create)
     strcpy(def->hide, "no");
 
     result = db_query(t->probe->db, 0,
-                      "select id, server, yellow, red, contact, hide, email, delay, pgroup "
+                      "select id, server, yellow, red, contact, hide, email, sms, delay, pgroup "
                       "from   pr_%s_def "
                       "where  ipaddress = '%s'", res->name, res->ipaddress);
     if (!result) return(NULL);
@@ -148,7 +148,7 @@ void *iptraf_get_def(trx *t, int create)
                          res->name, res->ipaddress);
       }
       result = db_query(t->probe->db, 0,
-                        "select id, server, yellow, red, contact, hide, email, delay, pgroup "
+                        "select id, server, yellow, red, contact, hide, email, sms, lay, pgroup "
                         "from   pr_%s_def "
                         "where  ipaddress = '%s'", res->name, res->ipaddress);
       if (!result) return(NULL);
@@ -167,6 +167,7 @@ void *iptraf_get_def(trx *t, int create)
     def->contact = dbi_result_get_uint(result, "contact");
     strcpy(def->hide, dbi_result_get_string(result, "hide"));
     strcpy(def->email, dbi_result_get_string(result, "email"));
+    strcpy(def->sms, dbi_result_get_string(result, "sms"));
     def->delay = dbi_result_get_uint(result, "delay");
     def->pgroup = dbi_result_get_uint(result, "pgroup");
     dbi_result_free(result);

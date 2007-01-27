@@ -48,11 +48,16 @@ static void postgresql_set_def_fields(trx *t, struct probe_def *probedef, dbi_re
     } else {
       strcpy(def->email, "");
     }
-    def->delay = dbi_result_get_uint_idx(result, 8);
-    def->dbname = dbi_result_get_string_copy_idx(result, 9);
-    def->dbuser = dbi_result_get_string_copy_idx(result, 10);
-    def->dbpasswd = dbi_result_get_string_copy_idx(result, 11);
-    def->query = dbi_result_get_string_copy_idx(result, 12);
+    if (dbi_result_get_string_idx(result, 8)) {
+      strcpy(def->sms, dbi_result_get_string_idx(result, 8));
+    } else {
+      strcpy(def->sms, "");
+    }
+    def->delay = dbi_result_get_uint_idx(result, 9);
+    def->dbname = dbi_result_get_string_copy_idx(result, 10);
+    def->dbuser = dbi_result_get_string_copy_idx(result, 11);
+    def->dbpasswd = dbi_result_get_string_copy_idx(result, 12);
+    def->query = dbi_result_get_string_copy_idx(result, 13);
   }
 }
 
@@ -92,7 +97,7 @@ module postgresql_module  = {
   NO_XML_RESULT_NODE,
   ct_get_from_xml,
   NO_ACCEPT_RESULT,
-  "ipaddress, description, server, yellow, red, contact, hide, email, delay, "
+  "ipaddress, description, server, yellow, red, contact, hide, email, sms, delay, "
   "dbname, dbuser, dbpasswd, query ",
   postgresql_set_def_fields,
   NO_GET_DEF,

@@ -36,6 +36,7 @@ struct probe_result {
   guint color; \
   guint newest; \
   char email[65]; \
+  char sms[65]; \
   guint delay; \
 
 struct probe_def {
@@ -165,6 +166,15 @@ struct diskfree_result {
   STANDARD_PROBE_RESULT;
 };
 struct diskfree_def {
+  STANDARD_PROBE_DEF;
+#include "../common/common.h"
+};
+
+/****************************** probe local ************************/
+struct local_result {
+  STANDARD_PROBE_RESULT;
+};
+struct local_def {
   STANDARD_PROBE_DEF;
 #include "../common/common.h"
 };

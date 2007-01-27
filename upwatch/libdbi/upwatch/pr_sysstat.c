@@ -116,7 +116,7 @@ void *sysstat_get_def(trx *t, int create)
     def->server = res->server;
     
     result = db_query(t->probe->db, 0,
-                      "select id, yellow, red, contact, hide, email, delay, pgroup "
+                      "select id, yellow, red, contact, hide, email, sms, delay, pgroup "
                       "from   pr_%s_def "
                       "where  server = '%u'", res->name, res->server);
     if (!result) return(NULL);
@@ -142,7 +142,7 @@ void *sysstat_get_def(trx *t, int create)
                          res->name, def->probeid, errmsg);
       }
       result = db_query(t->probe->db, 0,
-                        "select id, yellow, red, contact, hide, email, delay, pgroup "
+                        "select id, yellow, red, contact, hide, email, sms, delay, pgroup "
                         "from   pr_%s_def "
                         "where  server = '%u'", res->name, res->server);
       if (!result) return(NULL);
@@ -162,6 +162,7 @@ void *sysstat_get_def(trx *t, int create)
     def->contact = dbi_result_get_uint(result, "contact");
     strcpy(def->hide, dbi_result_get_string(result, "hide"));
     strcpy(def->email, dbi_result_get_string(result, "email"));
+    strcpy(def->sms, dbi_result_get_string(result, "sms"));
     def->delay = dbi_result_get_uint(result, "delay");
     def->pgroup = dbi_result_get_uint(result, "pgroup");
     dbi_result_free(result);

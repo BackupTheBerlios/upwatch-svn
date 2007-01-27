@@ -15,5 +15,6 @@ green [LOGDATE] ntpd[PID]: reply from [IPADDR]: not synced, next query [NUM]s
 green [LOGDATE] ntpd[PID]: sendto: Operation not permitted
 green [LOGDATE] ntpd[PID]: sendto: Connection refused
 green [LOGDATE] ntpd[PID]: IMSG_HOST_DNS with invalid peerID
+green [LOGDATE] ntpd[PID]: clock is now (un)?synced
 yellow [LOGDATE] ntpd[PID]: could not parse "[HOSTNAME]": Temporary failure in name resolution
 red [LOGDATE] ntpd[PID]: adjtime failed: Invalid argument

@@ -98,7 +98,7 @@ void *bb_cpu_get_def(trx *t, int create)
     strcpy(def->hide, "no");
 
     // first find the definition based on the serverid
-    result = db_query(t->probe->db, 0, "select id, yellow, red, contact, hide, email, delay "
+    result = db_query(t->probe->db, 0, "select id, yellow, red, contact, hide, email, sms, delay "
                                     "from pr_%s_def where server = '%u'", 
                       res->name, res->server);
     if (!result) {
@@ -115,7 +115,7 @@ void *bb_cpu_get_def(trx *t, int create)
       def->probeid = dbi_conn_sequence_last(t->probe->db, NULL);
       LOG(LOG_NOTICE, "%s:%u@%s: pr_%s_def created for %s, id = %u", 
           res->realm, res->stattime, t->fromhost, res->name, res->hostname, def->probeid);
-      result = db_query(t->probe->db, 0, "select id, yellow, red, contact, hide, email, delay "
+      result = db_query(t->probe->db, 0, "select id, yellow, red, contact, hide, email, sms, delay "
                                       "from pr_%s_def where id = '%u'", 
                         res->name, def->probeid);
     }
@@ -134,6 +134,7 @@ void *bb_cpu_get_def(trx *t, int create)
     def->contact = dbi_result_get_uint(result, "contact");
     strcpy(def->hide, dbi_result_get_string(result, "hide"));
     strcpy(def->email, dbi_result_get_string(result, "email"));
+    strcpy(def->sms, dbi_result_get_string(result, "sms"));
     def->delay = dbi_result_get_uint(result, "delay");
     dbi_result_free(result);
 

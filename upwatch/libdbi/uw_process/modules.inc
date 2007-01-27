@@ -16,6 +16,7 @@ extern module mysqlstats_module;
 extern module errlog_module;
 extern module diskfree_module;
 extern module hwstat_module;
+extern module local_module;
 
 module *modules[] = {
   &httpget_module,
@@ -31,6 +32,7 @@ module *modules[] = {
   &errlog_module,
   &diskfree_module,
   &hwstat_module,
+  &local_module,
   &bb_cpu_module,
   &bb_module,
 #if HAVE_LIBPQ

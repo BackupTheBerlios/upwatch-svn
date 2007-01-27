@@ -24,7 +24,7 @@ ag_xmbmon = -DXMBMON
 endif
 
 SPECFILES = $(program:%=%.spec-requires) $(program:%=%.spec-buildrequires) $(program:%=%.spec-files)
-INITFILES = $(program:%=%.redhat) $(program:%=%.suse) $(program:%=%.solaris)
+INITFILES = $(program:%=%.redhat) $(program:%=%.suse) $(program:%=%.solaris) $(program:%=%.debian)
 PROBFILES  = probe.def_h probe.res_h probe.enum probe.def_mysql probe.raw_mysql probe.xml probe.dtd probe.dtd-inc
 AGDEFINES = -Dconfdir=$(confdir) -Dsysconfdir=$(sysconfdir) -Dsbindir=$(sbindir) \
  -Dlogdir=$(logdir) -Dspooldir=$(spooldir) $(ag_xmbmon)
@@ -46,11 +46,12 @@ probe.def_h probe.res_h probe.enum probe.def_mysql probe.raw_mysql probe.dtd pro
 %.1: %.def
 	autogen -b $(<:%.def=%) $(AGDEFINES) $(GENINCL) -T $(MAN1TPL) $<
 
-%.redhat %.suse %.solaris: %.def
+%.redhat %.suse %.solaris %.debian: %.def
 	autogen -b $(<:%.def=%) $(AGDEFINES) $(GENINCL) -T $(INITTPL) $<
 	chmod +x $(<:%.def=%).redhat
 	chmod +x $(<:%.def=%).suse
 	chmod +x $(<:%.def=%).solaris
+	chmod +x $(<:%.def=%).debian
 
 %.spec-requires %.spec-buildrequires %.spec-files: %.def
 	autogen -b $(<:%.def=%) $(AGDEFINES) $(GENINCL) -T $(SPECTPL) $<

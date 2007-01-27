@@ -21,6 +21,7 @@ CREATE TABLE pr_[+name+]_def (
   contact int unsigned NOT NULL default '1',	-- user field: pointer to contact database
   notify int unsigned NOT NULL default '1',	-- notifier id
   email varchar(64) NOT NULL default '',	-- address to send warning email to
+  sms varchar(64) NOT NULL default '',		-- phonenumber(s) to send SMS to
   delay int unsigned NOT NULL default '1',	-- after this many minutes of red light
   disable enum('yes', 'no') not null default 'no', -- disable this probe
   hide enum('yes', 'no') not null default 'no', -- hide probe results from viewing
@@ -194,7 +195,7 @@ ESAC type +][+ ENDFOR result+]
   PRIMARY KEY (id),
   UNIQUE KEY probstat (probe,stattime),
   UNIQUE KEY statprob (stattime,probe)
-) TYPE=MyISAM [+
+) TYPE=MyISAM DELAYED_KEY_WRITE=1 [+
 IF max_rows +] MAX_ROWS=[+max_rows+] [+
 ENDIF+][+
 IF avg_row_length +] AVG_ROW_LENGTH=[+avg_row_length+][+

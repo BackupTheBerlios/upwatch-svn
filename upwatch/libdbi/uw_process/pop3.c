@@ -46,9 +46,14 @@ static void pop3_set_def_fields(trx *t, struct probe_def *probedef, dbi_result r
     } else {
       strcpy(def->email, "");
     }
-    def->delay = dbi_result_get_uint_idx(result, 8);
-    def->password = dbi_result_get_string_copy_idx(result, 8);
-    def->username = dbi_result_get_string_copy_idx(result, 9);
+    if (dbi_result_get_string_idx(result, 8)) {
+      strcpy(def->sms, dbi_result_get_string_idx(result, 8));
+    } else {
+      strcpy(def->sms, "");
+    }
+    def->delay = dbi_result_get_uint_idx(result, 9);
+    def->password = dbi_result_get_string_copy_idx(result, 10);
+    def->username = dbi_result_get_string_copy_idx(result, 11);
   }
 }
 
@@ -84,7 +89,7 @@ module pop3_module  = {
   NO_XML_RESULT_NODE,
   ct_get_from_xml,
   NO_ACCEPT_RESULT,
-  "ipaddress, description, server, yellow, red, contact, hide, email, delay, "
+  "ipaddress, description, server, yellow, red, contact, hide, email, sms, delay, "
   "username, password ",
   pop3_set_def_fields,
   NO_GET_DEF,

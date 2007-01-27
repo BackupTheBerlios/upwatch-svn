@@ -30,6 +30,8 @@
 
 char ipaddress[24];
 
+xmlNodePtr newnode(xmlDocPtr doc, char *name);
+
 struct _errlogspec {
   char *style;
   char *path;
@@ -173,6 +175,119 @@ void get_hwstats(void)
          hw.vc0, hw.vc1, hw.v33, hw.v50p, hw.v12p, hw.v12n, hw.v50n);
 }
 #endif
+
+int do_local(xmlNodePtr doc )
+{
+  char buffer[1024];
+  char resultmsg[32768]="";
+  unsigned int color=STAT_GREEN;
+  GError *error=NULL;
+  GDir *dir;
+  G_CONST_RETURN gchar *filename;
+  char path[PATH_MAX] = "/etc/upwatch.d/uw_local_scripts";
+  char cmd[PATH_MAX];
+  FILE *in;
+  char info[32768];
+  char buf[256];
+  xmlNodePtr node = (xmlNodePtr) newnode(doc, "local");
+  struct stat st;
+  struct timeval start, now;
+
+  /* measure the time it takes to perform all checks */
+  gettimeofday(&start, NULL);
+ 
+  /* Don't allow directories writable by others */
+  if (stat(path, &st) < 0) {
+    LOG(LOG_ERR,"Cannot check permissions for %s", path);
+  }
+  if ( (st.st_uid == getuid()) && (st.st_mode & 077) != 0 ) {  /* we are world or group writable */
+    LOG(LOG_ERR,"%s has bad permissions, refusing to run the scripts", path);
+    return;
+  }
+
+  /* Ok the directory is safe enough, lets open it. */
+  dir = g_dir_open (path, 0, &error);
+  if (dir == NULL) {
+    LOG(LOG_ERR,"Cannot open %s", path); /* Should not be reached */
+    perror(path);
+    return;
+  }
+
+  /* set a strict umask for safety */
+  umask(077);
+
+  /* Time to traverse the directory */
+  while ((filename = g_dir_read_name(dir)) != NULL) {
+    char fullpath[PATH_MAX];
+    if (filename[0] == '.') continue;  // skip '.', '..' and hidden files
+    sprintf(fullpath, "%s/%s", path, filename);
+    if (!g_file_test(fullpath, G_FILE_TEST_IS_EXECUTABLE)) {
+      LOG(LOG_WARNING,"Script %s is not executable, skipping.", fullpath);
+      continue;
+    }
+ 
+    if ( debug > 4 ) printf("Checking script %s\n", fullpath);
+
+    /* The script should not be writable by others */
+    if (stat(fullpath, &st) < 0) {
+      LOG(LOG_ERR,"Cannot check permissions for %s", fullpath);
+      continue;
+    }
+    if ( (st.st_uid == getuid()) && (st.st_mode & 077) != 0 ) {  /* we are world or group writable */
+      LOG(LOG_ERR,"Script %s has insecure permissions, refusing it.", fullpath);
+      continue;
+    }
+    if ( debug > 4 ) printf("Script %s is ok\n", fullpath);
+
+    uw_setproctitle("Running check %s", fullpath);
+
+    char msgbuf[8192]="";
+    unsigned int mycolor=STAT_GREEN; /* Untill proven otherwise */
+    sprintf(cmd, "%s > /tmp/.uw_sysstat.tmp", fullpath);
+    LOG(LOG_INFO, cmd);
+    if ( debug > 4 ) printf("Running local check %s\n", fullpath);
+    system(cmd);
+    in = fopen("/tmp/.uw_sysstat.tmp", "r");
+    if (in) {
+      int linecount=0;
+      while (fgets(buf, sizeof(buf), in)) {
+        if ( linecount == 0 ) { /* First line contains the color of the check */
+          linecount++;
+          mycolor=convert_color(buf); 
+        }
+        else { /* All the rest is part of the message */
+          snprintf(msgbuf, sizeof(msgbuf), "%s\n%s", msgbuf, buf);
+        }
+          
+      }
+    } else {
+      strcpy(info, strerror(errno));
+    }
+    fclose(in);
+    unlink("tmp/.uw_sysstat.tmp");
+
+   /* If there is a message, put it into the big message. Prepend the script name. */
+   if (strlen( msgbuf ) != 0 ) {
+     snprintf(resultmsg, sizeof(resultmsg), "%s%s:%s\n", resultmsg, fullpath, msgbuf );
+   }
+
+   /* is this the highest color? */
+   if ( mycolor > color ) color = mycolor;
+  }
+
+  /* ok, we finished the scripts loop, set the results */
+  gettimeofday(&now, NULL);
+  char totalstring[16]=""; /* Big enough? */
+  snprintf( totalstring, sizeof(totalstring), "%f", ((float) timeval_diff(&now, &start)) * 0.000001);
+  xmlSetProp(node, "total", totalstring);
+  /* Here we set the color */
+  sprintf(buffer, "%d", color);
+  xmlSetProp(node, "color", buffer);
+  xmlNewTextChild(node, NULL, "info", resultmsg);
+  g_dir_close(dir);
+
+  return color;
+}
 
 #if HAVE_LIBPCRE
 #define STATFILE "/var/run/upwatch/uw_sysstat.stat"
@@ -388,6 +503,29 @@ xmlNodePtr newnode(xmlDocPtr doc, char *name)
   xmlSetProp(node, "color", "200");
   sprintf(buffer, "%ld", OPT_VALUE_INTERVAL);	xmlSetProp(node, "interval", buffer);
   return node;
+}
+
+/* Small helper function to convert a string to a valid upwatch color code. Probably not efficient */
+int convert_color ( char *string )
+{
+  int color=STAT_GREEN;
+  switch(string[0]) {
+               case 'r':
+                         color=STAT_RED;
+                         break;
+               case 'p':
+                         color=STAT_PURPLE;
+                         break;
+               case 'y':
+                         color=STAT_YELLOW;
+                         break;
+               case 'b':
+                         color=STAT_BLUE;
+                         break;
+               default: 
+                         color=STAT_GREEN;
+  } 
+  return color;
 }
 
 #if USE_XMBMON || defined (__OpenBSD__)
@@ -662,7 +800,7 @@ extern int forever;
   xmlSetDocCompressMode(doc, OPT_VALUE_COMPRESS);
 
   // do the sysstat
-  node = newnode(doc, "sysstat");
+  node = (xmlNodePtr) newnode(doc, "sysstat");
   add_loadavg(node);
   add_cpu(node);
   add_paging(node);
@@ -677,16 +815,21 @@ extern int forever;
   if (OPT_VALUE_HWSTATS ) { 
     // do the hwstat
     get_hwstats();
-    node = newnode(doc, "hwstat");
+    node = (xmlNodePtr) newnode(doc, "hwstat");
     add_hwstat(node);
     color = xmlGetPropInt(node, "color");
     if (color > highest_color) highest_color = color;
   }
 #endif
+  if (OPT_VALUE_LOCALCHECKS ) { 
+   // do the local checks
+    color = do_local((xmlNodePtr) doc);
+    if (color > highest_color) highest_color = color;
+  }
 
 #if HAVE_LIBPCRE
   // do the errlog
-  node = newnode(doc, "errlog");
+  node = (xmlNodePtr) newnode(doc, "errlog");
   log = check_logs(&color);
   if (color > highest_color) highest_color = color;
   sprintf(buf, "%u", color);
@@ -701,7 +844,7 @@ extern int forever;
 
   // do the diskfree
   uw_setproctitle("checking diskspace");
-  node = newnode(doc, "diskfree");
+  node = (xmlNodePtr) newnode(doc, "diskfree");
   add_diskfree_info(node);
   color = xmlGetPropInt(node, "color");
 

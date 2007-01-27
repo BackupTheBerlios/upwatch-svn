@@ -58,7 +58,12 @@ int notify(trx *t)
   return(notified);
 }
 
+//*******************************************************************
+// Low level Email functions
+//*******************************************************************
+#if HAVE_LIBESMTP
 #include <libesmtp.h>
+#endif
 
 #define BUFLEN 8192
 
@@ -157,6 +162,136 @@ int mail(const char *to, const char *subject, const char *body, time_t date)
 }
 
 //*******************************************************************
+// Low level SMS functions
+//*******************************************************************
+#if HAVE_LIBGNOKII
+#include <gnokii.h>
+
+static char *lockfile = NULL;
+static struct gn_statemachine state;
+static gn_data data;
+
+static void  gnokii_error_logger(const char *fmt, va_list ap)
+{
+  char buf[512];
+  vsnprintf(buf, sizeof(buf), fmt, ap);
+  LOG(LOG_NOTICE, buf);
+}
+
+static void busterminate(void)
+{
+  gn_sm_functions(GN_OP_Terminate, NULL, &state);
+  if (lockfile) gn_device_unlock(lockfile);
+}
+
+static int businit(void)
+{
+  gn_error error;
+  char *aux;
+  static atexit_registered = 0;
+
+  gn_data_clear(&data);
+
+  aux = gn_cfg_get(gn_cfg_info, "global", "use_locking");
+  /* Defaults to 'no' */
+  if (aux && !strcmp(aux, "yes")) {
+    lockfile = gn_device_lock(state.config.port_device);
+    if (lockfile == NULL) {
+      LOG(LOG_NOTICE, "Lock file error. Cannot send SMS messages\n");
+      return 0;
+    }
+  }
+
+  /* register cleanup function */
+  if (!atexit_registered) {
+    atexit_registered = 1;
+    atexit(busterminate);
+  }
+  /* signal(SIGINT, bussignal); */
+
+  /* Initialise the code for the GSM interface. */
+  error = gn_gsm_initialise(&state);
+  if (error != GN_ERR_NONE) {
+    LOG(LOG_NOTICE, "Telephone interface init failed: %s\n", gn_error_print(error));
+    return 0;
+  }
+  return 1;
+}
+#endif
+
+int sms(char *to, char *msg)
+{
+static int firsttime = 1;
+#if HAVE_LIBGNOKII
+  gn_sms sms;
+  gn_error error;
+  int input_len, i, curpos = 0;
+
+  if (firsttime) {
+    gn_elog_handler = gnokii_error_logger;
+
+    /* Read config file */
+    if (gn_cfg_read_default() < 0)
+      return 0;
+
+    if (!gn_cfg_phone_load("", &state))
+      return 0;
+
+    if (businit()) {
+      firsttime = 0;
+    }
+  }
+  input_len = GN_SMS_MAX_LENGTH;
+
+  /* The memory is zeroed here */
+  gn_sms_default_submit(&sms);
+
+  memset(&sms.remote.number, 0, sizeof(sms.remote.number));
+  strncpy(sms.remote.number, to, sizeof(sms.remote.number) - 1);
+  if (sms.remote.number[0] == '+') {
+    sms.remote.type = GN_GSM_NUMBER_International;
+  } else {
+    sms.remote.type = GN_GSM_NUMBER_Unknown;
+  }
+
+  if (!sms.smsc.number[0]) {
+    data.message_center = calloc(1, sizeof(gn_sms_message_center));
+    data.message_center->id = 1;
+    if (gn_sm_functions(GN_OP_GetSMSCenter, &data, &state) == GN_ERR_NONE) {
+      strcpy(sms.smsc.number, data.message_center->smsc.number);
+      sms.smsc.type = data.message_center->smsc.type;
+    } else {
+      LOG(LOG_WARNING, "Cannot read the SMSC number from your phone.");
+    }
+    free(data.message_center);
+  }
+
+  if (!sms.smsc.type) sms.smsc.type = GN_GSM_NUMBER_Unknown;
+
+  if (curpos != -1) {
+    strcpy(sms.user_data[curpos].u.text, msg);
+    sms.user_data[curpos].type = GN_SMS_DATA_Text;
+    if (!gn_char_def_alphabet(sms.user_data[curpos].u.text))
+      sms.dcs.u.general.alphabet = GN_SMS_DCS_UCS2;
+    sms.user_data[++curpos].type = GN_SMS_DATA_None;
+  }
+
+  data.sms = &sms;
+
+  error = gn_sms_send(&data, &state); /* send it */
+
+  if (error == GN_ERR_NONE) {
+    LOG(LOG_NOTICE, "SMS: %s", msg);
+    return 1;
+  }
+  LOG(LOG_NOTICE, "SMS to %s FAILED: %s", to, gn_error_print(error));
+  if (debug > 3) fprintf(stderr, "SMS to %s FAILED: %s", to, gn_error_print(error));
+#endif
+  return 0;
+}
+
+
+//*******************************************************************
 // Notify user if necessary
 //*******************************************************************
 static int do_notification(trx *t)
@@ -169,9 +304,6 @@ static int do_notification(trx *t)
   char body_probe_def[8192];
   char msg[8192];
 
-  if (t->def->email[0] == 0) {
-    return(notified);
-  }
   servername = realm_server_by_id(t->res->realm, t->def->server);
 
   if (t->probe->notify_mail_subject_extra) {
@@ -179,7 +311,7 @@ static int do_notification(trx *t)
   } else {
     subject_extra[0] = 0;
   }
-  sprintf(subject, "%s: %s %s (was %s) %s", servername,
+  snprintf(subject, sizeof(subject), "%s: %s %s (was %s) %s", servername,
                    t->probe->module_name, color2string(t->res->color),
                    color2string(t->res->prevhistcolor), subject_extra);
 
@@ -193,7 +325,7 @@ static int do_notification(trx *t)
   } else {
     msg[0] = 0;
   }
-  sprintf(body, "Dear customer,\n\n"
+  snprintf(body, sizeof(body), "Dear customer,\n\n"
                 "Moments ago, at %s"
                 "the status of probe %s\n"
                 "at server %s\n"
@@ -212,7 +344,18 @@ static int do_notification(trx *t)
                    OPT_ARG(FROM_NAME)
   );
   free(servername);
-  notified = mail(t->def->email, subject, body, t->res->stattime);
+  if (t->def->email[0]) {
+    notified |= mail(t->def->email, subject, body, t->res->stattime);
+  }
+  if (t->def->sms[0]) {
+    char *p;
+
+    strcpy(body, t->def->sms);
+    p = strtok(body, " ,/");
+    do {
+      notified |= sms(p, subject);
+    } while ((p = strtok(NULL, " ,/")) != NULL);
+  }
   if (notified) {
     strcpy(t->res->notified, "yes");
   }

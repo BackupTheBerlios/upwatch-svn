@@ -255,50 +255,53 @@ AC_ARG_ENABLE(all,
 # Checks for libraries.
 
 ################# First the autogen autoopts library
-if test -f /usr/lib/libopts.a
+AC_CHECK_PROG([HAVE_LIBOPTS], [libopts-config], ["yes"], ["no"])
+if test "$HAVE_LIBOPTS" = "yes"
 then
-  LIBOPTS=/usr/lib/libopts.a
-fi
-if test -f /usr/lib64/libopts.a
-then
-  LIBOPTS=/usr/lib64/libopts.a
+  LIBOPTS_CFLAGS="`libopts-config --cflags`"
+  LIBOPTS_LIBS="`libopts-config --libs`"
 fi
 
-if test -f /usr/local/lib/libopts.a
+if test -z "$LIBOPTS_LIBS"
 then
-  LIBOPTS=/usr/local/lib/libopts.a
+  for libpath in /usr/lib /usr/local/lib /usr/lib/lib64 /usr/local/lib64 /usr/pkg/lib
+  do
+    if test -f $libpath/libopts.a
+    then
+      LIBOPTS_LIBS="-L$libpath -lopts"
+    fi
+  done
 fi
-if test -f /usr/local/lib64/libopts.a
+
+if test -z "$LIBOPTS_CFLAGS"
 then
-  LIBOPTS=/usr/local/lib64/libopts.a
+  # path to autoopts includes
+  AC_ARG_WITH(autoopts-include,
+      [  --with-autoopts-include=<path>        prefix of autoopts headers. Default /usr/include/],
+      [LIBOPTS_INC_PREFIX=$with_autoopts_include],
+      [LIBOPTS_INC_PREFIX=/usr/include/]
+  )
+  AC_SUBST(LIBOPTS_INC_PREFIX)
+
+  for incpath in /usr/include $LIBOPTS_INC_PREFIX /usr/local/include /cygdrive/c/include /usr/pkg/include
+  do
+    if test -f $incpath/autoopts/options.h
+    then
+      LIBOPTS_CFLAGS="-I${incpath}"
+    fi
+    if test -f $incpath/autogen/autoopts/options.h
+    then
+      LIBOPTS_CFLAGS="-I${incpath}/autogen"
+    fi
+  done
 fi
-if test -f /usr/pkg/lib/libopts.a
+if test -z "$LIBOPTS_LIBS" -o -z "$LIBOPTS_CFLAGS"
 then
-  LIBOPTS=/usr/pkg/lib/libopts.a
+  AC_MSG_ERROR([You really need autogen or libopts to compile upwatch])
 fi
-AC_SUBST(LIBOPTS)
-
-# path to autoopts includes
-AC_ARG_WITH(autoopts-include,
-    [  --with-autoopts-include=<path>        prefix of autoopts headers. Default /usr/include/],
-    [LIBOPTS_INC_PREFIX=$with_autoopts_include],
-    [LIBOPTS_INC_PREFIX=/usr/include/]
-)
-AC_SUBST(LIBOPTS_INC_PREFIX)
-
-for incpath in /usr/include $LIBOPTS_LIB_PREFIX /usr/local/include /cygdrive/c/include /usr/pkg/include
-do
-  if test -f $incpath/options.h
-  then
-    LIBOPTS_CFLAGS="-I${incpath}"
-  fi
-  if test -f $incpath/autoopts/options.h
-  then
-    LIBOPTS_CFLAGS="-I${incpath}/autoopts"
-  fi
-done
-
+AC_SUBST(LIBOPTS_LIBS)
 AC_SUBST(LIBOPTS_CFLAGS)
+
 
 ################## MYSQL
 # path to libmysqlclient stuff:.
@@ -585,8 +588,17 @@ then
 		AC_MSG_ERROR([You really need libesmtp to compile upwatch server])
 	fi
 	AC_SUBST(LIBESMTP_LIBS)
+
+	# libgnokii
+	AC_CHECK_LIB([gnokii], [gn_cfg_get], [HAVE_LIBGNOKII=1], [HAVE_LIBGNOKII=0])
+	if test $HAVE_LIBGNOKII -eq 1
+	then
+	        LIBGNOKII_LIBS=-lgnokii
+	fi
+	AC_SUBST(LIBGNOKII_LIBS)
 fi
 AM_CONDITIONAL(HAVE_LIBESMTP, test "$HAVE_LIBESMTP" = "1")
+AM_CONDITIONAL(HAVE_LIBGNOKII, test "$HAVE_LIBGNOKII" = "1")
 
 # readline
 AC_CHECK_LIB([readline], [readline], [HAVE_LIBREADLINE=1], [HAVE_LIBREADLINE=0], -lncurses)

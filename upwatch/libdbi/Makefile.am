@@ -74,7 +74,7 @@ endif
 
 DIST_SUBDIRS = ${SUBDIRS} doc
 
-dist_doc_DATA = AUTHORS COPYING ChangeLog NEWS README upwatch-base.mysql upwatch-full.mysql
+dist_doc_DATA = AUTHORS COPYING NEWS README upwatch-base.mysql upwatch-full.mysql
 
 if ENABLE_SERVER
 SERVER_DIST = probes.enum 
@@ -100,12 +100,6 @@ upwatch-full.mysql: config/upwatch-full.mysql config/upwatch-common.mysql uw_*/p
 
 force:
 	touch force
-
-#ChangeLog: force
-#       cfg/cvs2cl.pl -U AUTHORS -b -T --hide-filenames
-#       rm -f force
-ChangeLog:
-	svn log > ChangeLog
 
 RELEASE: force
 	svnversion . > RELEASE
