@@ -111,7 +111,7 @@ ESAC type +][+ ENDFOR def+]
       (error (sprintf "addbyhand not set for probe %s" (get "probe.name")) )
   )
 +]
-INSERT into pr_[+name+]_def (id, description) VALUES (1, 'empty');
+INSERT into pr_[+name+]_def (id, description, changed) VALUES (1, 'empty', NOW());
 INSERT into probe (id, name, description,addbyhand,class,graphgroup,graphtypes,comment[+if (exist? "expiry") +],expiry[+ endif +][+if (exist? "fuse") +],fuse[+ endif +]) VALUES ('[+id+]','[+name+]','[+descrip+]','[+addbyhand+]','[+class+]','[+graphgroup+]','[+graphtypes+]','[+comment+]'[+if (exist? "expiry") +],'[+expiry+]'[+endif +][+ if (exist? "fuse") +],'[+fuse+]'[+endif+]); [+ ENDFOR probe +][+
    == raw_mysql +]--
 [+(dne "-- ")+]
