@@ -22,7 +22,7 @@
 #define sleep st_sleep
 #endif
 
-#include <options.h>
+#include <autoopts/options.h>
 
 #define max(x,y) ((x) > (y) ? (x) : (y))
 #define min(x,y) ((x) < (y) ? (x) : (y))

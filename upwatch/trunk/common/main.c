@@ -4,7 +4,7 @@
 #include <string.h>
 #include <signal.h>
 #include <limits.h>
-#include <options.h>
+#include <autoopts/options.h>
 #include <time.h>
 #include <sys/time.h>
 #include <sys/types.h>
