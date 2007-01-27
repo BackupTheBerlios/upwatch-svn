@@ -20,7 +20,9 @@ dbi_conn open_database(const char *dbtype, const char *dbhost, const char *dbpor
 {
   dbi_conn conn;
 
+  dbi_initialize(NULL);
   conn = dbi_conn_new(dbtype);
+  if ( ! conn ) { LOG(LOG_ERR, "Cannot start a connection with driver %s", dbtype); }
 
   dbi_conn_set_option(conn, "host", dbhost);
   dbi_conn_set_option(conn, "port", dbport);

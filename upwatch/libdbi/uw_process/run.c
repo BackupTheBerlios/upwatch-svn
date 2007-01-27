@@ -273,7 +273,7 @@ static void modules_start_run(void)
       dbi_result_free(result);
     }
     close_database(db);
-  }
+  } 
 
   for (i = 0; modules[i]; i++) {
     dbi_result result;
