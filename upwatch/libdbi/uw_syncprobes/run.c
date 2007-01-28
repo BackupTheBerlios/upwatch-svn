@@ -132,7 +132,7 @@ void update_record(dbi_conn conn, char *name, unsigned tblid, unsigned upwid, db
     char *escaped = strdup(dbi_result_get_string_idx(result, i));
 
     dbi_conn_quote_string(conn, &escaped);
-    sprintf(tmp, "%s = '%s', ", dbi_result_get_field_name(result, i), escaped);
+    sprintf(tmp, "%s = %s, ", dbi_result_get_field_name(result, i), escaped);
     strcat(buffer, tmp);
     if (escaped) free(escaped);
   }
@@ -175,7 +175,7 @@ void insert_record(dbi_conn conn, const char *name, unsigned tblid, unsigned rea
     char *escaped;
 
     dbi_conn_quote_string_copy(conn, dbi_result_get_char_idx(result, i), &escaped);
-    sprintf(tmp, "%s = '%s', ", dbi_result_get_field_name(result, i), escaped);
+    sprintf(tmp, "%s = %s, ", dbi_result_get_field_name(result, i), escaped);
     strcat(buffer, tmp);
     if (escaped) free(escaped);
   }
