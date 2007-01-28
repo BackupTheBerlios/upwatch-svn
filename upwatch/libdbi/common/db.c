@@ -44,7 +44,7 @@ dbi_conn open_database(const char *dbtype, const char *dbhost, const char *dbpor
 dbi_result db_rawquery(dbi_conn conn, int log_dupes, const char *qry)
 {
   dbi_result result;
-
+ 
   if (debug > 4) {
     LOGRAW(LOG_DEBUG, qry);
   }
@@ -73,7 +73,7 @@ dbi_result db_query(dbi_conn conn, int log_dupes, const char *fmt, ...)
 static char qry[65536]; // max query size for us
   va_list arg;
 
-  if (conn) return(NULL);
+  if (! conn) return(NULL);
 
   va_start(arg, fmt);
   vsnprintf(qry, sizeof(qry)-1, fmt, arg);
