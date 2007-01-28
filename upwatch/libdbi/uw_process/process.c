@@ -144,9 +144,9 @@ static dbi_result update_pr_status(trx *t, struct probe_result *prv)
     dbi_conn_quote_string(t->probe->db, &escmsg);
 
     if (t->res->color != prv->color) {
-      sprintf(&qry[strlen(qry)], ", message = '%s'", escmsg);
+      sprintf(&qry[strlen(qry)], ", message = %s", escmsg);
     } else if (t->probe->fuse) {
-      sprintf(&qry[strlen(qry)], ", message = concat(message,'%s')", escmsg);
+      sprintf(&qry[strlen(qry)], ", message = concat(message,%s)", escmsg);
     }
     free(escmsg);
   }
@@ -172,13 +172,13 @@ static void insert_pr_status(trx *t)
     escmsg = strdup(t->res->message);
     dbi_conn_quote_string(t->probe->db, &escmsg);
   } else {
-    escmsg = strdup("");
+    escmsg = strdup("''");
   }
 
   result = db_query(t->probe->db, 0,
                     "insert into pr_status "
                     "set    class =  '%u', probe = '%u', stattime = '%u', expires = '%u', "
-                    "       color = '%u', server = '%u', message = '%s', "
+                    "       color = '%u', server = '%u', message = %s, "
                     "       contact = '%u', hide = '%s'",
                     t->probe->class, t->def->probeid, t->res->stattime, t->res->expires, 
                     t->def->color, t->def->server, escmsg, t->def->contact, t->def->hide);
@@ -198,13 +198,13 @@ static void create_pr_hist(trx *t, struct probe_result *prv)
     escmsg = strdup(t->res->message);
     dbi_conn_quote_string(t->probe->db, &escmsg);
   } else {
-    escmsg = strdup("");
+    escmsg = strdup("''");
   }
 
   result = db_query(t->probe->db, 0,
                     "insert into pr_hist "
                     "set    server = '%u', class = '%u', probe = '%u', stattime = '%u', "
-                    "       prv_color = '%d', color = '%d', message = '%s', contact = '%u', "
+                    "       prv_color = '%d', color = '%d', message = %s, contact = '%u', "
                     "       hide = '%s', pgroup = '%u'",
                     t->def->server, t->probe->class, t->def->probeid, t->res->stattime,
                     /* (t->res->received > t->res->expires) ? STAT_PURPLE : */ prv->color, 

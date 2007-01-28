@@ -26,7 +26,7 @@ static gint sysstat_store_raw_result(trx *t)
     escmsg = strdup(res->message);
     dbi_conn_quote_string(t->probe->db, &escmsg);
   } else {
-    escmsg = strdup("");
+    escmsg = strdup("''");
   }
     
   result = db_query(t->probe->db, 0,
@@ -35,7 +35,7 @@ static gint sysstat_store_raw_result(trx *t)
                     "       loadavg = '%f', user = '%u', system = '%u', idle = '%u', "
                     "       swapin = '%u', swapout = '%u', blockin = '%u', blockout = '%u', "
                     "       swapped = '%u', free = '%u', buffered = '%u', cached = '%u', "
-                    "       used = '%u', systemp = '%d', message = '%s'",
+                    "       used = '%u', systemp = '%d', message = %s",
                     def->probeid, def->yellow, def->red, res->stattime, res->color, 
                     res->loadavg,   res->user, res->system, res->idle,
                     res->swapin, res->swapout, res->blockin, res->blockout,

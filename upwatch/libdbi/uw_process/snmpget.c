@@ -85,14 +85,14 @@ static gint snmpget_store_raw_result(trx *t)
     escmsg = strdup(res->message);
     dbi_conn_quote_string(t->probe->db, &escmsg);
   } else {
-    escmsg = strdup("");
+    escmsg = strdup("''");
   }
     
   result = db_query(t->probe->db, 0,
                     "insert into pr_snmpget_raw "
                     "set    probe = '%u', yellow = '%f', red = '%f', stattime = '%u', color = '%u', "
                     "       value = '%f', "
-                    "       message = '%s' ",
+                    "       message = %s ",
                     def->probeid, def->yellow, def->red, res->stattime, res->color, 
                     res->value, escmsg);
   g_free(escmsg);

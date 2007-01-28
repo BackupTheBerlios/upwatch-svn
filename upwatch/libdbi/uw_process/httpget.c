@@ -26,14 +26,14 @@ static gint httpget_store_raw_result(trx *t)
     escmsg = strdup(res->message);
     dbi_conn_quote_string(t->probe->db, &escmsg);
   } else {
-    escmsg = strdup("");
+    escmsg = strdup("''");
   }
     
   result = db_query(t->probe->db, 0,
                     "insert into pr_httpget_raw "
                     "set    probe = '%u', yellow = '%f', red = '%f', stattime = '%u', color = '%u', "
                     "       lookup = '%f', connect = '%f', pretransfer = '%f', total = '%f', "
-                    "       message = '%s' ",
+                    "       message = %s ",
                     def->probeid, def->yellow, def->red, res->stattime, res->color, 
                     res->lookup, res->connect, res->pretransfer, res->total, escmsg);
   g_free(escmsg);

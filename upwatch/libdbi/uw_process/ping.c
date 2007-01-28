@@ -60,13 +60,13 @@ static gint ping_store_raw_result(trx *t)
     escmsg = strdup(res->message);
     dbi_conn_quote_string(t->probe->db, &escmsg);
   } else {
-    escmsg = strdup("");
+    escmsg = strdup("''");
   }
 
   result = db_query(t->probe->db, 0,
                     "insert into pr_ping_raw "
                     "set    probe = '%u', yellow = '%f', red = '%f', stattime = '%u', color = '%u', "
-                    "       average = '%f', lowest = '%f', highest = '%f', message = '%s'",
+                    "       average = '%f', lowest = '%f', highest = '%f', message = %s",
                     def->probeid, def->yellow, def->red, res->stattime, res->color, 
                     res->average, res->lowest, res->highest, escmsg);
   g_free(escmsg);

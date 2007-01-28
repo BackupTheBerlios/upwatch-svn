@@ -45,13 +45,13 @@ static gint bb_cpu_store_raw_result(trx *t)
     escmsg = strdup(res->message);
     dbi_conn_quote_string(t->probe->db, &escmsg);
   } else {
-    escmsg = strdup("");
+    escmsg = strdup("''");
   }
     
   result = db_query(t->probe->db, 0,
                     "insert into pr_bb_cpu_raw "
                     "set    probe = '%u', stattime = '%u', color = '%u', loadavg = '%f', "
-                    "       user = '%u',  idle = '%u', free = '%u', used = '%u', message = '%s'",
+                    "       user = '%u',  idle = '%u', free = '%u', used = '%u', message = %s",
                     def->probeid, res->stattime, res->color, res->loadavg,
                     res->user, res->idle, res->free, res->used, escmsg);
   g_free(escmsg);

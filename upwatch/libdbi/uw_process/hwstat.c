@@ -26,7 +26,7 @@ static gint hwstat_store_raw_result(trx *t)
     escmsg = strdup(res->message);
     dbi_conn_quote_string(t->probe->db, &escmsg);
   } else {
-    escmsg = strdup("");
+    escmsg = strdup("''");
   }
     
   result = db_query(t->probe->db, 0,
@@ -36,7 +36,7 @@ static gint hwstat_store_raw_result(trx *t)
                     "       rot1 = '%d', rot2 = '%d', rot3 = '%d', "
                     "       vc0 = '%f', vc1 = '%f', v33 = '%f', " 
                     "       v50p = '%f', v12p = '%f', v12n = '%f', v50n = '%f', "
-                    "       message = '%s'",
+                    "       message = %s",
                     def->probeid, def->yellow, def->red, res->stattime, res->color, 
                     res->temp1, res->temp2, res->temp3, 
                     res->rot1, res->rot2, res->rot3, 
