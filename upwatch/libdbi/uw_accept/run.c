@@ -127,7 +127,7 @@ static int uw_password_ok(char *user, char *passwd)
 
     sprintf(buffer, OPT_ARG(AUTHQUERY), user, passwd);
     LOG(LOG_DEBUG, buffer);
-    result = dbi_conn_query(conn, buffer);
+    result = db_query(conn, 0, buffer);
     if (!result) {
       close_database(conn);
       return(FALSE);
