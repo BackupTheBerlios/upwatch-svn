@@ -55,8 +55,8 @@ int run(void)
       db.password = dbi_result_get_string(result, "password");
       uw_setproctitle("synching %s:pr_%s_def", dbi_result_get_string(result, "name"), 
                        dbi_result_get_string(result, "tbl"));
-      LOG(LOG_DEBUG, "syncing %s:pr_%s_def", dbi_result_get_string(result, "name"), 
-                       dbi_result_get_string(result, "tbl"));
+      LOG(LOG_DEBUG, "syncing %s:pr_%s_def from realm %s", dbi_result_get_string(result, "name"), 
+                       dbi_result_get_string(result, "tbl"), db.realm);
       sync_table(upwatch, &db, dbi_result_get_string(result, "tbl"));
     }
     dbi_result_free(result);
