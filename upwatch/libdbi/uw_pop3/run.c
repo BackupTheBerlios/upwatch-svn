@@ -131,7 +131,7 @@ void refresh_database(dbi_conn conn)
       probe = g_malloc0(sizeof(struct probedef));
       if (dbi_result_get_uint(result, "domid") > 1) {
         probe->probeid = dbi_result_get_uint(result, "tblid");
-        strcpy(probe->realm, dbi_result_get_string(result, "name"));
+        probe->realm=strdup(dbi_result_get_string(result, "name"));
       } else {
         probe->probeid = probe->id;
       }
