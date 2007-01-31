@@ -71,8 +71,8 @@ int find_expired_probes(struct dbspec *dbspec)
     xmlNewChild(probe, NULL, "color", "400");  // PURPLE
     xmlNewChild(probe, NULL, "prevcolor", dbi_result_get_string(result, "color"));
 
-    LOG(LOG_INFO, "%s: purpled %s %s", dbspec->realm, dbi_result_get_string(result, "name"), 
-                                                      dbi_result_get_string(result, "probe"));
+    LOG(LOG_INFO, "%s: purpled %s %d", dbspec->realm, dbi_result_get_string(result, "name"), 
+                                                      dbi_result_get_uint(result, "probe"));
     count++;
   }
   if (count) {
