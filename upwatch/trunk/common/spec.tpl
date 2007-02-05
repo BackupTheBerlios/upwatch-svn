@@ -5,6 +5,7 @@
 %attr(0755,upwatch,upwatch) /usr/share/upwatch/init/[+prog-name+].redhat
 %attr(0755,upwatch,upwatch) /usr/share/upwatch/init/[+prog-name+].suse
 %attr(0755,upwatch,upwatch) /usr/share/upwatch/init/[+prog-name+].solaris
+%attr(0755,upwatch,upwatch) /usr/share/upwatch/init/[+prog-name+].debian
 %config(noreplace) /etc/upwatch.d/[+prog-name+].conf
 %attr(0444,upwatch,upwatch) /usr/share/man/man1/[+prog-name+].1.gz
 [+ FOR spec-files +][+ 
