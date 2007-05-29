@@ -26,7 +26,7 @@ will be read from `new`.';
 
 flag = {
     name      = no-stat;
-    value     = n;
+    value     = N;
     arg_type  = bool;
     descrip   = "Don't stat() every file for date/time";
     doc       =
