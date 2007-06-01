@@ -112,7 +112,7 @@ and capture packets from';
 
 flag = {
     name      = network;
-    value     = n;
+    value     = N;
     arg_type  = string;
     stack_arg;
     descrip   = "internal network in CIDR format";
@@ -124,7 +124,7 @@ specificy those with one or more -n options. Note only CIDR format is supported
 
 flag = {
     name      = extignore;
-    value     = n;
+    value     = X;
     arg_type  = string;
     stack_arg;
     descrip   = "external network (in CIDR format) to ignore";
