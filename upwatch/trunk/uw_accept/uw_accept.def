@@ -32,7 +32,7 @@ flag = {
 flag = {
     must-set;
     name      = listen;
-    value     = l;        /* flag style option character */
+    value     = L;        /* flag style option character */
     arg_default  = 1985;  /* option argument indication  */
     arg_type  = number;   /* option argument indication  */
     max       = NOLIMIT;  /* occurrence limit (none)     */

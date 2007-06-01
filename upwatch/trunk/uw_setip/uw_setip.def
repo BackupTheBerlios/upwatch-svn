@@ -31,7 +31,7 @@ flag = {
 flag = {
     must-set;
     name      = listen;
-    value     = l;        /* flag style option character */
+    value     = L;        /* flag style option character */
     arg_default  = 1990;  /* option argument indication  */
     arg_type  = number;   /* option argument indication  */
     max       = NOLIMIT;  /* occurrence limit (none)     */
@@ -52,7 +52,7 @@ exactly one row for authentication to succeed.';
 
 flag = {
     name      = setipquery;
-    value     = A;
+    value     = S;
     arg_type  = string;
     arg_default = "update server set ip = '%s', nat = '%s' where id = '%s'";
     descrip   = "SQL query to use for updating ip addresses";
