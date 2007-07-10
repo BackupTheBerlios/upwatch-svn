@@ -83,6 +83,10 @@ int main( int argc, char** argv, char **envp )
   }
   //fprintf(stderr, "%s\n", progname);
 
+#ifdef ERRSKIP_OPTERR
+  ERRSKIP_OPTERR;  // Don't barf on unknown commandline or configfile options. Only available in newer autogen versions
+#endif
+
   umask(002); // all created files must be group-writable
   arg_ct = optionProcess( &progOptions, argc, newArgv );
   argc -= arg_ct;

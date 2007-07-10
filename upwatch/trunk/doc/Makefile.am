@@ -30,7 +30,7 @@ EXTRA_DIST = ${DIST_DOC}
 endif
 
 upwatch.html: ${UPWATCH_SOURCE}
-	xmllint --valid --noout upwatch.xml
+	-xmllint --valid --noout upwatch.xml
 	-${XSLTPROC} --nonet -o upwatch.html upwatch.xsl upwatch.xml
 	touch upwatch.html
 
@@ -46,7 +46,7 @@ upwatch.pdf: ${UPWATCH_SOURCE}
 	touch upwatch.pdf
 
 admin-guide.html: ${ADMIN_SOURCE}
-	xmllint --valid --noout admin-guide.xml
+	-xmllint --valid --noout admin-guide.xml
 	-${XSLTPROC} --nonet -o admin-guide.html upwatch.xsl admin-guide.xml
 	touch admin-guide.html
 
@@ -59,7 +59,7 @@ admin-guide.pdf: ${ADMIN_SOURCE}
 	touch admin-guide.pdf
 
 program-guide.html: ${PROGRAM_SOURCE}
-	xmllint --valid --noout program-guide.xml
+	-xmllint --valid --noout program-guide.xml
 	-${XSLTPROC} --nonet -o program-guide.html upwatch.xsl program-guide.xml
 	touch program-guide.html
 
