@@ -12,6 +12,10 @@ int main (int argc, char *argv[])
   gulong lowest, highest;
   char start[40], end[40];
 
+#ifdef ERRSKIP_OPTERR
+  ERRSKIP_OPTERR;  // Don't barf on unknown commandline or configfile options. Only available in newer autogen versions
+#endif
+
   arg_ct = optionProcess( &progOptions, argc, argv );
   argc -= arg_ct;
   argv += arg_ct;
