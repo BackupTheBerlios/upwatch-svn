@@ -25,7 +25,6 @@ resolvable of course, but an IP address may be specified';
 };  
     
 flag = {
-    must-set;
     name      = dbport;
     arg_type  = numeric;   /* option argument indication  */
     arg-default = 3306;

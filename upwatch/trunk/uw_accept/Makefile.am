@@ -14,6 +14,7 @@ uw_accept_LDADD = uw_accept_$(DB_O) uw_accept_$(MAIN_O) @LIBOPTS_LIBS@ $(LIBST) 
 BUILT_SOURCES = $(program:%=%.1) $(program:%=%.h) $(program:%=%.c) $(SPECFILES) $(INITFILES) 
 INCLUDES = -I../upwatch -I $(INCL_ST)
 EXTRA_DIST = $(program:%=%.conf) $(program:%=%.def)
+CLEAN_FILES = uw_accept.h uw_accept.c
 
 include $(top_srcdir)/Makefile.am.common
 

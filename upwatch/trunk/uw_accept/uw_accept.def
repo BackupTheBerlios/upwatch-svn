@@ -67,6 +67,7 @@ flag = {
     name      = spooldir;
     value     = S;
     arg_type  = string;
+    arg_default = "/var/spool/upwatch";
     descrip   = "maildir-type spooldirectory for result files";
     doc       =
 'This probe generates files with data. These are put in maildir style

@@ -153,7 +153,7 @@ int init(void)
     }
     q->user = strdup(buf);
     q->pwd = strdup(pwd[i]);
-    q->maxthreads = thr[i] ? atoi(thr[i]) : 1;
+    q->maxthreads = (thr && thr[i]) ? atoi(thr[i]) : 1;
   }
   if (HAVE_OPT(ONCE)) {
     every = ONE_SHOT;

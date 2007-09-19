@@ -2,6 +2,7 @@ flag = {
     name      = syslog;
     value     = s;
     arg_type  = bool;
+    arg-default = false;
     descrip   = "Use syslog for runtime messages";
     doc       =
 'If this options is enabled (which it default is), the program writes 
@@ -13,6 +14,7 @@ flag = {
     settable;
     value     = e;
     arg_type  = bool;
+    arg-default = true;
     descrip   = "Write non-debug messages to stderr";
     doc       =
 'If this options is enabled (which it default is), the program writes 
@@ -23,7 +25,7 @@ flag = {
     name      = debug;
     value     = d;
     arg_type  = number;
-    arg-default = 0;
+    arg-default = 1;
     arg-range = '0->9';
     descrip   = "Debug mode";
     doc       =
@@ -37,7 +39,7 @@ flag = {
     name      = logfile;
     value     = l;
     arg_type  = string;
-    arg-default = "/var/log/upwatch/upwatch.log";
+    arg-default = "/var/log/upwatch/messages";
     descrip   = "Log messages to this file";
     doc       =
 'Specify the outputfile where all log messages should be written
@@ -45,4 +47,3 @@ please note the directory and file should be writable for the current user.
 The logfile is written in the same format as the system log uses, i.e. date/time, 
 hostname, program name + process id, message.';
 };
-

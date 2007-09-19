@@ -77,7 +77,7 @@ slot_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ @LIBOPTS_CFLAGS@
 slot_LDADD = @LIBOPTS_LIBS@ $(LIBUPWATCH) 
 BUILT_SOURCES += slot_options.h
 EXTRA_DIST += slot_options.def
-CLEAN_FILES +=  slot_options.c slot_options.h
+CLEAN_FILES += slot_options.c slot_options.h
 
 slot_options.h: slot_options.def ../common/minimal_options.def
 	autogen -b slot_options $(AGDEFINES) $(GENINCL) -L $(top_srcdir)/common slot_options.def
@@ -91,7 +91,7 @@ chklog_CFLAGS = @LIBGLIB2_CFLAGS@ @LIBXML2_CFLAGS@ @MYSQL_CFLAGS@ @LIBPCRE_CFLAG
 chklog_LDADD = @LIBGLIB2_LIBS@ @LIBPCRE_LIBS@ @LIBOPTS_LIBS@ $(LIBUPWATCH) 
 BUILT_SOURCES += chklog_options.h
 EXTRA_DIST += chklog_options.def
-CLEAN_FILES +=  chklog_options.c chklog_options.h
+CLEAN_FILES += chklog_options.c chklog_options.h
 
 chklog_options.h: chklog_options.def ../common/minimal_options.def
 	autogen -b chklog_options $(AGDEFINES) $(GENINCL) -L $(top_srcdir)/common chklog_options.def
