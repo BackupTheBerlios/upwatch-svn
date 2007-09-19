@@ -1,0 +1,8 @@
+#!/bin/sh
+
+cfg/bootstrap
+./configure --enable-all
+
+make
+make rpm
+
