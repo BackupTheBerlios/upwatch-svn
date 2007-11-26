@@ -464,7 +464,7 @@ int process(trx *t)
 
   set_result_prev_color(t, prv); // indicate previous color in result set
 
-  if (t->def->email[0]) { // and if email address given, add simple notification record
+  if (t->def->email[0] || t->def->sms[0]) { // and if email address given, add simple notification record
     xmlNodePtr notify;
 
     notify = xmlNewChild(t->cur, NULL, "notify", NULL);

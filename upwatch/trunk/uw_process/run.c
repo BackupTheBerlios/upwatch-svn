@@ -293,7 +293,7 @@ static void modules_start_run(void)
           if (row[0]) modules[i]->fuse  = (strcmp(row[0], "yes") == 0) ? 1 : 0;
           if (row[1]) modules[i]->lastseen = atoi(row[1]);
         } else {
-          LOG(LOG_NOTICE, "probe record for id %u not found", modules[i]->class);
+          LOG(LOG_NOTICE, "recordid %u not found in probe table (probetype='%s'), db=%s", modules[i]->class, modules[i]->module_name, OPT_ARG(DBNAME));
         }
         mysql_free_result(result);
       }
@@ -655,7 +655,7 @@ int master_checks(void)
             }
           }
         } else {
-          LOG(LOG_NOTICE, "probe record for id %u not found", modules[i]->class);
+          LOG(LOG_NOTICE, "%s probe record for id %u not found", modules[i]->module_name, modules[i]->class);
         }
         mysql_free_result(result);
       }

@@ -170,8 +170,11 @@ int mail(char *to, char *subject, char *body, time_t date)
 #include <gnokii.h>
 
 static char *lockfile = NULL;
-static struct gn_statemachine state;
-static gn_data data;
+static char *configfile = NULL;
+static char *configmodel = NULL;
+
+static struct gn_statemachine *state;
+static gn_data *data;
 
 static void  gnokii_error_logger(const char *fmt, va_list ap)
 {
@@ -182,42 +185,34 @@ static void  gnokii_error_logger(const char *fmt, va_list ap)
 
 static void busterminate(void)
 {
-  gn_sm_functions(GN_OP_Terminate, NULL, &state);
-  if (lockfile) gn_device_unlock(lockfile);
+        gn_lib_phone_close(state);
+        gn_lib_phoneprofile_free(&state);
+        gn_lib_library_free();
 }
 
-static int businit(void)
+static void businit(void)
 {
-  gn_error error;
-  char *aux;
-  static atexit_registered = 0;
-
-  gn_data_clear(&data);
-
-  aux = gn_cfg_get(gn_cfg_info, "global", "use_locking");
-  /* Defaults to 'no' */
-  if (aux && !strcmp(aux, "yes")) {
-    lockfile = gn_device_lock(state.config.port_device);
-    if (lockfile == NULL) {
-      LOG(LOG_NOTICE, "Lock file error. Cannot send SMS messages\n");
-      return 0;
+  gn_error err;
+  if ((err = gn_lib_phoneprofile_load_from_file(configfile, configmodel, &state)) != GN_ERR_NONE) {
+    LOG(LOG_NOTICE, "%s\n", gn_error_print(err));
+    if (configfile) {
+      LOG(LOG_NOTICE, "File: %s\n", configfile);
     }
+    if (configmodel) {
+      LOG(LOG_NOTICE, "Phone section: [phone_%s]\n", configmodel);
+    }
+    exit(2);
   }
 
   /* register cleanup function */
-  if (!atexit_registered) {
-    atexit_registered = 1;
-    atexit(busterminate);
-  }
+  atexit(busterminate);
   /* signal(SIGINT, bussignal); */
 
-  /* Initialise the code for the GSM interface. */
-  error = gn_gsm_initialise(&state);
-  if (error != GN_ERR_NONE) {
-    LOG(LOG_NOTICE, "Telephone interface init failed: %s\n", gn_error_print(error));
-    return 0;
+  if ((err = gn_lib_phone_open(state)) != GN_ERR_NONE) {
+    LOG(LOG_NOTICE, "%s\n", gn_error_print(err));
+    exit(2);
   }
-  return 1;
+  data = &state->sm_data;
 }
 #endif
 
@@ -232,16 +227,7 @@ static int firsttime = 1;
   if (firsttime) {
     gn_elog_handler = gnokii_error_logger;
 
-    /* Read config file */
-    if (gn_cfg_read_default() < 0)
-      return 0;
-
-    if (!gn_cfg_phone_load("", &state))
-      return 0;
-
-    if (businit()) {
-      firsttime = 0;
-    }
+    businit();
   }
   input_len = GN_SMS_MAX_LENGTH;
 
@@ -257,15 +243,15 @@ static int firsttime = 1;
   }
 
   if (!sms.smsc.number[0]) {
-    data.message_center = calloc(1, sizeof(gn_sms_message_center));
-    data.message_center->id = 1;
-    if (gn_sm_functions(GN_OP_GetSMSCenter, &data, &state) == GN_ERR_NONE) {
-      strcpy(sms.smsc.number, data.message_center->smsc.number);
-      sms.smsc.type = data.message_center->smsc.type;
+    data->message_center = calloc(1, sizeof(gn_sms_message_center));
+    data->message_center->id = 1;
+    if (gn_sm_functions(GN_OP_GetSMSCenter, data, state) == GN_ERR_NONE) {
+      strcpy(sms.smsc.number, data->message_center->smsc.number);
+      sms.smsc.type = data->message_center->smsc.type;
     } else {
       LOG(LOG_WARNING, "Cannot read the SMSC number from your phone.");
     }
-    free(data.message_center);
+    free(data->message_center);
   }
 
   if (!sms.smsc.type) sms.smsc.type = GN_GSM_NUMBER_Unknown;
@@ -278,9 +264,9 @@ static int firsttime = 1;
     sms.user_data[++curpos].type = GN_SMS_DATA_None;
   }
 
-  data.sms = &sms;
+  data->sms = &sms;
 
-  error = gn_sms_send(&data, &state); /* send it */
+  error = gn_sms_send(data, state); /* send it */
 
   if (error == GN_ERR_NONE) {
     LOG(LOG_NOTICE, "SMS: %s", msg);
@@ -288,6 +274,8 @@ static int firsttime = 1;
   }
   LOG(LOG_NOTICE, "SMS to %s FAILED: %s", to, gn_error_print(error));
   if (debug > 3) fprintf(stderr, "SMS to %s FAILED: %s", to, gn_error_print(error));
+#else
+  LOG(LOG_NOTICE, "SMS to %s (%s): SMS-support not compiled in", to, msg);
 #endif
   return 0;
 }
@@ -346,6 +334,8 @@ static int do_notification(trx *t)
                    OPT_ARG(FROM_NAME)
   );
   free(servername);
+  
+  LOG(LOG_NOTICE, "notify: SMS=%s, email=%s",  t->def->sms, t->def->email);
   if (t->def->email[0]) {
     notified |= mail(t->def->email, subject, body, t->res->stattime);
   }
