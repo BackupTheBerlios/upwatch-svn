@@ -157,7 +157,7 @@ void *hwstat_get_def(trx *t, int create)
     if (row[1]) def->contact  = atoi(row[1]);
     strcpy(def->hide, row[2] ? row[2] : "no");
     strcpy(def->email, row[3] ? row[3] : "");
-    strcpy(def->email, row[4] ? row[4] : "");
+    strcpy(def->sms, row[4] ? row[4] : "");
     if (row[5]) def->delay = atoi(row[5]);
     if (row[6]) def->temp1_yellow = atoi(row[6]);
     if (row[7]) def->temp1_red = atoi(row[7]);
