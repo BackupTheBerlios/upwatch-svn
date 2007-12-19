@@ -593,9 +593,24 @@ AC_CHECK_LIB([tds], [tds_alloc_login], [HAVE_LIBTDS=1], [HAVE_LIBTDS=0])
 if test $HAVE_LIBTDS -eq 1
 then
 	LIBTDS_LIBS=-ltds
+	case `grep TDS_VERSION_NO ${FREETDS_DIR:-/usr}/include/tdsver.h` in
+	*0.64*)
+		LIBTDS_CFLAGS="-DFREETDS_0_64"
+	;;
+	*0.63*)
+		LIBTDS_CFLAGS="-DFREETDS_0_63"
+	;;
+	*0.62*)
+		LIBTDS_CFLAGS="-DFREETDS_0_62"
+	;;
+	*)
+		LIBTDS_CFLAGS="-DFREETDS_PRE_0_62"
+	;;
+	esac
 fi
 AM_CONDITIONAL(HAVE_LIBTDS, test $HAVE_LIBTDS -eq 1)
 AC_SUBST(LIBTDS_LIBS)
+AC_SUBST(LIBTDS_CFLAGS)
 
 # PostgreSQL
 AC_CHECK_LIB([pq], [PQclear], [HAVE_LIBPQ=1], [HAVE_LIBPQ=0])

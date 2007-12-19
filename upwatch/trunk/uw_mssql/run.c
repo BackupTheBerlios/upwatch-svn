@@ -252,13 +252,22 @@ void probe(gpointer data, gpointer user_data)
   TDSSOCKET *tds;
   TDSLOGIN *login;
   TDSCONTEXT *context;
-  TDSCONNECTINFO *connect_info;
+#if (defined(FREETDS_0_63) || defined(FREETDS_0_64))
+  TDSCONNECTION *connect_info= NULL;
+#else
+  TDSCONNECTINFO *connect_info = NULL;
+#endif
   int rc;
 
   /* grab a login structure */
   login = tds_alloc_login();
 
+#ifdef FREETDS_0_64
+  context = tds_alloc_context(NULL);
+#else
   context = tds_alloc_context();
+#endif
+
   if( context->locale && !context->locale->date_fmt ) {
     /* set default in case there's no locale file */
     context->locale->date_fmt = strdup("%b %e %Y %l:%M%p");
@@ -288,11 +297,19 @@ void probe(gpointer data, gpointer user_data)
   if (!connect_info || tds_connect(tds, connect_info) == TDS_FAIL) {
     gettimeofday(&now, NULL);
     probe->connect = ((float) timeval_diff(&now, &start)) * 0.000001;
+#if (defined(FREETDS_0_63) || defined(FREETDS_0_64))
+    tds_free_connection(connect_info);
+#else
     tds_free_connect(connect_info);
+#endif
     probe->msg = strdup("There was a problem connecting to the server");
     goto end;
   }
+#if (defined(FREETDS_0_63) || defined(FREETDS_0_64))
+  tds_free_connection(connect_info);
+#else
   tds_free_connect(connect_info);
+#endif
 
   gettimeofday(&now, NULL);
   probe->connect = ((float) timeval_diff(&now, &start)) * 0.000001;
