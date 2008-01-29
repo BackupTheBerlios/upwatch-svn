@@ -335,7 +335,6 @@ static int do_notification(trx *t)
   );
   free(servername);
   
-  LOG(LOG_NOTICE, "notify: SMS=%s, email=%s",  t->def->sms, t->def->email);
   if (t->def->email[0]) {
     notified |= mail(t->def->email, subject, body, t->res->stattime);
   }

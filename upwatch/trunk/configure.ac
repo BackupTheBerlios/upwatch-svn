@@ -593,7 +593,15 @@ AC_CHECK_LIB([tds], [tds_alloc_login], [HAVE_LIBTDS=1], [HAVE_LIBTDS=0])
 if test $HAVE_LIBTDS -eq 1
 then
 	LIBTDS_LIBS=-ltds
-	case `grep TDS_VERSION_NO ${FREETDS_DIR:-/usr}/include/tdsver.h` in
+	if [ -f /usr/include/tdsver.h ]
+	then
+		LIBTDS_INCLUDE=/usr/include
+	fi
+	if [ -f /usr/include/freetds/tdsver.h ]
+	then
+		LIBTDS_INCLUDE=/usr/include/freetds
+	fi
+	case `grep TDS_VERSION_NO $LIBTDS_INCLUDE/tdsver.h` in
 	*0.64*)
 		LIBTDS_CFLAGS="-DFREETDS_0_64"
 	;;
@@ -607,6 +615,7 @@ then
 		LIBTDS_CFLAGS="-DFREETDS_PRE_0_62"
 	;;
 	esac
+        LIBTDS_CFLAGS="$LIBTDS_CFLAGS -I$LIBTDS_INCLUDE"
 fi
 AM_CONDITIONAL(HAVE_LIBTDS, test $HAVE_LIBTDS -eq 1)
 AC_SUBST(LIBTDS_LIBS)
