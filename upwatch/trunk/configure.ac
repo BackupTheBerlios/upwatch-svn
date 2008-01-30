@@ -593,11 +593,11 @@ AC_CHECK_LIB([tds], [tds_alloc_login], [HAVE_LIBTDS=1], [HAVE_LIBTDS=0])
 if test $HAVE_LIBTDS -eq 1
 then
 	LIBTDS_LIBS=-ltds
-	if [ -f /usr/include/tdsver.h ]
+	if test -f /usr/include/tdsver.h 
 	then
 		LIBTDS_INCLUDE=/usr/include
 	fi
-	if [ -f /usr/include/freetds/tdsver.h ]
+	if test -f /usr/include/freetds/tdsver.h 
 	then
 		LIBTDS_INCLUDE=/usr/include/freetds
 	fi

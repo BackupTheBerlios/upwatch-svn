@@ -1,0 +1,7 @@
+#!/bin/bash
+# 
+# this script stops upwatch, and is meant to be inserted in /etc/cron.daily
+# So daily cron jobs (like backups) will not trigger alarms unneccessarily.
+
+service upwatch stop
+

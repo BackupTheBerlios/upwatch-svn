@@ -308,6 +308,8 @@ fi
 %defattr(0660,root,upwatch,0770)
 %attr(0755,root,root) /usr/bin/bbhimport
 %attr(0755,root,root) /usr/bin/uw_maint.pl
+%attr(0755,root,root) /usr/bin/uw_stop
+%attr(0755,root,root) /usr/bin/uw_start
 %doc doc/program-guide.txt doc/program-guide.html doc/program-guide.pdf
 %doc doc/admin-guide.txt doc/admin-guide.html doc/admin-guide.pdf
 /usr/share/man/man1/bbhimport.1.gz

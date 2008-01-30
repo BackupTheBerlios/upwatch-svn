@@ -1,0 +1,13 @@
+#!/bin/bash
+# 
+# this script starts upwatch, and is meant to be inserted in /etc/cron.daily
+# with a softlink like: 
+#
+# cd /etc/cron.daily
+# ln -s /usr/bin/uw_start 00uw_start
+# ln -s /usr/bin/uw_stop 00uw_stop
+#
+# So daily cron jobs (like backups) will not trigger alarms unneccessarily.
+
+service upwatch start
+
