@@ -262,7 +262,7 @@ fi
 
 if test -z "$LIBOPTS_LIBS"
 then
-  for libpath in /usr/lib /usr/local/lib /usr/lib/lib64 /usr/local/lib64 /usr/pkg/lib
+  for libpath in /usr/lib /usr/local/lib /usr/lib64 /usr/local/lib64 /usr/pkg/lib
   do
     if test -f $libpath/libopts.a
     then
