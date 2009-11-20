@@ -82,22 +82,28 @@ hwstats_t hw;
 
 int get_stats(void)
 {
+  struct stat fst;
+
   st.cpu = sg_get_cpu_percents();
   if (!st.cpu) { LOG(LOG_INFO, "could not sg_get_cpu_stats"); }
   st.mem = sg_get_mem_stats();
   if (!st.mem) { LOG(LOG_INFO, "could not sg_get_mem_stats"); }
   st.swap = sg_get_swap_stats();
   if (!st.swap) { LOG(LOG_INFO, "could not get_swap_stats"); }
-  st.load = sg_get_load_stats();
-  if (!st.load) { LOG(LOG_INFO, "could not get_load_stats"); }
+
+  if (stat(OPT_ARG(LOADCHECK_LOCK), &fst) < 0 || (time(NULL) - fst.st_mtime) > 7200) {
+    st.load = sg_get_load_stats();
+    if (!st.load) { LOG(LOG_INFO, "could not get_load_stats"); }
+    st.diskio = sg_get_disk_io_stats_diff(&(st.diskio_entries));
+    if (!st.diskio) { LOG(LOG_INFO, "could not get_diskio_stats_diff"); }
+  }
+
   st.process = sg_get_process_stats(&st.process_entries);
   if (!st.process) { LOG(LOG_INFO, "could not get_process_stats"); }
   st.paging = sg_get_page_stats_diff();
   if (!st.paging) { LOG(LOG_INFO, "could not get_page_stats_diff"); }
   st.network = sg_get_network_io_stats_diff(&(st.network_entries));
   if (!st.network) { LOG(LOG_INFO, "could not get_network_stats_diff"); }
-  st.diskio = sg_get_disk_io_stats_diff(&(st.diskio_entries));
-  if (!st.diskio) { LOG(LOG_INFO, "could not get_diskio_stats_diff"); }
   st.disk = sg_get_fs_stats(&(st.disk_entries));
   if (!st.disk) { LOG(LOG_INFO, "could not get_disk_stats"); }
   st.hostinfo = sg_get_host_info();

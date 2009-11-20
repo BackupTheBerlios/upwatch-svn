@@ -208,6 +208,15 @@ flag = {
 'This command is used to run a `top` in batch mode';
 };
 
+flag = {
+    name      = loadcheck_lock;
+    arg_type  = string;   /* option argument indication  */
+    arg_default = "/tmp/backup.lock";
+    descrip   = "inhibit loadchecking lockfile";
+    doc       =
+'When this lockfile is present and the file is not older than two hours - do not check for high load levels';
+};
+
 // describe commandline flags
 flag = {
     name      = spooldir;
