@@ -28,11 +28,15 @@ CREATE TABLE pr_hist (
   prv_color smallint unsigned NOT NULL default '200',
   color smallint unsigned NOT NULL default '200',
   message text NOT NULL default '',
-  PRIMARY KEY  (id),
-  UNIQUE KEY probtime (probe,stattime),
-  UNIQUE KEY probclstat (probe,class,stattime),
-  KEY stattime (stattime),
-  KEY contact (contact)
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `probtime` (`probe`,`stattime`),
+  UNIQUE KEY `probclstat` (`probe`,`class`,`stattime`),
+  KEY `stattime` (`stattime`),
+  KEY `contact` (`contact`),
+  KEY `statprobcl` (`stattime`,`probe`,`class`),
+  KEY `probclstatnot` (`probe`,`class`,`stattime`,`notified`),
+  KEY `contacttime` (`contact`,`stattime`),
+  KEY `server` (`server`)
 ) TYPE=MyISAM;
 
 INSERT INTO pr_hist set id = '1', message = 'do NOT delete!';

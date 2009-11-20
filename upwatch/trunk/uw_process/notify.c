@@ -318,7 +318,7 @@ static int do_notification(trx *t)
   snprintf(body, sizeof(body), "Dear customer,\n\n"
                 "Moments ago, at %s"
                 "the status of probe %s\n"
-                "at server %s\n"
+                "at server %s (id %d, realm %s)\n"
                 "has changed from %s to %s\n"
                 "%s:\n%s\n"
                 "%s"
@@ -327,7 +327,7 @@ static int do_notification(trx *t)
                 "%s\n", 
                    ctime((time_t *)&t->res->stattime), 
                    t->probe->module_name,
-                   servername, 
+                   servername, t->def->server, t->res->realm,
                    color2string(t->res->prevhistcolor), color2string(t->res->color),
                    body_probe_def[0] ? "\nProbe details" : "", body_probe_def,
                    msg,

@@ -112,7 +112,7 @@ void refresh_database(MYSQL *mysql)
   sprintf(qry,  "SELECT pr_snmpget_def.id, pr_snmpget_def.domid, pr_snmpget_def.tblid, pr_realm.name, "
                 "       pr_snmpget_def.ipaddress, pr_snmpget_def.community, "
                 "       pr_snmpget_def.OID, pr_snmpget_def.mode, pr_snmpget_def.multiplier, "
-                "       pr_snmpget_def.yellow,  pr_snmpget_def.red "
+                "       pr_snmpget_def.yellow,  pr_snmpget_def.red, pr_snmpget_def.port "
                 "FROM   pr_snmpget_def, pr_realm "
                 "WHERE  pr_snmpget_def.id > 1 and pr_snmpget_def.disable <> 'yes'"
                 "       and pr_snmpget_def.pgroup = '%d' and pr_realm.id = pr_snmpget_def.domid",
@@ -151,6 +151,7 @@ void refresh_database(MYSQL *mysql)
     probe->multiplier = atof(row[8]);
     probe->yellow = atof(row[9]);
     probe->red = atof(row[10]);
+    probe->port = atoi(row[11]);
     if (probe->msg) g_free(probe->msg);
     probe->msg = NULL;
     probe->seen = 1;
@@ -253,6 +254,7 @@ struct oid {
   snmp_sess_init(&sess);			/* initialize session */
   sess.version = SNMP_VERSION_1;
   sess.peername = probe->ipaddress;
+  sess.remote_port = probe->port;
   sess.community = probe->community;
   sess.community_len = strlen(sess.community);
   sess.callback = asynch_response;		/* default callback */
@@ -332,6 +334,7 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   }
   sprintf(buffer, "%d", probe->probeid);      xmlSetProp(snmpget, "id", buffer);
   sprintf(buffer, "%s", probe->ipaddress);    xmlSetProp(snmpget, "ipaddress", buffer);
+  sprintf(buffer, "%d", probe->port);         xmlSetProp(snmpget, "port", buffer);
   sprintf(buffer, "%d", (int) now);           xmlSetProp(snmpget, "date", buffer);
   sprintf(buffer, "%d", ((int)now)+((int)OPT_VALUE_EXPIRES*60));   xmlSetProp(snmpget, "expires", buffer);
   sprintf(buffer, "%d", color);               xmlSetProp(snmpget, "color", buffer);

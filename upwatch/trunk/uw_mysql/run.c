@@ -106,7 +106,7 @@ void refresh_database(MYSQL *mysql)
                 "       pr_mysql_def.ipaddress, pr_mysql_def.dbname, "
                 "       pr_mysql_def.dbuser, pr_mysql_def.dbpasswd,"
                 "       pr_mysql_def.query, "
-                "       pr_mysql_def.yellow,  pr_mysql_def.red "
+                "       pr_mysql_def.yellow,  pr_mysql_def.red, pr_mysql_def.port "
                 "FROM   pr_mysql_def, pr_realm "
                 "WHERE  pr_mysql_def.id > 1 and pr_mysql_def.disable <> 'yes'"
                 "       and pr_mysql_def.pgroup = '%d' and pr_realm.id = pr_mysql_def.domid",
@@ -146,6 +146,7 @@ void refresh_database(MYSQL *mysql)
     probe->query = strdup(row[8]);
     probe->yellow = atof(row[9]);
     probe->red = atof(row[10]);
+    probe->port = atoi(row[11]);
     if (probe->msg) g_free(probe->msg);
     probe->msg = NULL;
     probe->seen = 1;
@@ -212,6 +213,7 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   }
   sprintf(buffer, "%d", probe->probeid);      xmlSetProp(mysql, "id", buffer);
   sprintf(buffer, "%s", probe->ipaddress);    xmlSetProp(mysql, "ipaddress", buffer);
+  sprintf(buffer, "%d", probe->port);         xmlSetProp(mysql, "port", buffer);
   sprintf(buffer, "%d", (int) now);           xmlSetProp(mysql, "date", buffer);
   sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60)); 
     xmlSetProp(mysql, "expires", buffer);
@@ -245,6 +247,7 @@ void write_results(void)
 void probe(gpointer data, gpointer user_data) 
 { 
   char *dbhost, *dbuser, *dbpasswd, *dbname;
+  int dbport;
   struct probedef *probe = (struct probedef *)data;
   MYSQL *mysql = mysql_init(NULL);
   MYSQL_RES *result;
@@ -252,13 +255,14 @@ void probe(gpointer data, gpointer user_data)
   unsigned int option;
 
   dbhost = probe->ipaddress;
+  dbport = probe->port;
   dbname = probe->dbname;
   dbuser = probe->dbuser;
   dbpasswd = probe->dbpasswd;
 
   option = 50; mysql_options(mysql, MYSQL_OPT_CONNECT_TIMEOUT, (const char *) &option);
   gettimeofday(&start, NULL);
-  if (!mysql_real_connect(mysql, dbhost, dbuser, dbpasswd, dbname, 0, NULL, 0)) {
+  if (!mysql_real_connect(mysql, dbhost, dbuser, dbpasswd, dbname, dbport, NULL, 0)) {
     probe->msg = strdup(mysql_error(mysql));
     return;
   }

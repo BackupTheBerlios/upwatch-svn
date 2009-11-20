@@ -108,7 +108,7 @@ void refresh_database(MYSQL *mysql)
                 "       pr_postgresql_def.ipaddress, pr_postgresql_def.dbname, "
                 "       pr_postgresql_def.dbuser, pr_postgresql_def.dbpasswd,"
                 "       pr_postgresql_def.query, "
-                "       pr_postgresql_def.yellow,  pr_postgresql_def.red "
+                "       pr_postgresql_def.yellow,  pr_postgresql_def.red, pr_postgresql_def.port "
                 "FROM   pr_postgresql_def, pr_realm "
                 "WHERE  pr_postgresql_def.id > 1 and pr_postgresql_def.disable <> 'yes'"
                 "       and pr_postgresql_def.pgroup = '%d' and pr_realm.id = pr_postgresql_def.domid",
@@ -148,6 +148,7 @@ void refresh_database(MYSQL *mysql)
     probe->query = strdup(row[8]);
     probe->yellow = atof(row[9]);
     probe->red = atof(row[10]);
+    probe->port = atoi(row[11]);
     if (probe->msg) g_free(probe->msg);
     probe->msg = NULL;
     probe->seen = 1;
@@ -214,6 +215,7 @@ void write_probe(gpointer key, gpointer value, gpointer user_data)
   }
   sprintf(buffer, "%d", probe->probeid);      xmlSetProp(postgresql, "id", buffer);
   sprintf(buffer, "%s", probe->ipaddress);    xmlSetProp(postgresql, "ipaddress", buffer);
+  sprintf(buffer, "%d", probe->port);         xmlSetProp(postgresql, "port", buffer);
   sprintf(buffer, "%d", (int) now);           xmlSetProp(postgresql, "date", buffer);
   sprintf(buffer, "%d", ((int)now)+((unsigned)OPT_VALUE_EXPIRES*60));
     xmlSetProp(postgresql, "expires", buffer);
@@ -249,6 +251,7 @@ void write_results(void)
 void probe(gpointer data, gpointer user_data) 
 { 
   char *dbhost, *dbuser, *dbpasswd, *dbname;
+  char dbport[12];
   struct probedef *probe = (struct probedef *)data;
   PGconn *conn;
   PGresult *res;
@@ -260,13 +263,14 @@ void probe(gpointer data, gpointer user_data)
   }
     
   dbhost = probe->ipaddress;
+  sprintf(dbport, "%d", probe->port);
   dbname = probe->dbname;
   dbuser = probe->dbuser;
   dbpasswd = probe->dbpasswd;
 
   gettimeofday(&start, NULL);
 
-  conn = PQsetdbLogin(dbhost, NULL, NULL, NULL, dbname, dbuser, dbpasswd);
+  conn = PQsetdbLogin(dbhost, dbport, NULL, NULL, dbname, dbuser, dbpasswd);
   if (PQstatus(conn) == CONNECTION_BAD) {
     probe->msg = strdup(PQerrorMessage(conn));
     goto err_exit;

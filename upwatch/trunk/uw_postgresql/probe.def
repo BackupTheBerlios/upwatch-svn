@@ -27,6 +27,14 @@ probe = {
     descrip = "target ip address";
   };
 
+  def = {
+    name = "port";
+    type = "int";
+    null = false;
+    default = "5432";
+    descrip = "port to connect to";
+  };
+  
   attribute = {
     name = "realm";
     required = true;

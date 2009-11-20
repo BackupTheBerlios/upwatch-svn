@@ -32,6 +32,14 @@ probe = {
     descrip = "target ip address";
   };
 
+  def = {
+    name = "port";
+    type = "int";
+    null = false;
+    default = "3306";
+    descrip = "port to connect to";
+  };
+
   attribute = {
     name = "date";
     required = true;
