@@ -1,6 +1,6 @@
 [+ AutoGen5 template def_mysql raw_mysql def_pgsql raw_pgsql def_h res_h enum xml dtd dtd-inc +]
 [+ CASE (suffix) +][+
-   == def_mysql +]--
+   == def_mysql +][+# =========== GENERATE DATABASE DEFINITION FOR THIS PROBE IN MYSQL FORMAT ========== +]--
 [+(dne "-- ")+]
 [+ FOR probe +]
 --
@@ -112,7 +112,7 @@ INSERT into pr_[+name+]_def set id = '1', description = 'empty';
 INSERT into probe set id = '[+id+]', name = '[+name+]', description = '[+descrip+]', [+
  if (exist? "expiry") +]expiry = '[+expiry+]', [+ endif +]addbyhand = '[+addbyhand+]', [+
  if (exist? "fuse") +]fuse = '[+fuse+]', [+ endif +]class = '[+class+]', graphgroup = '[+graphgroup+]', graphtypes = '[+graphtypes+]', comment = '[+comment+]';[+ ENDFOR probe +][+
-   == def_pgsql +]--
+   == def_pgsql +][+# ============ GENERATE DATABASE DEFINITION FOR THIS PROBE IN POSTGRESQL FORMAT ===========  +]--
 [+(dne "-- ")+]
 [+ FOR probe +]
 --
@@ -232,7 +232,7 @@ INSERT into probe (id, name, description, addbyhand, class, graphgroup, graphtyp
 +]) values ('[+id+]', '[+name+]', '[+descrip+]', '[+addbyhand+]', '[+class+]', '[+graphgroup+]', '[+graphtypes+]', '[+comment+]' [+
  if (exist? "expiry") +], '[+expiry+]'[+ endif +][+
  if (exist? "fuse") +], '[+fuse+]'[+ endif +]);[+ ENDFOR probe +][+
-   == raw_mysql +]--
+   == raw_mysql +][+# ============ GENERATE DATABASE RESULT TABLES FOR THIS PROBE IN MYSQL FORMAT ============= +]--
 [+(dne "-- ")+]
 [+ FOR probe +]
 [+ IF (count "result") +]
@@ -345,7 +345,7 @@ ENDFOR result +]
 [+ ENDFOR period +]
 [+ ENDIF  result +]
 [+ ENDFOR probe +][+
-   == raw_pgsql +]--
+   == raw_pgsql +][+# ============ GENERATE DATABASE RESULT TABLES FOR THIS PROBE IN POSTGRESQL FORMAT ============ +]--
 [+(dne "-- ")+]
 [+ FOR probe +]
 [+ IF (count "result") +]
@@ -460,8 +460,7 @@ CREATE UNIQUE INDEX pr_[+name+]_[+period+]_statprob_index on pr_[+name+]_[+perio
 [+ ENDFOR period +]
 [+ ENDIF  result +]
 [+ ENDFOR probe +]
-[+ == def_h
-+]/*
+[+ == def_h +][+# ================ GENERATE DEFINITION FOR THIS PROBE IN C HEADER FORMAT =================== +]/*
 [+(dne " * ")+]
  */
 /* probe specific part of C struct for [+table+] definition */
@@ -488,8 +487,7 @@ ENDIF+]
 IF unsigned +]unsigned [+
 ENDIF+]
   int [+name+];		/* [+descrip+] */[+ ESAC type +][+ ENDFOR def+][+ENDFOR probe+]
-[+ == res_h
-+]/*
+[+ == res_h +][+# ================== GENERATE RESULT FOR THIS PROBE IN C HEADER FORMAT ================== +]/*
 [+(dne " * ")+]
  */
 /* probe specific part of C struct for [+table+] results */
@@ -516,9 +514,9 @@ ENDIF+]
 ENDIF+]int [+name+];    /* [+descrip+] */[+ ESAC type +][+ ENDFOR result+][+ ENDFOR probe +]
 [+ == enum +][+ FOR probe 
 +]PROBE_[+name+] = [+id+],
-[+ ENDFOR probe +]
-[+ == dtd-inc
-+][+ FOR probe +][+ FOR element +]<!ELEMENT [+name+] (#PCDATA)>		<!-- [+descrip+] -->
+[+ ENDFOR probe +][+ 
+  == dtd-inc +][+# ================== GENERATE XML DTD FOR THIS PROBE ================== +][+ 
+FOR probe +][+ FOR element +]<!ELEMENT [+name+] (#PCDATA)>		<!-- [+descrip+] -->
 [+ ENDFOR element +][+ FOR result +][+
 IF (not (exist? "noelement")) +]<!ELEMENT [+name+] (#PCDATA)>		<!-- [+descrip+] -->
 [+ ENDIF element +][+ ENDFOR result +][+ ENDFOR probe +][+ == dtd
@@ -531,7 +529,8 @@ IF (exist? "default") +] "[+default+]"[+ENDIF
 +][+IF required+] #REQUIRED[+ENDIF required+]
 [+ ENDFOR attribute +]>
 
-[+ ENDFOR probe +][+ == xml
+[+ ENDFOR probe +][+ 
+  == xml +][+# ====================== GENERATE XML DOCUMENTATION FOR THIS PROBE ========================
 +]<?xml version="1.0" encoding="UTF-8"?>
 [+ FOR probe +]
 
