@@ -159,7 +159,7 @@ if [ "$1" -eq "0" ]; then
 %files
 %defattr(0660,root,upwatch,0770)
 %doc AUTHORS ChangeLog COPYING INSTALL README NEWS TODO VERSION
-%doc upwatch-base.mysql upwatch-full.mysql
+%doc upwatch-base.mysql upwatch-full.mysql upwatch-base.pgsql upwatch-full.pgsql
 %doc doc/upwatch.txt doc/upwatch.html doc/upwatch.pdf
 %attr(0770,upwatch,upwatch) %dir /etc/upwatch.d
 /etc/upwatch.d/uw_sysstat.d/syslog/linux.kernel

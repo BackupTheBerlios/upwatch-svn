@@ -11,7 +11,7 @@ result.dtd : result.dtd-base ../uw_*/probe.dtd ../uw_*/probe.dtd-inc
 	cat ../uw_*/probe.dtd  >> result.dtd
 
 EXTRA_DIST = upwatch.conf upwatch-common.mysql upwatch-realm.mysql upwatch-full.mysql \
-  upwatch-common.pqsql upwatch-realm.pqsql upwatch-full.pgsql \
+  upwatch-common.pgsql upwatch-realm.pgsql upwatch-full.pgsql \
   result.dtd-base logrotate sysconfig cron.daily upwatch.redhat upwatch.suse
 
 install-data-local:
