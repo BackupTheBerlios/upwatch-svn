@@ -69,7 +69,7 @@ endif
 
 DIST_SUBDIRS = ${SUBDIRS} doc
 
-dist_doc_DATA = AUTHORS COPYING NEWS README upwatch-base.mysql upwatch-full.mysql
+dist_doc_DATA = AUTHORS COPYING NEWS README upwatch-base.mysql upwatch-full.mysql upwatch-base.pgsql upwatch-full.pgsql
 
 if ENABLE_SERVER
 SERVER_DIST = probes.enum 
@@ -93,6 +93,19 @@ upwatch-base.mysql: config/upwatch-realm.mysql config/upwatch-common.mysql uw_*/
 upwatch-full.mysql: config/upwatch-full.mysql config/upwatch-common.mysql uw_*/probe.def_mysql uw_*/probe.raw_mysql
 	cat $+ > upwatch-full.mysql
 
+upwatch-base.pgsql: config/upwatch-realm.pgsql config/upwatch-common.pgsql uw_*/probe.def_pgsql
+	echo "CREATE DOMAIN uinteger AS INTEGER CHECK( VALUE >= '0');" > upwatch-base.pgsql
+	echo "CREATE DOMAIN usmallint AS SMALLINT CHECK( VALUE >= '0');" >> upwatch-base.pgsql
+	echo "CREATE DOMAIN ubigint AS BIGINT CHECK( VALUE >= '0');" >> upwatch-base.pgsql
+	echo "BEGIN;" >> upwatch-base.pgsql
+	cat $+ >> upwatch-base.pgsql
+	echo "ROLLBACK;" >> upwatch-base.pgsql
+
+upwatch-full.pgsql: config/upwatch-full.pgsql config/upwatch-common.pgsql uw_*/probe.def_pgsql uw_*/probe.raw_pgsql
+	echo "BEGIN;" > upwatch-full.pgsql
+	cat $+ >> upwatch-full.pgsql
+	echo "ROLLBACK;" >> upwatch-full.pgsql
+
 force:
 	touch force
 
@@ -100,7 +113,7 @@ RELEASE: force
 	svnversion . > RELEASE
 	rm -f force
 
-CLEANFILES = upwatch.mysql upwatch.spec upwatch-*.tar.gz
+CLEANFILES = upwatch.mysql upwatch.pgsql upwatch.spec upwatch-*.tar.gz
 
 install-data-local:
 	if test `${ID} -u` -eq 0; then \

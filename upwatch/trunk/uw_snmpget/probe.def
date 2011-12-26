@@ -107,6 +107,7 @@ probe = {
   def = {
     name = "mode";
     type = "enum";
+    length = 10;
     enumval = "'absolute', 'relative'";
     null = false;
     default = "absolute";

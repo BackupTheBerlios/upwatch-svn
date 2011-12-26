@@ -10,6 +10,8 @@ probe = {
   graphgroup = "";
   graphtypes = "default";
   comment = "";
+  yellow = "0";
+  red = "0";
 
   attribute = {
     name = "ipaddress";

@@ -188,8 +188,8 @@ probe = {
   graphtypes = "temp rotation voltage";
   comment = "";
   max_rows = 1000000;
-// yellow = "40";
-// red = "50";
+  yellow = "0";
+  red = "0";
   message = "Hardware status";
 
   attribute = {
@@ -414,6 +414,8 @@ probe = {
   class = "";
   graphgroup = "";
   graphtypes = "default";
+  yellow = "0";
+  red = "0";
   comment = "";
 
   attribute = {
@@ -473,6 +475,8 @@ probe = {
   class = "";
   graphgroup = "";
   graphtypes = "default";
+  yellow = "0";
+  red = "0";
   comment = "";
 
   attribute = {
@@ -532,6 +536,8 @@ probe = {
   class = "";
   graphgroup = "";
   graphtypes = "default";
+  yellow = "0";
+  red = "0";
   comment = "";
 
   attribute = {

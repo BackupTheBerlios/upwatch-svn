@@ -1,4 +1,4 @@
-[+ AutoGen5 template def_mysql raw_mysql def_h res_h enum xml dtd dtd-inc +]
+[+ AutoGen5 template def_mysql raw_mysql def_pgsql raw_pgsql def_h res_h enum xml dtd dtd-inc +]
 [+ CASE (suffix) +][+
    == def_mysql +]--
 [+(dne "-- ")+]
@@ -14,7 +14,7 @@ CREATE TABLE pr_[+name+]_def (
 -- in one central database. 
   domid int unsigned NOT NULL default '1',      -- the id of the database this probe belongs to
   tblid int unsigned NOT NULL default '1',      -- the unique id of the probe in that database
-  changed timestamp NOT NULL,			-- 
+  changed timestamp NOT NULL default CURRENT_TIMESTAMP,			-- 
 -- end aggregation fields
   pgroup int unsigned NOT NULL default '2', 	-- group id 
   server int unsigned NOT NULL default '1', 	-- server id
@@ -112,6 +112,126 @@ INSERT into pr_[+name+]_def set id = '1', description = 'empty';
 INSERT into probe set id = '[+id+]', name = '[+name+]', description = '[+descrip+]', [+
  if (exist? "expiry") +]expiry = '[+expiry+]', [+ endif +]addbyhand = '[+addbyhand+]', [+
  if (exist? "fuse") +]fuse = '[+fuse+]', [+ endif +]class = '[+class+]', graphgroup = '[+graphgroup+]', graphtypes = '[+graphtypes+]', comment = '[+comment+]';[+ ENDFOR probe +][+
+   == def_pgsql +]--
+[+(dne "-- ")+]
+[+ FOR probe +]
+--
+-- Table structure for table 'pr_[+name+]_def'
+--
+
+CREATE TABLE pr_[+name+]_def (
+-- PLEASE NOTE THE FIRST FIELDS MUST STAY THIS WAY.
+  id serial,  					-- probe unique numerical id
+-- the following fields are only used when the probe definitions are aggregated
+-- in one central database. 
+  domid uinteger NOT NULL default '1',		-- the id of the database this probe belongs to
+  tblid uinteger NOT NULL default '1',		-- the unique id of the probe in that database
+  changed timestamp NOT NULL default CURRENT_TIMESTAMP,			-- 
+-- end aggregation fields
+  pgroup uinteger NOT NULL default '2', 	-- group id 
+  server uinteger NOT NULL default '1', 	-- server id
+  contact uinteger NOT NULL default '1',	-- user field: pointer to contact database
+  notify uinteger NOT NULL default '1',		-- notifier id
+  email varchar(64) NOT NULL default '',	-- address to send warning email to
+  sms varchar(64) NOT NULL default '',		-- phonenumber(s) to send SMS to
+  delay uinteger NOT NULL default '1',		-- after this many minutes of red light
+  disable varchar(3) not null default 'no' CHECK (disable IN ('yes','no')), -- disable this probe
+  hide varchar(3) not null default 'no' CHECK (hide IN ('yes','no')), -- hide probe results from viewing
+  ipaddress varchar(128) NOT NULL default '127.0.0.1',	-- target ipaddress or hostname
+  description text NOT NULL default '',		-- description
+  freq usmallint NOT NULL default '1',		-- frequency in minutes
+  yellow float NOT NULL default '[+yellow+]',	-- value for yellow alert
+  red float NOT NULL default '[+red+]', 	-- value for red alert [+ 		
+FOR def +][+
+CASE type +][+
+== float +]
+  [+name+] [+type+][+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
+== varchar +]
+  [+name+] [+type+][+
+IF length +]([+length+])[+
+ENDIF +][+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
+== text +]
+  [+name+] [+type+][+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
+== char +]
+  [+name+] [+type+][+
+IF length +]([+length+])[+
+ENDIF +][+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
+== bool +]
+  [+name+] varchar(3)[+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]' CHECK ([+name+] IN ('yes','no')),       -- [+descrip+][+
+== enum +]
+  [+name+] varchar([+length+])[+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]' CHECK ([+name+] IN ([+enumval+])),       -- [+descrip+][+
+== tinyint +]
+  [+name+] [+
+IF unsigned +] usmallint[+
+ELSE +] smallint[+
+ENDIF+][+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
+== int +]
+  [+name+][+
+IF unsigned +] uinteger[+
+ELSE +] integer[+
+ENDIF+][+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL [+
+IF auto +]auto_increment,       -- [+descrip+][+
+ELSE +]default '[+default+]',   -- [+descrip+][+
+ENDIF +][+
+== bigint +]
+  [+name+] [+type+][+
+IF unsigned +] ubigint[+
+ELSE +] bigint[+
+ENDIF+][+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL [+
+IF auto +]auto_increment,       -- [+descrip+][+
+ELSE +]default '[+default+]',   -- [+descrip+][+
+ENDIF +][+
+ESAC type +][+ ENDFOR def+]
+  PRIMARY KEY  (id)
+);
+
+CREATE INDEX pr_[+name+]_def_server_index on pr_[+name+]_def (server);
+CREATE INDEX pr_[+name+]_def_notify_index on pr_[+name+]_def (notify);
+CREATE INDEX pr_[+name+]_def_ipaddress_index on pr_[+name+]_def (ipaddress);
+CREATE INDEX pr_[+name+]_def_domtbl_index on pr_[+name+]_def (domid, tblid);
+
+[+
+  (if (not (exist? "id"))
+      (error (sprintf "Missing probe id for probe %s" (get "probe.name")) )
+  )
+  (if (not (exist? "addbyhand"))
+      (error (sprintf "addbyhand not set for probe %s" (get "probe.name")) )
+  )
++]
+INSERT into pr_[+name+]_def (id, description) values ('1', 'empty');
+INSERT into probe (id, name, description, addbyhand, class, graphgroup, graphtypes, comment [+
+ if (exist? "expiry") +], expiry[+ endif +][+
+ if (exist? "fuse") +], fuse[+ endif 
++]) values ('[+id+]', '[+name+]', '[+descrip+]', '[+addbyhand+]', '[+class+]', '[+graphgroup+]', '[+graphtypes+]', '[+comment+]' [+
+ if (exist? "expiry") +], '[+expiry+]'[+ endif +][+
+ if (exist? "fuse") +], '[+fuse+]'[+ endif +]);[+ ENDFOR probe +][+
    == raw_mysql +]--
 [+(dne "-- ")+]
 [+ FOR probe +]
@@ -206,7 +326,7 @@ CREATE TABLE pr_[+name+]_[+period+] (
   probe int unsigned NOT NULL default '1',	-- probe identifier
   yellow float NOT NULL default '[+yellow+]',	-- value for yellow alert
   red float NOT NULL default '[+red+]', 	-- value for red alert 
-  slot smallint(5) unsigned NOT NULL default '0', -- timeslot in this period
+  slot smallint unsigned NOT NULL default '0', -- timeslot in this period
   stattime int unsigned NOT NULL default '0',	-- time when result was generated
   color smallint unsigned NOT NULL default '200', -- color value [+ 
 FOR result +]
@@ -222,6 +342,121 @@ ENDFOR result +]
   UNIQUE KEY probstat (probe,stattime),
   UNIQUE KEY statprob (stattime,probe)
 ) TYPE=MyISAM;
+[+ ENDFOR period +]
+[+ ENDIF  result +]
+[+ ENDFOR probe +][+
+   == raw_pgsql +]--
+[+(dne "-- ")+]
+[+ FOR probe +]
+[+ IF (count "result") +]
+--
+-- Table structure for table 'pr_[+name+]_raw'
+--
+
+CREATE TABLE pr_[+name+]_raw (
+  id serial,					-- unique id for result
+  probe uinteger NOT NULL default '1',      -- probe identifier
+  yellow float NOT NULL default '[+yellow+]',   -- value for yellow alert
+  red float NOT NULL default '[+red+]',         -- value for red alert
+  stattime uinteger NOT NULL default '0',   -- time when result was generated
+  color usmallint NOT NULL default '200', -- color value [+
+FOR result +][+
+CASE type +][+
+== float +]
+  [+name+] [+type+][+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
+== varchar +]
+  [+name+] [+type+][+
+IF length +]([+length+])[+
+ENDIF +][+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
+== text +]
+  [+name+] [+type+][+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
+== char +]
+  [+name+] [+type+][+
+IF length +]([+length+])[+
+ENDIF +][+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
+== bool +]
+  [+name+] enum('yes', 'no')[+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
+== tinyint +]
+  [+name+] [+
+IF unsigned +] usmallint[+
+ELSE +] smallint[+
+ENDIF+][+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL default '[+default+]',       -- [+descrip+][+
+== int +]
+  [+name+] [+
+IF unsigned +] uinteger[+
+ELSE +] integer[+
+ENDIF+][+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL [+
+IF auto +]auto_increment,       -- [+descrip+][+
+ELSE +]default '[+default+]',   -- [+descrip+][+
+ENDIF +][+
+== bigint +]
+  [+name+] [+
+IF unsigned +] ubigint[+
+ELSE +] bigint[+
+ENDIF+][+
+IF null +][+
+ELSE +] NOT[+
+ENDIF null +] NULL [+
+IF auto +]auto_increment,       -- [+descrip+][+
+ELSE +]default '[+default+]',   -- [+descrip+][+
+ENDIF +][+
+ESAC type +][+ ENDFOR result+]
+  message text NOT NULL default '',
+  PRIMARY KEY (id)
+); 
+
+CREATE UNIQUE INDEX pr_[+name+]_raw_probstat_index on pr_[+name+]_raw (probe,stattime);
+CREATE UNIQUE INDEX pr_[+name+]_raw_statprob_index on pr_[+name+]_raw (stattime, probe);
+
+[+ FOR period +]
+--
+-- Table structure for table 'pr_[+name+]_[+period+]'
+--
+
+CREATE TABLE pr_[+name+]_[+period+] (
+  id serial,					-- unique id for result
+  probe uinteger NOT NULL default '1',		-- probe identifier
+  yellow float NOT NULL default '[+yellow+]',	-- value for yellow alert
+  red float NOT NULL default '[+red+]', 	-- value for red alert 
+  slot usmallint NOT NULL default '0', 		-- timeslot in this period
+  stattime uinteger NOT NULL default '0',	-- time when result was generated
+  color usmallint NOT NULL default '200', 	-- color value [+ 
+FOR result +]
+  [+name+] [+type+][+
+IF length +]([+length+])[+ 
+ENDIF +] [+
+IF null +][+ 
+ELSE +]NOT [+
+ENDIF null +]NULL default '[+default+]',	-- [+descrip+][+ 
+ENDFOR result +]
+  message text NOT NULL default '',
+  PRIMARY KEY (id)
+);
+
+CREATE UNIQUE INDEX pr_[+name+]_[+period+]_probstat_index on pr_[+name+]_[+period+] (probe,stattime);
+CREATE UNIQUE INDEX pr_[+name+]_[+period+]_statprob_index on pr_[+name+]_[+period+] (stattime, probe);
+
 [+ ENDFOR period +]
 [+ ENDIF  result +]
 [+ ENDFOR probe +]

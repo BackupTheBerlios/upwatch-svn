@@ -25,7 +25,7 @@ endif
 
 SPECFILES = $(program:%=%.spec-requires) $(program:%=%.spec-buildrequires) $(program:%=%.spec-files)
 INITFILES = $(program:%=%.redhat) $(program:%=%.suse) $(program:%=%.solaris) $(program:%=%.debian)
-PROBFILES  = probe.def_h probe.res_h probe.enum probe.def_mysql probe.raw_mysql probe.xml probe.dtd probe.dtd-inc
+PROBFILES  = probe.def_h probe.res_h probe.enum probe.def_mysql probe.raw_mysql probe.def_pgsql probe.raw_pgsql probe.xml probe.dtd probe.dtd-inc
 AGDEFINES = -Dconfdir=$(confdir) -Dsysconfdir=$(sysconfdir) -Dsbindir=$(sbindir) \
  -Dlogdir=$(logdir) -Dspooldir=$(spooldir) $(ag_xmbmon)
 
@@ -40,7 +40,7 @@ AGDEFINES = -Dconfdir=$(confdir) -Dsysconfdir=$(sysconfdir) -Dsbindir=$(sbindir)
 %.c %.h: %.def
 	autogen -b $(<:%.def=%) $(AGDEFINES) $(GENINCL) $<
 	
-probe.def_h probe.res_h probe.enum probe.def_mysql probe.raw_mysql probe.dtd probe.dtd-inc probe.xml: probe.def $(PROBDEF)
+probe.def_h probe.res_h probe.enum probe.def_mysql probe.raw_mysql probe.def_pgsql probe.raw_pgsql probe.dtd probe.dtd-inc probe.xml: probe.def $(PROBDEF)
 	autogen -b probe $(AGDEFINES) $(GENINCL) -T $(PROBTPL) probe.def
 
 %.1: %.def
