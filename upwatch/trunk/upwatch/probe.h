@@ -88,7 +88,6 @@ void init_no_cache(module *probe);
   void (*xml_result_node)(trx *t);		/* process properties of the "result" node  */ \
   void (*get_from_xml)(trx *t);			/* process one child of the "result" node */ \
   int (*accept_result)(trx *t);			/* accept (and maybe convert) result */ \
-  char *get_def_fields;				/* list of fields to be inserted into SQL get_def query */ \
   void (*set_def_fields)(trx *t, struct probe_def *def, MYSQL_RES *result);/* convert MySQL ROW into probe_def */ \
   void *(*get_def)(trx *t, int create);		/* retrieve probe definition */ \
   void (*adjust_result)(trx *t);		/* adjust result: usually compute our own colors */ \

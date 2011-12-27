@@ -180,7 +180,6 @@ void *get_def(trx *t, int create)
   MYSQL_RES *result;
   MYSQL_ROW row;
   time_t now = time(NULL);
-  char *def_fields = "ipaddress, description, server, yellow, red, contact, hide, email, sms, delay, pgroup";
 
   def = g_hash_table_lookup(t->probe->cache, &res->probeid);
   if (def && def->stamp < now - (120 + uw_rand(240))) { // older then 2 - 6 minutes?
@@ -210,8 +209,9 @@ void *get_def(trx *t, int create)
 
     // Get the server, contact and yellow/red info from the def record. Note the yellow/red may 
     // have been changed by the user so need to be transported into the data files
-    result = my_query(t->probe->db, 0, "select %s from pr_%s_def where  id = '%u'", 
-                      t->probe->get_def_fields ? t->probe->get_def_fields : def_fields,
+    result = my_query(t->probe->db, 0, "select ipaddress, description, server, yellow, red, "
+                                       "       contact, hide, email, sms, delay, pgroup "
+                                       "  from pr_%s_def where  id = '%u'", 
                       res->name, res->probeid);
     if (!result) return(NULL);
 
@@ -245,8 +245,9 @@ void *get_def(trx *t, int create)
                          res->realm, res->stattime, t->fromhost,
                          res->name, res->probeid, mysql_error(t->probe->db));
       }
-      result = my_query(t->probe->db, 0, "select %s from pr_%s_def where  id = '%u'", 
-                        t->probe->get_def_fields ? t->probe->get_def_fields : def_fields,
+      result = my_query(t->probe->db, 0, "select ipaddress, description, server, yellow, red, "
+                                         "       contact, hide, email, sms, delay, pgroup " 
+                                         "  from pr_%s_def where  id = '%u'", 
                         res->name, res->probeid);
       if (!result) return(NULL);
     }
