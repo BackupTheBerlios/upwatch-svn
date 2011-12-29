@@ -15,7 +15,7 @@ int bb_find_realm(trx *t)
 
   query_server_by_name = NULL;
   for (i=0; i < dblist_cnt; i++) {
-    t->probe->db = open_realm(dblist[i].realm);
+    t->probe->db = open_realm(dblist[i].realm, OPT_ARG(DBTYPE), OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
     server = realm_server_by_name(dblist[i].realm, t->res->hostname);
     if (server > 1) {
       t->res->server = server;

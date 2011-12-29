@@ -13,35 +13,41 @@
 //*******************************************************************
 static gint mysqlstats_store_raw_result(trx *t)
 {
-  MYSQL_RES *result;
+  dbi_result result;
   struct mysqlstats_result *res = (struct mysqlstats_result *)t->res;
   struct probe_def *def = (struct probe_def *)t->def;
   char *escmsg;
+  const char *errmsg;
 
   if (t->res->color == STAT_PURPLE) return 1;
   t->seen_before = FALSE;
   if (res->message) {
-    escmsg = g_malloc(strlen(res->message) * 2 + 1);
-    mysql_real_escape_string(t->probe->db, escmsg, res->message, strlen(res->message)) ;
+    dbi_conn_quote_string_copy(t->probe->db->conn, t->res->message, &escmsg);
   } else {
     escmsg = strdup("");
   }
     
-  result = my_query(t->probe->db, 0,
-                    "insert into pr_mysqlstats_raw "
-                    "set    probe = '%u', yellow = '%f', red = '%f', stattime = '%u', color = '%u', "
-                    "       selectq = '%u', insertq = '%u', updateq = '%u', deleteq = '%u', "
-                    "       message = '%s' ",
+  result = db_query(t->probe->db, 0,
+                    "insert into pr_mysqlstats_raw (probe, yellow, red, stattime, color, selectq, insertq, "
+                    "                               updateq, deleteq, message) "
+                    "            values ('%u', '%f', '%f', '%u', '%u', '%u', '%u', "
+                    "                    '%u', '%u', '%s')",
                     def->probeid, def->yellow, def->red, res->stattime, res->color, 
                     res->selectq, res->insertq, res->updateq, res->deleteq,escmsg);
   g_free(escmsg);
-  if (result) mysql_free_result(result);
-  if (mysql_errno(t->probe->db) == ER_DUP_ENTRY) {
-    t->seen_before = TRUE;
-  } else if (mysql_errno(t->probe->db)) {
-    return 0; // other failure
+  if (result) {
+    dbi_result_free(result);
+    return 1; // success
   }
-  return 1; // success
+  if (dbi_duplicate_entry(t->probe->db->conn)) {
+    t->seen_before = TRUE;
+    return 1; // success
+  }
+  if (dbi_conn_error(t->probe->db->conn, &errmsg) == DBI_ERROR_NONE) {
+    return 1; // success
+  }
+  LOG(LOG_ERR, "%s", errmsg);
+  return 0; // Failure
 }
 
 //*******************************************************************
@@ -59,8 +65,7 @@ static int mysqlstats_notify_mail_subject(trx *t, FILE *fp, char *servername)
 //*******************************************************************
 static void mysqlstats_summarize(trx *t, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint resummarize)
 {
-  MYSQL_RES *result;
-  MYSQL_ROW row;
+  dbi_result result;
   struct probe_def *def = (struct probe_def *)t->def;
   float avg_yellow, avg_red;
   int avg_selectq;
@@ -72,59 +77,58 @@ static void mysqlstats_summarize(trx *t, char *from, char *into, guint slot, gui
 
   stattime = slotlow + ((slothigh-slotlow)/2);
 
-  result = my_query(t->probe->db, 0,
-                    "select avg(selectq), avg(insertq), avg(updateq), avg(deleteq), "
-                    "       max(color), avg(yellow), avg(red) "
+  result = db_query(t->probe->db, 0,
+                    "select avg(selectq) as avg_selectq, avg(insertq) as avg_insertq, avg(updateq) as avg_updateq, "
+                    "       avg(deleteq) as avg_deleteq, max(color) as max_color, avg(yellow) as avg_yellow, avg(red) as avg_red"
                     "from   pr_mysqlstats_%s use index(probstat) "
                     "where  probe = '%d' and stattime >= %d and stattime < %d",
                     from, def->probeid, slotlow, slothigh);
 
   if (!result) return;
-  if (mysql_num_rows(result) == 0) { // no records found
+  if (dbi_result_get_numrows(result) == 0) { // no records found
     LOG(LOG_NOTICE, "nothing to summarize from %s for probe %u %u %u",
                        from, def->probeid, slotlow, slothigh);
-    mysql_free_result(result);
+    dbi_result_free(result);
     return;
   }
 
-  row = mysql_fetch_row(result);
-  if (!row) {
-    mysql_free_result(result);
+  if (!dbi_result_next_row(result)) {
+    dbi_result_free(result);
     return;
   }
-  if (row[0] == NULL) {
+  if (dbi_result_field_is_null_idx(result, 0)) {
     LOG(LOG_NOTICE, "nothing to summarize from %s for probe %u %u %u", 
                        from, def->probeid, slotlow, slothigh);
-    mysql_free_result(result);
+    dbi_result_free(result);
     return;
   }
 
-  avg_selectq = atoi(row[0]);
-  avg_insertq = atoi(row[1]);
-  avg_updateq = atoi(row[2]);
-  avg_deleteq = atoi(row[3]);
-  max_color   = atoi(row[4]);
-  avg_yellow  = atof(row[5]);
-  avg_red     = atof(row[6]);
-  mysql_free_result(result);
+  avg_selectq = dbi_result_get_int(result, "avg_selectq");
+  avg_insertq = dbi_result_get_int(result, "avg_insertq");
+  avg_updateq = dbi_result_get_int(result, "avg_updateq");
+  avg_deleteq = dbi_result_get_int(result, "avg_deleteq");
+  max_color   = dbi_result_get_int(result, "max_color");
+  avg_yellow  = dbi_result_get_float(result, "avg_yellow");
+  avg_red     = dbi_result_get_float(result, "avg_red");
+  dbi_result_free(result);
 
   if (resummarize) {
     // delete old values
-    result = my_query(t->probe->db, 0,
+    result = db_query(t->probe->db, 0,
                     "delete from pr_mysqlstats_%s where probe = '%u' and stattime = '%u'",
                     into, def->probeid, stattime);
-    mysql_free_result(result);
+    dbi_result_free(result);
   }
 
-  result = my_query(t->probe->db, 0,
-                    "insert into pr_mysqlstats_%s "
-                    "set    selectq = '%u', insertq = '%u', updateq = '%u', deleteq = '%u', "
-                    "       probe = %d, color = '%u', stattime = %d, "
-                    "       yellow = '%f', red = '%f', slot = '%u'",
+  result = db_query(t->probe->db, 0,
+                    "insert into pr_mysqlstats_%s (selectq, insertq, updateq, deleteq, probe, color, stattime, "
+                    "                              yellow, red, slot) "
+                    "            values ('%u', '%u', '%u', '%u', '%d', '%u', '%d', "
+                    "                    '%f', '%f', '%u')",
                     into,  avg_selectq, avg_insertq, avg_updateq, avg_deleteq, def->probeid, 
                     max_color, stattime, avg_yellow, avg_red, slot);
 
-  mysql_free_result(result);
+  dbi_result_free(result);
 }
 
 module mysqlstats_module  = {

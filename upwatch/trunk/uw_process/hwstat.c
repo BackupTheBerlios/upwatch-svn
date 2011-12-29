@@ -13,28 +13,25 @@
 //*******************************************************************
 static gint hwstat_store_raw_result(trx *t)
 {
-  MYSQL_RES *result;
+  dbi_result result;
   struct hwstat_result *res = (struct hwstat_result *)t->res;
   struct probe_def *def = (struct probe_def *)t->def;
   char *escmsg;
+  const char *errmsg;
 
   if (t->res->color == STAT_PURPLE) return 1;
   t->seen_before = FALSE;
   if (res->message) {
-    escmsg = g_malloc(strlen(res->message) * 2 + 1);
-    mysql_real_escape_string(t->probe->db, escmsg, res->message, strlen(res->message)) ;
+    dbi_conn_quote_string_copy(t->probe->db->conn, t->res->message, &escmsg);
   } else {
     escmsg = strdup("");
   }
     
-  result = my_query(t->probe->db, 0,
-                    "insert into pr_hwstat_raw "
-                    "set    probe = '%u', yellow = '%f', red = '%f', stattime = '%u', color = '%u', "
-                    "       temp1 = '%f', temp2 = '%f', temp3 = '%f', "
-                    "       rot1 = '%d', rot2 = '%d', rot3 = '%d', "
-                    "       vc0 = '%f', vc1 = '%f', v33 = '%f', " 
-                    "       v50p = '%f', v12p = '%f', v12n = '%f', v50n = '%f', "
-                    "       message = '%s'",
+  result = db_query(t->probe->db, 0,
+                    "insert into pr_hwstat_raw (probe, yellow, red, stattime, color, temp1, temp2, temp3, "
+                    "                           rot1, rot2, rot3, vc0, vc1, v33, v50p, v12p, v12n, v50n, message) "
+                    "            values ('%u', '%f', '%f', '%u', '%u', '%f', '%f', '%f', "
+                    "                    '%d', '%d', '%d', '%f', '%f', '%f', '%f', '%f', '%f', '%f', '%s')",
                     def->probeid, def->yellow, def->red, res->stattime, res->color, 
                     res->temp1, res->temp2, res->temp3, 
                     res->rot1, res->rot2, res->rot3, 
@@ -42,13 +39,19 @@ static gint hwstat_store_raw_result(trx *t)
                     res->v50p, res->v12p, res->v12n, res->v50n, 
                     escmsg);
   g_free(escmsg);
-  if (result) mysql_free_result(result);
-  if (mysql_errno(t->probe->db) == ER_DUP_ENTRY) {
-    t->seen_before = TRUE;
-  } else if (mysql_errno(t->probe->db)) {
-    return 0; // other failure
+  if (result) {
+    dbi_result_free(result);
+    return 1; // success
   }
-  return 1; // success
+  if (dbi_duplicate_entry(t->probe->db->conn)) {
+    t->seen_before = TRUE;
+    return 1; // success
+  }
+  if (dbi_conn_error(t->probe->db->conn, &errmsg) == DBI_ERROR_NONE) {
+    return 1; // success
+  }
+  LOG(LOG_ERR, "%s", errmsg);
+  return 0; // Failure
 }
 
 //*******************************************************************
@@ -56,8 +59,7 @@ static gint hwstat_store_raw_result(trx *t)
 //*******************************************************************
 static void hwstat_summarize(trx *t, char *from, char *into, guint slot, guint slotlow, guint slothigh, gint resummarize)
 {
-  MYSQL_RES *result;
-  MYSQL_ROW row;
+  dbi_result result;
   struct probe_def *def = (struct probe_def *)t->def;
   gfloat avg_yellow, avg_red;
   gfloat avg_temp1, avg_temp2, avg_temp3;
@@ -68,68 +70,65 @@ static void hwstat_summarize(trx *t, char *from, char *into, guint slot, guint s
 
   stattime = slotlow + ((slothigh-slotlow)/2);
 
-  result = my_query(t->probe->db, 0,
-                    "select avg(temp1), avg(temp2), avg(temp3), "
-                    "       avg(rot1), avg(rot2), avg(rot3), "
-                    "       avg(vc0), avg(vc1), avg(v33), avg(v50p), "
-                    "       avg(v50n), avg(v50n), max(color), avg(yellow), avg(red) " 
+  result = db_query(t->probe->db, 0,
+                    "select avg(temp1) as avg_temp1, avg(temp2) as avg_temp2, avg(temp3) as avg_temp3, "
+                    "       avg(rot1) as avg_rot1, avg(rot2) as avg_rot2, avg(rot3) as avg_rot3, "
+                    "       avg(vc0) as avg_vc0, avg(vc1) as avg_vc1, avg(v33) as avg_v33, "
+                    "       avg(v50p) as avg_v50p, avg(v50n) as avg_v50n, avg(v12p) as avg_v12p, avg(v12n) as avg_v12n, "
+                    "       max(color) as max_color, avg(yellow) as avg_yellow, avg(red) as avg_red " 
                     "from   pr_hwstat_%s use index(probstat) "
                     "where  probe = '%d' and stattime >= %d and stattime < %d",
                     from, def->probeid, slotlow, slothigh);
   
   if (!result) return;
-  if (mysql_num_rows(result) == 0) { // no records found
+  if (dbi_result_get_numrows(result) == 0) { // no records found
     LOG(LOG_NOTICE, "nothing to summarize from %s for probe %u %u %u", 
                        from, def->probeid, slotlow, slothigh);
-    mysql_free_result(result);
+    dbi_result_free(result);
     return;
   }
-  row = mysql_fetch_row(result);
-  if (!row) {
-    mysql_free_result(result);
+  if (!dbi_result_next_row(result)) {
+    dbi_result_free(result);
     return;
   }
-  if (row[0] == NULL) {
+  if (dbi_result_field_is_null_idx(result, 0)) {
     LOG(LOG_NOTICE, "NULL values found in summarizing from %s for probe %u %u %u", 
                       from, def->probeid, slotlow, slothigh);
-    mysql_free_result(result);
+    dbi_result_free(result);
     return;
   }
 
-  avg_temp1   = atof(row[0]);
-  avg_temp2   = atof(row[1]);
-  avg_temp3   = atof(row[2]);
-  avg_rot1    = atoi(row[3]);
-  avg_rot2    = atoi(row[4]);
-  avg_rot3    = atoi(row[5]);
-  avg_vc0     = atof(row[6]);
-  avg_vc1     = atof(row[7]);
-  avg_v33     = atof(row[8]);
-  avg_v50p    = atof(row[9]);
-  avg_v12p    = atof(row[10]);
-  avg_v12n    = atof(row[11]);
-  avg_v50n    = atof(row[12]);
-  max_color   = atoi(row[13]);
-  avg_yellow  = atof(row[14]);
-  avg_red     = atof(row[15]);
-  mysql_free_result(result);
+  avg_temp1   = dbi_result_get_float(result, "avg_temp1");
+  avg_temp2   = dbi_result_get_float(result, "avg_temp2");
+  avg_temp3   = dbi_result_get_float(result, "avg_temp3");
+  avg_rot1    = dbi_result_get_int(result, "avg_rot1");
+  avg_rot2    = dbi_result_get_int(result, "avg_rot2");
+  avg_rot3    = dbi_result_get_int(result, "avg_rot3");
+  avg_vc0     = dbi_result_get_float(result, "avg_vc0");
+  avg_vc1     = dbi_result_get_float(result, "avg_vc1");
+  avg_v33     = dbi_result_get_float(result, "avg_v33");
+  avg_v50p    = dbi_result_get_float(result, "avg_v50p");
+  avg_v50n    = dbi_result_get_float(result, "avg_v50n");
+  avg_v12p    = dbi_result_get_float(result, "avg_v12p");
+  avg_v12n    = dbi_result_get_float(result, "avg_v12n");
+  max_color   = dbi_result_get_int(result, "max_color");
+  avg_yellow  = dbi_result_get_float(result, "avg_yellow");
+  avg_red     = dbi_result_get_float(result, "avg_red");
+  dbi_result_free(result);
 
   if (resummarize) {
     // delete old values
-    result = my_query(t->probe->db, 0,
+    result = db_query(t->probe->db, 0,
                     "delete from pr_hwstat_%s where probe = '%u' and stattime = '%u'",
                     into, def->probeid, stattime);
-    mysql_free_result(result);
+    dbi_result_free(result);
   }
 
-  result = my_query(t->probe->db, 0,
-                    "insert into pr_hwstat_%s " 
-                    "set    temp1 = '%f', temp2 = '%f', temp3 = '%f', "
-                    "       rot1 = '%u', rot2 = '%u', rot3 = '%u', "
-                    "       vc0 = '%f', vc1 = '%f', v33 = '%f', v50p = '%f', "
-                    "       v12p = '%f', v12n = '%f', v50n = '%f', "
-                    "       probe = %d, color = '%u', stattime = %d, "
-                    "       yellow = '%f', red = '%f', slot = '%u'",
+  result = db_query(t->probe->db, 0,
+                    "insert into pr_hwstat_%s (temp1, temp2, temp3, rot1, rot2, rot3, vc0, vc1, v33, v50p, v50n, v12p, v12n, "
+                    "                          probe, color, stattime, yellow, red, slot) "
+                    "            values ('%f', '%f', '%f', '%u', '%u', '%u', '%f', '%f', '%f', '%f', '%f', '%f', '%f', "
+                    "                    '%d', '%u', '%d', '%f', '%f', '%u')",
                     into, 
                     avg_temp1, avg_temp2, avg_temp3,
                     avg_rot1, avg_rot2, avg_rot3, 
@@ -137,7 +136,7 @@ static void hwstat_summarize(trx *t, char *from, char *into, guint slot, guint s
                     avg_v12p, avg_v12n, avg_v50n, 
                     def->probeid, max_color, stattime,
                     avg_yellow, avg_red, slot);
-  mysql_free_result(result);
+  dbi_result_free(result);
 }
 
 module hwstat_module  = {

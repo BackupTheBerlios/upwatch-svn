@@ -1,20 +1,11 @@
 #include "config.h"
 #include <generic.h>
+#include <db.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <probe.h>
 
 #include "uw_purple.h"
-
-struct dbspec {
-  int domid;
-  char *realm;
-  char *host;
-  int port;
-  char *db;
-  char *user;
-  char *password;
-};
 
 int init(void)
 {
@@ -32,20 +23,19 @@ int find_expired_probes(struct dbspec *dbspec)
 {
   xmlDocPtr doc;
   xmlNodePtr probe;
-  MYSQL_RES *result;
-  MYSQL_ROW row;
-  MYSQL *db;
+  dbi_result result;
+  database *db;
   int count = 0;
 
-  db = open_database(dbspec->host, dbspec->port, dbspec->db,
-                     dbspec->user, dbspec->password);
+  db = open_database(dbspec->dbtype, dbspec->host, dbspec->port, dbspec->dbname,
+                     dbspec->dbuser, dbspec->dbpassword);
   if (!db) return 0;
 
   doc = UpwatchXmlDoc("result", NULL);
 
   // find all expired probes, but skip those for which processing
   // has been stopped for some reason
-  result = my_query(db, 0, "select probe.name, pr_status.probe, " 
+  result = db_query(db, 0, "select probe.name, pr_status.probe, " 
                            "       pr_status.server, pr_status.color, "
                            "       pr_status.expires "
                            "from   pr_status, probe "
@@ -55,21 +45,21 @@ int find_expired_probes(struct dbspec *dbspec)
                            "       and probe.expiry = 'yes'");
   if (!result) goto errexit;
 
-  while ((row = mysql_fetch_row(result)) != NULL) {
+  while (dbi_result_next_row(result)) {
     char buffer[256];
     time_t now = time(NULL);
 
-    probe = xmlNewChild(xmlDocGetRootElement(doc), NULL, row[0], NULL);
+    probe = xmlNewChild(xmlDocGetRootElement(doc), NULL, dbi_result_get_string(result, "name"), NULL);
     xmlSetProp(probe, "realm", dbspec->realm);
-    xmlSetProp(probe, "id", row[1]);
-    xmlSetProp(probe, "server", row[2]);
+    xmlSetProp(probe, "id", dbi_result_get_string(result, "probe"));
+    xmlSetProp(probe, "server", dbi_result_get_string(result, "server"));
     sprintf(buffer, "%u", (int) now);	xmlSetProp(probe, "date", buffer);
-    xmlSetProp(probe, "expires", row[4]);
+    xmlSetProp(probe, "expires", dbi_result_get_string(result, "expires"));
 
     xmlNewChild(probe, NULL, "color", "400");  // PURPLE
-    xmlNewChild(probe, NULL, "prevcolor", row[3]);
+    xmlNewChild(probe, NULL, "prevcolor", dbi_result_get_string(result, "color"));
 
-    LOG(LOG_INFO, "%s: purpled %s %s", dbspec->realm, row[0], row[1]);
+    LOG(LOG_INFO, "%s: purpled %s %s", dbspec->realm, dbi_result_get_string(result, "name"), dbi_result_get_int(result, "probe"));
     count++;
   }
   if (count) {
@@ -79,7 +69,7 @@ int find_expired_probes(struct dbspec *dbspec)
   }
 
 errexit:
-  if (result) mysql_free_result(result);
+  if (result) dbi_result_free(result);
   if (db) close_database(db);
   if (doc) xmlFreeDoc(doc);
   return count;
@@ -91,38 +81,38 @@ errexit:
 //***********************************************************************
 int run(void)
 {
-  MYSQL_RES *result;
-  MYSQL_ROW row;
-  MYSQL *upwatch;
+  dbi_result result;
+  database *upwatch;
   int count = 0;
 
-  upwatch = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
+  upwatch = open_database(OPT_ARG(DBTYPE), OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
                         OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
   if (!upwatch) return 0;
 
   LOG(LOG_INFO, "processing ..");
   uw_setproctitle("reading info from database");
-  result = my_query(upwatch, 0, "select pr_realm.id, pr_realm.name, pr_realm.host, "
-                                "       pr_realm.port, pr_realm.db, pr_realm.user, "
-                                "       pr_realm.password "
+  result = db_query(upwatch, 0, "select pr_realm.id, pr_realm.name, pr_realm.host, "
+                                "       pr_realm.port, pr_realm.dbtype, pr_realm.dbname, "
+                                "       pr_realm.dbuser, pr_realm.dbpassword "
                                 "from   pr_realm "
                                 "where  pr_realm.id > 1");
   if (result) {
-    while ((row = mysql_fetch_row(result)) != NULL) {
+    while (dbi_result_next_row(result)) {
       struct dbspec db;
 
-      db.domid = atoi(row[0]);
-      db.realm = row[1];
-      db.host = row[2];
-      db.port = atoi(row[3]);
-      db.db = row[4];
-      db.user = row[5];
-      db.password = row[6];
-      uw_setproctitle("checking %s", row[1]);
-      LOG(LOG_DEBUG, "checking %s", row[1]);
+      db.domid = dbi_result_get_int(result, "id");
+      strcpy(db.realm, dbi_result_get_string(result, "name"));
+      strcpy(db.host, dbi_result_get_string_copy(result, "host"));
+      db.port = dbi_result_get_int(result, "port");
+      strcpy(db.dbtype, dbi_result_get_string(result, "dbtype"));
+      strcpy(db.dbname, dbi_result_get_string(result, "dbname"));
+      strcpy(db.dbuser, dbi_result_get_string(result, "dbuser"));
+      strcpy(db.dbpassword, dbi_result_get_string(result, "dbpassword"));
+      uw_setproctitle("checking %s", db.realm);
+      LOG(LOG_DEBUG, "checking %s", db.realm);
       count += find_expired_probes(&db);
     }
-    mysql_free_result(result);
+    dbi_result_free(result);
   }
   close_database(upwatch);
   LOG(LOG_INFO, "sleeping");

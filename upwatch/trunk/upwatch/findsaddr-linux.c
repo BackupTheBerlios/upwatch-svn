@@ -48,7 +48,6 @@ static const char rcsid[] =
 #include <sys/sockio.h>
 #endif
 #include <sys/time.h>				/* concession to AIX */
-#include <generic.h>
 
 #if __STDC__
 struct mbuf;

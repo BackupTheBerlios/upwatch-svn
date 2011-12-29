@@ -6,16 +6,6 @@
 
 #include "uw_syncprobes.h"
 
-struct dbspec {
-  int domid;
-  char *realm;
-  char *host;
-  int port;
-  char *db;
-  char *user;
-  char *password;
-};
-
 int init(void)
 {
   daemonize = TRUE;
@@ -24,41 +14,41 @@ int init(void)
   return(1);
 }
 
-void sync_table(MYSQL *upwatch, struct dbspec *db, char *table);
+void sync_table(database *upwatch, struct dbspec *db, const char *table);
 
 int run(void)
 {
-  MYSQL_RES *result;
-  MYSQL_ROW row;
-  MYSQL *upwatch;
+  dbi_result result;
+  database *upwatch;
 
-  upwatch = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
+  upwatch = open_database(OPT_ARG(DBTYPE), OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
                         OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
   if (!upwatch) return 0;
 
   LOG(LOG_INFO, "syncing..");
   uw_setproctitle("reading info from database");
-  result = my_query(upwatch, 0, "select pr_realm.id, pr_realm.name, pr_realm.host, "
-                                "       pr_realm.port, pr_realm.db, pr_realm.user, "
-                                "       pr_realm.password, probe.name as tbl "
+  result = db_query(upwatch, 0, "select pr_realm.id, pr_realm.name, pr_realm.host, "
+                                "       pr_realm.port, pr_realm.dbtype, pr_realm.dbname, pr_realm.dbuser, "
+                                "       pr_realm.dbpassword, probe.name as tbl "
                                 "from   probe, pr_realm " 
                                 "where  probe.id > 1 and pr_realm.id > 1");
   if (result) {
-    while ((row = mysql_fetch_row(result)) != NULL) {
+    while (dbi_result_next_row(result)) {
       struct dbspec db;
 
-      db.domid = atoi(row[0]);
-      db.realm = row[1];
-      db.host = row[2];
-      db.port = atoi(row[3]);
-      db.db = row[4];
-      db.user = row[5];
-      db.password = row[6];
-      uw_setproctitle("synching %s:pr_%s_def", row[1], row[7]);
-      LOG(LOG_DEBUG, "syncing %s:pr_%s_def", row[1], row[7]);
-      sync_table(upwatch, &db, row[7]);
+      db.domid = dbi_result_get_int(result, "id");
+      strcpy(db.realm, dbi_result_get_string(result, "name"));
+      strcpy(db.host, dbi_result_get_string_copy(result, "host"));
+      db.port = dbi_result_get_int(result, "port");
+      strcpy(db.dbtype, dbi_result_get_string(result, "dbtype"));
+      strcpy(db.dbname, dbi_result_get_string(result, "dbname"));
+      strcpy(db.dbuser, dbi_result_get_string(result, "dbuser"));
+      strcpy(db.dbpassword, dbi_result_get_string(result, "dbpassword"));
+      uw_setproctitle("synching %s:pr_%s_def", db.realm, dbi_result_get_string(result, "tbl"));
+      LOG(LOG_DEBUG, "syncing %s:pr_%s_def", db.realm, dbi_result_get_string(result, "tbl"));
+      sync_table(upwatch, &db, dbi_result_get_string(result, "tbl"));
     }
-    mysql_free_result(result);
+    dbi_result_free(result);
   }
   close_database(upwatch);
   LOG(LOG_INFO, "sleeping");
@@ -73,20 +63,19 @@ struct deftable {
 };
  
 #define SIZE_STEP 1000
-struct deftable *read_def(MYSQL *db, char *table, int realmid, int isaggr, int *count)
+struct deftable *read_def(database *db, const char *table, int realmid, int isaggr, int *count)
 {
-  MYSQL_RES *result;
-  MYSQL_ROW row;
+  dbi_result result;
   struct deftable *tbl;
   int tbl_max=1000;
 
   if (isaggr) {
-    result = my_query(db, 0, "select id, domid, tblid, unix_timestamp(changed) " 
+    result = db_query(db, 0, "select id, domid, tblid, unix_timestamp(changed) as changed " 
                              "from   pr_%s_def "
                              "where  id > 1 and tblid > 1 and domid = %u "
                              "order  by tblid asc", table, realmid);
   } else {
-    result = my_query(db, 0, "select id, domid, tblid, unix_timestamp(changed) " 
+    result = db_query(db, 0, "select id, domid, tblid, unix_timestamp(changed) as changed " 
                              "from   pr_%s_def "
                              "where  id > 1 "
                              "order  by id asc", table);
@@ -96,112 +85,120 @@ struct deftable *read_def(MYSQL *db, char *table, int realmid, int isaggr, int *
   }
   tbl = calloc(SIZE_STEP, sizeof(struct deftable));
   *count = 0; // preset
-  while ((row = mysql_fetch_row(result)) != NULL) {
-    tbl[*count].id = atoi(row[0]);
-    tbl[*count].domid = atoi(row[1]);
-    tbl[*count].tblid = atoi(row[2]);
-    tbl[*count].changed = atoi(row[3]);
+  while (dbi_result_next_row(result)) {
+    tbl[*count].id = dbi_result_get_int(result, "id");
+    tbl[*count].domid = dbi_result_get_int(result, "domid");
+    tbl[*count].tblid = dbi_result_get_int(result, "tblid");
+    tbl[*count].changed = dbi_result_get_int(result, "changed");
 
     if (++(*count) == tbl_max) {
       tbl_max += 1000;
       tbl = realloc(tbl, tbl_max * sizeof(struct deftable));
     }
   }
-  mysql_free_result(result);
+  dbi_result_free(result);
   return(tbl);
 }
 
-void update_record(MYSQL *db, char *name, unsigned tblid, unsigned upwid, MYSQL *upwatch)
+void update_record(database *db, const char *name, unsigned tblid, unsigned upwid, database *upwatch)
 {
-  MYSQL_RES *result;
-  MYSQL_ROW row;
-  MYSQL_FIELD *fields;
+  dbi_result result;
   int i, numfields;
   char buffer[8192], tmp[8192];
 
-  result = my_query(db, 0, "select * from pr_%s_def where id = '%u'", name, tblid);
+  result = db_query(db, 0, "select * from pr_%s_def where id = '%u'", name, tblid);
   if (!result) return;
 
-  row = mysql_fetch_row(result);
-  if (!row) {
-    mysql_free_result(result);
+  if (!dbi_result_next_row(result)) {
+    dbi_result_free(result);
     return;
   }
 
-  numfields = mysql_num_fields(result);
-  fields = mysql_fetch_fields(result);
+  numfields = dbi_result_get_numfields(result);
 
-  sprintf(buffer, "update pr_%s_def set ", name);
+  sprintf(buffer, "update pr_%s_def (", name);
   for (i=3; i<numfields; i++) {
-    char escaped[16384];
-
-    mysql_real_escape_string(db, escaped, row[i], strlen(row[i]));
-    sprintf(tmp, "%s = '%s', ", fields[i].name, escaped);
+    sprintf(tmp, "%s, ", dbi_result_get_field_name(result, i));
     strcat(buffer, tmp);
   }
+  buffer[strlen(buffer)-2] = 0; // kill last comma and space
+  strcat(buffer, ") values (");
+  for (i=3; i<numfields; i++) {
+    char *escaped;
+
+    strcpy(escaped, dbi_result_get_string_idx(result, i));
+    dbi_conn_escape_string(db->conn, &escaped);
+    sprintf(tmp, "'%s', ", escaped);
+    strcat(buffer, tmp);
+    free(escaped);
+  }
   buffer[strlen(buffer)-2] = 0;
-  sprintf(tmp, " where id = '%u'", upwid);
+  sprintf(tmp, ") where id = '%u'", upwid);
   strcat(buffer, tmp);
-  mysql_free_result(result);
+  dbi_result_free(result);
 
-  result = my_query(upwatch, 0, buffer);
-  if (result) mysql_free_result(result);
+  result = db_query(upwatch, 0, buffer);
+  if (result) dbi_result_free(result);
 }
 
-void delete_record(MYSQL *upwatch, char *name, unsigned id)
+void delete_record(database *upwatch, const char *name, unsigned id)
 {
-  MYSQL_RES *result;
+  dbi_result result;
 
-  result = my_query(upwatch, 0, "delete from pr_%s_def where id = '%u'", name, id);
-  if (result) mysql_free_result(result);
+  result = db_query(upwatch, 0, "delete from pr_%s_def where id = '%u'", name, id);
+  if (result) dbi_result_free(result);
 
 }
 
-void insert_record(MYSQL *db, char *name, unsigned tblid, unsigned realmid, MYSQL *upwatch)
+void insert_record(database *db, const char *name, unsigned tblid, unsigned realmid, database *upwatch)
 {
-  MYSQL_RES *result;
-  MYSQL_ROW row;
-  MYSQL_FIELD *fields;
+  dbi_result result;
   int i, numfields;
   char buffer[8192], tmp[8192];
 
-  result = my_query(db, 0, "select * from pr_%s_def where id = '%u'", name, tblid);
+  result = db_query(db, 0, "select * from pr_%s_def where id = '%u'", name, tblid);
   if (!result) return;
 
-  row = mysql_fetch_row(result);
-  if (!row) {
-    mysql_free_result(result);
+  if (dbi_result_next_row(result)) {
+    dbi_result_free(result);
     return;
   }
 
-  numfields = mysql_num_fields(result);
-  fields = mysql_fetch_fields(result);
+  numfields = dbi_result_get_numfields(result);
 
-  sprintf(buffer, "insert into pr_%s_def set domid = '%u', tblid = '%u', ", name, realmid, tblid);
+  sprintf(buffer, "insert into pr_%s_def (domid, tblid, ", name);
   for (i=3; i<numfields; i++) {
-    char escaped[16384];
-
-    mysql_real_escape_string(db, escaped, row[i], strlen(row[i]));
-    sprintf(tmp, "%s = '%s', ", fields[i].name, escaped);
+    sprintf(tmp, "%s, ", dbi_result_get_field_name(result, i));
     strcat(buffer, tmp);
   }
   buffer[strlen(buffer)-2] = 0;
-  mysql_free_result(result);
+  sprintf(tmp, ") values ('%u', tblid = '%u', ", realmid, tblid);
+  strcat(buffer, tmp);
+  for (i=3; i<numfields; i++) {
+    char *escaped;
 
-  result = my_query(upwatch, 0, buffer);
-  if (result) mysql_free_result(result);
+    strcpy(escaped, dbi_result_get_string_idx(result, i));
+    dbi_conn_escape_string(db->conn, &escaped);
+    sprintf(tmp, "'%s', ", escaped);
+    strcat(buffer, tmp);
+    free(escaped);
+  }
+  buffer[strlen(buffer)-2] = 0;
+  dbi_result_free(result);
+  result = db_query(upwatch, 0, buffer);
+  if (result) dbi_result_free(result);
 }
 
-void sync_table(MYSQL *upwatch, struct dbspec *dbspec, char *table)
+void sync_table(database *upwatch, struct dbspec *dbspec, const char *table)
 {
-  MYSQL *db;
+  database *db;
   struct deftable *tbl, *upw;
   int tbl_size=0, upw_size=0;
   int i, j;
   int added=0, updated=0, deleted=0;
 
-  db = open_database(dbspec->host, dbspec->port, dbspec->db,
-                     dbspec->user, dbspec->password);
+  db = open_database(dbspec->dbtype, dbspec->host, dbspec->port, dbspec->dbname,
+                     dbspec->dbuser, dbspec->dbpassword);
   if (!db) return;
 
   tbl = read_def(db, table, dbspec->domid, FALSE, &tbl_size);

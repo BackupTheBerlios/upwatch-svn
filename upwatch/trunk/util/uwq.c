@@ -6,6 +6,7 @@
 #include <pwd.h>
 #include <stdlib.h>
 #include <uwq_options.h>
+#include "db.h"
 #include "generic.h"
 
 char *progname;

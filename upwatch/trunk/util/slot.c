@@ -2,6 +2,7 @@
 #include <time.h>
 #include <stdlib.h>
 #include <slot_options.h>
+#include "db.h"
 #include "generic.h"
 #include "slot.h"
 

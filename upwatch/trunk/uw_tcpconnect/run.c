@@ -1,6 +1,6 @@
 #include "config.h"
-#include <db.h>
 #include <generic.h>
+#include <db.h>
 #include <st.h>
 #include <sys/time.h>
 #include <sys/types.h>
@@ -66,13 +66,13 @@ int init(void)
   return(1);
 }
 
-void refresh_database(MYSQL *mysql);
+void refresh_database(database *db);
 void run_actual_probes(void);
 void write_results(void);
 
 int run(void)
 {
-  MYSQL *mysql;
+  database *db;
 
   if (!cache) {
     cache = g_hash_table_new_full(g_int_hash, g_int_equal, g_free, free_probe);
@@ -80,11 +80,11 @@ int run(void)
   
   LOG(LOG_INFO, "reading info from database");
   uw_setproctitle("reading info from database");
-  mysql = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
+  db = open_database(OPT_ARG(DBTYPE), OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
 			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
-  if (mysql) {
-    refresh_database(mysql);
-    close_database(mysql);
+  if (db) {
+    refresh_database(db);
+    close_database(db);
   }
 
   if (g_hash_table_size(cache) > 0) {
@@ -100,11 +100,11 @@ int run(void)
   return(g_hash_table_size(cache));
 }
 
-void refresh_database(MYSQL *mysql)
+void refresh_database(database *db)
 {
-  MYSQL_RES *result;
-  MYSQL_ROW row;
+  dbi_result result;
   char qry[1024];
+  char *error;
 
   sprintf(qry,  "SELECT pr_tcpconnect_def.id, pr_tcpconnect_def.domid, pr_tcpconnect_def.tblid, pr_realm.name, "
                 "       pr_tcpconnect_def.ipaddress, pr_tcpconnect_def.port, "
@@ -114,43 +114,45 @@ void refresh_database(MYSQL *mysql)
 		"       and pr_tcpconnect_def.pgroup = '%d' and pr_realm.id = pr_tcpconnect_def.domid",	
                 (unsigned)OPT_VALUE_GROUPID);
 
-  result = my_query(mysql, 1, qry);
+  result = db_query(db, 1, qry);
   if (!result) {
     return;
   }
     
-  while ((row = mysql_fetch_row(result))) {
+  while (dbi_result_next_row(result)) {
     int id;
     struct probedef *probe;
-
-    id = atol(row[0]);
+    
+    id = dbi_result_get_int(result, "id");
     probe = g_hash_table_lookup(cache, &id);
     if (!probe) {
       probe = g_malloc0(sizeof(struct probedef));
       probe->id = id;
-      if (atoi(row[1]) > 1) {
-        probe->probeid = atoi(row[2]);
-        probe->realm = strdup(row[3]);
+      if (dbi_result_get_int(result, "domid") > 1) {
+        probe->probeid = dbi_result_get_int(result, "tblid");
+        probe->realm = dbi_result_get_string_copy(result, "name");
       } else {
         probe->probeid = probe->id;
       }
+      //fprintf(stderr, "Adding %u\n", id);
       g_hash_table_insert(cache, guintdup(id), probe);
     }
 
     if (probe->ipaddress) g_free(probe->ipaddress);
-    probe->ipaddress = strdup(row[4]);
-    probe->port = atoi(row[5]);
-    probe->yellow = atof(row[6]);
-    probe->red = atof(row[7]);
+    probe->ipaddress = dbi_result_get_string_copy(result, "ipaddress");
+    probe->port = dbi_result_get_int(result, "port");
+    probe->yellow = dbi_result_get_float(result, "yellow");
+    probe->red = dbi_result_get_float(result, "red");
     if (probe->msg) g_free(probe->msg);
     probe->msg = NULL;
     probe->seen = 1;
   }
-  mysql_free_result(result);
-  if (mysql_errno(mysql)) {
-    g_hash_table_foreach(cache, reset_seen, NULL);
-  } else {
+  dbi_result_free(result);
+  if (dbi_conn_error(db, &error) == DBI_ERROR_NONE) {
     g_hash_table_foreach_remove(cache, return_seen, NULL);
+  } else {
+    LOG(LOG_ERR, "%s", error);
+    g_hash_table_foreach(cache, reset_seen, NULL);
   }
 }
 

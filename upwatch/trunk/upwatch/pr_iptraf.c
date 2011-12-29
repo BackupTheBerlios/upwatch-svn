@@ -64,27 +64,25 @@ void *iptraf_get_def(trx *t, int create)
 {
   struct iptraf_def *def;
   struct iptraf_result *res = (struct iptraf_result *)t->res;
-  MYSQL_RES *result;
-  MYSQL_ROW row;
+  dbi_result result;
   char buffer[10];
   time_t now = time(NULL);
 
   if (res->color == STAT_PURPLE) {
-    result = my_query(t->probe->db, 0,
+    result = db_query(t->probe->db, 0,
                       "select ipaddress from pr_%s_def where id = '%u'", res->name, res->probeid);
     if (!result) return(NULL);
 
-    row = mysql_fetch_row(result);
-    if (row && row[0]) {
-      res->ipaddress = strdup(row[0]);
+    if (dbi_result_next_row(result)) {
+      res->ipaddress = dbi_result_get_string_copy(result, "ipaddress");
       inet_aton(res->ipaddress, &res->ipaddr);
     } else {
       LOG(LOG_NOTICE, "%s:%u@%s: iptraf def %u not found", res->realm, res->stattime, t->fromhost, res->probeid);
-      mysql_free_result(result);
+      dbi_result_free(result);
       delete_pr_status(t, res->probeid);
       return(NULL);
     }
-    mysql_free_result(result);
+    dbi_result_free(result);
   }
 
   def = g_hash_table_lookup(t->probe->cache, &res->ipaddr);
@@ -99,14 +97,14 @@ void *iptraf_get_def(trx *t, int create)
     def->stamp = now;
     strcpy(def->hide, "no");
 
-    result = my_query(t->probe->db, 0,
+    result = db_query(t->probe->db, 0,
                       "select id, server, yellow, red, contact, hide, email, sms, delay, pgroup "
                       "from   pr_%s_def "
                       "where  ipaddress = '%s'", res->name, res->ipaddress);
     if (!result) return(NULL);
 
-    if (mysql_num_rows(result) == 0) { // DEF RECORD NOT FOUND
-      mysql_free_result(result);
+    if (dbi_result_get_numrows(result) == 0) { // DEF RECORD NOT FOUND
+      dbi_result_free(result);
       if (!create) {
         LOG(LOG_NOTICE, "%s:%u@%s: pr_%s_def ip %s not found - skipped",
                          res->realm, res->stattime, t->fromhost, res->name, res->ipaddress);
@@ -118,25 +116,23 @@ void *iptraf_get_def(trx *t, int create)
         LOG(LOG_ERR, "No SQL query for how to find a server by ip address");
         return(NULL);
       }
-      result = my_query(t->probe->db, 0, query_server_by_ip, res->ipaddress, res->ipaddress,
+      result = db_query(t->probe->db, 0, query_server_by_ip, res->ipaddress, res->ipaddress,
                         res->ipaddress, res->ipaddress, res->ipaddress);
       if (!result) return(NULL);
-      row = mysql_fetch_row(result);
-      if (row && row[0]) {
-        res->server   = atoi(row[0]);
+      if (dbi_result_next_row(result)) {
+        res->server   = dbi_result_get_int_idx(result, 0);
       } else {
         LOG(LOG_NOTICE, "%s:%u@%s: iptraf for ip %s added without server id", 
             res->realm, res->stattime, t->fromhost, res->ipaddress);
         res->server = 1;
       }
-      mysql_free_result(result);
+      dbi_result_free(result);
 
-      result = my_query(t->probe->db, 0,
-                        "insert into pr_%s_def set ipaddress = '%s', server = '%u', "
-                        "        description = 'auto-added by system'",
-                        res->name, res->ipaddress, res->server);
-      mysql_free_result(result);
-      if (mysql_affected_rows(t->probe->db) == 0) { // nothing was actually inserted
+      result = db_query(t->probe->db, 0,
+                        "insert into pr_%s_def (ipaddress, server, description) values ('%s', '%u', '%s')" ,
+                        res->name, res->ipaddress, res->server, "auto-added by system");
+      dbi_result_free(result);
+      if (dbi_result_get_numrows_affected(t->probe->db) == 0) { // nothing was actually inserted
         LOG(LOG_NOTICE, "%s:%u@%s: insert missing pr_%s_def id %s: %s", 
                          res->realm, res->stattime, t->fromhost, 
                          res->name, res->ipaddress, mysql_error(t->probe->db));
@@ -145,83 +141,76 @@ void *iptraf_get_def(trx *t, int create)
                          res->realm, res->stattime, t->fromhost,
                          res->name, res->ipaddress);
       }
-      result = my_query(t->probe->db, 0,
+      result = db_query(t->probe->db, 0,
                         "select id, server, yellow, red, contact, hide, email, sms, lay, pgroup "
                         "from   pr_%s_def "
                         "where  ipaddress = '%s'", res->name, res->ipaddress);
       if (!result) return(NULL);
     }
-  
-    row = mysql_fetch_row(result);
-    if (!row) {
-      mysql_free_result(result);
+    if (!dbi_result_next_row(result)) {
+      dbi_result_free(result);
       return(NULL);
     }
-    def->probeid  = atoi(row[0]);
-    def->server   = atoi(row[1]);
-    def->yellow   = atof(row[2]);
-    def->red      = atof(row[3]);
-    def->contact  = atof(row[4]);
-    strcpy(def->hide, row[5] ? row[5] : "no");
-    strcpy(def->email, row[6] ? row[6] : "");
-    strcpy(def->sms, row[7] ? row[7] : "");
-    if (row[8]) def->delay = atoi(row[8]);
-    if (row[9]) def->pgroup = atoi(row[9]);
+    def->probeid = dbi_result_get_int(result, "id");
+    def->server  = dbi_result_get_int(result, "server");
+    def->yellow  = dbi_result_get_float(result, "yellow");
+    def->red     = dbi_result_get_float(result, "red");
+    def->contact = dbi_result_get_int(result, "contact");
+    strcpy(def->hide, dbi_result_get_string_default(result, "hide", "no"));
+    strcpy(def->email, dbi_result_get_string_default(result, "email", ""));
+    strcpy(def->sms, dbi_result_get_string_default(result, "sms", ""));
+    def->delay   = dbi_result_get_int(result, "delay");
+    def->pgroup  = dbi_result_get_int(result, "pgroup");
+    dbi_result_free(result);
 
-    mysql_free_result(result);
-
-    result = my_query(t->probe->db, 0,
+    result = db_query(t->probe->db, 0,
                       "select color "
                       "from   pr_status "
                       "where  class = '%d' and probe = '%d'", t->probe->class, def->probeid);
     if (result) {
-      row = mysql_fetch_row(result);
-      if (row) {
-        def->color   = atoi(row[0]);
+      if (dbi_result_next_row(result)) {
+        def->color   = dbi_result_get_int(result, "color");
       } else {
         LOG(LOG_NOTICE, "%s:%u@%s: pr_status record for %s id %u (%s) not found", 
             res->realm, res->stattime, t->fromhost, res->name, def->probeid, res->ipaddress);
-        mysql_free_result(result);
-        result = my_query(t->probe->db, 0,
-                          "insert into pr_status set class = '%d', probe = '%d', server = '%d'",
+        dbi_result_free(result);
+        result = db_query(t->probe->db, 0,
+                          "insert into pr_status (class, probe, server) values ('%d', '%d', '%d')",
                           t->probe->class, def->probeid, def->server);
       }
-      mysql_free_result(result);
+      dbi_result_free(result);
     } else {
       LOG(LOG_NOTICE, "%s:%u@%s: pr_status record for %s id %u (%s) not found", 
           res->realm, res->stattime, t->fromhost, res->name, def->probeid, res->ipaddress);
     }
 
-    result = my_query(t->probe->db, 0,
+    result = db_query(t->probe->db, 0,
                       "select stattime from pr_%s_raw use index(probstat) "
                       "where probe = '%u' order by stattime desc limit 1",
                        res->name, def->probeid);
     if (result) {
-      if (mysql_num_rows(result) > 0) {
-        row = mysql_fetch_row(result);
-        if (row && row[0]) {
-          def->newest = atoi(row[0]);
-        }
+      if (dbi_result_next_row(result)) {
+        def->newest = dbi_result_get_int(result, "stattime");
       }
-      mysql_free_result(result);
+      dbi_result_free(result);
     }
 
     uw_slot(SLOT_DAY, res->stattime, &slotlow, &slothigh);
-    result = my_query(t->probe->db, 0,
-                      "select sum(incoming), sum(outgoing), max(color), avg(yellow), avg(red) "
+    result = db_query(t->probe->db, 0,
+                      "select sum(incoming) as sumincoming, sum(outgoing) as sumoutgoing, "
+                      "       max(color) as maxcolor, avg(yellow) as avgyellow, avg(red) as avgred "
                       "from   pr_iptraf_raw use index(probstat) "
                       "where  probe = '%u' and stattime >= '%u' and stattime < '%u'",
                       def->probeid, slotlow, slothigh);
     if (result) {
-      row = mysql_fetch_row(result);
-      if (row) {
-        if (row[0]) def->slotday_in   = atoi(row[0]);
-        if (row[1]) def->slotday_out  = atoi(row[1]);
-        if (row[2]) def->slotday_max_color  = atoi(row[2]);
-        if (row[3]) def->slotday_avg_yellow = atof(row[3]);
-        if (row[4]) def->slotday_avg_red    = atof(row[4]);
+      if (dbi_result_next_row(result)) {
+        def->slotday_in   = dbi_result_get_int(result, "sumincoming");
+        def->slotday_out  = dbi_result_get_int(result, "sumoutgoing");
+        def->slotday_max_color  = dbi_result_get_int(result, "maxcolor");
+        def->slotday_avg_yellow = dbi_result_get_float(result, "avgyellow");
+        def->slotday_avg_red    = dbi_result_get_float(result, "avgred");
       }
-      mysql_free_result(result);
+      dbi_result_free(result);
     } else {
       LOG(LOG_NOTICE, "%s:%u@%s: raw record for %s id %u not found between %u and %u", 
                       res->realm, res->stattime, t->fromhost, res->name, def->probeid, slotlow, slothigh);

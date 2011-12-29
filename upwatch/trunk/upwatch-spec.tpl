@@ -10,8 +10,8 @@ License: GPL
 Group: Application/Monitoring
 BuildRoot: %{_tmppath}/%{name}-%{version}-root-%(id -u -n)
 BuildRequires: gzip glib2-devel autogen libxslt lynx readline-devel
-BuildRequires: mysql-devel libxml2-devel postgresql-devel 
-Requires: libxml2 >= 2.4.19 glib2
+BuildRequires: mysql-devel libxml2-devel postgresql-devel libdbi-devel
+Requires: libxml2 >= 2.4.19 glib2 libdbi
 [+ FOR clientprog +]# [+clientprog+] requirements:
 [+ include (string-append (get "clientprog") "/" (get "clientprog") ".spec-requires") ;+]
 [+ ENDFOR +]

@@ -8,7 +8,6 @@
 #include <netinet/in.h>
 #include <netinet/in_systm.h>
 
-#include <generic.h>
 #include "uw_null.h"
 #include "slot.h"
 

@@ -9,7 +9,7 @@ PROBE_EMPTY = 1,
 #include "../../../probes.enum"
 } probeidx;
 
-void process(MYSQL *mysql, char *ip, char *hostname, char *args);
+void process(database *db, char *ip, char *hostname, char *args);
 
 int init(void)
 {
@@ -23,16 +23,16 @@ int run(void)
   FILE *in;
   char buffer[4096];
   int count = 0;
-  MYSQL *mysql;
+  database *db;
 
   if (!HAVE_OPT(INPUT)) {
     fprintf(stderr, "parameter -I is required\n");
     return 0;
   }
 
-  mysql = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
+  db = open_database(OPT_ARG(DBTYPE), OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
 			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
-  if (!mysql) {
+  if (!db) {
     printf("Can't open database\n");
     return 0;
   }
@@ -56,55 +56,53 @@ int run(void)
       arg = strtok(NULL, " \t");
     }
     count++;
-    process(mysql, ip, hostname, arg ? arg : "");
+    process(db, ip, hostname, arg ? arg : "");
   }
   fclose(in);
-  close_database(mysql);
+  close_database(db);
   return count;
 }
 
-void process(MYSQL *mysql, char *ip, char *hostname, char *args)
+void process(database *db, char *ip, char *hostname, char *args)
 {
-  MYSQL_RES *result;
-  MYSQL_ROW row;
+  dbi_result result;
   int serverid;
   char *p;
 
-  result = my_query(mysql, 0, "select %s from %s where %s = '%s'", 
+  result = db_query(db, 0, "select %s from %s where %s = '%s'", 
        OPT_ARG(SERVER_TABLE_ID_FIELD), OPT_ARG(SERVER_TABLE_NAME), 
        OPT_ARG(SERVER_TABLE_NAME_FIELD), hostname);
   if (!result) {
     printf("internal error. Stop.\n");
     exit(1);
   }
-  row = mysql_fetch_row(result);
-  if (!row || !row[0]) {
-    mysql_free_result(result);
+  if (dbi_result_next_row(result)) {
+    dbi_result_free(result);
     return;
   }
-  serverid = atoi(row[0]);
-  mysql_free_result(result);
+  serverid = dbi_result_get_int_idx(result, 0);
+  dbi_result_free(result);
   if (!serverid) return;
 
   if (strstr(args, "noping") == NULL) {
     int rows;
 
-    result = my_query(mysql, 0, 
+    result = db_query(db, 0, 
                       "select id from pr_ping_def where server = '%d' and ipaddress = '%s'",
                       serverid, ip);
     if (!result) {
       printf("internal error. Stop.\n");
       exit(1);
     }
-    rows = mysql_num_rows(result);
-    mysql_free_result(result);
-
-    if (rows == 0) { 
+    if (dbi_result_get_numrows(result) == 0) { 
+      dbi_result_free(result);
       printf("INSERT ping %s %s\n", ip, hostname);
-      my_query(mysql, 0, 
+      result = db_query(db, 0, 
                "insert into pr_ping_def set server = '%d', ipaddress = '%s', description = '%s'",
                serverid, ip, hostname);
+      if (result) dbi_result_free(result);
     } else {
+      dbi_result_free(result);
       printf("ALREADY THERE: ping %s %s\n", ip, hostname);
     }
   }
@@ -114,7 +112,6 @@ void process(MYSQL *mysql, char *ip, char *hostname, char *args)
     char URI[2048];
     char *s;
     int i;
-    int rows;
 
     s = p + 7;
     for (i=0; *s && *s != '/'; i++, s++) {
@@ -129,68 +126,64 @@ void process(MYSQL *mysql, char *ip, char *hostname, char *args)
     }
     URI[i] = 0;
 
-    result = my_query(mysql, 0,
+    result = db_query(db, 0,
                       "select id from pr_httpget_def where server = '%d' and ipaddress = '%s' and "
                       "hostname = '%s' and uri = '%s'", serverid, ip, HostName, URI);
     if (!result) {
       printf("internal error. Stop.\n");
       exit(1);
     }
-    rows = mysql_num_rows(result);
-    mysql_free_result(result);
-
-    if (rows == 0) { 
+    if (dbi_result_get_numrows(result)) { 
+      dbi_result_free(result);
       printf("INSERT httpget %s %s http://%s%s\n", ip, hostname, HostName, URI);
-      my_query(mysql, 0,
+      result = db_query(db, 0,
                "insert into pr_httpget_def set server = '%d', ipaddress = '%s', description = '%s', "
                "hostname = '%s', uri = '%s'", serverid, ip, hostname, HostName, URI);
+      if (result) dbi_result_free(result);
     } else {
+      dbi_result_free(result);
       printf("ALREADY THERE: httpget %s %s http://%s%s\n", ip, hostname, HostName, URI);
     }
   }
 
   if ((p = strstr(args, "pop-3")) != NULL || (p = strstr(args, "pop3")) != NULL) {
-    int rows;
-
-    result = my_query(mysql, 0,
+    result = db_query(db, 0,
                       "select id from pr_pop3_def where server = '%d' and ipaddress = '%s'",
                       serverid, ip);
     if (!result) {
       printf("internal error. Stop.\n");
       exit(1);
     }
-    rows = mysql_num_rows(result);
-    mysql_free_result(result);
-
-    if (rows == 0) { 
+    if (dbi_result_get_numrows(result) == 0) { 
+      dbi_result_free(result);
       printf("INSERT pop-3 %s %s\n", ip, hostname);
-      my_query(mysql, 0,
+      result = db_query(db, 0,
                "insert into pr_pop3_def set server = '%d', ipaddress = '%s', description = '%s'",
                serverid, ip, hostname);
+      if (result) dbi_result_free(result);
     } else {
+      dbi_result_free(result);
       printf("ALREADY THERE: pop3 %s %s \n", ip, hostname);
     }
   }
 
   if ((p = strstr(args, "imap")) != NULL) {
-    int rows;
-
-    result = my_query(mysql, 0,
+    result = db_query(db, 0,
                       "select id from pr_imap_def where server = '%d' and ipaddress = '%s'",
                       serverid, ip);
     if (!result) {
       printf("internal error. Stop.\n");
       exit(1);
     }
-    rows = mysql_num_rows(result);
-    mysql_free_result(result);
-
-    if (rows == 0) { 
+    if (dbi_result_get_numrows(result) == 0) { 
+      dbi_result_free(result);
       printf("INSERT imap %s %s\n", ip, hostname);
-      my_query(mysql, 0,
+      result = db_query(db, 0,
                "insert into pr_imap_def set server = '%d', ipaddress = '%s', description = '%s'",
                serverid, ip, hostname);
+      if (result) dbi_result_free(result);
     } else {
+      dbi_result_free(result);
       printf("ALREADY THERE: imap %s %s \n", ip, hostname);
     }
   }

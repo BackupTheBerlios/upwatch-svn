@@ -8,6 +8,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <glib.h>
+#include <dbi/dbi.h>
 #include <netdb.h>
 #if defined(ENABLE_SERVER) || defined(ENABLE_MONITORS)
 #include <db.h>
@@ -38,7 +39,7 @@ extern pthread_mutex_t _logmutex;
 #endif
 void _LOG(int level, char *fmt, ...);
 void _LOGRAW(int level, char *fmt);
-extern char *_logsrce;
+extern const char *_logsrce;
 extern char *progname;
 extern int _logline;
 extern int _log2stderr;
@@ -67,12 +68,35 @@ extern int init(void);
 #endif
 #endif
 
+struct dbspec {
+  int domid;
+  char realm[25];
+  char host[65];
+  int port;
+  char dbtype[64];
+  char dbname[64];
+  char dbuser[25];
+  char dbpassword[25];
+  char *srvrbyname; // query to retrieve the server id given the server name
+  char *srvrbyid;   // query to retrieve the server name given the server id
+  char *srvrbyip;   // query to retrieve the server id given the ipaddress
+  database *db;
+};
+extern struct dbspec *dblist;
+extern int dblist_cnt;
+
 char *uw_gmtime(time_t *now);
 long timeval_diff(struct timeval *a,struct timeval *b);
 guint *guintdup(guint val);
 int uw_rand(float maxval);
 char *strcat_realloc(char *here, char *str);
 void setsin(struct sockaddr_in *, u_int32_t);
+database *open_realm(char *realm, const char *dbtype, const char *dbhost, int dbport, const char *dbname, const char *dbuser, const char *dbpasswd);
+int uw_password_ok(char *user, char *passwd, const char *authquery, const char *dbtype, const char *dbhost, int dbport, const char *dbname, const char *dbuser, const char *dbpasswd);
+int realm_exists(char *realm);
+char *realm_server_by_id(char *realm, int id);
+int realm_server_by_ip(char *realm, char *ip);
+int realm_server_by_name(char *realm, char *name);
 
 #include <compat.h>
 

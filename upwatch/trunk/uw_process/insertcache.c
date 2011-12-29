@@ -19,7 +19,7 @@ void mod_ic_flush(module *probe, const char *table)
 {
   int i, len=0;
   char *sql, *start;
-  MYSQL_RES *result;
+  dbi_result result;
 
   if (probe->insertc->len == 0) return;
   for (i=0; i < probe->insertc->len; i++) {
@@ -35,8 +35,8 @@ void mod_ic_flush(module *probe, const char *table)
   }
   g_ptr_array_free(probe->insertc, TRUE); 
   probe->insertc = g_ptr_array_new();
-  result = my_query(probe->db, 0, sql);
+  result = db_query(probe->db, 0, sql);
   free(sql);
-  if (result) mysql_free_result(result);
+  if (result) dbi_result_free(result);
   // note we ignore dupes/errors for the sake of speed.
 }

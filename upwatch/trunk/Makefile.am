@@ -99,12 +99,12 @@ upwatch-base.pgsql: config/upwatch-realm.pgsql config/upwatch-common.pgsql uw_*/
 	echo "CREATE DOMAIN ubigint AS BIGINT CHECK( VALUE >= '0');" >> upwatch-base.pgsql
 	echo "BEGIN;" >> upwatch-base.pgsql
 	cat $+ >> upwatch-base.pgsql
-	echo "ROLLBACK;" >> upwatch-base.pgsql
+	echo "COMMIT;" >> upwatch-base.pgsql
 
 upwatch-full.pgsql: config/upwatch-full.pgsql config/upwatch-common.pgsql uw_*/probe.def_pgsql uw_*/probe.raw_pgsql
 	echo "BEGIN;" > upwatch-full.pgsql
 	cat $+ >> upwatch-full.pgsql
-	echo "ROLLBACK;" >> upwatch-full.pgsql
+	echo "COMMIT;" >> upwatch-full.pgsql
 
 force:
 	touch force

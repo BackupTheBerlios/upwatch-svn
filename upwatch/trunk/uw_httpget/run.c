@@ -29,7 +29,7 @@ GHashTable *cache;
 static void *probe(void *user_data); 
 static void write_results(void);
 void run_actual_probes(void);
-void refresh_database(MYSQL *mysql);
+void refresh_database(database *db);
 
 int thread_count = 0;
 
@@ -90,13 +90,9 @@ int init(void)
   return 1;
 }
 
-void refresh_database(MYSQL *mysql);
-void run_actual_probes(void);
-static void write_results(void);
-
 int run()
 {
-  MYSQL *mysql;
+  database *db;
 
   if (!cache) {
     cache = g_hash_table_new_full(g_int_hash, g_int_equal, g_free, free_probe);
@@ -104,11 +100,11 @@ int run()
 
   LOG(LOG_INFO, "reading info from database");
   uw_setproctitle("reading info from database");
-  mysql = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
+  db = open_database(OPT_ARG(DBTYPE), OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
                         OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
-  if (mysql) {
-    refresh_database(mysql);
-    close_database(mysql);
+  if (db) {
+    refresh_database(db);
+    close_database(db);
   }
 
   if (g_hash_table_size(cache) > 0) {
@@ -124,11 +120,11 @@ int run()
   return(g_hash_table_size(cache));
 }
 
-void refresh_database(MYSQL *mysql)
+void refresh_database(database *db)
 {
-  MYSQL_RES *result;
-  MYSQL_ROW row;
+  dbi_result result;
   char qry[1024];
+  char *error;
 
   //g_hash_table_foreach_remove(cache, delete_probe, NULL);
   sprintf(qry,  "SELECT pr_httpget_def.id, pr_httpget_def.domid, pr_httpget_def.tblid, pr_realm.name,"
@@ -140,22 +136,22 @@ void refresh_database(MYSQL *mysql)
                 "       and pr_httpget_def.pgroup = '%u' and pr_realm.id = pr_httpget_def.domid",
                 (unsigned) OPT_VALUE_GROUPID);
 
-  result = my_query(mysql, 1, qry);
+  result = db_query(db, 1, qry);
   if (!result) {
     return;
   }
-  while ((row = mysql_fetch_row(result))) {
+  while (dbi_result_next_row(result)) {
     int id;
     struct probedef *probe;
 
-    id = atoi(row[0]);
+    id = dbi_result_get_int(result, "id");
     probe = g_hash_table_lookup(cache, &id);
     if (!probe) {
       probe = g_malloc0(sizeof(struct probedef));
       probe->id = id;
-      if (atoi(row[1]) > 1) {
-        probe->probeid = atoi(row[2]);
-        probe->realm = strdup(row[3]);
+      if (dbi_result_get_int(result, "domid") > 1) {
+        probe->probeid = dbi_result_get_int(result, "tblid");
+        probe->realm = dbi_result_get_string_copy(result, "name");
       } else {
         probe->probeid = probe->id;
       }
@@ -164,26 +160,26 @@ void refresh_database(MYSQL *mysql)
     }
 
     if (probe->ipaddress) g_free(probe->ipaddress);
-    probe->ipaddress = strdup(row[4]);
+    probe->ipaddress = dbi_result_get_string_copy(result, "ipaddress");
     if (probe->uri) g_free(probe->uri);
-    probe->uri = strdup(row[5]);
+    probe->uri = dbi_result_get_string_copy(result, "uri");
     if (probe->hostname) g_free(probe->hostname);
-    probe->hostname = strdup(row[6]);
-    probe->port = atoi(row[7]);
-    probe->yellow = atof(row[8]);
-    probe->red = atof(row[9]);
+    probe->hostname = dbi_result_get_string_copy(result, "hostname");
+    probe->port = dbi_result_get_int(result, "port");
+    probe->yellow = dbi_result_get_float(result, "yellow");
+    probe->red = dbi_result_get_float(result, "red");
     if (probe->msg) g_free(probe->msg);
     probe->msg = NULL;
     if (probe->info) g_free(probe->info);
     probe->info = NULL;
     probe->seen = 1;
   }
-  mysql_free_result(result);
-  if (mysql_errno(mysql)) {
-    LOG(LOG_ERR, "%s", mysql_error(mysql));
-    g_hash_table_foreach(cache, reset_seen, NULL);
-  } else {
+  dbi_result_free(result);
+  if (dbi_conn_error(db, &error) == DBI_ERROR_NONE) { 
     g_hash_table_foreach_remove(cache, return_seen, NULL);
+  } else {
+    LOG(LOG_ERR, "%s", error);
+    g_hash_table_foreach(cache, reset_seen, NULL);
   }
 }
 

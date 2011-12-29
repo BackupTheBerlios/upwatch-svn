@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 #include <chklog_options.h>
+#include "db.h"
 #include "generic.h"
 #include "logregex.h"
 

@@ -27,26 +27,25 @@ static void mssql_free_def(void *probedef)
 //*******************************************************************
 // Get the results of the MySQL query into our probe_def structure
 //*******************************************************************
-static void mssql_set_def_fields(trx *t, struct probe_def *probedef, MYSQL_RES *result)
+static void mssql_set_def_fields(trx *t, struct probe_def *probedef, dbi_result result)
 {
   struct mssql_def *def = (struct mssql_def *) probedef;
-  MYSQL_ROW row = mysql_fetch_row(result);
 
-  if (row) {
-    if (row[0]) def->ipaddress = strdup(row[0]);
-    if (row[1]) def->description = strdup(row[1]);
-    if (row[2]) def->server   = atoi(row[2]);
-    if (row[3]) def->yellow   = atof(row[3]);
-    if (row[4]) def->red      = atof(row[4]);
-    if (row[5]) def->contact  = atof(row[5]);
-    strcpy(def->hide, row[6] ? row[6] : "no");
-    strcpy(def->email, row[7] ? row[7] : "");
-    strcpy(def->sms, row[8] ? row[8] : "");
-    if (row[9]) def->delay = atoi(row[9]);
-    if (row[10]) def->dbname = strdup(row[10]);
-    if (row[11]) def->dbuser = strdup(row[11]);
-    if (row[12]) def->dbpasswd = strdup(row[12]);
-    if (row[13]) def->query = strdup(row[13]);
+  if (dbi_result_next_row(result)) {
+    def->ipaddress   = dbi_result_get_string_copy(result, "ipaddress");
+    def->description = dbi_result_get_string_copy(result, "description");
+    def->server      = dbi_result_get_int(result, "server");
+    def->yellow      = dbi_result_get_float(result, "yellow");
+    def->red         = dbi_result_get_float(result, "red");
+    def->contact     = dbi_result_get_int(result, "contact");
+    strcpy(def->hide, dbi_result_get_string_default(result, "hide", "no"));
+    strcpy(def->email, dbi_result_get_string_default(result, "email", ""));
+    strcpy(def->sms, dbi_result_get_string_default(result, "sms", "")); 
+    def->delay       = dbi_result_get_int(result, "delay");
+    def->dbname      = dbi_result_get_string_copy(result, "dbname");
+    def->dbuser      = dbi_result_get_string_copy(result, "dbuser");
+    def->dbpasswd    = dbi_result_get_string_copy(result, "dbpasswd");
+    def->query       = dbi_result_get_string_copy(result, "query");
   }
 }
 

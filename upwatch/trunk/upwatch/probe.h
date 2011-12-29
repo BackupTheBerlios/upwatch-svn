@@ -69,7 +69,7 @@ void init_no_cache(module *probe);
 #define STANDARD_MODULE_STRUCT \
   int class;					/* numberic probe class (id of record in probe table) */ \
   char *module_name; 				/* name of the module */ \
-  MYSQL *db;					/* database handle the methods should use */ \
+  database *db;					/* database handle the methods should use */ \
   int needs_cache;				/* true if this probe caches def records */ \
   GHashTable *cache;				/* cached definition records */ \
   GPtrArray *insertc;				/* cache for doing multi value insert statements */ \
@@ -88,7 +88,7 @@ void init_no_cache(module *probe);
   void (*xml_result_node)(trx *t);		/* process properties of the "result" node  */ \
   void (*get_from_xml)(trx *t);			/* process one child of the "result" node */ \
   int (*accept_result)(trx *t);			/* accept (and maybe convert) result */ \
-  void (*set_def_fields)(trx *t, struct probe_def *def, MYSQL_RES *result);/* convert MySQL ROW into probe_def */ \
+  void (*set_def_fields)(trx *t, struct probe_def *def, dbi_result result);/* convert db row into probe_def */ \
   void *(*get_def)(trx *t, int create);		/* retrieve probe definition */ \
   void (*adjust_result)(trx *t);		/* adjust result: usually compute our own colors */ \
   int (*end_result)(trx *t);                    /* maybe do some cleanup for this result */  \

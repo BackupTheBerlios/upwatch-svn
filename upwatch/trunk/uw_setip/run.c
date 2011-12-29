@@ -1,5 +1,6 @@
 #include "config.h"
 #include "uw_setip.h"
+#include <generic.h>
 #include "db.h"
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -10,19 +11,7 @@
 #include <stdlib.h>
 #include <ctype.h>
 
-#include <generic.h>
 #include <st.h>
-
-struct dbspec {
-  char realm[25];
-  char host[65];
-  int port;
-  char db[64];
-  char user[25];
-  char password[25];
-  MYSQL *mysql;
-} *dblist;
-int dblist_cnt;
 
 int thread_count;
 
@@ -37,134 +26,64 @@ static char *chop(char *s, int i)
 
 void init_dblist(void)
 {
-  MYSQL *db;
+  database *db;
 
-  db = open_database(OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
+  db = open_database(OPT_ARG(DBTYPE), OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME),
                      OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
   if (db) {
-    MYSQL_RES *result;
+    dbi_result result;
 
     if (dblist) free(dblist);
     dblist = calloc(100, sizeof(struct dbspec));
 
-    result = my_query(db, 0, "select pr_realm.name, pr_realm.host, "
-                             "       pr_realm.port, pr_realm.db, pr_realm.user, "
-                             "       pr_realm.password "
+    result = db_query(db, 0, "select pr_realm.name, pr_realm.host, "
+                             "       pr_realm.port, pr_realm.dbtype, pr_realm.dbname, "
+                             "       pr_realm.dbuser, pr_realm.dbpassword "
                              "from   pr_realm "
                              "where  pr_realm.id > 1");
     if (result) {
-      MYSQL_ROW row;
       dblist_cnt = 0;
-      while ((row = mysql_fetch_row(result)) != NULL) {
-        strcpy(dblist[dblist_cnt].realm, row[0]);
-        strcpy(dblist[dblist_cnt].host, row[1]);
-        dblist[dblist_cnt].port = atoi(row[2]);
-        strcpy(dblist[dblist_cnt].db, row[3]);
-        strcpy(dblist[dblist_cnt].user, row[4]);
-        strcpy(dblist[dblist_cnt].password, row[5]);
+      while (dbi_result_next_row(result)) {
+        strcpy(dblist[dblist_cnt].realm, dbi_result_get_string(result, "name"));
+        strcpy(dblist[dblist_cnt].host, dbi_result_get_string_copy(result, "host"));
+        dblist[dblist_cnt].port = dbi_result_get_int(result, "port");
+        strcpy(dblist[dblist_cnt].dbtype, dbi_result_get_string(result, "dbtype"));
+        strcpy(dblist[dblist_cnt].dbname, dbi_result_get_string(result, "dbname"));
+        strcpy(dblist[dblist_cnt].dbuser, dbi_result_get_string(result, "dbuser"));
+        strcpy(dblist[dblist_cnt].dbpassword, dbi_result_get_string(result, "dbpassword"));
         dblist_cnt++;
       }
-      mysql_free_result(result);
+      dbi_result_free(result);
     }
     close_database(db);
     LOG(LOG_INFO, "read %u realms", dblist_cnt);
   } else {
-    LOG(LOG_NOTICE, "could not open database %s@%s as user %s", OPT_ARG(DBNAME), OPT_ARG(DBHOST), OPT_ARG(DBUSER));
+    LOG(LOG_NOTICE, "could not open %s database %s@%s as user %s", OPT_ARG(DBTYPE), OPT_ARG(DBNAME), OPT_ARG(DBHOST), OPT_ARG(DBUSER));
   } 
-}
-
-MYSQL *open_realm(char *realm)
-{
-  int i;
-  MYSQL *mysql;
-static int call_cnt = 0;
-
-  if (!dblist || ++call_cnt == 100) {
-    call_cnt = 0;
-    init_dblist();
-    if (!dblist) {
-      LOG(LOG_ERR, "open_realm but no dblist found");
-      return NULL;
-    }
-  }
-  if (realm == NULL || realm[0] == 0) {
-    mysql = open_database(dblist[0].host, dblist[0].port,
-            dblist[0].db, dblist[0].user, dblist[0].password);
-    return(mysql);
-  }
-
-  for (i=0; i < dblist_cnt; i++) {
-    if (strcmp(dblist[i].realm, realm) == 0) {
-      mysql = open_database(dblist[i].host, dblist[i].port,
-              dblist[i].db, dblist[i].user, dblist[i].password);
-      return(mysql);
-    }
-  }
-  return(NULL);
-}
-
-static int uw_password_ok(char *user, char *passwd) 
-{
-  MYSQL *mysql;
-  MYSQL_RES *result;
-  char user_realm[256];
-  char *realm;
-
-  strncpy(user_realm, user, sizeof(user_realm));
-  realm = strrchr(user, '@');
-  if (realm) { 
-    *realm++ = 0; 
-  }
-  mysql = open_realm(realm);
-  if (mysql) {
-    gchar buffer[256];
-    MYSQL_ROW row;
-
-    sprintf(buffer, OPT_ARG(AUTHQUERY), user, passwd);
-    LOG(LOG_DEBUG, buffer);
-    if (mysql_query(mysql, buffer)) {
-      close_database(mysql);
-      return(FALSE);
-    }
-    result = mysql_store_result(mysql);
-    if (!result || mysql_num_rows(result) < 1) {
-      // LOG(LOG_NOTICE, "user %s, pwd %s not found", user, passwd);
-      close_database(mysql);
-      return(FALSE);
-    }
-    if ((row = mysql_fetch_row(result))) {
-      int id;
-
-      id = atoi(row[0]);
-      LOG(LOG_DEBUG, "user %s, pwd %s resulted in id %d", user_realm, passwd, id);
-    }
-    mysql_free_result(result);
-    close_database(mysql);
-  } else {
-    close_database(mysql);
-    return(FALSE); // couldn't open database
-  }
-  return(TRUE);
 }
 
 static int uw_set_ip(char *user, char *ip, char *remotehost) 
 {
-  MYSQL *mysql;
+  database *db;
+  dbi_result result;
 
-  mysql = open_database((char *) &OPT_ARG(DBHOST), OPT_VALUE_DBPORT, (char *) &OPT_ARG(DBNAME), 
-			(char *) &OPT_ARG(DBUSER), (char *) &OPT_ARG(DBPASSWD));
-  if (mysql) {
+  db = open_database(OPT_ARG(DBTYPE), OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), 
+			OPT_ARG(DBUSER), OPT_ARG(DBPASSWD));
+  if (db) {
     gchar buffer[256];
 
     sprintf(buffer, OPT_ARG(SETIPQUERY), ip, remotehost, user);
     LOG(LOG_DEBUG, buffer);
-    if (mysql_query(mysql, buffer)) {
-      close_database(mysql);
+    
+    result = db_query(db, 1, buffer);
+    if (!result) {
+      close_database(db);
       return(FALSE);
     }
-    close_database(mysql);
+    dbi_result_free(result);
+    close_database(db);
   } else {
-    close_database(mysql);
+    close_database(db);
     return(FALSE); // couldn't open database
   }
   return(TRUE);
@@ -320,7 +239,7 @@ void handle_session(st_netfd_t rmt_nfd, char *remotehost)
   if (debug > 3) fprintf(stderr, "< %s", buffer);
   chop(buffer, len);
   sscanf(buffer, "%s %s %s", user, passwd, ip);
-  if (!uw_password_ok(user, passwd)) {
+  if (!uw_password_ok(user, passwd, OPT_ARG(AUTHQUERY), OPT_ARG(DBTYPE), OPT_ARG(DBHOST), OPT_VALUE_DBPORT, OPT_ARG(DBNAME), OPT_ARG(DBUSER), OPT_ARG(DBPASSWD))) {
     LOG(LOG_NOTICE, "Login error: %s/%s", user, passwd);
     return;
   }

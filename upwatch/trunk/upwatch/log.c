@@ -32,7 +32,7 @@ const char *_logfilename;
 #ifdef WITH_THREADS
 pthread_mutex_t _logmutex = PTHREAD_MUTEX_INITIALIZER;
 #endif
-char *_logsrce;
+const char *_logsrce;
 int _logline;
 char *_logfile;
 static void _ll_lograw(int level, const char *msg);
